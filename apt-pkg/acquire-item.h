@@ -254,8 +254,13 @@ class pkgAcqFile : public pkgAcquire::Item
    virtual string MD5Sum() override {return ExpectMd5Hash;}
    virtual string DescURI() override {return Desc.URI;}
 
-   pkgAcqFile(pkgAcquire *Owner,string URI,string MD5,unsigned long Size,
-		  string Desc,string ShortDesc);
+   // If DestFilename is empty, download to DestDir/<basename> if
+   // DestDir is non-empty, $CWD/<basename> otherwise.  If
+   // DestFilename is NOT empty, DestDir is ignored and DestFilename
+   // is the absolute name to which the file should be downloaded.
+   pkgAcqFile(pkgAcquire *Owner, string URI, string MD5, unsigned long Size,
+	      string Desc, string ShortDesc,
+	      const string &DestDir="", const string &DestFilename="");
 };
 
 #endif

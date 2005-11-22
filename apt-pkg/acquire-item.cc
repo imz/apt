@@ -983,12 +983,18 @@ void pkgAcqArchive::Finished()
 // ---------------------------------------------------------------------
 /* The file is added to the queue */
 pkgAcqFile::pkgAcqFile(pkgAcquire * const Owner,const string URI,const string MD5,
-		       const unsigned long Size,const string Dsc,const string ShortDesc) :
+		       const unsigned long Size,const string Dsc,const string ShortDesc,
+		       const string &DestDir, const string &DestFilename) :
                        Item(Owner), ExpectMd5Hash(MD5)
 {
    Retries = _config->FindI("Acquire::Retries",0);
 
-   DestFile = flNotDir(URI);
+   if(!DestFilename.empty())
+      DestFile = DestFilename;
+   else if(!DestDir.empty())
+      DestFile = DestDir + "/" + flNotDir(URI);
+   else
+      DestFile = flNotDir(URI);
 
    // Create the item
    Desc.URI = URI;
