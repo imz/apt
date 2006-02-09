@@ -58,26 +58,6 @@ rpmListParser::rpmListParser(RPMHandler *Handler)
       SeenPackages = NULL;
    }
    RpmData = RPMPackageData::Singleton();
-
-   // XXX ugh, move this stuff someplace else like rpmsystem
-   BaseArch = _config->Find("APT::Architecture");
-   MultilibArch = false;
-   for (int i=0; i < sizeof(MultilibArchs) / sizeof(string); i++) {
-      if (BaseArch == MultilibArchs[i]) {
-	 MultilibArch = true;
-	 break;
-      }
-   }
-   if (MultilibArch) {
-      CompatArch["x86_64"].push_back("i386");
-      CompatArch["x86_64"].push_back("i486");
-      CompatArch["x86_64"].push_back("i586");
-      CompatArch["x86_64"].push_back("i686");
-      CompatArch["x86_64"].push_back("athlon");
-      CompatArch["ia64"] = CompatArch["x86_64"];
-      CompatArch["ppc64"].push_back("ppc");
-      CompatArch["sparc64"].push_back("sparc");
-   }
 }
                                                                         /*}}}*/
 
@@ -142,7 +122,7 @@ string rpmListParser::Package()
    bool IsDup = false;
    string Name = str;
 
-   if (MultilibArch && IsCompatArch(Architecture()) == true) {
+   if (RpmData->IsMultilibSys() && RpmData->IsCompatArch(Architecture())) {
 	 Name += ".32bit";	 
 	 CurrentName = Name;
    }
@@ -187,16 +167,6 @@ string rpmListParser::Package()
    return Name;
 }
 
-bool rpmListParser::IsCompatArch(string Architecture)
-{
-   bool compat = false;
-   for (vector<string>::iterator I = CompatArch[BaseArch].begin(); 
-        I != CompatArch[BaseArch].end(); I++) {
-      if (Architecture == *I)
-	 return true;
-   }
-   return false;
-}
                                                                         /*}}}*/
 // ListParser::Arch - Return the architecture string			/*{{{*/
 // ---------------------------------------------------------------------
@@ -443,20 +413,85 @@ bool rpmListParser::ParseDepends(pkgCache::VerIterator Ver,
       }
 
 #if RPM_VERSION >= 0x040404
-      if (namel[i][0] == 'g' && strncmp(namel[i], "getconf", 7) == 0)
+      // uhhuh, any of these changing would require full cache rebuild...
+      if (strncmp(namel[i], "getconf(", sizeof("getconf(")-1) == 0)
       {
         rpmds getconfProv = NULL;
         rpmds ds = rpmdsSingle(RPMTAG_PROVIDENAME,
                                namel[i], verl?verl[i]:NULL, flagl[i]);
         rpmdsGetconf(&getconfProv, NULL);
-        int res = rpmdsSearch(getconfProv, ds) >= 0;
+        int res = rpmdsSearch(getconfProv, ds);
         rpmdsFree(ds);
         rpmdsFree(getconfProv);
         if (res) continue;
       }
+
+      if (strncmp(namel[i], "cpuinfo(", sizeof("cpuinfo(")-1) == 0)
+      {
+        rpmds cpuinfoProv = NULL;
+        rpmds ds = rpmdsSingle(RPMTAG_PROVIDENAME,
+                               namel[i], verl?verl[i]:NULL, flagl[i]);
+        rpmdsCpuinfo(&cpuinfoProv, NULL);
+        int res = rpmdsSearch(cpuinfoProv, ds);
+        rpmdsFree(ds);
+        rpmdsFree(cpuinfoProv);
+        if (res) continue;
+      }
+
+      if (strncmp(namel[i], "sysinfo(", sizeof("sysinfo(")-1) == 0)
+      {
+        rpmds sysinfoProv = NULL;
+        rpmds ds = rpmdsSingle(RPMTAG_PROVIDENAME,
+                               namel[i], verl?verl[i]:NULL, flagl[i]);
+        rpmdsCpuinfo(&sysinfoProv, NULL);
+        int res = rpmdsSearch(sysinfoProv, ds);
+        rpmdsFree(ds);
+        rpmdsFree(sysinfoProv);
+        if (res) continue;
+      }
+
+      if (strncmp(namel[i], "uname(", sizeof("uname(")-1) == 0)
+      {
+        rpmds unameProv = NULL;
+        rpmds ds = rpmdsSingle(RPMTAG_PROVIDENAME,
+                               namel[i], verl?verl[i]:NULL, flagl[i]);
+        rpmdsUname(&unameProv, NULL);
+        int res = rpmdsSearch(unameProv, ds);
+        rpmdsFree(ds);
+        rpmdsFree(unameProv);
+        if (res) continue;
+      }
+
+      if (strlen(namel[i]) > 5 && namel[i][strlen(namel[i])-1] == ')' &&
+	  ((strchr("Rr_", namel[i][0]) != NULL &&
+	    strchr("Ww_", namel[i][1]) != NULL &&
+	    strchr("Xx_", namel[i][2]) != NULL &&
+	    namel[i][3] == '(') ||
+	    strncmp(namel[i], "exists(", sizeof("exists(")-1) == 0 ||
+	    strncmp(namel[i], "executable(", sizeof("executable(")-1) == 0 ||
+	    strncmp(namel[i], "readable(", sizeof("readable(")-1) == 0 ||
+	    strncmp(namel[i], "writable(", sizeof("writable(")-1)== 0 ))
+      {
+	 int res = rpmioAccess(namel[i], NULL, X_OK);
+	 if (res == 0)
+	    continue;
+      }
+
+      /* TODO
+       * - /etc/rpm/sysinfo provides
+       * - macro probe provides 
+       * - actually implement soname() and access() dependencies
+       */
+      if (strncmp(namel[i], "soname(", sizeof("soname(")-1) == 0)
+      {
+	 cout << "FIXME, ignoring soname() dependency: " << namel[i] << endl;
+	 continue;
+      }
+      
+
 #endif
       
-      if (namel[i][0] == 'r' && strncmp(namel[i], "rpmlib", 6) == 0)
+      if (strncmp(namel[i], "rpmlib(", sizeof("rpmlib(")-1) == 0)
       {
 #if RPM_VERSION >= 0x040404
         rpmds rpmlibProv = NULL;

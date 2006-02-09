@@ -35,9 +35,16 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <dirent.h>
+#include <fcntl.h>
 #include <rpm/rpmlib.h>
 #include <assert.h>
+#include <time.h>
 									/*}}}*/
+// for distrover
+#if RPM_VERSION >= 0x040101
+#include <rpmdb.h>
+#endif
+
 #if RPM_VERSION >= 0x040201
 extern int _rpmds_nopromote;
 #endif
@@ -238,6 +245,38 @@ signed rpmSystem::Score(Configuration const &Cnf)
 
    return Score;
 }
+
+string rpmSystem::DistroVer(Configuration const &Cnf)
+{
+   string DistroVerPkg = _config->Find("Apt::DistroVerPkg");
+   string DistroVersion = "";
+
+
+   if (! DistroVerPkg.empty()) {
+      rpmts ts;
+      char *version;
+      int type, count, rc;
+      rpmdbMatchIterator iter;
+
+      ts = rpmtsCreate();
+      rpmtsSetVSFlags(ts, (rpmVSFlags_e)-1);
+      rpmtsSetRootDir(ts, NULL);
+      rc = rpmtsOpenDB(ts, O_RDWR);
+
+      Header hdr;
+      iter = rpmtsInitIterator(ts, (rpmTag)RPMDBI_LABEL, DistroVerPkg.c_str(), 0);
+      while ((hdr = rpmdbNextIterator(iter)) != NULL) {
+         headerGetEntry(hdr, RPMTAG_VERSION, &type, (void **)&version, &count);
+	 DistroVersion = version;
+         break;
+      }
+      rpmdbFreeIterator(iter);
+      rpmtsFree(ts);
+   }
+   
+   return DistroVersion;
+}
+
 									/*}}}*/
 // System::AddStatusFiles - Register the status files			/*{{{*/
 // ---------------------------------------------------------------------
@@ -533,6 +572,12 @@ static void HashOptionFile(unsigned long &Hash, const char *Name)
    stat(FileName.c_str(), &st);
    Hash += st.st_mtime;
 }
+
+static void HashTime(unsigned long &Hash)
+{
+   Hash += time(NULL);
+}
+
 unsigned long rpmSystem::OptionsHash() const
 {
    unsigned long Hash = 0;
@@ -544,6 +589,12 @@ unsigned long rpmSystem::OptionsHash() const
    HashEnv(Hash, "LANG");
    HashEnv(Hash, "LC_ALL");
    HashEnv(Hash, "LC_MESSAGES");
+#if RPM_VERSION >= 0x040404
+   // This is really draconian but until apt can made somehow deal with
+   // runtime dependencies the cache has to be rebuilt for each run for
+   // accuracy.
+   HashTime(Hash);
+#endif
    return Hash;
 }
 									/*}}}*/
