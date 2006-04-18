@@ -185,6 +185,9 @@ class RPMDBHandler : public RPMHdrHandler
    virtual unsigned long Mnanotime() const {return DbFileMnanotime;}
    virtual bool OrderedOffset() const override {return false;}
 
+   // used by rpmSystem::DistroVer()
+   bool JumpByName(const string &PkgName, bool Provides=false);
+
    RPMDBHandler(bool WriteLock=false);
    virtual ~RPMDBHandler();
 };
