@@ -10,10 +10,6 @@
 #ifndef PKGLIB_RPMHANDLER_H
 #define PKGLIB_RPMHANDLER_H
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
 #include <sys/types.h>
 #include <dirent.h>
 
