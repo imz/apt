@@ -39,7 +39,7 @@ class rpmSystem : public pkgSystem
    virtual bool Initialize(Configuration &Cnf) override;
    virtual bool ArchiveSupported(const char *Type) override;
    virtual signed Score(Configuration const &Cnf) override;
-   virtual string DistroVer(Configuration const &Cnf) override;
+   virtual string DistroVer() override;
    virtual bool AddStatusFiles(vector<pkgIndexFile *> &List) override;
    virtual void AddSourceFiles(vector<pkgIndexFile *> &List) override;
    virtual bool FindIndex(pkgCache::PkgFileIterator File,
