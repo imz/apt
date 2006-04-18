@@ -8,12 +8,12 @@ setupenvironment
 
 testregexmatch 'APT "";'"
 APT::Architecture \"$APT_TEST_DEFAULT_ARCH\";"'
-APT::DistroVersion "";
 APT::Get "";
 APT::Get::ReInstall "";
 APT::Get::ReInstall::MarkManual "1";
 APT::Get::Obsoletes "";
 APT::Get::Obsoletes::AptMarkInheritanceAuto "all";
+APT::DistroVersion "";
 Dir "[^"]*";
 Dir::State "var/lib/apt/";
 Dir::State::lists "lists/";
