@@ -485,6 +485,16 @@ bool RPMDBHandler::Jump(off_t Offset)
    return true;
 }
 
+bool RPMDBHandler::JumpByName(const string &PkgName, bool Provides)
+{
+   raptTag tag = Provides ? (raptTag) RPMTAG_PROVIDES : (raptTag) RPMDBI_LABEL;
+   if (RpmIter == NULL) return false;
+   rpmdbFreeIterator(RpmIter);
+   RpmIter = raptInitIterator(Handler, tag, PkgName.c_str(), 0);
+   HeaderP = rpmdbNextIterator(RpmIter);
+   return HeaderP != NULL;
+}
+
 void RPMDBHandler::Rewind()
 {
    if (RpmIter == NULL)
