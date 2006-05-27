@@ -355,41 +355,6 @@ void rpmSystem::AddSourceFiles(vector<pkgIndexFile *> &List)
    }
 }
 									/*}}}*/
-#ifdef OLD_FILEDEPS
-static void gatherFileDependencies(map<string,int> &filedeps, Header header)
-{
-   rpm_tagtype_t type;
-   rpm_count_t count;
-   char **namel;
-   //char **verl;
-   //int *flagl;
-   int res;
-
-   res = headerGetEntry(header, RPMTAG_REQUIRENAME, &type,
-			(void **)&namel, &count);
-   /*
-   res = headerGetEntry(header, RPMTAG_REQUIREVERSION, &type,
-			(void **)&verl, &count);
-   res = headerGetEntry(header, RPMTAG_REQUIREFLAGS, &type,
-			(void **)&flagl, &count);
-   */
-
-   while (count--)
-   {
-      if (*namel[count] == '/')
-	 filedeps[string(namel[count])] = 1;
-   }
-}
-#endif
-
-
-#ifdef OLD_FILEDEPS
-bool rpmSystem::IsFileDep(string File)
-{
-   return (FileDeps.find(File) != FileDeps.end());
-}
-#endif
-
 // System::FindIndex - Get an index file for status files		/*{{{*/
 // ---------------------------------------------------------------------
 /* */

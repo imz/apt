@@ -267,10 +267,6 @@ bool rpmListParser::NewVersion(pkgCache::VerIterator Ver)
        return false;
    if (ParseDepends(Ver,pkgCache::Dep::Obsoletes) == false)
        return false;
-#ifdef OLD_FILEDEPS
-   if (ProcessFileProvides(Ver) == false)
-       return false;
-#endif
 
    if (ParseProvides(Ver) == false)
        return false;
@@ -584,27 +580,6 @@ bool rpmListParser::ParseDepends(pkgCache::VerIterator Ver,
    return true;
 }
                                                                         /*}}}*/
-#ifdef OLD_FILEDEPS
-bool rpmListParser::ProcessFileProvides(pkgCache::VerIterator Ver)
-{
-   const char **names = NULL;
-   rpm_count_t count = 0;
-
-   rpmHeaderGetEntry(header, RPMTAG_OLDFILENAMES, NULL, &names, &count);
-
-   while (count--)
-   {
-      if (rpmSys.IsFileDep(string(names[count])))
-      {
-	 if (!NewProvides(Ver, string(names[count]), string()))
-	     return false;
-      }
-   }
-
-   return true;
-}
-#endif
-
 bool rpmListParser::CollectFileProvides(pkgCache &Cache,
 					pkgCache::VerIterator Ver)
 {
