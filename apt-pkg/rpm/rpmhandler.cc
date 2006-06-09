@@ -78,11 +78,11 @@ bool RPMFileHandler::Skip()
    return (HeaderP != NULL);
 }
 
-bool RPMFileHandler::Jump(unsigned Offset)
+bool RPMFileHandler::Jump(off_t Offset)
 {
    if (FD == NULL)
       return false;
-   if (lseek(Fileno(FD),Offset,SEEK_SET) != (off_t)Offset)
+   if (lseek(Fileno(FD),Offset,SEEK_SET) != Offset)
       return false;
    return Skip();
 }
@@ -131,7 +131,7 @@ string RPMFileHandler::Directory() const
    return res;
 }
 
-unsigned long RPMFileHandler::FileSize() const
+off_t RPMFileHandler::FileSize() const
 {
    assert(HeaderP != NULL);
 
@@ -189,7 +189,7 @@ bool RPMSingleFileHandler::Skip()
    return (HeaderP != NULL);
 }
 
-bool RPMSingleFileHandler::Jump(unsigned Offset)
+bool RPMSingleFileHandler::Jump(off_t Offset)
 {
    assert(Offset == 0);
    Rewind();
@@ -207,7 +207,7 @@ void RPMSingleFileHandler::Rewind()
    lseek(Fileno(FD),0,SEEK_SET);
 }
 
-unsigned long RPMSingleFileHandler::FileSize() const
+off_t RPMSingleFileHandler::FileSize() const
 {
    struct stat S;
    if (stat(sFilePath.c_str(),&S) != 0)
@@ -304,7 +304,7 @@ bool RPMDirHandler::Skip()
    return Res;
 }
 
-bool RPMDirHandler::Jump(unsigned Offset)
+bool RPMDirHandler::Jump(off_t Offset)
 {
    if (Dir == NULL)
       return false;
@@ -326,7 +326,7 @@ void RPMDirHandler::Rewind()
    iOffset = 0;
 }
 
-unsigned long RPMDirHandler::FileSize() const
+off_t RPMDirHandler::FileSize() const
 {
    if (Dir == NULL)
       return 0;
@@ -461,7 +461,7 @@ bool RPMDBHandler::Skip()
    return true;
 }
 
-bool RPMDBHandler::Jump(unsigned int Offset)
+bool RPMDBHandler::Jump(off_t Offset)
 {
    iOffset = Offset;
    if (RpmIter == NULL)
@@ -469,9 +469,13 @@ bool RPMDBHandler::Jump(unsigned int Offset)
    rpmdbFreeIterator(RpmIter);
    if (iOffset == 0)
       RpmIter = raptInitIterator(Handler, RPMDBI_PACKAGES, NULL, 0);
-   else
+   else {
+      // rpmdb indexes are hardcoded uint32_t, the size must match here
+      raptDbOffset rpmOffset = iOffset;
       RpmIter = raptInitIterator(Handler, RPMDBI_PACKAGES,
-				  &iOffset, sizeof(iOffset));
+				 &rpmOffset, sizeof(rpmOffset));
+      iOffset = rpmOffset;
+   }
    HeaderP = rpmdbNextIterator(RpmIter);
    return true;
 }
