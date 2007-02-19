@@ -63,6 +63,9 @@ class pkgRecords::Parser
    virtual string Name() = 0;
    virtual string Changelog() = 0;
 
+   // These are not supported by all repository types and can fail
+   virtual bool FileList(std::vector<string> &Files) { return false;};
+
    // The record in binary form
    virtual void GetRec(const char *&Start,const char *&Stop) = 0;
 

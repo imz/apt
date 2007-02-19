@@ -297,6 +297,10 @@ void rpmRecordParser::GetRec(const char *&Start,const char *&Stop)
    Stop = Buffer + BufUsed;
 }
 									/*}}}*/
+bool rpmRecordParser::FileList(std::vector<string> &Files)
+{
+   return Handler->FileList(Files);
+}
 
 bool rpmRecordParser::HasFile(const char *File)
 {

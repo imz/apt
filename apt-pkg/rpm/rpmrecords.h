@@ -56,6 +56,9 @@ class rpmRecordParser : public pkgRecords::Parser
    virtual string Name() override;
    virtual string Changelog() override;
 
+   virtual bool FileList(std::vector<string> &Files) override;
+
+
    // The record in raw text, in standard Debian format
    virtual void GetRec(const char *&Start,const char *&Stop) override;
 
