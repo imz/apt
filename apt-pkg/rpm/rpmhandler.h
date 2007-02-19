@@ -26,7 +26,6 @@ class RPMHandler
 
    off_t iOffset;
    off_t iSize;
-   Header HeaderP;
    string ID;
 
    public:
@@ -41,21 +40,40 @@ class RPMHandler
    inline off_t Offset() const {return iOffset;}
    virtual bool OrderedOffset() const {return true;}
    inline off_t Size() const {return iSize;}
-   inline Header GetHeader() const {return HeaderP;}
    virtual bool IsDatabase() const = 0;
+   virtual Header GetHeader() const = 0;
 
-   virtual string FileName() const {return "";}
-   virtual string Directory() const {return "";}
-   virtual off_t FileSize() const {return 1;}
-   virtual string MD5Sum() const {return "";}
+   virtual string FileName() const = 0;
+   virtual string Directory() const = 0;
+   virtual off_t FileSize() const = 0;
+   virtual string MD5Sum() const = 0;
    virtual bool ProvideFileName() const {return false;}
 
-   RPMHandler() : iOffset(0), iSize(0), HeaderP(0) {}
+   RPMHandler() : iOffset(0), iSize(0) {}
    virtual ~RPMHandler() {}
 };
 
 
-class RPMFileHandler : public RPMHandler
+class RPMHdrHandler : public RPMHandler
+{
+   protected:
+
+   Header HeaderP;
+
+   public:
+
+   virtual Header GetHeader() const override {return HeaderP;}
+   virtual string FileName() const override {return "";}
+   virtual string Directory() const override {return "";}
+   virtual off_t FileSize() const override {return 1;}
+   virtual string MD5Sum() const override {return "";}
+
+   RPMHdrHandler() : RPMHandler(), HeaderP(0) {}
+   virtual ~RPMHdrHandler() {}
+};
+
+
+class RPMFileHandler : public RPMHdrHandler
 {
    protected:
 
@@ -101,8 +119,7 @@ class RPMSingleFileHandler : public RPMFileHandler
 };
 
 
-
-class RPMDBHandler : public RPMHandler
+class RPMDBHandler : public RPMHdrHandler
 {
    protected:
 
@@ -129,7 +146,8 @@ class RPMDBHandler : public RPMHandler
    virtual ~RPMDBHandler();
 };
 
-class RPMDirHandler : public RPMHandler
+
+class RPMDirHandler : public RPMHdrHandler
 {
    protected:
 
