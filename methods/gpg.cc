@@ -177,7 +177,7 @@ bool extractSignedFile(string file, string targetPrefix, string targetFile,
 
 
 
-char *getFileSigner(const char *file, const char *sigfile,
+const char *getFileSigner(const char *file, const char *sigfile,
 		    const char *outfile, string &signerKeyID)
 {
    pid_t pid;
@@ -366,7 +366,7 @@ bool GPGMethod::Fetch(FetchItem *Itm)
    if (OldStyle == true)
    {
       // Run GPG on file, extract contents and get the key ID of the signer
-      char *msg = getFileSigner(Path.c_str(), NULL,
+      const char *msg = getFileSigner(Path.c_str(), NULL,
 				Itm->DestFile.c_str(), KeyList);
       if (msg != NULL)
       {
@@ -376,7 +376,7 @@ bool GPGMethod::Fetch(FetchItem *Itm)
    }
    else
    {
-      char *msg;
+      const char *msg;
       int i;
       char buf[32];
       string KeyID;
