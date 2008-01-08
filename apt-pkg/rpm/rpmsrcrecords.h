@@ -12,10 +12,8 @@
 
 #include <apt-pkg/srcrecords.h>
 #include <apt-pkg/fileutl.h>
-#include <rpm/rpmlib.h>
 
-
-class RPMHandler;
+#include "rpmhandler.h"
 
 class rpmSrcRecordParser : public pkgSrcRecords::Parser
 {

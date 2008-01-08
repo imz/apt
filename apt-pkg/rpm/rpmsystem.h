@@ -10,8 +10,8 @@
 #ifndef PKGLIB_RPMSYSTEM_H
 #define PKGLIB_RPMSYSTEM_H
 
+#include "rpmindexfile.h"
 #include <apt-pkg/pkgsystem.h>
-#include <apt-pkg/rpmindexfile.h>
 #include <apt-pkg/algorithms.h>
 
 #include <map>

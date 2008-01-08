@@ -12,13 +12,14 @@
 
 #ifdef HAVE_RPM
 
-#include <apt-pkg/rpmindexfile.h>
-#include <apt-pkg/rpmsrcrecords.h>
-#include <apt-pkg/rpmlistparser.h>
-#include <apt-pkg/rpmrecords.h>
-#include <apt-pkg/rpmsystem.h>
-#include <apt-pkg/rpmhandler.h>
-#include <apt-pkg/rpmpackagedata.h>
+#include "rpmindexfile.h"
+#include "rpmsrcrecords.h"
+#include "rpmlistparser.h"
+#include "rpmrecords.h"
+#include "rpmsystem.h"
+#include "rpmhandler.h"
+#include "rpmpackagedata.h"
+
 #include <apt-pkg/sourcelist.h>
 #include <apt-pkg/configuration.h>
 #include <apt-pkg/progress.h>

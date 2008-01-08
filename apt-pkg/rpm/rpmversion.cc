@@ -14,7 +14,7 @@
 
 #ifdef HAVE_RPM
 
-#include <apt-pkg/rpmversion.h>
+#include "rpmversion.h"
 #include <apt-pkg/pkgcache.h>
 
 #define ALT_RPM_API

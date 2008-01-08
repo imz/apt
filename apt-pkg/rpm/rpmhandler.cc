@@ -22,8 +22,8 @@
 #include <apt-pkg/configuration.h>
 #include <apt-pkg/md5.h>
 
-#include <apt-pkg/rpmhandler.h>
-#include <apt-pkg/rpmpackagedata.h>
+#include "rpmhandler.h"
+#include "rpmpackagedata.h"
 
 #include <apti18n.h>
 
