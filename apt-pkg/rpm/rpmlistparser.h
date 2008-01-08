@@ -14,8 +14,9 @@
 
 #include <stdint.h>
 #include <apt-pkg/pkgcachegen.h>
-#include <apt-pkg/rpmhandler.h>
+#include "rpmhandler.h"
 #include <rpm/rpmlib.h>
+
 #include <unordered_set>
 #include <vector>
 #include <regex.h>

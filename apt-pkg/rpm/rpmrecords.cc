@@ -14,11 +14,11 @@
 
 #include <assert.h>
 
-#include <apt-pkg/rpmrecords.h>
-#include <apt-pkg/error.h>
-#include <apt-pkg/rpmhandler.h>
-#include <apt-pkg/rpmsystem.h>
+#include "rpmrecords.h"
+#include "rpmhandler.h"
+#include "rpmsystem.h"
 
+#include <apt-pkg/error.h>
 #include <apti18n.h>
 
 #include <cstring>
