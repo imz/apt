@@ -109,7 +109,20 @@ libapt_pkg_la_SOURCES = \
 	versionmatch.cc \
 	versionmatch.h
 
-PRIVATEHEADERS = contrib/system.h rpm/raptheader.h rpm/rapttypes.h
+PRIVATEHEADERS = \
+	contrib/system.h \
+	rpm/raptheader.h \
+	rpm/rapttypes.h \
+	rpm/rpmhandler.h \
+	rpm/rpmindexfile.h \
+	rpm/rpmlistparser.h \
+	rpm/rpmpackagedata.h \
+	rpm/rpmpm.h \
+	rpm/rpmrecords.h \
+	rpm/rpmsrcrecords.h \
+	rpm/rpmsystem.h \
+	rpm/rpmversion.h \
+	#
 
 includedir=${prefix}/include/apt-pkg
 include_HEADERS = $(filter-out \
