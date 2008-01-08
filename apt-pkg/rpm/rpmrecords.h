@@ -16,11 +16,9 @@
 
 #include <apt-pkg/pkgrecords.h>
 #include <apt-pkg/fileutl.h>
-#include <rpm/rpmlib.h>
 #include <cinttypes>
 
-
-class RPMHandler;
+#include "rpmhandler.h"
 
 class rpmRecordParser : public pkgRecords::Parser
 {

@@ -17,7 +17,7 @@
 #define PKGLIB_RPMINDEXFILE_H
 
 #include <apt-pkg/indexfile.h>
-#include <apt-pkg/rpmhandler.h>
+#include "rpmhandler.h"
 
 class RPMHandler;
 class RPMDBHandler;
