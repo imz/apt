@@ -1115,7 +1115,7 @@ class UpdateLogCleaner : public pkgArchiveCleaner
    {
       c1out << "Del " << Pkg << " " << Ver << " [" << SizeToStr(St.st_size) << "B]" << endl;
       unlink(File);
-   };
+   }
 };
 
 bool DoUpdate(CommandLine &CmdL)
@@ -1916,7 +1916,7 @@ class LogCleaner : public pkgArchiveCleaner
 
       if (_config->FindB("APT::Get::Simulate") == false)
 	 unlink(File);
-   };
+   }
 };
 
 bool DoAutoClean(CommandLine &CmdL)

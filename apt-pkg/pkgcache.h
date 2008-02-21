@@ -109,7 +109,7 @@ class pkgCache
 
    // CNC:2003-02-16 - Inlined here.
    inline unsigned long sHash(const char *S) const;
-   inline unsigned long sHash(const string &S) const {return sHash(S.c_str());};
+   inline unsigned long sHash(const string &S) const {return sHash(S.c_str());}
 
    public:
 
@@ -125,13 +125,13 @@ class pkgCache
    char *StrP;
 
    virtual bool ReMap();
-   inline bool Sync() {return Map.Sync();};
-   inline MMap &GetMap() {return Map;};
-   inline void *DataEnd() {return ((unsigned char *)Map.Data()) + Map.Size();};
+   inline bool Sync() {return Map.Sync();}
+   inline MMap &GetMap() {return Map;}
+   inline void *DataEnd() {return ((unsigned char *)Map.Data()) + Map.Size();}
 
    // String hashing function (512 range)
    inline unsigned long Hash(const char *S) const;
-   inline unsigned long Hash(const string &S) const {return Hash(S.c_str());};
+   inline unsigned long Hash(const string &S) const {return Hash(S.c_str());}
 
    // Usefull transformation things
    const char *Priority(unsigned char Priority);
@@ -143,7 +143,7 @@ class pkgCache
 #endif
    // CNC:2003-02-17 - A slightly changed FindPkg(), hacked for performance.
    Package *FindPackage(const char *Name);
-   Header &Head() {return *HeaderP;};
+   Header &Head() {return *HeaderP;}
    inline PkgIterator PkgBegin();
    inline PkgIterator PkgEnd();
    inline PkgFileIterator FileBegin();
@@ -158,7 +158,7 @@ class pkgCache
    static const char *DepType(unsigned char Dep);
 
    pkgCache(MMap *Map,bool DoMap = true);
-   virtual ~pkgCache() {};
+   virtual ~pkgCache() {}
 };
 
 // Header structure
@@ -334,13 +334,13 @@ inline unsigned long pkgCache::Hash(const char *S) const
 #undef hash_count
 
 inline pkgCache::PkgIterator pkgCache::PkgBegin()
-       {return PkgIterator(*this);};
+       {return PkgIterator(*this);}
 inline pkgCache::PkgIterator pkgCache::PkgEnd()
-       {return PkgIterator(*this,PkgP);};
+       {return PkgIterator(*this,PkgP);}
 inline pkgCache::PkgFileIterator pkgCache::FileBegin()
-       {return PkgFileIterator(*this,PkgFileP + HeaderP->FileList);};
+       {return PkgFileIterator(*this,PkgFileP + HeaderP->FileList);}
 inline pkgCache::PkgFileIterator pkgCache::FileEnd()
-       {return PkgFileIterator(*this,PkgFileP);};
+       {return PkgFileIterator(*this,PkgFileP);}
 
 // Oh I wish for Real Name Space Support
 class pkgCache::Namespace

@@ -52,7 +52,7 @@ class OpProgress
    bool MajorChange;
 
    bool CheckChange(float Interval = 0.7);
-   virtual void Update() {};
+   virtual void Update() {}
 
    public:
 
@@ -61,10 +61,10 @@ class OpProgress
    void SubProgress(unsigned long SubTotal,string Op);
    void OverallProgress(unsigned long Current,unsigned long Total,
 			unsigned long Size,string Op);
-   virtual void Done() {};
+   virtual void Done() {}
 
    OpProgress();
-   virtual ~OpProgress() {};
+   virtual ~OpProgress() {}
 };
 
 class OpTextProgress : public OpProgress
@@ -83,9 +83,9 @@ class OpTextProgress : public OpProgress
    virtual void Done();
 
    OpTextProgress(bool NoUpdate = false) : NoUpdate(NoUpdate),
-                NoDisplay(false), LastLen(0) {};
+                NoDisplay(false), LastLen(0) {}
    OpTextProgress(Configuration &Config);
-   virtual ~OpTextProgress() {Done();};
+   virtual ~OpTextProgress() {Done();}
 };
 
 #endif

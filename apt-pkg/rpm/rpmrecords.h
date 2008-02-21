@@ -61,7 +61,7 @@ class rpmRecordParser : public pkgRecords::Parser
    virtual string Name();
    virtual string Changelog();
 
-   inline Header GetRecord() { return HeaderP; };
+   inline Header GetRecord() { return HeaderP; }
 
    // The record in raw text, in standard Debian format
    virtual void GetRec(const char *&Start,const char *&Stop);

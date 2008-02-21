@@ -41,8 +41,8 @@ using namespace std;
  #include <pthread.h>
 
  static pthread_key_t ErrorKey;
- static void ErrorDestroy(void *Obj) {delete (GlobalError *)Obj;};
- static void KeyAlloc() {pthread_key_create(&ErrorKey,ErrorDestroy);};
+ static void ErrorDestroy(void *Obj) {delete (GlobalError *)Obj;}
+ static void KeyAlloc() {pthread_key_create(&ErrorKey,ErrorDestroy);}
 
  GlobalError *_GetErrorObj()
  {

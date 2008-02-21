@@ -78,7 +78,7 @@ class pkgSourceList
 			      Vendor const *Vendor) const = 0;
 
       Type();
-      virtual ~Type() {};
+      virtual ~Type() {}
    };
 
    typedef vector<pkgIndexFile *>::const_iterator const_iterator;
@@ -100,10 +100,10 @@ class pkgSourceList
    bool ReadSourceDir(string Dir);
 
    // List accessors
-   inline const_iterator begin() const {return SrcList.begin();};
-   inline const_iterator end() const {return SrcList.end();};
-   inline unsigned int size() const {return SrcList.size();};
-   inline bool empty() const {return SrcList.empty();};
+   inline const_iterator begin() const {return SrcList.begin();}
+   inline const_iterator end() const {return SrcList.end();}
+   inline unsigned int size() const {return SrcList.size();}
+   inline bool empty() const {return SrcList.empty();}
 
    bool FindIndex(pkgCache::PkgFileIterator File,
 		  pkgIndexFile *&Found) const;

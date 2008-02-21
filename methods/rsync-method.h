@@ -70,7 +70,7 @@ class RsyncMethod : public pkgAcqMethod
 		 bool WaitChild(pkgAcqMethod *Owner, FetchResult &FRes, const char *To);
 		 virtual void ParseOutput(pkgAcqMethod *Owner, FetchResult &FRes, const char *buf);
 		 virtual void AddOptions(Argv &argv)
-			{ argv.add("-vvvv"); };
+			{ argv.add("-vvvv"); }
 
 		public:
 		 RsyncConnExec(URI u, const string &_proxy, const string &prog);
@@ -84,11 +84,11 @@ class RsyncMethod : public pkgAcqMethod
 		protected:
 		 virtual void ParseOutput(pkgAcqMethod *Owner, FetchResult &FRes, const char *buf);
 		 virtual void AddOptions(Argv &argv)
-			{ argv.add("--apt-support"); };
+			{ argv.add("--apt-support"); }
 
 		public:
 		 RsyncConnExecExt(URI u, const string &_proxy, const string &prog):
-			RsyncConnExec(u, _proxy, prog) {};
+			RsyncConnExec(u, _proxy, prog) {}
 	  };
 
    static RsyncConn *server;

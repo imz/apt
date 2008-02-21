@@ -68,15 +68,15 @@ class rpmListParser : public pkgCacheGenerator::ListParser
    virtual bool UsePackage(pkgCache::PkgIterator Pkg,
 			   pkgCache::VerIterator Ver);
    virtual unsigned long Offset()
-	{return Handler->Offset();};
+	{return Handler->Offset();}
    virtual unsigned long Size();
    virtual unsigned long Flags();
 
    virtual bool OrderedOffset()
-	{return Handler->OrderedOffset();};
+	{return Handler->OrderedOffset();}
 
    virtual bool IsDatabase()
-	{return Handler->IsDatabase();};
+	{return Handler->IsDatabase();}
 
    virtual bool CollectFileProvides(pkgCache &Cache,
 				    pkgCache::VerIterator Ver);
