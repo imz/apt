@@ -31,8 +31,8 @@ class pkgAcquire::Item
    // Some private helper methods for registering URIs
    pkgAcquire *Owner;
    inline void QueueURI(ItemDesc &Item)
-                 {Owner->Enqueue(Item);};
-   inline void Dequeue() {Owner->Dequeue(this);};
+                 {Owner->Enqueue(Item);}
+   inline void Dequeue() {Owner->Dequeue(this);}
 
    // Safe rename function with timestamp preservation
    void Rename(string From,string To);
@@ -68,13 +68,13 @@ class pkgAcquire::Item
    virtual void Done(string Message,unsigned long Size,string Md5Hash,
 		     pkgAcquire::MethodConfig *Cnf);
    virtual void Start(string Message,unsigned long Size);
-   virtual string Custom600Headers() {return string();};
+   virtual string Custom600Headers() {return string();}
    virtual string DescURI() = 0;
-   virtual void Finished() {};
+   virtual void Finished() {}
 
    // Inquire functions
-   virtual string MD5Sum() {return string();};
-   pkgAcquire *GetOwner() {return Owner;};
+   virtual string MD5Sum() {return string();}
+   pkgAcquire *GetOwner() {return Owner;}
 
    Item(pkgAcquire *Owner);
    virtual ~Item();
@@ -102,7 +102,7 @@ class pkgAcqIndex : public pkgAcquire::Item
    virtual void Done(string Message,unsigned long Size,string Md5Hash,
 		     pkgAcquire::MethodConfig *Cnf) override;
    virtual string Custom600Headers() override;
-   virtual string DescURI() override {return RealURI;}; // CNC:2003-02-14
+   virtual string DescURI() override {return RealURI;} // CNC:2003-02-14
 
    // CNC:2002-07-03
    pkgAcqIndex(pkgAcquire *Owner,pkgRepository *Repository,string URI,
@@ -130,7 +130,7 @@ class pkgAcqIndexRel : public pkgAcquire::Item
    virtual void Done(string Message,unsigned long Size,string Md5Hash,
 		     pkgAcquire::MethodConfig *Cnf) override;
    virtual string Custom600Headers() override;
-   virtual string DescURI() override {return RealURI;};
+   virtual string DescURI() override {return RealURI;}
 
    // CNC:2002-07-03
    pkgAcqIndexRel(pkgAcquire *Owner,pkgRepository *Repository,string URI,
@@ -161,8 +161,8 @@ class pkgAcqArchive : public pkgAcquire::Item
    virtual void Failed(string Message,pkgAcquire::MethodConfig *Cnf) override;
    virtual void Done(string Message,unsigned long Size,string Md5Hash,
 		     pkgAcquire::MethodConfig *Cnf) override;
-   virtual string MD5Sum() override {return MD5;};
-   virtual string DescURI() override {return Desc.URI;};
+   virtual string MD5Sum() override {return MD5;}
+   virtual string DescURI() override {return Desc.URI;}
    virtual void Finished() override;
 
    pkgAcqArchive(pkgAcquire *Owner,pkgSourceList *Sources,
@@ -183,8 +183,8 @@ class pkgAcqFile : public pkgAcquire::Item
    virtual void Failed(string Message,pkgAcquire::MethodConfig *Cnf) override;
    virtual void Done(string Message,unsigned long Size,string Md5Hash,
 		     pkgAcquire::MethodConfig *Cnf) override;
-   virtual string MD5Sum() override {return Md5Hash;};
-   virtual string DescURI() override {return Desc.URI;};
+   virtual string MD5Sum() override {return Md5Hash;}
+   virtual string DescURI() override {return Desc.URI;}
 
    pkgAcqFile(pkgAcquire *Owner,string URI,string MD5,unsigned long Size,
 		  string Desc,string ShortDesc);

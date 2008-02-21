@@ -36,8 +36,8 @@ class pkgRPMPM : public pkgPackageManager
       string File;
       PkgIterator Pkg;
       Item(Ops Op,PkgIterator Pkg,string File = "")
-	 : Op(Op), File(File), Pkg(Pkg) {};
-      Item() {};
+	 : Op(Op), File(File), Pkg(Pkg) {}
+      Item() {}
 
    };
    vector<Item> List;
@@ -53,7 +53,7 @@ class pkgRPMPM : public pkgPackageManager
 
    virtual bool Process(const std::vector<apt_item> &install,
 		const std::vector<apt_item> &upgrade,
-		const std::vector<apt_item> &uninstall) {return false;};
+		const std::vector<apt_item> &uninstall) {return false;}
 
    virtual bool Go() override;
    virtual void Reset() override;

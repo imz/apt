@@ -35,8 +35,8 @@ class pkgTagSection
 
    public:
 
-   inline bool operator ==(const pkgTagSection &rhs) {return Section == rhs.Section;};
-   inline bool operator !=(const pkgTagSection &rhs) {return Section != rhs.Section;};
+   inline bool operator ==(const pkgTagSection &rhs) {return Section == rhs.Section;}
+   inline bool operator !=(const pkgTagSection &rhs) {return Section != rhs.Section;}
 
    bool Find(const char *Tag,const char *&Start, const char *&End) const;
    bool Find(const char *Tag,unsigned &Pos) const;
@@ -46,10 +46,10 @@ class pkgTagSection
    bool FindFlag(const char *Tag,unsigned long &Flags,
 		 unsigned long Flag) const;
    bool Scan(const char *Start,unsigned long MaxLength);
-   inline unsigned long size() const {return Stop - Section;};
+   inline unsigned long size() const {return Stop - Section;}
    void Trim();
 
-   inline unsigned int Count() const {return TagCount;};
+   inline unsigned int Count() const {return TagCount;}
    inline void Get(const char *&Start,const char *&Stop,unsigned int I) const
                    {Start = Section + Indexes[I]; Stop = Section + Indexes[I+1];}
 
@@ -57,9 +57,9 @@ class pkgTagSection
    {
       Start = Section;
       Stop = this->Stop;
-   };
+   }
 
-   pkgTagSection() : Section(0), Stop(0) {};
+   pkgTagSection() : Section(0), Stop(0) {}
 };
 
 class pkgTagFile
@@ -77,7 +77,7 @@ class pkgTagFile
    public:
 
    bool Step(pkgTagSection &Section);
-   inline unsigned long Offset() {return iOffset;};
+   inline unsigned long Offset() {return iOffset;}
    bool Jump(pkgTagSection &Tag,unsigned long Offset);
 
    pkgTagFile(FileFd *F,unsigned long Size = 32*1024);

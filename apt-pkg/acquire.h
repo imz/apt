@@ -99,10 +99,10 @@ class pkgAcquire
    void Shutdown();
 
    // Simple iteration mechanism
-   inline Worker *WorkersBegin() {return Workers;};
+   inline Worker *WorkersBegin() {return Workers;}
    Worker *WorkerStep(Worker *I);
-   inline ItemIterator ItemsBegin() {return Items.begin();};
-   inline ItemIterator ItemsEnd() {return Items.end();};
+   inline ItemIterator ItemsBegin() {return Items.begin();}
+   inline ItemIterator ItemsEnd() {return Items.end();}
 
    // Iterate over queued Item URIs
    class UriIterator;
@@ -153,7 +153,7 @@ class pkgAcquire::Queue
 	 Description = I.Description;
 	 ShortDesc = I.ShortDesc;
 	 Owner = I.Owner;
-      };
+      }
    };
 #endif
 
@@ -195,7 +195,7 @@ class pkgAcquire::UriIterator
    public:
 
    // Advance to the next item
-   inline void operator ++() {operator ++();};
+   inline void operator ++() {operator ++();}
    void operator ++(int)
    {
       CurItem = CurItem->Next;
@@ -204,12 +204,12 @@ class pkgAcquire::UriIterator
 	 CurItem = CurQ->Items;
 	 CurQ = CurQ->Next;
       }
-   };
+   }
 
    // Accessors
-   inline pkgAcquire::ItemDesc const *operator ->() const {return CurItem;};
-   inline bool operator !=(UriIterator const &rhs) const {return rhs.CurQ != CurQ || rhs.CurItem != CurItem;};
-   inline bool operator ==(UriIterator const &rhs) const {return rhs.CurQ == CurQ && rhs.CurItem == CurItem;};
+   inline pkgAcquire::ItemDesc const *operator ->() const {return CurItem;}
+   inline bool operator !=(UriIterator const &rhs) const {return rhs.CurQ != CurQ || rhs.CurItem != CurItem;}
+   inline bool operator ==(UriIterator const &rhs) const {return rhs.CurQ == CurQ && rhs.CurItem == CurItem;}
 
    UriIterator(pkgAcquire::Queue *Q) : CurQ(Q), CurItem(0)
    {
@@ -273,16 +273,16 @@ class pkgAcquireStatus
    virtual bool Authenticate(string Desc,string &User,string &Pass);
 
    // Each of these is called by the workers when an event occures
-   virtual void IMSHit(pkgAcquire::ItemDesc &/*Itm*/) {};
-   virtual void Fetch(pkgAcquire::ItemDesc &/*Itm*/) {};
-   virtual void Done(pkgAcquire::ItemDesc &/*Itm*/) {};
-   virtual void Fail(pkgAcquire::ItemDesc &/*Itm*/) {};
+   virtual void IMSHit(pkgAcquire::ItemDesc &/*Itm*/) {}
+   virtual void Fetch(pkgAcquire::ItemDesc &/*Itm*/) {}
+   virtual void Done(pkgAcquire::ItemDesc &/*Itm*/) {}
+   virtual void Fail(pkgAcquire::ItemDesc &/*Itm*/) {}
    virtual bool Pulse(pkgAcquire *Owner); // returns false on user cancel
    virtual void Start();
    virtual void Stop();
 
    pkgAcquireStatus();
-   virtual ~pkgAcquireStatus() {};
+   virtual ~pkgAcquireStatus() {}
 };
 
 #endif
