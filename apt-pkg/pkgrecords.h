@@ -52,25 +52,25 @@ class pkgRecords::Parser
    friend class pkgRecords;
 
    // These refer to the archive file for the Version
-   virtual string FileName() {return string();};
-   virtual string MD5Hash() {return string();};
-   virtual string SHA1Hash() {return string();};
-   virtual string SourcePkg() {return string();};
+   virtual string FileName() {return string();}
+   virtual string MD5Hash() {return string();}
+   virtual string SHA1Hash() {return string();}
+   virtual string SourcePkg() {return string();}
 
    // These are some general stats about the package
-   virtual string Maintainer() {return string();};
-   virtual string ShortDesc() {return string();};
-   virtual string LongDesc() {return string();};
-   virtual string Name() {return string();};
-   virtual string Changelog() {return string();};
+   virtual string Maintainer() {return string();}
+   virtual string ShortDesc() {return string();}
+   virtual string LongDesc() {return string();}
+   virtual string Name() {return string();}
+   virtual string Changelog() {return string();}
 
    // The record in binary form
-   virtual void GetRec(const char *&Start,const char *&Stop) {Start = Stop = 0;};
+   virtual void GetRec(const char *&Start,const char *&Stop) {Start = Stop = 0;}
 
    // CNC:2003-11-21
-   virtual bool HasFile(const char *File) {return false;};
+   virtual bool HasFile(const char *File) {return false;}
 
-   virtual ~Parser() {};
+   virtual ~Parser() {}
 };
 
 #endif

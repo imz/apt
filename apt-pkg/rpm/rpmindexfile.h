@@ -29,7 +29,7 @@ class rpmIndexFile : public pkgIndexFile
    public:
 
    virtual RPMHandler *CreateHandler() const = 0;
-   virtual bool HasPackages() const override {return false;};
+   virtual bool HasPackages() const override {return false;}
 
 };
 
@@ -43,12 +43,12 @@ class rpmDatabaseIndex : public rpmIndexFile
    virtual RPMHandler *CreateHandler() const override;
 
    // Interface for acquire
-   virtual string Describe(bool Short) const override {return "RPM Database";};
+   virtual string Describe(bool Short) const override {return "RPM Database";}
 
    // Interface for the Cache Generator
-   virtual bool Exists() const override {return true;};
+   virtual bool Exists() const override {return true;}
    virtual unsigned long Size() const override;
-   virtual bool HasPackages() const override {return true;};
+   virtual bool HasPackages() const override {return true;}
    virtual bool Merge(pkgCacheGenerator &Gen,OpProgress &Prog) const override;
    virtual bool MergeFileProvides(pkgCacheGenerator &/*Gen*/,
 				  OpProgress &/*Prog*/) const override;
@@ -76,8 +76,8 @@ class rpmListIndex : public rpmIndexFile
    string IndexURI(string Type) const;
 
    virtual string MainType() const = 0;
-   virtual string IndexPath() const {return IndexFile(MainType());};
-   virtual string ReleasePath() const {return IndexFile("release");};
+   virtual string IndexPath() const {return IndexFile(MainType());}
+   virtual string ReleasePath() const {return IndexFile("release");}
 
    public:
 
@@ -94,7 +94,7 @@ class rpmListIndex : public rpmIndexFile
 		pkgRepository *Repository) :
 		URI(URI), Dist(Dist), Section(Section),
 		Repository(Repository)
-	{};
+	{}
 };
 
 class rpmPkgListIndex : public rpmListIndex
@@ -109,7 +109,7 @@ class rpmPkgListIndex : public rpmListIndex
 
    // Creates a RPMHandler suitable for usage with this object
    virtual RPMHandler *CreateHandler() const override
-	   { return new RPMFileHandler(IndexPath()); };
+	   { return new RPMFileHandler(IndexPath()); }
 
    // Stuff for accessing files on remote items
    virtual string ArchiveInfo(pkgCache::VerIterator Ver) const override;
@@ -119,7 +119,7 @@ class rpmPkgListIndex : public rpmListIndex
    virtual bool GetIndexes(pkgAcquire *Owner) const override;
 
    // Interface for the Cache Generator
-   virtual bool HasPackages() const override {return true;};
+   virtual bool HasPackages() const override {return true;}
    virtual bool Merge(pkgCacheGenerator &Gen,OpProgress &Prog) const override;
    virtual bool MergeFileProvides(pkgCacheGenerator &/*Gen*/,
 				  OpProgress &/*Prog*/) const override;
@@ -128,7 +128,7 @@ class rpmPkgListIndex : public rpmListIndex
    rpmPkgListIndex(string URI,string Dist,string Section,
 		   pkgRepository *Repository) :
 	   rpmListIndex(URI,Dist,Section,Repository)
-      {};
+      {}
 };
 
 
@@ -144,7 +144,7 @@ class rpmSrcListIndex : public rpmListIndex
 
    // Creates a RPMHandler suitable for usage with this object
    virtual RPMHandler *CreateHandler() const override
-	   { return new RPMFileHandler(IndexPath()); };
+	   { return new RPMFileHandler(IndexPath()); }
 
    // Stuff for accessing files on remote items
    virtual string SourceInfo(pkgSrcRecords::Parser const &Record,
@@ -161,7 +161,7 @@ class rpmSrcListIndex : public rpmListIndex
    rpmSrcListIndex(string URI,string Dist,string Section,
 		   pkgRepository *Repository) :
 	   rpmListIndex(URI,Dist,Section,Repository)
-      {};
+      {}
 };
 
 class rpmPkgDirIndex : public rpmPkgListIndex
@@ -179,7 +179,7 @@ class rpmPkgDirIndex : public rpmPkgListIndex
 
    // Creates a RPMHandler suitable for usage with this object
    virtual RPMHandler *CreateHandler() const override
-	   { return new RPMDirHandler(IndexPath()); };
+	   { return new RPMDirHandler(IndexPath()); }
 
    virtual const Type *GetType() const override;
 
@@ -189,7 +189,7 @@ class rpmPkgDirIndex : public rpmPkgListIndex
    rpmPkgDirIndex(string URI,string Dist,string Section,
 		   pkgRepository *Repository) :
 	   rpmPkgListIndex(URI,Dist,Section,Repository)
-      {};
+      {}
 };
 
 class rpmSrcDirIndex : public rpmSrcListIndex
@@ -206,7 +206,7 @@ class rpmSrcDirIndex : public rpmSrcListIndex
 
    // Creates a RPMHandler suitable for usage with this object
    virtual RPMHandler *CreateHandler() const override
-	   { return new RPMDirHandler(IndexPath()); };
+	   { return new RPMDirHandler(IndexPath()); }
 
    virtual const Type *GetType() const override;
 
@@ -216,7 +216,7 @@ class rpmSrcDirIndex : public rpmSrcListIndex
    rpmSrcDirIndex(string URI,string Dist,string Section,
 		   pkgRepository *Repository) :
 	   rpmSrcListIndex(URI,Dist,Section,Repository)
-      {};
+      {}
 };
 
 class rpmSinglePkgIndex : public rpmPkgListIndex
@@ -235,14 +235,14 @@ class rpmSinglePkgIndex : public rpmPkgListIndex
 
    // Creates a RPMHandler suitable for usage with this object
    virtual RPMHandler *CreateHandler() const override
-	   { return new RPMSingleFileHandler(IndexPath()); };
+	   { return new RPMSingleFileHandler(IndexPath()); }
 
    virtual string ArchiveURI(string File) const override;
 
    virtual const Type *GetType() const override;
 
    rpmSinglePkgIndex(string File) :
-	   rpmPkgListIndex("", "", "", NULL), FilePath(File) {};
+	   rpmPkgListIndex("", "", "", NULL), FilePath(File) {}
 };
 
 class rpmSingleSrcIndex : public rpmSrcListIndex
@@ -261,14 +261,14 @@ class rpmSingleSrcIndex : public rpmSrcListIndex
 
    // Creates a RPMHandler suitable for usage with this object
    virtual RPMHandler *CreateHandler() const override
-	   { return new RPMSingleFileHandler(IndexPath()); };
+	   { return new RPMSingleFileHandler(IndexPath()); }
 
    virtual string ArchiveURI(string File) const override;
 
    virtual const Type *GetType() const override;
 
    rpmSingleSrcIndex(string File) :
-	   rpmSrcListIndex("", "", "", NULL), FilePath(File) {};
+	   rpmSrcListIndex("", "", "", NULL), FilePath(File) {}
 };
 
 #endif
