@@ -45,7 +45,7 @@ class pkgPolicy : public pkgDepCache::Policy
       pkgVersionMatch::MatchType Type;
       string Data;
       signed short Priority;
-      Pin() : Type(pkgVersionMatch::None), Priority(0) {};
+      Pin() : Type(pkgVersionMatch::None), Priority(0) {}
    };
 
    struct PkgPin : Pin
@@ -68,7 +68,7 @@ class pkgPolicy : public pkgDepCache::Policy
    void CreatePin(pkgVersionMatch::MatchType Type,string Pkg,
 		  string Data,signed short Priority);
    inline signed short GetPriority(pkgCache::PkgFileIterator const &File)
-       {return PFPriority[File->ID];};
+       {return PFPriority[File->ID];}
    signed short GetPriority(pkgCache::PkgIterator const &Pkg);
    pkgCache::VerIterator GetMatch(pkgCache::PkgIterator Pkg);
 
@@ -81,11 +81,11 @@ class pkgPolicy : public pkgDepCache::Policy
    //		       currently check for IsCritical() as well. Since
    //		       this is a virtual (heavy) function, we'll try
    //		       not to use it while not necessary.
-   virtual bool IsImportantDep(pkgCache::DepIterator Dep) override {return pkgDepCache::Policy::IsImportantDep(Dep);};
+   virtual bool IsImportantDep(pkgCache::DepIterator Dep) override {return pkgDepCache::Policy::IsImportantDep(Dep);}
    bool InitDefaults();
 
    pkgPolicy(pkgCache *Owner);
-   virtual ~pkgPolicy() {delete [] PFPriority; delete [] Pins;};
+   virtual ~pkgPolicy() {delete [] PFPriority; delete [] Pins;}
 };
 
 bool ReadPinFile(pkgPolicy &Plcy,string File = "");

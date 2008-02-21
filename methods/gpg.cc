@@ -20,7 +20,7 @@ class GPGMethod : public pkgAcqMethod
 
  public:
 
-   GPGMethod() : pkgAcqMethod("1.0",SingleInstance | SendConfig) {};
+   GPGMethod() : pkgAcqMethod("1.0",SingleInstance | SendConfig) {}
 };
 
 

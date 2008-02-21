@@ -31,7 +31,7 @@ class FileMethod : public pkgAcqMethod
 
    public:
 
-   FileMethod() : pkgAcqMethod("1.0",SingleInstance | LocalOnly) {};
+   FileMethod() : pkgAcqMethod("1.0",SingleInstance | LocalOnly) {}
 };
 
 // FileMethod::Fetch - Fetch a file					/*{{{*/
