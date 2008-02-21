@@ -35,7 +35,7 @@ class GzipMethod : public pkgAcqMethod
 
    public:
 
-   GzipMethod() : pkgAcqMethod("1.1",SingleInstance | SendConfig) {};
+   GzipMethod() : pkgAcqMethod("1.1",SingleInstance | SendConfig) {}
 };
 
 

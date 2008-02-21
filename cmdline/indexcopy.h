@@ -47,8 +47,8 @@ class PackageCopy : public IndexCopy
 
    virtual bool GetFile(string &Filename,unsigned long &Size) override;
    virtual bool RewriteEntry(FILE *Target,string File) override;
-   virtual const char *GetFileName() override {return "Packages";};
-   virtual const char *Type() override {return "Package";};
+   virtual const char *GetFileName() override {return "Packages";}
+   virtual const char *Type() override {return "Package";}
 
    public:
 };
@@ -59,8 +59,8 @@ class SourceCopy : public IndexCopy
 
    virtual bool GetFile(string &Filename,unsigned long &Size) override;
    virtual bool RewriteEntry(FILE *Target,string File) override;
-   virtual const char *GetFileName() override {return "Sources";};
-   virtual const char *Type() override {return "Source";};
+   virtual const char *GetFileName() override {return "Sources";}
+   virtual const char *Type() override {return "Source";}
 
    public:
 };
