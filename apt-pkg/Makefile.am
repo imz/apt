@@ -37,6 +37,7 @@ libapt_pkg_la_SOURCES = \
 	contrib/strutl.cc \
 	contrib/strutl.h \
 	contrib/system.h \
+	rpm/rapttypes.h \
 	rpm/rpmhandler.cc \
 	rpm/rpmhandler.h \
 	rpm/rpmindexfile.cc \
@@ -106,7 +107,7 @@ libapt_pkg_la_SOURCES = \
 	versionmatch.cc \
 	versionmatch.h
 
-PRIVATEHEADERS = contrib/system.h
+PRIVATEHEADERS = contrib/system.h rpm/rapttypes.h
 
 includedir=${prefix}/include/apt-pkg
 include_HEADERS = $(filter-out \
