@@ -116,11 +116,8 @@ bool FTPConn::Open(pkgAcqMethod *Owner)
    Close();
 
    // Determine the proxy setting
-   if (getenv("ftp_proxy") == 0)
-   {
-      string DefProxy = _config->Find("Acquire::ftp::Proxy");
       string SpecificProxy = _config->Find("Acquire::ftp::Proxy::" + ServerName.Host);
-      if (SpecificProxy.empty() == false)
+   if (!SpecificProxy.empty())
       {
 	 if (SpecificProxy == "DIRECT")
 	    Proxy = "";
@@ -128,10 +125,18 @@ bool FTPConn::Open(pkgAcqMethod *Owner)
 	    Proxy = SpecificProxy;
       }
       else
+   {
+	   string DefProxy = _config->Find("Acquire::ftp::Proxy");
+	   if (!DefProxy.empty())
+	   {
 	 Proxy = DefProxy;
    }
    else
-      Proxy = getenv("ftp_proxy");
+	   {
+		   char* result = getenv("ftp_proxy");
+		   Proxy = result ? result : "";
+	   }
+   }
 
    // Parse no_proxy, a , separated list of domains
    if (getenv("no_proxy") != 0)
