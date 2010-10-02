@@ -789,7 +789,6 @@ bool pkgRPMLibPM::Process(const std::vector<apt_item> &install,
    string Dir = _config->Find("RPM::RootDir");
    string DBDir = _config->Find("RPM::DBPath");
    int quiet = _config->FindI("quiet",0);
-   rpmReadConfigFiles(NULL, NULL);
 
    int probFilter = 0;
    unsigned int notifyFlags = 0;
