@@ -38,17 +38,17 @@ class RPMHandler
    virtual bool Skip() = 0;
    virtual bool Jump(unsigned int Offset) = 0;
    virtual void Rewind() = 0;
-   inline unsigned Offset() {return iOffset;}
-   virtual bool OrderedOffset() {return true;}
-   inline unsigned Size() {return iSize;}
-   inline Header GetHeader() {return HeaderP;}
-   virtual bool IsDatabase() = 0;
+   inline unsigned Offset() const {return iOffset;}
+   virtual bool OrderedOffset() const {return true;}
+   inline unsigned Size() const {return iSize;}
+   inline Header GetHeader() const {return HeaderP;}
+   virtual bool IsDatabase() const = 0;
 
-   virtual string FileName() {return "";}
-   virtual string Directory() {return "";}
-   virtual unsigned long FileSize() {return 1;}
-   virtual string MD5Sum() {return "";}
-   virtual bool ProvideFileName() {return false;}
+   virtual string FileName() const {return "";}
+   virtual string Directory() const {return "";}
+   virtual unsigned long FileSize() const {return 1;}
+   virtual string MD5Sum() const {return "";}
+   virtual bool ProvideFileName() const {return false;}
 
    RPMHandler() : iOffset(0), iSize(0), HeaderP(0) {}
    virtual ~RPMHandler() {}
@@ -66,12 +66,12 @@ class RPMFileHandler : public RPMHandler
    virtual bool Skip() override;
    virtual bool Jump(unsigned int Offset) override;
    virtual void Rewind() override;
-   virtual inline bool IsDatabase() override {return false;}
+   virtual inline bool IsDatabase() const override {return false;}
 
-   virtual string FileName() override;
-   virtual string Directory() override;
-   virtual unsigned long FileSize() override;
-   virtual string MD5Sum() override;
+   virtual string FileName() const override;
+   virtual string Directory() const override;
+   virtual unsigned long FileSize() const override;
+   virtual string MD5Sum() const override;
 
    RPMFileHandler(FileFd *File);
    RPMFileHandler(string File);
@@ -90,11 +90,11 @@ class RPMSingleFileHandler : public RPMFileHandler
    virtual bool Jump(unsigned int Offset) override;
    virtual void Rewind() override;
 
-   virtual string FileName() override {return sFilePath;}
-   virtual string Directory() override {return "";}
-   virtual unsigned long FileSize() override;
-   virtual string MD5Sum() override;
-   virtual bool ProvideFileName() override {return true;}
+   virtual string FileName() const override {return sFilePath;}
+   virtual string Directory() const override {return "";}
+   virtual unsigned long FileSize() const override;
+   virtual string MD5Sum() const override;
+   virtual bool ProvideFileName() const override {return true;}
 
    RPMSingleFileHandler(string File) : RPMFileHandler(File), sFilePath(File) {}
    virtual ~RPMSingleFileHandler() {}
@@ -119,11 +119,11 @@ class RPMDBHandler : public RPMHandler
    virtual bool Skip() override;
    virtual bool Jump(unsigned Offset) override;
    virtual void Rewind() override;
-   virtual inline bool IsDatabase() override {return true;}
-   virtual bool HasWriteLock() {return WriteLock;}
-   virtual time_t Mtime() {return DbFileMtime;}
-   virtual unsigned long Mnanotime() {return DbFileMnanotime;}
-   virtual bool OrderedOffset() override {return false;}
+   virtual inline bool IsDatabase() const override {return true;}
+   virtual bool HasWriteLock() const {return WriteLock;}
+   virtual time_t Mtime() const {return DbFileMtime;}
+   virtual unsigned long Mnanotime() const {return DbFileMnanotime;}
+   virtual bool OrderedOffset() const override {return false;}
 
    RPMDBHandler(bool WriteLock=false);
    virtual ~RPMDBHandler();
@@ -147,11 +147,11 @@ class RPMDirHandler : public RPMHandler
    virtual bool Skip() override;
    virtual bool Jump(unsigned int Offset) override;
    virtual void Rewind() override;
-   virtual inline bool IsDatabase() override {return false;}
+   virtual inline bool IsDatabase() const override {return false;}
 
-   virtual string FileName() override {return (Dir == NULL)?"":sFileName;}
-   virtual unsigned long FileSize() override;
-   virtual string MD5Sum() override;
+   virtual string FileName() const override {return (Dir == NULL)?"":sFileName;}
+   virtual unsigned long FileSize() const override;
+   virtual string MD5Sum() const override;
 
    RPMDirHandler(string DirName);
    virtual ~RPMDirHandler();
