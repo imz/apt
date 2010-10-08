@@ -96,7 +96,7 @@ void RPMFileHandler::Rewind()
       _error->Error(_("could not rewind RPMFileHandler"));
 }
 
-string RPMFileHandler::FileName()
+string RPMFileHandler::FileName() const
 {
    assert(HeaderP != NULL);
 
@@ -114,7 +114,7 @@ string RPMFileHandler::FileName()
    return res;
 }
 
-string RPMFileHandler::Directory()
+string RPMFileHandler::Directory() const
 {
    assert(HeaderP != NULL);
 
@@ -131,7 +131,7 @@ string RPMFileHandler::Directory()
    return res;
 }
 
-unsigned long RPMFileHandler::FileSize()
+unsigned long RPMFileHandler::FileSize() const
 {
    assert(HeaderP != NULL);
 
@@ -152,7 +152,7 @@ unsigned long RPMFileHandler::FileSize()
 }
 
 
-string RPMFileHandler::MD5Sum()
+string RPMFileHandler::MD5Sum() const
 {
    assert(HeaderP != NULL);
 
@@ -207,7 +207,7 @@ void RPMSingleFileHandler::Rewind()
    lseek(Fileno(FD),0,SEEK_SET);
 }
 
-unsigned long RPMSingleFileHandler::FileSize()
+unsigned long RPMSingleFileHandler::FileSize() const
 {
    struct stat S;
    if (stat(sFilePath.c_str(),&S) != 0)
@@ -215,7 +215,7 @@ unsigned long RPMSingleFileHandler::FileSize()
    return S.st_size;
 }
 
-string RPMSingleFileHandler::MD5Sum()
+string RPMSingleFileHandler::MD5Sum() const
 {
    MD5Summation MD5;
    FileFd File(sFilePath, FileFd::ReadOnly);
@@ -326,7 +326,7 @@ void RPMDirHandler::Rewind()
    iOffset = 0;
 }
 
-unsigned long RPMDirHandler::FileSize()
+unsigned long RPMDirHandler::FileSize() const
 {
    if (Dir == NULL)
       return 0;
@@ -338,7 +338,7 @@ unsigned long RPMDirHandler::FileSize()
    return St.st_size;
 }
 
-string RPMDirHandler::MD5Sum()
+string RPMDirHandler::MD5Sum() const
 {
    if (Dir == NULL)
       return "";
