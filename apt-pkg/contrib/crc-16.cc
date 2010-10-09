@@ -71,3 +71,10 @@ unsigned short AddCRC16(unsigned short fcs, void const *Buf,
       fcs = CalcFCS(fcs, *buf++);
    return fcs;
 }
+
+unsigned short AddCRC16(unsigned short fcs, const std::string & str)
+{
+    for (std::string::const_iterator I = str.begin(); I != str.end(); ++I)
+	fcs = CalcFCS(fcs, *I);
+    return fcs;
+}
