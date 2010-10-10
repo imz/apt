@@ -107,7 +107,7 @@ class RPMPackageData
    }
    void InitMinArchScore();
 
-   bool IsCompatArch(string Arch);
+   bool IsCompatArch(const string &Arch);
    bool IsMultilibSys() { return MultilibSys; }
 
    void SetDupPackage(const string &Name)
@@ -116,12 +116,13 @@ class RPMPackageData
 
    static RPMPackageData *Singleton();
 
-   void SetVersion(string ID, unsigned long Offset,
+   void SetVersion(const string &ID, unsigned long Offset,
 		   pkgCache::VerIterator &Version)
    {
       VerMap[Offset][ID] = Version;
    }
-   const pkgCache::VerIterator *GetVersion(string ID, unsigned long Offset)
+   const pkgCache::VerIterator *GetVersion(const string &ID,
+					   unsigned long Offset)
    {
        VerMapType::const_iterator I1 = VerMap.find(Offset);
        if (I1 != VerMap.end()) {
