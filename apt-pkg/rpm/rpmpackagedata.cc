@@ -294,7 +294,7 @@ int RPMPackageData::RpmArchScore(const char *Arch)
    return 0;
 }
 
-bool RPMPackageData::IsCompatArch(string Arch)
+bool RPMPackageData::IsCompatArch(const string &Arch)
 {
    for (vector<string>::iterator I = CompatArch[BaseArch].begin();
         I != CompatArch[BaseArch].end(); I++) {
