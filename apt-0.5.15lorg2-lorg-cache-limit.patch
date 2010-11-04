@@ -13,7 +13,7 @@ index 1dbd7bf..d743ec2 100644
  			MMap **OutMap,bool AllowMem)
  {
 -   unsigned long MapSize = _config->FindI("APT::Cache-Limit",12*1024*1024);
-+   unsigned long MapSize = _config->FindI("APT::Cache-Limit",24*1024*1024);
++   unsigned long MapSize = _config->FindI("APT::Cache-Limit",48*1024*1024);
     
     vector<pkgIndexFile *> Files(List.begin(),List.end());
     unsigned long EndOfSource = Files.size();
@@ -22,7 +22,7 @@ index 1dbd7bf..d743ec2 100644
  bool pkgMakeOnlyStatusCache(OpProgress &Progress,DynamicMMap **OutMap)
  {
 -   unsigned long MapSize = _config->FindI("APT::Cache-Limit",8*1024*1024);
-+   unsigned long MapSize = _config->FindI("APT::Cache-Limit",24*1024*1024);
++   unsigned long MapSize = _config->FindI("APT::Cache-Limit",48*1024*1024);
     vector<pkgIndexFile *> Files;
     unsigned long EndOfSource = Files.size();
     if (_system->AddStatusFiles(Files) == false)
