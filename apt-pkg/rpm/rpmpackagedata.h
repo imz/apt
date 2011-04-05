@@ -25,8 +25,7 @@ class RPMPackageData
    hash_map<string,vector<string>,hash_string> CompatArch;
    typedef map<string,pkgCache::VerIterator> VerMapValueType;
    typedef hash_map<unsigned long,VerMapValueType> VerMapType;
-   typedef hash_map<const char*,int,
-		    hash<const char*>,cstr_eq_pred> ArchScoresType;
+   typedef hash_map<string,int,hash_string> ArchScoresType;
 #else
    map<string,pkgCache::State::VerPriority> Priorities;
    map<string,pkgCache::Flag::PkgFlags> Flags;
@@ -36,7 +35,7 @@ class RPMPackageData
    map<string,vector<string> > CompatArch;
    typedef map<string,pkgCache::VerIterator> VerMapValueType;
    typedef map<unsigned long,VerMapValueType> VerMapType;
-   typedef map<const char*,int,cstr_lt_pred> ArchScoresType;
+   typedef map<string,int> ArchScoresType;
 #endif
 
    vector<regex_t*> HoldPackages;
@@ -97,12 +96,11 @@ class RPMPackageData
 
    int ArchScore(const string &Arch)
    {
-      ArchScoresType::const_iterator I = ArchScores.find(Arch.c_str());
+      ArchScoresType::const_iterator I = ArchScores.find(Arch);
       if (I != ArchScores.end())
 	 return I->second;
       int Ret = RpmArchScore(Arch);
-      // Must iterate and free when deallocating.
-      ArchScores[strdup(Arch.c_str())] = Ret;
+      ArchScores[Arch] = Ret;
       return Ret;
    }
    void InitMinArchScore();
