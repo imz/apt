@@ -97,20 +97,6 @@ else
    AC_SUBST(RPMLIBS)
 fi
 
-dnl Can we use g++ hash_map?
-AH_TEMPLATE(WITH_GNU_HASH_MAP,
-	    [Define to 1 if you want to use the g++ hash_map extension.])
-AC_MSG_CHECKING(for g++ hash_map extension)
-AC_LANG_PUSH([C++])
-AC_TRY_LINK(
-[
-#include <ext/hash_map>
-using namespace __gnu_cxx;
-],[hash_map<char*,hash<char*> > HashMap;
-],[AC_DEFINE_UNQUOTED(WITH_GNU_HASH_MAP, 1) AC_MSG_RESULT(yes)
-],[AC_MSG_RESULT(no)])
-AC_LANG_POP([C++])
-
 dnl CNC:2003-03-20
 AC_MSG_CHECKING(for --disable-scripts)
 AC_ARG_ENABLE([scripts],

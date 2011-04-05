@@ -15,10 +15,7 @@
 #include <rpm/rpmlib.h>
 
 RPMPackageData::RPMPackageData()
-   : MinArchScore(-1)
-#ifdef WITH_HASH_MAP
-   , ArchScores(31), VerMap(517)
-#endif
+   : VerMap(517), MinArchScore(-1), ArchScores(31)
 {
    BaseArch = _config->Find("APT::Architecture");
    if (BaseArch == "x86_64" || BaseArch == "ia64" ||
