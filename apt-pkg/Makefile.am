@@ -43,7 +43,6 @@ libapt_pkg_la_SOURCES = \
 	rpm/rpmindexfile.h \
 	rpm/rpmlistparser.cc \
 	rpm/rpmlistparser.h \
-	rpm/rpmmisc.h \
 	rpm/rpmpackagedata.cc \
 	rpm/rpmpackagedata.h \
 	rpm/rpmpm.cc \
