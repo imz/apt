@@ -59,7 +59,7 @@ class RPMPackageData
    int MinArchScore;
 
    ArchScoresType ArchScores;
-   int RpmArchScore(const char *Arch);
+   int RpmArchScore(const string &Arch);
 
    string BaseArch;
    bool MultilibSys;
@@ -95,14 +95,14 @@ class RPMPackageData
    bool HasIndexTranslation()
 	{return !IndexTranslations.empty();}
 
-   int ArchScore(const char *Arch)
+   int ArchScore(const string &Arch)
    {
-      ArchScoresType::const_iterator I = ArchScores.find(Arch);
+      ArchScoresType::const_iterator I = ArchScores.find(Arch.c_str());
       if (I != ArchScores.end())
 	 return I->second;
       int Ret = RpmArchScore(Arch);
       // Must iterate and free when deallocating.
-      ArchScores[strdup(Arch)] = Ret;
+      ArchScores[strdup(Arch.c_str())] = Ret;
       return Ret;
    }
    void InitMinArchScore();
