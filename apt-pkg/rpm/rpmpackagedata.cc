@@ -286,9 +286,9 @@ void RPMPackageData::InitMinArchScore()
       MinArchScore = 0;
 }
 
-int RPMPackageData::RpmArchScore(const char *Arch)
+int RPMPackageData::RpmArchScore(const string & Arch)
 {
-   int Score = rpmMachineScore(RPM_MACHTABLE_INSTARCH, Arch);
+   int Score = rpmMachineScore(RPM_MACHTABLE_INSTARCH, Arch.c_str());
    if (Score >= MinArchScore)
       return Score;
    return 0;
