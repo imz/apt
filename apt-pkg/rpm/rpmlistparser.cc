@@ -48,11 +48,7 @@ rpmListParser::rpmListParser(RPMHandler *Handler)
    header = NULL;
    if (Handler->IsDatabase() == true)
    {
-#ifdef WITH_HASH_MAP
-      SeenPackages = new SeenPackagesType(517);
-#else
       SeenPackages = new SeenPackagesType;
-#endif
    }
    else
    {
@@ -138,7 +134,7 @@ string rpmListParser::Package()
    if (RpmData->IsDupPackage(Name) == true)
       IsDup = true;
    else if (SeenPackages != NULL) {
-      if (SeenPackages->find(Name.c_str()) != SeenPackages->end())
+      if (SeenPackages->find(Name) != SeenPackages->end())
       {
 	 if (_config->FindB("RPM::Allow-Duplicated-Warning", true) == true)
 	    _error->Warning(
@@ -293,13 +289,13 @@ bool rpmListParser::NewVersion(pkgCache::VerIterator Ver)
 bool rpmListParser::UsePackage(pkgCache::PkgIterator Pkg,
 			       pkgCache::VerIterator Ver)
 {
+   string PkgName = Pkg.Name();
    if (SeenPackages != NULL)
-      (*SeenPackages)[Pkg.Name()] = true;
+      SeenPackages->insert(PkgName);
    if (Pkg->Section == 0)
       Pkg->Section = UniqFindTagWrite(RPMTAG_GROUP);
    if (_error->PendingError())
        return false;
-   string PkgName = Pkg.Name();
    string::size_type HashPos = PkgName.find('#');
    if (HashPos != string::npos)
       PkgName = PkgName.substr(0, HashPos);
