@@ -17,7 +17,7 @@
 #include <apt-pkg/rpmhandler.h>
 #include <apt-pkg/rpmmisc.h>
 #include <rpm/rpmlib.h>
-#include <map>
+#include <unordered_set>
 #include <vector>
 #include <regex.h>
 
@@ -35,12 +35,7 @@ class rpmListParser : public pkgCacheGenerator::ListParser
    string CurrentName;
    const pkgCache::VerIterator *VI;
 
-#ifdef WITH_HASH_MAP
-   typedef hash_map<const char*,bool,
-		    hash<const char*>,cstr_eq_pred> SeenPackagesType;
-#else
-   typedef map<const char*,bool,cstr_lt_pred> SeenPackagesType;
-#endif
+   typedef std::unordered_set<std::string> SeenPackagesType;
    SeenPackagesType *SeenPackages;
 
    bool Duplicated;
