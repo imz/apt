@@ -3,9 +3,9 @@
 
 #include <apt-pkg/tagfile.h>
 #include <apt-pkg/pkgcache.h>
-#include <apt-pkg/rpmmisc.h>
 
 #include <map>
+#include <unordered_map>
 #include <vector>
 #include <regex.h>
 #include <cstring>
@@ -16,27 +16,15 @@ class RPMPackageData
 {
    protected:
 
-#ifdef WITH_HASH_MAP
-   hash_map<string,pkgCache::State::VerPriority,hash_string> Priorities;
-   hash_map<string,pkgCache::Flag::PkgFlags,hash_string> Flags;
-   hash_map<string,vector<string>*,hash_string> FakeProvides;
-   hash_map<string,int,hash_string> IgnorePackages;
-   hash_map<string,int,hash_string> DuplicatedPackages;
-   hash_map<string,vector<string>,hash_string> CompatArch;
+   unordered_map<string,pkgCache::State::VerPriority> Priorities;
+   unordered_map<string,pkgCache::Flag::PkgFlags> Flags;
+   unordered_map<string,vector<string>*> FakeProvides;
+   unordered_map<string,int> IgnorePackages;
+   unordered_map<string,int> DuplicatedPackages;
+   unordered_map<string,vector<string> > CompatArch;
    typedef map<string,pkgCache::VerIterator> VerMapValueType;
-   typedef hash_map<unsigned long,VerMapValueType> VerMapType;
-   typedef hash_map<string,int,hash_string> ArchScoresType;
-#else
-   map<string,pkgCache::State::VerPriority> Priorities;
-   map<string,pkgCache::Flag::PkgFlags> Flags;
-   map<string,vector<string>*> FakeProvides;
-   map<string,int> IgnorePackages;
-   map<string,int> DuplicatedPackages;
-   map<string,vector<string> > CompatArch;
-   typedef map<string,pkgCache::VerIterator> VerMapValueType;
-   typedef map<unsigned long,VerMapValueType> VerMapType;
-   typedef map<string,int> ArchScoresType;
-#endif
+   typedef unordered_map<unsigned long,VerMapValueType> VerMapType;
+   typedef unordered_map<string,int> ArchScoresType;
 
    vector<regex_t*> HoldPackages;
    vector<regex_t*> DuplicatedPatterns;

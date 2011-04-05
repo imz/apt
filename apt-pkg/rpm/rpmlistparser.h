@@ -15,7 +15,6 @@
 #include <stdint.h>
 #include <apt-pkg/pkgcachegen.h>
 #include <apt-pkg/rpmhandler.h>
-#include <apt-pkg/rpmmisc.h>
 #include <rpm/rpmlib.h>
 #include <set>
 #include <vector>
