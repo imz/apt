@@ -20,8 +20,6 @@ class rpmSrcRecordParser : public pkgSrcRecords::Parser
    RPMHandler *Handler;
    Header HeaderP;
 
-   const char *StaticBinList[400];
-
    char *Buffer;
    unsigned int BufSize;
    unsigned int BufUsed;

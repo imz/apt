@@ -59,20 +59,7 @@ rpmSrcRecordParser::~rpmSrcRecordParser()
    reused by the next Binaries function call. */
 const char **rpmSrcRecordParser::Binaries()
 {
-   int i = 0;
-   char **bins;
-   rpm_tagtype_t type;
-   rpm_count_t count;
-   assert(HeaderP != NULL);
-   int rc = headerGetEntry(HeaderP, CRPMTAG_BINARY,
-			   &type, (void**)&bins, &count);
-   if (rc != 1)
-       return NULL;
-   for (i = 0; (unsigned)i < sizeof(StaticBinList)/sizeof(char*) && i < count;
-        i++)
-      StaticBinList[i] = bins[i];
-   StaticBinList[i] = 0;
-   return StaticBinList;
+   return NULL;
 }
 									/*}}}*/
 // SrcRecordParser::Files - Return a list of files for this source	/*{{{*/
