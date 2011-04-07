@@ -108,14 +108,8 @@ class RPMDBHandler : public RPMHandler
 {
    protected:
 
-#if RPM_VERSION >= 0x040100
    rpmts Handler;
-#else
-   rpmdb Handler;
-#endif
-#if RPM_VERSION >= 0x040000
    rpmdbMatchIterator RpmIter;
-#endif
    bool WriteLock;
 
    time_t DbFileMtime;
@@ -144,9 +138,7 @@ class RPMDirHandler : public RPMHandler
    string sFileName;
    string sFilePath;
 
-#if RPM_VERSION >= 0x040100
    rpmts TS;
-#endif
 
    const char *nextFileName();
 

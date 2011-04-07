@@ -60,34 +60,7 @@ if test "$RPM_PATH" = "none"; then
 else
    AC_DEFINE_UNQUOTED([HAVE_RPM],1,[Define if RPM backend is available])
 
-   dnl Check for RPM version
-   AC_MSG_CHECKING(for RPM version)
-   RPM_VERSION_RAW=`LANG= LC_ALL= $RPM_PATH --version | sed 's/^RPM version //'`
-   RPM_VERSION_MAJOR=`echo $RPM_VERSION_RAW | cut -d. -f1`
-   RPM_VERSION_MINOR=`echo $RPM_VERSION_RAW | cut -d. -f2`
-   RPM_VERSION_MICRO=`echo $RPM_VERSION_RAW | cut -d. -f3 | cut -d- -f1`
-   if test -z "$RPM_VERSION_MAJOR" -o -z "$RPM_VERSION_MINOR"; then
-      AC_MSG_ERROR([can't parse RPM version])
-   fi
-   if test -z "$RPM_VERSION_MICRO"; then
-      RPM_VERSION_MICRO=0
-   fi
-   AC_DEFINE_UNQUOTED([RPM_VERSION_MAJOR],$RPM_VERSION_MAJOR,[RPM major version])
-   AC_DEFINE_UNQUOTED([RPM_VERSION_MINOR],$RPM_VERSION_MINOR,[RPM minor version])
-   AC_DEFINE_UNQUOTED([RPM_VERSION_MICRO],$RPM_VERSION_MICRO,[RPM micro version])
-   AC_DEFINE_UNQUOTED([RPM_VERSION],
-      [((RPM_VERSION_MAJOR<<16)|(RPM_VERSION_MINOR<<8)|RPM_VERSION_MICRO)],
-      [Define to the RPM version])
-   AC_DEFINE_UNQUOTED([RPM_VERSION_RAW],"$RPM_VERSION_RAW",[RPM raw version])
-   AC_MSG_RESULT($RPM_VERSION_RAW)
-
    dnl Check for RPM libraries and headers
-
-   AC_CHECK_LIB([rpm],[rpmCheckRpmlibProvides],[
-      AC_DEFINE([HAVE_RPMCHECKRPMLIBPROVIDES],[1],[Define to 1 if librpm rpmCheckRpmlibProvides is present])])
-
-   AC_CHECK_LIB([rpm],[rpmRangesOverlap],[
-      AC_DEFINE([HAVE_RPMRANGESOVERLAP],[1],[Define to 1 if librpm rpmRangesOverlap is present])])
 
    CPPFLAGS="$CPPFLAGS -I/usr/include/rpm"
    AC_CHECK_HEADER(rpm/rpmlib.h, [],

@@ -30,9 +30,7 @@
 
 #include <rpm/rpmlib.h>
 
-#if RPM_VERSION >= 0x040100
 #include <rpm/rpmds.h>
-#endif
 
 #define WITH_VERSION_CACHING 1
 
@@ -411,50 +409,17 @@ bool rpmListParser::ParseDepends(pkgCache::VerIterator Ver,
       if (DepMode == true) {
 	 if (flagl[i] & RPMSENSE_PREREQ)
 	    Type = pkgCache::Dep::PreDepends;
-#if RPM_VERSION >= 0x040403
 	 else if (flagl[i] & RPMSENSE_MISSINGOK)
 	    Type = pkgCache::Dep::Suggests;
-#endif
 	 else
 	    Type = pkgCache::Dep::Depends;
       }
 
-#if RPM_VERSION >= 0x040404 && 0
-      if (namel[i][0] == 'g' && strncmp(namel[i], "getconf", 7) == 0)
-      {
-        rpmds getconfProv = NULL;
-        rpmds ds = rpmdsSingle(RPMTAG_PROVIDENAME,
-                               namel[i], verl?verl[i]:NULL, flagl[i]);
-        rpmdsGetconf(&getconfProv, NULL);
-        int res = rpmdsSearch(getconfProv, ds) >= 0;
-        rpmdsFree(ds);
-        rpmdsFree(getconfProv);
-        if (res) continue;
-      }
-#endif
-
       if (namel[i][0] == 'r' && strncmp(namel[i], "rpmlib", 6) == 0)
       {
-#if HAVE_RPMCHECKRPMLIBPROVIDES && RPM_VERSION >= 0x040d00 /* 4.13.0 (ALT specific) */
+	 /* 4.13.0 (ALT specific) */
 	 int res = rpmCheckRpmlibProvides(namel[i], verl?verl[i]:NULL,
 					  flagl[i]);
-#elif RPM_VERSION >= 0x040404
-        rpmds rpmlibProv = NULL;
-        rpmds ds = rpmdsSingle(RPMTAG_PROVIDENAME,
-                               namel[i], verl?verl[i]:NULL, flagl[i]);
-        rpmdsRpmlib(&rpmlibProv, NULL);
-        int res = rpmdsSearch(rpmlibProv, ds) >= 0;
-        rpmdsFree(ds);
-        rpmdsFree(rpmlibProv);
-#elif RPM_VERSION >= 0x040100
-	 rpmds ds = rpmdsSingle(RPMTAG_PROVIDENAME,
-			        namel[i], verl?verl[i]:NULL, flagl[i]);
-	 int res = rpmCheckRpmlibProvides(ds);
-	 rpmdsFree(ds);
-#else
-	 int res = rpmCheckRpmlibProvides(namel[i], verl?verl[i]:NULL,
-					  flagl[i]);
-#endif
 	 if (res) continue;
       }
 
@@ -546,30 +511,6 @@ bool rpmListParser::ParseDepends(pkgCache::VerIterator Ver,
       res = headerGetEntry(header, RPMTAG_CONFLICTFLAGS, &type,
 			   (void **)&flagl, &count);
       break;
-#if RPM_VERSION >= 0x040403 && 0
-   case pkgCache::Dep::Suggests:
-      res = headerGetEntry(header, RPMTAG_SUGGESTSNAME, &type,
-			   (void **)&namel, &count);
-      if (res != 1)
-	  return true;
-      res = headerGetEntry(header, RPMTAG_SUGGESTSVERSION, &type,
-			   (void **)&verl, &count);
-      res = headerGetEntry(header, RPMTAG_SUGGESTSFLAGS, &type,
-			   (void **)&flagl, &count);
-      break;
-#if 0 // Enhances is not even known to apt, sigh...
-   case pkgCache::Dep::Enhances:
-      res = headerGetEntry(header, RPMTAG_ENHANCESNAME, &type,
-			   (void **)&namel, &count);
-      if (res != 1)
-	  return true;
-      res = headerGetEntry(header, RPMTAG_ENHANCESVERSION, &type,
-			   (void **)&verl, &count);
-      res = headerGetEntry(header, RPMTAG_ENHANCESFLAGS, &type,
-			   (void **)&flagl, &count);
-      break;
-#endif
-#endif
    }
 
    ParseDepends(Ver, namel, verl, flagl, count, Type);

@@ -27,9 +27,7 @@
 #include <stdlib.h>
 #include <assert.h>
 
-#if RPM_VERSION >= 0x040100
 #include <rpm/rpmds.h>
-#endif
 
 rpmVersioningSystem rpmVS;
 
@@ -203,21 +201,8 @@ bool rpmVersioningSystem::CheckDep(const char *PkgVer,
          PkgVer = strndupa(PkgVer, (std::size_t)PkgVer_len);
    }
 
-#if HAVE_RPMRANGESOVERLAP && RPM_VERSION >= 0x040d00 /* 4.13.0 (ALT specific) */
+   /* 4.13.0 (ALT specific) */
    const int rc = rpmRangesOverlap("", PkgVer, PkgFlags, "", DepVer, DepFlags, _rpmds_nopromote);
-#elif RPM_VERSION >= 0x040100
-   rpmds pds = rpmdsSingle(RPMTAG_PROVIDENAME, "", PkgVer, PkgFlags);
-   rpmds dds = rpmdsSingle(RPMTAG_REQUIRENAME, "", DepVer, DepFlags);
-# if RPM_VERSION >= 0x040201
-   rpmdsSetNoPromote(pds, _rpmds_nopromote);
-   rpmdsSetNoPromote(dds, _rpmds_nopromote);
-# endif
-   const int rc = rpmdsCompare(pds, dds);
-   rpmdsFree(pds);
-   rpmdsFree(dds);
-#else
-   const int rc = rpmRangesOverlap("", PkgVer, PkgFlags, "", DepVer, DepFlags);
-#endif
 
    return (!invert && rc) || (invert && !rc);
 }

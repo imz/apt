@@ -27,13 +27,9 @@
 
 #include <apti18n.h>
 
-#if RPM_VERSION >= 0x040100
 #include <rpm/rpmts.h>
 #include <rpm/rpmdb.h>
 #define rpmxxInitIterator(a,b,c,d) rpmtsInitIterator(a,(rpmTag)b,c,d)
-#else
-#define rpmxxInitIterator(a,b,c,d) rpmdbInitIterator(a,b,c,d)
-#endif
 
 RPMFileHandler::RPMFileHandler(string File)
 {
@@ -183,7 +179,6 @@ bool RPMSingleFileHandler::Skip()
       HeaderP = NULL;
       return false;
    }
-#if RPM_VERSION >= 0x040100
    rpmts TS = rpmtsCreate();
    rpmtsSetVSFlags(TS, (rpmVSFlags_e)-1);
    int rc = rpmReadPackageFile(TS, FD, sFilePath.c_str(), &HeaderP);
@@ -192,13 +187,6 @@ bool RPMSingleFileHandler::Skip()
       HeaderP = NULL;
    }
    rpmtsFree(TS);
-#else
-   int rc = rpmReadPackageHeader(FD, &HeaderP, 0, NULL, NULL);
-   if (rc) {
-      _error->Error(_("Failed reading file %s"), sFilePath.c_str());
-      HeaderP = NULL;
-   }
-#endif
    return (HeaderP != NULL);
 }
 
@@ -241,9 +229,7 @@ RPMDirHandler::RPMDirHandler(string DirName)
    : sDirName(DirName)
 {
    ID = DirName;
-#if RPM_VERSION >= 0x040100
    TS = NULL;
-#endif
    Dir = opendir(sDirName.c_str());
    if (Dir == NULL)
       return;
@@ -251,10 +237,8 @@ RPMDirHandler::RPMDirHandler(string DirName)
    while (nextFileName() != NULL)
       iSize += 1;
    rewinddir(Dir);
-#if RPM_VERSION >= 0x040100
    TS = rpmtsCreate();
    rpmtsSetVSFlags(TS, (rpmVSFlags_e)-1);
-#endif
 }
 
 const char *RPMDirHandler::nextFileName()
@@ -286,10 +270,8 @@ RPMDirHandler::~RPMDirHandler()
 {
    if (HeaderP != NULL)
       headerFree(HeaderP);
-#if RPM_VERSION >= 0x040100
    if (TS != NULL)
       rpmtsFree(TS);
-#endif
    if (Dir != NULL)
       closedir(Dir);
 }
@@ -311,20 +293,12 @@ bool RPMDirHandler::Skip()
       FD_t FD = Fopen(sFilePath.c_str(), "r");
       if (FD == NULL)
 	 continue;
-#if RPM_VERSION >= 0x040100
       int rc = rpmReadPackageFile(TS, FD, fname, &HeaderP);
       Fclose(FD);
       if (rc != RPMRC_OK
 	  && rc != RPMRC_NOTTRUSTED
 	  && rc != RPMRC_NOKEY)
 	 continue;
-#else
-      int isSource;
-      int rc = rpmReadPackageHeader(FD, &HeaderP, &isSource, NULL, NULL);
-      Fclose(FD);
-      if (rc != 0)
-	 continue;
-#endif
       Res = true;
       break;
    }
@@ -380,9 +354,7 @@ string RPMDirHandler::MD5Sum()
 RPMDBHandler::RPMDBHandler(bool WriteLock)
    : Handler(0), WriteLock(WriteLock)
 {
-#if RPM_VERSION >= 0x040000
    RpmIter = NULL;
-#endif
    string Dir = _config->Find("RPM::RootDir");
 
    rpmReadConfigFiles(NULL, NULL);
@@ -398,7 +370,6 @@ RPMDBHandler::RPMDBHandler(bool WriteLock)
    stat(DataPath(false).c_str(), &St);
    DbFileMtime = St.st_mtime;
 
-#if RPM_VERSION >= 0x040100
    Handler = rpmtsCreate();
    rpmtsSetVSFlags(Handler, (rpmVSFlags_e)-1);
    rpmtsSetRootDir(Handler, Dir.c_str());
@@ -407,17 +378,6 @@ RPMDBHandler::RPMDBHandler(bool WriteLock)
       _error->Error(_("could not open RPM database"));
       return;
    }
-#else
-   const char *RootDir = NULL;
-   if (!Dir.empty())
-      RootDir = Dir.c_str();
-   if (rpmdbOpen(RootDir, &Handler, O_RDONLY, 0644) != 0)
-   {
-      _error->Error(_("could not open RPM database"));
-      return;
-   }
-#endif
-#if RPM_VERSION >= 0x040000
    RpmIter = rpmxxInitIterator(Handler, RPMDBI_PACKAGES, NULL, 0);
    if (RpmIter == NULL) {
       _error->Error(_("could not create RPM database iterator"));
@@ -434,11 +394,6 @@ RPMDBHandler::RPMDBHandler(bool WriteLock)
    while (rpmdbNextIterator(countIt) != NULL)
       iSize++;
    rpmdbFreeIterator(countIt);
-#else
-   iSize = St.st_size;
-
-#endif
-
 
    // Restore just after opening the database, and just after closing.
    if (WriteLock) {
@@ -451,20 +406,11 @@ RPMDBHandler::RPMDBHandler(bool WriteLock)
 
 RPMDBHandler::~RPMDBHandler()
 {
-#if RPM_VERSION >= 0x040000
    if (RpmIter != NULL)
       rpmdbFreeIterator(RpmIter);
-#else
-   if (HeaderP != NULL)
-       headerFree(HeaderP);
-#endif
 
    if (Handler != NULL) {
-#if RPM_VERSION >= 0x040100
       rpmtsFree(Handler);
-#else
-      rpmdbClose(Handler);
-#endif
    }
 
    // Restore just after opening the database, and just after closing.
@@ -491,34 +437,18 @@ string RPMDBHandler::DataPath(bool DirectoryOnly)
 
 bool RPMDBHandler::Skip()
 {
-#if RPM_VERSION >= 0x040000
    if (RpmIter == NULL)
        return false;
    HeaderP = rpmdbNextIterator(RpmIter);
    iOffset = rpmdbGetIteratorOffset(RpmIter);
    if (HeaderP == NULL)
       return false;
-#else
-   if (iOffset == 0)
-      iOffset = rpmdbFirstRecNum(Handler);
-   else
-      iOffset = rpmdbNextRecNum(Handler, iOffset);
-   if (HeaderP != NULL)
-   {
-      headerFree(HeaderP);
-      HeaderP = NULL;
-   }
-   if (iOffset == 0)
-       return false;
-   HeaderP = rpmdbGetRecord(Handler, iOffset);
-#endif
    return true;
 }
 
 bool RPMDBHandler::Jump(unsigned int Offset)
 {
    iOffset = Offset;
-#if RPM_VERSION >= 0x040000
    if (RpmIter == NULL)
       return false;
    rpmdbFreeIterator(RpmIter);
@@ -528,26 +458,15 @@ bool RPMDBHandler::Jump(unsigned int Offset)
       RpmIter = rpmxxInitIterator(Handler, RPMDBI_PACKAGES,
 				  &iOffset, sizeof(iOffset));
    HeaderP = rpmdbNextIterator(RpmIter);
-#else
-   HeaderP = rpmdbGetRecord(Handler, iOffset);
-#endif
    return true;
 }
 
 void RPMDBHandler::Rewind()
 {
-#if RPM_VERSION >= 0x040000
    if (RpmIter == NULL)
       return;
    rpmdbFreeIterator(RpmIter);
    RpmIter = rpmxxInitIterator(Handler, RPMDBI_PACKAGES, NULL, 0);
-#else
-   if (HeaderP != NULL)
-   {
-      headerFree(HeaderP);
-      HeaderP = NULL;
-   }
-#endif
    iOffset = 0;
 }
 #endif
