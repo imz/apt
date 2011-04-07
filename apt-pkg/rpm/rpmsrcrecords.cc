@@ -24,9 +24,7 @@
 
 #include <apti18n.h>
 
-#if RPM_VERSION >= 0x040100
 #include <rpm/rpmds.h>
-#endif
 
 // SrcRecordParser::rpmSrcRecordParser - Constructor			/*{{{*/
 // ---------------------------------------------------------------------
@@ -482,41 +480,11 @@ bool rpmSrcRecordParser::BuildDepends(vector<pkgSrcRecords::Parser::BuildDepRec>
 
       for (int i = 0; i < count; i++)
       {
-#if RPM_VERSION >= 0x040404 && 0
-         if (namel[i][0] == 'g' && strncmp(namel[i], "getconf", 7) == 0)
-         {
-            rpmds getconfProv = NULL;
-            rpmds ds = rpmdsSingle(RPMTAG_PROVIDENAME,
-                                   namel[i], verl?verl[i]:NULL, flagl[i]);
-            rpmdsGetconf(&getconfProv, NULL);
-            int res = rpmdsSearch(getconfProv, ds) >= 0;
-            rpmdsFree(ds);
-            rpmdsFree(getconfProv);
-            if (res) continue;
-         }
-#endif
 	 if (strncmp(namel[i], "rpmlib", 6) == 0)
 	 {
-#if HAVE_RPMCHECKRPMLIBPROVIDES && RPM_VERSION >= 0x040d00 /* 4.13.0 (ALT specific) */
+	    /* 4.13.0 (ALT specific) */
 	    int res = rpmCheckRpmlibProvides(namel[i], verl?verl[i]:NULL,
 					     flagl[i]);
-#elif RPM_VERSION >= 0x040404
-	    rpmds rpmlibProv = NULL;
-	    rpmds ds = rpmdsSingle(RPMTAG_PROVIDENAME,
-				   namel[i], verl?verl[i]:NULL, flagl[i]);
-	    rpmdsRpmlib(&rpmlibProv, NULL);
-	    int res = (rpmdsSearch(rpmlibProv, ds) != -1);
-	    rpmdsFree(ds);
-	    rpmdsFree(rpmlibProv);
-#elif RPM_VERSION >= 0x040100
-	    rpmds ds = rpmdsSingle(RPMTAG_PROVIDENAME,
-				   namel[i], verl?verl[i]:NULL, flagl[i]);
-	    int res = rpmCheckRpmlibProvides(ds);
-	    rpmdsFree(ds);
-#else
-	    int res = rpmCheckRpmlibProvides(namel[i], verl?verl[i]:NULL,
-					     flagl[i]);
-#endif
 	    if (res) continue;
 	 }
 
