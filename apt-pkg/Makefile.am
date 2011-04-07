@@ -47,7 +47,6 @@ libapt_pkg_la_SOURCES = \
 	rpm/rpmpackagedata.h \
 	rpm/rpmpm.cc \
 	rpm/rpmpm.h \
-	rpm/rpmshowprogress.h \
 	rpm/rpmrecords.cc \
 	rpm/rpmrecords.h \
 	rpm/rpmsrcrecords.cc \
@@ -107,7 +106,7 @@ libapt_pkg_la_SOURCES = \
 	versionmatch.cc \
 	versionmatch.h
 
-PRIVATEHEADERS = contrib/system.h rpm/rpmshowprogress.h
+PRIVATEHEADERS = contrib/system.h
 
 includedir=${prefix}/include/apt-pkg
 include_HEADERS = $(filter-out \

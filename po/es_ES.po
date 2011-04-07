@@ -1778,10 +1778,6 @@ msgstr "Grabando nueva lista fuente"
 msgid "Reading Package Lists"
 msgstr "Leyendo listas de paquetes"
 
-#: apt-pkg/rpm/rpmshowprogress.h:121 apt-pkg/rpm/rpmshowprogress.h:123
-msgid "Preparing..."
-msgstr ""
-
 #: apt-pkg/acquire.cc:61
 #, c-format
 msgid "Lists directory %spartial is missing."
