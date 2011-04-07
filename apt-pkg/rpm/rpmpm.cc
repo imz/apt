@@ -33,19 +33,8 @@
 #include <functional>
 #include <utility>
 
-#if RPM_VERSION >= 0x040100
 #include <rpm/rpmdb.h>
 #include <rpm/rpmlog.h>
-#else
-#define rpmpsPrint(a,b) rpmProblemSetPrint(a,b)
-#define rpmpsFree(a) rpmProblemSetFree(a)
-#define rpmReadPackageFile(a,b,c,d) rpmReadPackageHeader(b,d,0,NULL,NULL)
-#if RPM_VERSION < 0x040000
-#define rpmtransFlags int
-#define rpmprobFilterFlags int
-#include "rpmshowprogress.h"
-#endif
-#endif
 
 namespace {
 
@@ -74,11 +63,9 @@ std::string rpm_name_conversion(const pkgCache::PkgIterator &Pkg)
       Name += VerStr;
    }
 
-#if RPM_VERSION >= 0x040202
    // This is needed for removal to work on multilib packages, but old
    // rpm versions don't support name.arch in RPMDBI_LABEL, oh well...
    Name = Name + "." + Pkg.CurrentVer().Arch();
-#endif
 
    return Name;
 }
@@ -560,7 +547,6 @@ bool pkgRPMExtPM::ExecRPM(Item::RPMOps op, const std::vector<apt_item> &files)
 
    bool FilesInArgs = true;
    char *ArgsFileName = NULL;
-#if RPM_VERSION >= 0x040000
    if (op != Item::RPMErase && files.size() > 50) {
       string FileName = _config->FindDir("Dir::Cache", "/tmp/") +
 			"filelist.XXXXXX";
@@ -580,7 +566,6 @@ bool pkgRPMExtPM::ExecRPM(Item::RPMOps op, const std::vector<apt_item> &files)
 	 }
       }
    }
-#endif
 
    if (FilesInArgs == true) {
       for (auto I = files.begin();
@@ -743,7 +728,6 @@ bool pkgRPMLibPM::AddToTransaction(Item::RPMOps op, const std::vector<apt_item> 
 
 		scope_exit close_fd(std::bind(&Fclose, fd));
 
-#if RPM_VERSION >= 0x040100
             rc = rpmReadPackageFile(TS, fd, I->file.c_str(), &hdr);
 	    if (rc != RPMRC_OK && rc != RPMRC_NOTTRUSTED && rc != RPMRC_NOKEY)
 		{
@@ -761,25 +745,6 @@ bool pkgRPMLibPM::AddToTransaction(Item::RPMOps op, const std::vector<apt_item> 
 		}
 
 	    rc = rpmtsAddInstallElement(TS, hdr, I->file.c_str(), upgrade, 0);
-#else
-	    rc = rpmReadPackageHeader(fd, &hdr, 0, NULL, NULL);
-	    if (rc)
-		{
-	       _error->Error(_("Failed reading file %s"), I->file.c_str());
-	       return false;
-		}
-
-		scope_exit free_hd(std::bind(&headerFree, hdr));
-
-	    rc = headerPutUint32(hdr, RPMTAG_AUTOINSTALLED, &(I->autoinstalled), 1);
-	    if (rc != 1)
-		{
-	        _error->Error(_("Failed to add package flags for file %s"), I->file.c_str());
-	        return false;
-		}
-
-	    rc = rpmtransAddPackage(TS, hdr, NULL, I->file.c_str(), upgrade, 0);
-#endif
 	    if (rc)
 		{
 	       _error->Error(_("Failed adding %s to transaction %s"),
@@ -790,22 +755,13 @@ bool pkgRPMLibPM::AddToTransaction(Item::RPMOps op, const std::vector<apt_item> 
 	  break;
 
 	 case Item::RPMErase:
-#if RPM_VERSION >= 0x040000
             rpmdbMatchIterator MI;
-#if RPM_VERSION >= 0x040100
 	    MI = rpmtsInitIterator(TS, (rpmTag)RPMDBI_LABEL, I->file.c_str(), 0);
-#else
-	    MI = rpmdbInitIterator(DB, RPMDBI_LABEL, I->file.c_str(), 0);
-#endif
 	    while ((hdr = rpmdbNextIterator(MI)) != NULL)
 	    {
 	       unsigned int recOffset = rpmdbGetIteratorOffset(MI);
 	       if (recOffset) {
-#if RPM_VERSION >= 0x040100
 		  rc = rpmtsAddEraseElement(TS, hdr, recOffset);
-#else
-		  rc = rpmtransRemovePackage(TS, recOffset);
-#endif
 		  if (rc)
 		  {
 		     _error->Error(_("Failed adding %s to transaction %s"),
@@ -815,17 +771,6 @@ bool pkgRPMLibPM::AddToTransaction(Item::RPMOps op, const std::vector<apt_item> 
 	       }
 	    }
 	    MI = rpmdbFreeIterator(MI);
-#else // RPM 3.X
-	    dbiIndexSet matches;
-	    rc = rpmdbFindByLabel(DB, I->file.c_str(), &matches);
-	    if (rc == 0) {
-	       for (int i = 0; i < dbiIndexSetCount(matches); i++) {
-		  unsigned int recOffset = dbiIndexRecordOffset(matches, i);
-		  if (recOffset)
-		     rpmtransRemovePackage(TS, recOffset);
-	       }
-	    }
-#endif
 	  break;
       }
    }
@@ -854,7 +799,6 @@ bool pkgRPMLibPM::Process(const std::vector<apt_item> &install,
       ParseRpmOpts("RPM::Install-Options", &tsFlags, &probFilter);
    ParseRpmOpts("RPM::Options", &tsFlags, &probFilter);
 
-#if RPM_VERSION >= 0x040100
    rpmps probs;
    TS = rpmtsCreate();
    rpmtsSetVSFlags(TS, (rpmVSFlags_e)-1);
@@ -877,34 +821,6 @@ bool pkgRPMLibPM::Process(const std::vector<apt_item> &install,
       _error->Error(_("Could not open RPM database"));
       goto exit;
    }
-#else
-   rpmProblemSet probs;
-   const char *RootDir = NULL;
-   if (!Dir.empty())
-      RootDir = Dir.c_str();
-   if (rpmdbOpen(RootDir, &DB, O_RDWR|O_CREAT, 0644) != 0)
-   {
-      _error->Error(_("Could not open RPM database"));
-      goto exit;
-   }
-   TS = rpmtransCreateSet(DB, Dir.c_str());
-#endif
-
-#if RPM_VERSION >= 0x040300 && 0
-   /* Initialize security context patterns for SELinux */
-   if (!(tsFlags & RPMTRANS_FLAG_NOCONTEXTS)) {
-      rpmsx sx = rpmtsREContext(TS);
-      if (sx == NULL) {
-         const char *fn = rpmGetPath("%{?_install_file_context_path}", NULL);
-         if (fn != NULL && *fn != '\0') {
-            sx = rpmsxNew(fn);
-            (void) rpmtsSetREContext(TS, sx);
-         }
-         fn = (const char *) _free(fn);
-      }
-      sx = rpmsxFree(sx);
-   }
-#endif
 
    if (_config->FindB("RPM::OldPackage", true) || !upgrade.empty()) {
       probFilter |= RPMPROB_FILTER_OLDPACKAGE;
@@ -956,7 +872,6 @@ bool pkgRPMLibPM::Process(const std::vector<apt_item> &install,
    // Setup the gauge used by rpmShowProgress.
    //packagesTotal = install.size()+upgrade.size();
 
-#if RPM_VERSION >= 0x040100
    if (_config->FindB("RPM::NoDeps", false) == false) {
       rc = rpmtsCheck(TS);
       probs = rpmtsProblems(TS);
@@ -967,33 +882,10 @@ bool pkgRPMLibPM::Process(const std::vector<apt_item> &install,
 	 goto exit;
       }
    }
-#else
-   if (_config->FindB("RPM::NoDeps", false) == false) {
-#if RPM_VERSION < 0x040000
-      rpmDependencyConflict *conflicts = NULL;
-#else
-      rpmDependencyConflict conflicts = NULL;
-#endif
-      int numConflicts;
-      if (rpmdepCheck(TS, &conflicts, &numConflicts) || conflicts) {
-	 _error->Error(_("Transaction set check failed"));
-	 if (conflicts) {
-	    printDepProblems(stderr, conflicts, numConflicts);
-	    rpmdepFreeConflicts(conflicts, numConflicts);
-	 }
-	 goto exit;
-      }
-   }
-#endif
 
    rc = 0;
-#if RPM_VERSION >= 0x040100
    if (_config->FindB("RPM::Order", true) == true)
       rc = rpmtsOrder(TS);
-#else
-   if (_config->FindB("RPM::Order", true) == true)
-      rc = rpmdepOrder(TS);
-#endif
 
    if (rc > 0) {
       _error->Error(_("Ordering failed for %d packages"), rc);
@@ -1003,7 +895,6 @@ bool pkgRPMLibPM::Process(const std::vector<apt_item> &install,
    if (quiet <= 2)
    cout << _("Committing changes...") << endl << flush;
 
-#if RPM_VERSION >= 0x040100
    probFilter |= rpmtsFilterFlags(TS);
    rpmtsSetFlags(TS, (rpmtransFlags)(rpmtsFlags(TS) | tsFlags));
    rpmtsClean(TS);
@@ -1011,12 +902,6 @@ bool pkgRPMLibPM::Process(const std::vector<apt_item> &install,
                                (void *) (unsigned long) notifyFlags);
    rc = rpmtsRun(TS, NULL, (rpmprobFilterFlags)probFilter);
    probs = rpmtsProblems(TS);
-#else
-   rc = rpmRunTransactions(TS, rpmShowProgress,
-                           (void *) (unsigned long) notifyFlags, NULL,
-                           &probs, (rpmtransFlags)tsFlags,
-			   (rpmprobFilterFlags)probFilter);
-#endif
 
    if (rc > 0) {
       _error->Error(_("Error while running transaction"));
@@ -1033,11 +918,7 @@ bool pkgRPMLibPM::Process(const std::vector<apt_item> &install,
 
 exit:
 
-#if RPM_VERSION >= 0x040100
    rpmtsFree(TS);
-#else
-   rpmdbClose(DB);
-#endif
 
    return Success;
 }
@@ -1067,19 +948,11 @@ bool pkgRPMLibPM::ParseRpmOpts(const char *Cnf, int *tsFlags, int *probFilter)
 	    *tsFlags |= RPMTRANS_FLAG_JUSTDB;
 	 else if (Opts->Value == "--test")
 	    *tsFlags |= RPMTRANS_FLAG_TEST;
-#if RPM_VERSION >= 0x040000
 	 else if (Opts->Value == "--nomd5")
 	    *tsFlags |= RPMTRANS_FLAG_NOMD5;
-#endif
-#if RPM_VERSION >= 0x040200
 	 else if (Opts->Value == "--noconfigs" ||
 	          Opts->Value == "--excludeconfigs")
 	    *tsFlags |= RPMTRANS_FLAG_NOCONFIGS;
-#endif
-#if RPM_VERSION >= 0x040300 && 0
-	 else if (Opts->Value == "--nocontexts")
-            *tsFlags |= RPMTRANS_FLAG_NOCONTEXTS;
-#endif
 
 	 // Problem filter flags
 	 else if (Opts->Value == "--replacefiles")
@@ -1092,9 +965,7 @@ bool pkgRPMLibPM::ParseRpmOpts(const char *Cnf, int *tsFlags, int *probFilter)
 	 else if (Opts->Value == "--ignoresize")
 	 {
 	    *probFilter |= RPMPROB_FILTER_DISKSPACE;
-#if RPM_VERSION >= 0x040000
 	    *probFilter |= RPMPROB_FILTER_DISKNODES;
-#endif
 	 }
 	 else if (Opts->Value == "--badreloc")
 	    *probFilter |= RPMPROB_FILTER_FORCERELOCATE;
@@ -1155,7 +1026,6 @@ bool pkgRPMLibPM::UpdateMarks()
       return false;
    }
 
-#if RPM_VERSION >= 0x040100
    TS = rpmtsCreate();
 
    scope_exit free_ts(std::bind(&rpmtsFree, TS));
@@ -1180,23 +1050,6 @@ bool pkgRPMLibPM::UpdateMarks()
       _error->Error(_("Could not open RPM database"));
       return false;
    }
-#else
-   const char *RootDir = NULL;
-   if (!Dir.empty())
-   {
-      RootDir = Dir.c_str();
-   }
-
-   if (rpmdbOpen(RootDir, &DB, O_RDWR|O_CREAT, 0644) != 0)
-   {
-      _error->Error(_("Could not open RPM database"));
-      return false;
-   }
-
-   scope_exit free_db(std::bind(&rpmdbClose, DB));
-
-   TS = rpmtransCreateSet(DB, Dir.c_str());
-#endif
 
    for (auto iter = changed_packages.begin(); iter != changed_packages.end(); ++iter)
    {
@@ -1204,11 +1057,7 @@ bool pkgRPMLibPM::UpdateMarks()
 
       rpmdbMatchIterator MI;
 
-#if RPM_VERSION >= 0x040100
       MI = rpmtsInitIterator(TS, (rpmTag)RPMDBI_LABEL, iter->file.c_str(), 0);
-#else
-      MI = rpmdbInitIterator(DB, RPMDBI_LABEL, iter->file.c_str(), 0);
-#endif
 
       scope_exit free_mi(std::bind(&rpmdbFreeIterator, MI));
 

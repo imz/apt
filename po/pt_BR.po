@@ -1877,10 +1877,6 @@ msgstr "erro analisando a lista de fontes %s"
 msgid "Reading Package Lists"
 msgstr "Lendo Listas de Pacotes"
 
-#: apt-pkg/rpm/rpmshowprogress.h:121 apt-pkg/rpm/rpmshowprogress.h:123
-msgid "Preparing..."
-msgstr "Preparando..."
-
 #: apt-pkg/acquire.cc:61
 #, c-format
 msgid "Lists directory %spartial is missing."

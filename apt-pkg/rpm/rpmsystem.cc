@@ -36,13 +36,9 @@
 #include <assert.h>
 									/*}}}*/
 // for distrover
-#if RPM_VERSION >= 0x040101
 #include <rpmdb.h>
-#endif
 
-#if RPM_VERSION >= 0x040201
 extern int _rpmds_nopromote;
-#endif
 
 rpmSystem rpmSys;
 
@@ -208,7 +204,6 @@ bool rpmSystem::Initialize(Configuration &Cnf)
     */
    Cnf.CndSet("APT::Get::Obsoletes::AptMarkInheritanceAuto", "all");
 
-#if RPM_VERSION >= 0x040201
    const char *RPMOptions[] =
    {
       "RPM::Options",
@@ -234,7 +229,6 @@ bool rpmSystem::Initialize(Configuration &Cnf)
       Opt++;
    }
    _rpmds_nopromote = NoPromote;
-#endif
 
    return true;
 }
@@ -276,7 +270,6 @@ string rpmSystem::DistroVer(Configuration const &Cnf)
    if (DistroVerPkg.empty())
       return DistroVersion;
 
-#if RPM_VERSION >= 0x040100
    rpmts ts;
    ts = rpmtsCreate();
    rpmtsSetVSFlags(ts, (rpmVSFlags_e)-1);
@@ -291,20 +284,9 @@ string rpmSystem::DistroVer(Configuration const &Cnf)
 
    if (rpmtsOpenDB(ts, O_RDONLY))
       return DistroVersion;
-#else
-   rpmdb DB;
-   string RootDir = _config->Find("RPM::RootDir");
-   const char *RootDirStr = RootDir.empty() ? NULL : RootDir.c_str();
-   if (rpmdbOpen(RootDirStr, &DB, O_RDONLY, 0644))
-      return DistroVersion;
-#endif
 
    rpmdbMatchIterator iter;
-#if RPM_VERSION >= 0x040100
    iter = rpmtsInitIterator(ts, (rpmTag)RPMDBI_LABEL, DistroVerPkg.c_str(), 0);
-#else
-   iter = rpmdbInitIterator(DB, RPMDBI_LABEL, DistroVerPkg.c_str(), 0);
-#endif
    Header hdr;
    while ((hdr = rpmdbNextIterator(iter)) != NULL) {
       void *version;
@@ -318,11 +300,7 @@ string rpmSystem::DistroVer(Configuration const &Cnf)
       }
    }
    rpmdbFreeIterator(iter);
-#if RPM_VERSION >= 0x040100
    rpmtsFree(ts);
-#else
-   rpmdbClose(DB);
-#endif
 
    return DistroVersion;
 }
