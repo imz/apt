@@ -1783,10 +1783,6 @@ msgstr "Scrittura della nuova lista di sorgenti"
 msgid "Reading Package Lists"
 msgstr "Lettura della lista di pacchetti"
 
-#: apt-pkg/rpm/rpmshowprogress.h:121 apt-pkg/rpm/rpmshowprogress.h:123
-msgid "Preparing..."
-msgstr ""
-
 #: apt-pkg/acquire.cc:61
 #, c-format
 msgid "Lists directory %spartial is missing."
