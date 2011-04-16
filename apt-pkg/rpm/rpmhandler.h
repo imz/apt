@@ -40,7 +40,7 @@ class RPMHandler
    inline off_t Offset() const {return iOffset;}
    virtual bool OrderedOffset() const {return true;}
    inline off_t Size() const {return iSize;}
-   virtual bool IsDatabase() const = 0;
+   virtual bool IsDatabase() const {return false;}
    virtual Header GetHeader() const = 0;
 
    virtual string FileName() const = 0;
@@ -84,7 +84,6 @@ class RPMFileHandler : public RPMHdrHandler
    virtual bool Skip() override;
    virtual bool Jump(off_t Offset) override;
    virtual void Rewind() override;
-   virtual inline bool IsDatabase() const override {return false;}
 
    virtual string FileName() const override;
    virtual string Directory() const override;
@@ -136,7 +135,7 @@ class RPMDBHandler : public RPMHdrHandler
    virtual bool Skip() override;
    virtual bool Jump(off_t Offset) override;
    virtual void Rewind() override;
-   virtual inline bool IsDatabase() const override {return true;}
+   virtual bool IsDatabase() const override {return true;}
    virtual bool HasWriteLock() const {return WriteLock;}
    virtual time_t Mtime() const {return DbFileMtime;}
    virtual unsigned long Mnanotime() const {return DbFileMnanotime;}
@@ -165,7 +164,6 @@ class RPMDirHandler : public RPMHdrHandler
    virtual bool Skip() override;
    virtual bool Jump(off_t Offset) override;
    virtual void Rewind() override;
-   virtual inline bool IsDatabase() const override {return false;}
 
    virtual string FileName() const override {return (Dir == NULL)?"":sFileName;}
    virtual off_t FileSize() const override;
