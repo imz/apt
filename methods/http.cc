@@ -644,7 +644,12 @@ void HttpMethod::SendReq(FetchItem *Itm,CircleBuf &Out)
 
    // The HTTP server expects a hostname with a trailing :port
    char Buf[1000];
-   string ProperHost = Uri.Host;
+   string ProperHost;
+
+   if (Uri.Host.find(':') != string::npos)
+      ProperHost = '[' + Uri.Host + ']';
+   else
+      ProperHost = Uri.Host;
    if (Uri.Port != 0)
    {
       sprintf(Buf,":%u",Uri.Port);
