@@ -1,6 +1,6 @@
 Name: apt
 Version: 0.5.15lorg2
-Release: alt42.M70P.1
+Release: alt42.M70P.2
 
 Summary: Debian's Advanced Packaging Tool with RPM support
 Summary(ru_RU.UTF-8): Debian APT - Усовершенствованное средство управления пакетами с поддержкой RPM
@@ -386,6 +386,11 @@ unset RPM_PYTHON
 # Probably %%doc with README.rsync?
 
 %changelog
+* Thu Apr 23 2015 Gleb F-Malinovskiy <glebfm@altlinux.org> 0.5.15lorg2-alt42.M70P.2
+- Increased default APT::Cache-Limit:
+ + up to 96M on 64bit systems.
+ + up to 80M on 32bit systems.
+
 * Mon Mar 03 2014 Anton V. Boyarshinov <boyarsh@altlinux.ru> 0.5.15lorg2-alt42.M70P.1
 - backport to p7
 
