@@ -26,7 +26,7 @@
 
 #include <config.h>
 
-#define _BSD_SOURCE
+#define _DEFAULT_SOURCE
 #include <apt-pkg/mmap.h>
 #include <apt-pkg/error.h>
 
