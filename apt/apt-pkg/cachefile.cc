@@ -1053,3 +1053,131 @@ void Stats(std::ostream &out, std::ostream &l_c3out, pkgDepCache &Dep, pkgDepCac
          Dep.BadCount());
    }
 }
+
+bool pkgDoAuto(std::ostream &c1out, const CommandLine &CmdL, int &auto_mark_changed, pkgDepCache &Dep)
+{
+   if (CmdL.FileList[1] == nullptr)
+   {
+      return _error->Error(_("No packages found"));
+   }
+
+   bool MarkAuto = (strcasecmp(CmdL.FileList[0], "auto") == 0);
+   int AutoMarkChanged = 0;
+
+   for (const char **I = CmdL.FileList + 1; *I != 0; ++I)
+   {
+      auto pkgiter = Dep.FindPkg(*I);
+      if (!pkgiter.end())
+      {
+         if ((pkgiter->CurrentState == pkgCache::State::NotInstalled) && (!Dep[pkgiter].NewInstall()))
+         {
+            ioprintf(c1out, _("%s can not be marked as it is not installed.\n"), pkgiter.Name());
+            continue;
+         }
+
+         else if (((Dep[pkgiter].Flags & pkgCache::Flag::Auto) == pkgCache::Flag::Auto) == MarkAuto)
+         {
+            if (!MarkAuto)
+            {
+               ioprintf(c1out,_("%s was already set to manually installed.\n"), pkgiter.Name());
+            }
+            else
+            {
+               ioprintf(c1out,_("%s was already set to automatically installed.\n"), pkgiter.Name());
+            }
+
+            continue;
+         }
+
+         if (!MarkAuto)
+         {
+            ioprintf(c1out,_("%s set to manually installed.\n"), pkgiter.Name());
+         }
+         else
+         {
+            ioprintf(c1out,_("%s set to automatically installed.\n"), pkgiter.Name());
+         }
+
+         Dep.MarkAuto(pkgiter, MarkAuto);
+         ++AutoMarkChanged;
+      }
+   }
+
+   auto_mark_changed = AutoMarkChanged;
+
+   return true;
+}
+
+bool pkgDoShowAuto(std::ostream &cout, const CommandLine &CmdL, pkgDepCache &Dep)
+{
+   std::vector<string> packages;
+
+   bool const ShowAuto = (strcasecmp(CmdL.FileList[0], "showauto") == 0);
+   bool const ShowState = (strcasecmp(CmdL.FileList[0], "showstate") == 0);
+
+   if (CmdL.FileList[1] == nullptr)
+   {
+      packages.reserve(Dep.Head().PackageCount / 3);
+      for (pkgCache::PkgIterator P = Dep.PkgBegin(); !P.end(); ++P)
+      {
+         if ((P->CurrentState == pkgCache::State::Installed) || (Dep[P].Install()))
+         {
+            bool current_state_is_auto = ((Dep[P].Flags & pkgCache::Flag::Auto) == pkgCache::Flag::Auto);
+
+            if (ShowState)
+            {
+               std::stringstream str;
+               str << P.Name() << " " << (current_state_is_auto ? "auto" : "manual");
+               packages.push_back(str.str());
+            }
+            else if (current_state_is_auto == ShowAuto)
+            {
+               packages.push_back(P.Name());
+            }
+         }
+      }
+   }
+   else
+   {
+      {
+         size_t filelist_size = 0;
+         for (const char **I = CmdL.FileList + 1; *I != 0; ++I)
+         {
+            ++filelist_size;
+         }
+
+         packages.reserve(filelist_size);
+      }
+
+      for (const char **I = CmdL.FileList + 1; *I != 0; ++I)
+      {
+         auto pkgiter = Dep.FindPkg(*I);
+         if (!pkgiter.end())
+         {
+            if ((pkgiter->CurrentState == pkgCache::State::Installed) || (Dep[pkgiter].Install()))
+            {
+               bool current_state_is_auto = ((Dep[pkgiter].Flags & pkgCache::Flag::Auto) == pkgCache::Flag::Auto);
+               if (ShowState)
+               {
+                  std::stringstream str;
+                  str << pkgiter.Name() << " " << (current_state_is_auto ? "auto" : "manual");
+                  packages.push_back(str.str());
+               }
+               else if (current_state_is_auto == ShowAuto)
+               {
+                  packages.push_back(pkgiter.Name());
+               }
+            }
+         }
+      }
+   }
+
+   std::sort(packages.begin(), packages.end());
+
+   for (std::vector<std::string>::const_iterator I = packages.begin(); I != packages.end(); ++I)
+   {
+      cout << *I << std::endl;
+   }
+
+   return true;
+}

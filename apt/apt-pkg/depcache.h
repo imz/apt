@@ -198,6 +198,9 @@ class pkgDepCache : protected pkgCache::Namespace
    void MarkKeep(PkgIterator const &Pkg,bool Soft = false);
    void MarkDelete(PkgIterator const &Pkg,bool Purge = false);
 
+   /** Set the "is automatically installed" flag of Pkg. */
+   void MarkAuto(const PkgIterator &Pkg, bool Auto);
+
    // shallow mark; ret: -1 err, 0 already marked, 1 just marked
    int MarkInstall0(PkgIterator const &Pkg);
    // non-ambiguous recursive mark; MarkAgain should be marked again
@@ -218,6 +221,10 @@ class pkgDepCache : protected pkgCache::Namespace
    // This is for debuging
    void Update(OpProgress *Prog = 0);
    
+   // read and write persistent states
+   bool readStateFile(OpProgress * const prog);
+   bool writeStateFile(OpProgress * const prog) const;
+
    // Size queries
    inline double UsrSize() {return iUsrSize;};
    inline double DebSize() {return iDownloadSize;};

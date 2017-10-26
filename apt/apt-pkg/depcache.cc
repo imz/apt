@@ -613,6 +613,8 @@ void pkgDepCache::Update(OpProgress *Prog)
 
    if (Prog != 0)      
       Prog->Progress(Done);
+
+   readStateFile(Prog);
 }
 									/*}}}*/
 // DepCache::Update - Update the deps list of a package	   		/*{{{*/
@@ -666,6 +668,16 @@ void pkgDepCache::Update(PkgIterator const &Pkg)
 }
 
 									/*}}}*/
+
+bool pkgDepCache::readStateFile(OpProgress * const /*prog*/)
+{
+   return false;
+}
+
+bool pkgDepCache::writeStateFile(OpProgress * const /*prog*/) const
+{
+   return false;
+}
 
 // DepCache::MarkKeep - Put the package in the keep state		/*{{{*/
 // ---------------------------------------------------------------------
@@ -751,6 +763,20 @@ void pkgDepCache::MarkDelete(PkgIterator const &Pkg, bool rPurge)
    AddStates(Pkg);   
    Update(Pkg);
    AddSizes(Pkg);
+}
+
+void pkgDepCache::MarkAuto(const PkgIterator &Pkg, bool Auto)
+{
+   StateCache &state = PkgState[Pkg->ID];
+
+   if (Auto)
+   {
+      state.Flags |= Flag::Auto;
+   }
+   else
+   {
+      state.Flags &= ~Flag::Auto;
+   }
 }
 									/*}}}*/
 // DepCache::MarkInstall - Put the package in the install state		/*{{{*/

@@ -22,6 +22,7 @@
 #endif 
 
 #include <apt-pkg/depcache.h>
+#include <apt-pkg/cmndline.h>
 
 #include <memory>
 
@@ -134,5 +135,8 @@ bool ShowEssential(std::ostream &out, std::ostream &l_c3out, CacheFile &Cache, p
 
 // Stats - Show some statistics
 void Stats(std::ostream &out, std::ostream &l_c3out, pkgDepCache &Dep, pkgDepCache::State *State);
+
+bool pkgDoAuto(std::ostream &c1out, const CommandLine &CmdL, int &auto_mark_changed, pkgDepCache &Dep);
+bool pkgDoShowAuto(std::ostream &cout, const CommandLine &CmdL, pkgDepCache &Dep);
 
 #endif

@@ -1,7 +1,7 @@
 
 EXTRA_DIST = indexcopy.cc indexcopy.h
 
-bin_PROGRAMS = apt-get apt-cache apt-cdrom apt-config
+bin_PROGRAMS = apt-get apt-cache apt-cdrom apt-config apt-mark
 
 if COMPILE_APTSHELL
 bin_PROGRAMS += apt-shell apt-pipe
@@ -21,6 +21,7 @@ apt_pipe_CPPFLAGS = -DAPT_PIPE
 apt_pipe_LDADD = $(LDADD) -lsetproctitle
 apt_config_SOURCES = apt-config.cc
 apt_cdrom_SOURCES = apt-cdrom.cc rpmindexcopy.cc rpmindexcopy.h
+apt_mark_SOURCES = apt-mark.cc
 
 apt_get_static_SOURCES = $(apt_get_SOURCES)
 apt_get_static_LDFLAGS = -all-static

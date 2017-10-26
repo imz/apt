@@ -510,6 +510,7 @@ bool InstallPackages(CacheFile &Cache,bool ShwKept,bool Ask = true,
 	       Ret &= DoClean(*CmdL);
 	    else if (_config->FindB("APT::Post-Install::AutoClean",false) == true) 
 	       Ret &= DoAutoClean(*CmdL);
+	    Cache->writeStateFile(0);
 	    return Ret;
 	 }
 	 

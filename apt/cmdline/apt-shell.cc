@@ -563,6 +563,7 @@ bool InstallPackages(CacheFile &Cache,bool ShwKept,bool Ask = true,
 	       Ret &= DoClean(*CmdL);
 	    else if (_config->FindB("APT::Post-Install::AutoClean",false) == true) 
 	       Ret &= DoAutoClean(*CmdL);
+	    Cache->writeStateFile(0);
 	    return Ret;
 	 }
 	 
@@ -2009,6 +2010,61 @@ bool DoBuildDep(CommandLine &CmdL)
    return true;
 }
 									/*}}}*/
+
+/* DoAuto - mark packages as automatically/manually installed */
+static bool DoAuto(CommandLine &CmdL)
+{
+   if (CheckHelp(CmdL))
+   {
+      return true;
+   }
+
+   CacheFile &Cache = *GCache;
+   if (not GCache->CanCommit())
+   {
+      _error->Error(_("You have no permissions for that"));
+      return false;
+   }
+
+   pkgDepCache * const DepCache = static_cast<pkgDepCache*>(Cache);
+   if (DepCache == nullptr)
+   {
+      return false;
+   }
+
+   int AutoMarkChanged = 0;
+
+   if (!pkgDoAuto(c1out, CmdL, AutoMarkChanged, *DepCache))
+   {
+      return false;
+   }
+
+   return true;
+}
+
+/* ShowAuto - show automatically installed packages (sorted) */
+static bool ShowAuto(CommandLine &CmdL)
+{
+   if (CheckHelp(CmdL))
+   {
+      return true;
+   }
+
+   CacheFile &Cache = *GCache;
+   pkgDepCache * const DepCache = static_cast<pkgDepCache*>(Cache);
+   if (DepCache == nullptr)
+   {
+      return false;
+   }
+
+   if (!pkgDoShowAuto(std::cout, CmdL, *DepCache))
+   {
+      return false;
+   }
+
+   return true;
+}
+
 // * - Scripting stuff.							/*{{{*/
 // ---------------------------------------------------------------------
 /* */
@@ -3393,8 +3449,16 @@ bool DoCommit(CommandLine &CmdL)
       _error->Error(_("You have no permissions for that"));
       return false;
    }
-   int err = InstallPackages(*GCache,false);
+   bool err = InstallPackages(*GCache,false);
    _config->Set("APT::Get::Fix-Broken",false);
+   if (err)
+   {
+	   pkgDepCache * const DepCache = static_cast<pkgDepCache*>(*GCache);
+	   if (DepCache != nullptr)
+	   {
+		   DepCache->writeStateFile(NULL);
+	   }
+   }
    return err;
 }
 
@@ -3447,7 +3511,8 @@ char *ReadLineCompCommands(const char *Text, int State)
 	 "keep", "dist-upgrade", "dselect-upgrade", "build-dep", "clean",
 	 "autoclean", "check", "help", "commit", "exit", "quit", "status",
 	 "showpkg", "unmet", "search", "depends", "whatdepends", "rdepends",
-	 "show", "script", "list", "ls", 0};
+	 "show", "script", "list", "ls",
+	 "auto", "manual", "showauto", "showmanual", "showstate", 0};
    static int Last;
    static int Len;
    if (State == 0) {
@@ -3809,6 +3874,11 @@ int aptpipe_main(int ac, const char *av[])
 		{"install", &DoInstall},
 		{"remove", &DoInstall},
 		{"keep", &DoInstall},
+		{"auto", &DoAuto},
+		{"manual", &DoAuto},
+		{"showauto", &ShowAuto},
+		{"showmanual", &ShowAuto},
+		{"showstate", &ShowAuto},
 		{"dist-upgrade", &DoDistUpgrade},
 		{"dselect-upgrade", &DoDSelectUpgrade},
 		{"build-dep", &DoBuildDep},
@@ -3872,6 +3942,11 @@ int main(int argc,const char *argv[])
                                    {"install",&DoInstall},
                                    {"remove",&DoInstall},
                                    {"keep",&DoInstall},
+                                   {"auto", &DoAuto},
+                                   {"manual", &DoAuto},
+                                   {"showauto", &ShowAuto},
+                                   {"showmanual", &ShowAuto},
+                                   {"showstate", &ShowAuto},
                                    {"dist-upgrade",&DoDistUpgrade},
                                    {"dselect-upgrade",&DoDSelectUpgrade},
 				   {"build-dep",&DoBuildDep},
