@@ -2505,6 +2505,33 @@ bool DoMoo(CommandLine &CmdL)
 }
 									/*}}}*/
 
+bool DoAutoremove(CommandLine &/*CmdL*/)
+{
+   CacheFile Cache(c1out);
+
+   if ((not Cache.OpenForInstall()) || (not Cache.CheckDeps()))
+   {
+      return false;
+   }
+
+   c0out << _("Calculating Autoremove... ") << std::flush;
+   if (not pkgAutoremove(*Cache))
+   {
+      c0out << _("Failed") << std::endl;
+      ShowBroken(std::cerr, Cache, false);
+      return false;
+   }
+
+   if (CheckOnly(Cache))
+   {
+      return true;
+   }
+
+   c0out << _("Done") << std::endl;
+
+   return InstallPackages(Cache, false);
+}
+
 // CNC:2003-03-18
 // DoScript - Scripting stuff.						/*{{{*/
 // ---------------------------------------------------------------------
@@ -2725,6 +2752,7 @@ int main(int argc,const char *argv[])
                                    {"check",&DoCheck},
 				   {"source",&DoSource},
 				   {"moo",&DoMoo},
+				   {"autoremove", &DoAutoremove},
 				   {"help",&ShowHelp},
 // CNC:2003-03-19
 #ifdef WITH_LUA

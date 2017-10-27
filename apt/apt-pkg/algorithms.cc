@@ -31,6 +31,8 @@
 #include <apti18n.h>
     
 #include <iostream>
+#include <map>
+#include <set>
 									/*}}}*/
 using namespace std;
 
@@ -566,6 +568,270 @@ bool pkgMinimizeUpgrade(pkgDepCache &Cache)
    return true;
 }
 									/*}}}*/
+
+static bool find_all_required_dependencies(
+   pkgDepCache &Cache,
+   const pkgCache::PkgIterator &pkg_iter,
+   std::set<const char*> &kept_packages,
+   std::map<const char*, std::set<pkgCache::PkgIterator> > &unresolved_virtual_dependencies,
+   const std::map<const char*, std::set<pkgCache::PkgIterator> > &virtual_provides_map)
+{
+   // don't try doing infinite loop on cyclic dependencies
+   if (kept_packages.find(pkg_iter.Name()) != kept_packages.end())
+   {
+      return true;
+   }
+
+   kept_packages.insert(pkg_iter.Name());
+
+   auto version_iter = pkg_iter.CurrentVer();
+
+   for (auto deps_iter = version_iter.DependsList(); not deps_iter.end(); ++deps_iter)
+   {
+      // only process specific dependencies types
+      switch (deps_iter->Type)
+      {
+      case pkgCache::Dep::Depends:
+      case pkgCache::Dep::PreDepends:
+         break;
+
+      default:
+         continue;
+      }
+
+      auto dependency_pkg = Cache.FindPkg(deps_iter.TargetPkg().Name());
+      if (dependency_pkg.end())
+      {
+         return false;
+      }
+
+      if (dependency_pkg->CurrentState == pkgCache::State::Installed)
+      {
+         if (!find_all_required_dependencies(Cache, dependency_pkg, kept_packages, unresolved_virtual_dependencies, virtual_provides_map))
+         {
+            return false;
+         }
+      }
+      else
+      {
+         // probably a virtual package, check it
+         auto virtual_provides_map_iter = virtual_provides_map.find(dependency_pkg.Name());
+         if (virtual_provides_map_iter == virtual_provides_map.end())
+         {
+            return false;
+         }
+
+         switch (virtual_provides_map_iter->second.size())
+         {
+         case 0:
+            return false;
+            break;
+
+         case 1:
+            if (!find_all_required_dependencies(Cache, *(virtual_provides_map_iter->second.begin()), kept_packages, unresolved_virtual_dependencies, virtual_provides_map))
+            {
+               return false;
+            }
+            break;
+
+         default:
+            for (auto virtuals_iter = virtual_provides_map_iter->second.begin(); virtuals_iter != virtual_provides_map_iter->second.end(); ++virtuals_iter)
+            {
+               unresolved_virtual_dependencies[dependency_pkg.Name()].insert(*virtuals_iter);
+            }
+            break;
+         }
+      }
+   }
+
+   return true;
+}
+
+bool pkgAutoremove(pkgDepCache &Cache)
+{
+   if (Cache.BrokenCount() != 0)
+   {
+      return false;
+   }
+
+   pkgProblemResolver Fix(&Cache);
+
+   // if package is still needed, put it into this set
+   std::set<const char*> kept_packages;
+
+   // save unresolved virtual dependencies here to try resolving it
+   std::map<const char*, std::set<pkgCache::PkgIterator> > unresolved_virtual_dependencies;
+
+   std::map<const char*, std::set<pkgCache::PkgIterator> > virtual_provides_map;
+
+   // First gather all virtual provides
+   for (pkgCache::PkgIterator pkg_iter = Cache.PkgBegin(); not pkg_iter.end(); ++pkg_iter)
+   {
+      for (auto provs_iter = pkg_iter.ProvidesList(); not provs_iter.end(); ++provs_iter)
+      {
+         if (provs_iter.OwnerPkg()->CurrentState == pkgCache::State::Installed)
+         {
+            // format: virtual dependency = providing package
+            virtual_provides_map[pkg_iter.Name()].insert(provs_iter.OwnerPkg());
+         }
+      }
+   }
+
+   // Check every installed package
+   for (pkgCache::PkgIterator pkg_iter = Cache.PkgBegin(); not pkg_iter.end(); ++pkg_iter)
+   {
+      // Skip packages not installed, and automatically installed ones too
+      if ((pkg_iter->CurrentState == pkgCache::State::Installed) && (!Cache.getMarkAuto(pkg_iter)))
+      {
+         if (!find_all_required_dependencies(Cache, pkg_iter, kept_packages, unresolved_virtual_dependencies, virtual_provides_map))
+         {
+            return _error->Error(_("Dependencies check failed"));
+         }
+      }
+   }
+
+   while (!unresolved_virtual_dependencies.empty())
+   {
+      std::map<const char*, std::set<pkgCache::PkgIterator> > new_unresolved_virtual_dependencies;
+
+      // process every unresolved virtual dependency
+      for (auto virtual_iter = unresolved_virtual_dependencies.begin();
+         virtual_iter != unresolved_virtual_dependencies.end();
+         ++virtual_iter)
+      {
+         // first check if any of providing packages already installed
+         {
+            auto provide_iter = virtual_iter->second.begin();
+
+            for ( ;
+               provide_iter != virtual_iter->second.end();
+               ++provide_iter)
+            {
+               if (kept_packages.find(provide_iter->Name()) != kept_packages.end())
+               {
+                  break;
+               }
+            }
+
+            if (provide_iter != virtual_iter->second.end())
+            {
+               // one or more dependencies are already installed, skip it
+               continue;
+            }
+         }
+
+         // now remove dependencies which have unsatisfied dependencies themselves
+         {
+            auto provide_iter = virtual_iter->second.begin();
+
+            while (provide_iter != virtual_iter->second.end())
+            {
+               std::set<const char*> kept_packages_copy = kept_packages;
+               std::map<const char*, std::set<pkgCache::PkgIterator> > temp_unresolved_virtual_dependencies;
+
+               if (!find_all_required_dependencies(Cache, *provide_iter, kept_packages_copy, temp_unresolved_virtual_dependencies, virtual_provides_map))
+               {
+                  provide_iter = virtual_iter->second.erase(provide_iter);
+               }
+               else
+               {
+                  ++provide_iter;
+               }
+            }
+         }
+
+         // if no package may be kept due to unsolved dependencies, fail
+         if (virtual_iter->second.empty())
+         {
+            return false;
+         }
+
+         // Finally, choose one of remaining dependencies.
+         // How about package with highest version?
+         // If everything else fails, let's just pick first one (alphabetically)
+         // TODO: consider implementing smarter choosing algorithm, some options, or even ask user to choose one
+         {
+            auto provide_iter = virtual_iter->second.begin();
+
+            auto max_version = provide_iter->CurrentVer();
+            size_t max_version_count = 1;
+            ++provide_iter;
+
+            while (provide_iter != virtual_iter->second.end())
+            {
+               auto compare_version_result = max_version.CompareVer(provide_iter->CurrentVer());
+
+               if (compare_version_result < 0)
+               {
+                  max_version = provide_iter->CurrentVer();
+                  max_version_count = 1;
+               }
+               else if (compare_version_result == 0)
+               {
+                  ++max_version_count;
+               }
+
+               ++provide_iter;
+            }
+
+            if (max_version_count == 1)
+            {
+               provide_iter = virtual_iter->second.begin();
+
+               for ( ;
+                  provide_iter != virtual_iter->second.end();
+                  ++provide_iter)
+               {
+                  if (provide_iter->CurrentVer().CompareVer(max_version) == 0)
+                  {
+                     break;
+                  }
+               }
+
+               if (provide_iter != virtual_iter->second.end())
+               {
+                  if (!find_all_required_dependencies(Cache, *provide_iter, kept_packages, new_unresolved_virtual_dependencies, virtual_provides_map))
+                  {
+                     // For some reason failed when it should not
+                     return false;
+                  }
+
+                  continue;
+               }
+            }
+         }
+
+         if (!find_all_required_dependencies(Cache, *(virtual_iter->second.begin()), kept_packages, new_unresolved_virtual_dependencies, virtual_provides_map))
+         {
+            // For some reason failed when it should not
+            return false;
+         }
+      }
+
+      unresolved_virtual_dependencies = new_unresolved_virtual_dependencies;
+   }
+
+   // Finally, go through all packages once more and mark them
+   for (pkgCache::PkgIterator pkg_iter = Cache.PkgBegin(); not pkg_iter.end(); ++pkg_iter)
+   {
+      // Skip packages not installed
+      if (pkg_iter->CurrentState == pkgCache::State::Installed)
+      {
+         if (kept_packages.find(pkg_iter.Name()) != kept_packages.end())
+         {
+            // Package is needed, protect it to prohibit automatic removal
+            Cache.MarkKeep(pkg_iter);
+            Fix.Protect(pkg_iter);
+         }
+         else
+         {
+            Cache.MarkDelete(pkg_iter, _config->FindB("APT::Get::Purge",false));
+         }
+      }
+   }
+
+   return Fix.Resolve(false);
+}
 
 // ProblemResolver::pkgProblemResolver - Constructor			/*{{{*/
 // ---------------------------------------------------------------------

@@ -134,6 +134,7 @@ bool pkgApplyStatus(pkgDepCache &Cache);
 bool pkgFixBroken(pkgDepCache &Cache);
 bool pkgAllUpgrade(pkgDepCache &Cache);
 bool pkgMinimizeUpgrade(pkgDepCache &Cache);
+bool pkgAutoremove(pkgDepCache &Cache);
 
 void pkgPrioSortList(pkgCache &Cache,pkgCache::Version **List);
 		     

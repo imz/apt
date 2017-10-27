@@ -2023,6 +2023,42 @@ bool DoBuildDep(CommandLine &CmdL)
 }
 									/*}}}*/
 
+bool DoAutoremove(CommandLine &CmdL)
+{
+   if (CheckHelp(CmdL))
+   {
+      return true;
+   }
+
+   CacheFile &Cache = *GCache;
+   if (not GCache->CanCommit())
+   {
+      _error->Error(_("You have no permissions for that"));
+      return false;
+   }
+
+   if (not Cache.CheckDeps())
+   {
+      return false;
+   }
+
+   AutoRestore StateGuard(Cache);
+
+   c0out << _("Calculating Autoremove... ") << std::flush;
+   if (not pkgAutoremove(*Cache))
+   {
+      c0out << _("Failed") << std::endl;
+      ShowBroken(std::cerr, Cache, false);
+      return false;
+   }
+
+   c0out << _("Done") << std::endl;
+
+   ConfirmChanges(Cache, StateGuard);
+
+   return true;
+}
+
 /* DoAuto - mark packages as automatically/manually installed */
 static bool DoAuto(CommandLine &CmdL)
 {
@@ -3516,7 +3552,7 @@ char *ReadLineCompCommands(const char *Text, int State)
 	 "keep", "dist-upgrade", "dselect-upgrade", "build-dep", "clean",
 	 "autoclean", "check", "help", "commit", "exit", "quit", "status",
 	 "showpkg", "unmet", "search", "depends", "whatdepends", "rdepends",
-	 "show", "script", "list", "ls",
+	 "show", "script", "list", "ls", "autoremove",
 	 "auto", "manual", "showauto", "showmanual", "showstate", 0};
    static int Last;
    static int Len;
@@ -3879,6 +3915,7 @@ int aptpipe_main(int ac, const char *av[])
 		{"install", &DoInstall},
 		{"remove", &DoInstall},
 		{"keep", &DoInstall},
+		{"autoremove", &DoAutoremove},
 		{"auto", &DoAuto},
 		{"manual", &DoAuto},
 		{"showauto", &ShowAuto},
@@ -3947,6 +3984,7 @@ int main(int argc,const char *argv[])
                                    {"install",&DoInstall},
                                    {"remove",&DoInstall},
                                    {"keep",&DoInstall},
+                                   {"autoremove",&DoAutoremove},
                                    {"auto", &DoAuto},
                                    {"manual", &DoAuto},
                                    {"showauto", &ShowAuto},
