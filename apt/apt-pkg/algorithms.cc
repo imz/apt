@@ -326,6 +326,42 @@ bool pkgFixBroken(pkgDepCache &Cache)
    
    return Fix.Resolve(true);
 }
+
+static bool replacingPackageMarkedAuto(
+   pkgDepCache &Cache,
+   const pkgCache::PkgIterator &obsoleted_package,
+   const pkgCache::PkgIterator &replacing_package)
+{
+   std::string apt_inheritance_value = _config->Find("APT::Get::Obsoletes::AptMarkInheritanceAuto", "all");
+
+   bool obsoleted_package_auto = Cache.getMarkAuto(obsoleted_package);
+   bool replacing_package_auto = Cache.getMarkAuto(replacing_package);
+
+   if (apt_inheritance_value.compare("obsoleted") == 0)
+   {
+      return obsoleted_package_auto;
+   }
+   else if (apt_inheritance_value.compare("replacing") == 0)
+   {
+      return replacing_package_auto;
+   }
+   else if (apt_inheritance_value.compare("at_least_one") == 0)
+   {
+      return obsoleted_package_auto || replacing_package_auto;
+   }
+   else if (apt_inheritance_value.compare("never") == 0)
+   {
+      return false;
+   }
+   else if (apt_inheritance_value.compare("always") == 0)
+   {
+      return true;
+   }
+   else /* if (apt_inheritance_value.compare("all") == 0) */
+   {
+      return obsoleted_package_auto && replacing_package_auto;
+   }
+}
 									/*}}}*/
 // DistUpgrade - Distribution upgrade					/*{{{*/
 // ---------------------------------------------------------------------
@@ -381,7 +417,9 @@ bool pkgDistUpgrade(pkgDepCache &Cache)
 	        Cache.VS().CheckDep(I.CurrentVer().VerStr(), D) == true &&
 		Cache.GetPkgPriority(D.ParentPkg()) >= Cache.GetPkgPriority(I))
 	    {
+	       bool newMarkAuto = replacingPackageMarkedAuto(Cache, I, D.ParentPkg());
 	       Cache.MarkInstall(D.ParentPkg(),true);
+	       Cache.MarkAuto(D.ParentPkg(), newMarkAuto);
 	       Obsoleted = true;
 	       break;
 	    }
@@ -415,7 +453,9 @@ bool pkgDistUpgrade(pkgDepCache &Cache)
 	        Cache.VS().CheckDep(I.CurrentVer().VerStr(), D) == true &&
 		Cache.GetPkgPriority(D.ParentPkg()) >= Cache.GetPkgPriority(I))
 	    {
+	       bool newMarkAuto = replacingPackageMarkedAuto(Cache, I, D.ParentPkg());
 	       Cache.MarkInstall(D.ParentPkg(),false);
+	       Cache.MarkAuto(D.ParentPkg(), newMarkAuto);
 	       Obsoleted = true;
 	       break;
 	    }

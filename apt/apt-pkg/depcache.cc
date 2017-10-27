@@ -710,7 +710,6 @@ void pkgDepCache::MarkKeep(PkgIterator const &Pkg,bool Soft)
    if (Pkg->VersionList == 0)
       return;
    
-   P.Flags &= ~Flag::Auto;
    RemoveSizes(Pkg);
    RemoveStates(Pkg);
 
@@ -719,6 +718,8 @@ void pkgDepCache::MarkKeep(PkgIterator const &Pkg,bool Soft)
       P.InstallVer = 0;
    else
       P.InstallVer = Pkg.CurrentVer();
+
+   MarkAuto(Pkg, getMarkAuto(Pkg));
 
    AddStates(Pkg);
 
@@ -759,6 +760,7 @@ void pkgDepCache::MarkDelete(PkgIterator const &Pkg, bool rPurge)
       P.Mode = ModeDelete;
    P.InstallVer = 0;
    P.Flags &= Flag::Auto;
+   MarkAuto(Pkg, getMarkAuto(Pkg));
 
    AddStates(Pkg);   
    Update(Pkg);
@@ -778,6 +780,20 @@ void pkgDepCache::MarkAuto(const PkgIterator &Pkg, bool Auto)
       state.Flags &= ~Flag::Auto;
    }
 }
+
+bool pkgDepCache::getMarkAuto(const PkgIterator &Pkg, bool installing_behaves_as_installed, bool value_if_package_not_installed) const
+{
+   if ((!installing_behaves_as_installed) || (PkgState[Pkg->ID].Mode != pkgDepCache::ModeInstall))
+   {
+      if (Pkg->CurrentState != pkgCache::State::Installed)
+      {
+         return value_if_package_not_installed;
+      }
+   }
+
+   return ((PkgState[Pkg->ID].Flags & Flag::Auto) == Flag::Auto);
+}
+
 									/*}}}*/
 // DepCache::MarkInstall - Put the package in the install state		/*{{{*/
 // ---------------------------------------------------------------------
@@ -813,9 +829,9 @@ int pkgDepCache::MarkInstall0(PkgIterator const &Pkg)
    RemoveSizes(Pkg);
    RemoveStates(Pkg);
    
+   MarkAuto(Pkg, getMarkAuto(Pkg));
    P.Mode = ModeInstall;
    P.InstallVer = P.CandidateVer;
-   P.Flags &= ~Flag::Auto;
    if (P.CandidateVer == (Version *)Pkg.CurrentVer())
       P.Mode = ModeKeep;
        
@@ -933,10 +949,6 @@ void pkgDepCache::MarkInstallRec(PkgIterator const &Pkg,
 	 {
 	    // Recursion is always restricted
 	    MarkInstallRec(InstPkg,/*Restricted*/true,MarkAgain,Depth+1,DebugStr);
-
-	    // Set the autoflag, after MarkInstall because MarkInstall unsets it
-	    if (P->CurrentVer == 0)
-	       PkgState[InstPkg->ID].Flags |= Flag::Auto;
 	 }
 	 
 	 continue;
@@ -952,7 +964,7 @@ void pkgDepCache::MarkInstallRec(PkgIterator const &Pkg,
 	    PkgIterator Pkg = Ver.ParentPkg();
 	    DEBUG_NEXT("delete %s", Pkg.Name());
 	    MarkDelete(Pkg);
-	    PkgState[Pkg->ID].Flags |= Flag::Auto;
+	    MarkAuto(Pkg, getMarkAuto(Pkg));
 	 }
 	 continue;
       }      

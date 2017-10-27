@@ -201,6 +201,8 @@ class pkgDepCache : protected pkgCache::Namespace
    /** Set the "is automatically installed" flag of Pkg. */
    void MarkAuto(const PkgIterator &Pkg, bool Auto);
 
+   bool getMarkAuto(const PkgIterator &Pkg, bool installing_behaves_as_installed = true, bool value_if_package_not_installed = true) const;
+
    // shallow mark; ret: -1 err, 0 already marked, 1 just marked
    int MarkInstall0(PkgIterator const &Pkg);
    // non-ambiguous recursive mark; MarkAgain should be marked again

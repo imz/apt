@@ -193,6 +193,19 @@ bool rpmSystem::Initialize(Configuration &Cnf)
    // If set to true, apt-get reinstall will remove 'auto' mark from package
    Cnf.CndSet("APT::Get::ReInstall::MarkManual", true);
 
+   /* Next option has following possible values:
+    *
+    * "obsoleted" - if obsoleted package is marked auto, replacing package is marked auto too, otherwise marked manual
+    * "replacing" - if replacing package is marked auto, it keeps it's mark, otherwise marked manual
+    * "at_least_one" - if obsoleted package or replacing package is marked auto, replacing package is marked auto, otherwise marked manual
+    * "all" - if obsoleted package and replacing package are both marked auto, replacing package is marked auto, otherwise marked manual
+    * "never" - replacing package is always marked manual
+    * "always" - replacing package is always marked auto
+    *
+    * if some other value is used or if value is missing, it acts as if "all" was set.
+    */
+   Cnf.CndSet("APT::Get::Obsoletes::AptMarkInheritanceAuto", "all");
+
 #if RPM_VERSION >= 0x040201
    const char *RPMOptions[] =
    {

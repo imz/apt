@@ -856,7 +856,10 @@ bool TryToInstall(pkgCache::PkgIterator Pkg,pkgDepCache &Cache,
       }      
    }   
    else
+   {
       ExpectedInst++;
+      Cache.MarkAuto(Pkg, false);
+   }
    
    // Install it with autoinstalling enabled.
    if (State.InstBroken() == true && BrokenFix == false)
