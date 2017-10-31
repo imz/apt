@@ -654,6 +654,8 @@ bool pkgAutoremove(pkgDepCache &Cache)
       return false;
    }
 
+   bool debug_virtuals = _config->FindB("Debug::pkgAutoremove::resolveVirtuals", false);
+
    pkgProblemResolver Fix(&Cache);
 
    // if package is still needed, put it into this set
@@ -699,6 +701,18 @@ bool pkgAutoremove(pkgDepCache &Cache)
          virtual_iter != unresolved_virtual_dependencies.end();
          ++virtual_iter)
       {
+         if (debug_virtuals)
+         {
+            std::cerr << "Trying to resolve virtual dependency: " << virtual_iter->first << std::endl;
+
+            for (auto provide_iter = virtual_iter->second.begin();
+               provide_iter != virtual_iter->second.end();
+               ++provide_iter)
+            {
+               std::cerr << "Candidate for " << virtual_iter->first << ": " << provide_iter->Name() << std::endl;
+            }
+         }
+
          // first check if any of providing packages already installed
          {
             auto provide_iter = virtual_iter->second.begin();
@@ -716,6 +730,10 @@ bool pkgAutoremove(pkgDepCache &Cache)
             if (provide_iter != virtual_iter->second.end())
             {
                // one or more dependencies are already installed, skip it
+               if (debug_virtuals)
+               {
+                  std::cerr << "Package " << provide_iter->Name() << " is already required, use it to satisfy virtual dependency " << virtual_iter->first << std::endl;
+               }
                continue;
             }
          }
@@ -731,6 +749,11 @@ bool pkgAutoremove(pkgDepCache &Cache)
 
                if (!find_all_required_dependencies(Cache, *provide_iter, kept_packages_copy, temp_unresolved_virtual_dependencies, virtual_provides_map))
                {
+                  if (debug_virtuals)
+                  {
+                     std::cerr << "Package " << provide_iter->Name() << " has unmet dependencies, don't try using it" << std::endl;
+                  }
+
                   provide_iter = virtual_iter->second.erase(provide_iter);
                }
                else
@@ -790,6 +813,11 @@ bool pkgAutoremove(pkgDepCache &Cache)
 
                if (provide_iter != virtual_iter->second.end())
                {
+                  if (debug_virtuals)
+                  {
+                     std::cerr << "Package " << provide_iter->Name() << " is chosen to satisfy virtual dependency " << virtual_iter->first << std::endl;
+                  }
+
                   if (!find_all_required_dependencies(Cache, *provide_iter, kept_packages, new_unresolved_virtual_dependencies, virtual_provides_map))
                   {
                      // For some reason failed when it should not
@@ -799,6 +827,11 @@ bool pkgAutoremove(pkgDepCache &Cache)
                   continue;
                }
             }
+         }
+
+         if (debug_virtuals)
+         {
+            std::cerr << "Package " << virtual_iter->second.begin()->Name() << " is chosen to satisfy virtual dependency " << virtual_iter->first << std::endl;
          }
 
          if (!find_all_required_dependencies(Cache, *(virtual_iter->second.begin()), kept_packages, new_unresolved_virtual_dependencies, virtual_provides_map))
