@@ -253,9 +253,9 @@ class pkgCache::PrvIterator
 
    inline const char *Name() const {return Owner->StrP + Owner->PkgP[Prv->ParentPkg].Name;};
    inline const char *ProvideVersion() const {return Prv->ProvideVersion == 0?0:Owner->StrP + Prv->ProvideVersion;};
-   inline PkgIterator ParentPkg() {return PkgIterator(*Owner,Owner->PkgP + Prv->ParentPkg);};
-   inline VerIterator OwnerVer() {return VerIterator(*Owner,Owner->VerP + Prv->Version);};
-   inline PkgIterator OwnerPkg() {return PkgIterator(*Owner,Owner->PkgP + Owner->VerP[Prv->Version].ParentPkg);};
+   inline PkgIterator ParentPkg() const {return PkgIterator(*Owner,Owner->PkgP + Prv->ParentPkg);};
+   inline VerIterator OwnerVer() const {return VerIterator(*Owner,Owner->VerP + Prv->Version);};
+   inline PkgIterator OwnerPkg() const {return PkgIterator(*Owner,Owner->PkgP + Owner->VerP[Prv->Version].ParentPkg);};
    inline unsigned long Index() const {return Prv - Owner->ProvideP;};
 
    inline PrvIterator() : Prv(0), Type(PrvVer), Owner(0)  {};

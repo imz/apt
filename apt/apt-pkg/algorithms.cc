@@ -574,7 +574,7 @@ static bool find_all_required_dependencies(
    const pkgCache::PkgIterator &pkg_iter,
    std::set<const char*> &kept_packages,
    std::map<const char*, std::set<pkgCache::PkgIterator> > &unresolved_virtual_dependencies,
-   const std::map<const char*, std::set<pkgCache::PkgIterator> > &virtual_provides_map)
+   const std::map<const char*, std::set<pkgCache::PrvIterator> > &virtual_provides_map)
 {
    // don't try doing infinite loop on cyclic dependencies
    if (kept_packages.find(pkg_iter.Name()) != kept_packages.end())
@@ -605,7 +605,10 @@ static bool find_all_required_dependencies(
          return false;
       }
 
-      if (dependency_pkg->CurrentState == pkgCache::State::Installed)
+      // Package should not only be installed, but a version should match too if it's a dependency on specific version
+      if ((dependency_pkg->CurrentState == pkgCache::State::Installed)
+         && (not dependency_pkg.CurrentVer().end())
+         && (Cache.VS().CheckDep(dependency_pkg.CurrentVer().VerStr(), deps_iter)))
       {
          if (!find_all_required_dependencies(Cache, dependency_pkg, kept_packages, unresolved_virtual_dependencies, virtual_provides_map))
          {
@@ -621,24 +624,32 @@ static bool find_all_required_dependencies(
             return false;
          }
 
-         switch (virtual_provides_map_iter->second.size())
+         // find all satisfying provides
+         std::set<pkgCache::PkgIterator> matching_provides;
+
+         for (auto provides_iter = virtual_provides_map_iter->second.begin(); provides_iter != virtual_provides_map_iter->second.end(); ++provides_iter)
+         {
+            if (Cache.VS().CheckDep(provides_iter->ProvideVersion(), deps_iter))
+            {
+               matching_provides.insert(provides_iter->OwnerPkg());
+            }
+         }
+
+         switch (matching_provides.size())
          {
          case 0:
             return false;
             break;
 
          case 1:
-            if (!find_all_required_dependencies(Cache, *(virtual_provides_map_iter->second.begin()), kept_packages, unresolved_virtual_dependencies, virtual_provides_map))
+            if (!find_all_required_dependencies(Cache, *(matching_provides.begin()), kept_packages, unresolved_virtual_dependencies, virtual_provides_map))
             {
                return false;
             }
             break;
 
          default:
-            for (auto virtuals_iter = virtual_provides_map_iter->second.begin(); virtuals_iter != virtual_provides_map_iter->second.end(); ++virtuals_iter)
-            {
-               unresolved_virtual_dependencies[dependency_pkg.Name()].insert(*virtuals_iter);
-            }
+            unresolved_virtual_dependencies[dependency_pkg.Name()].insert(matching_provides.begin(), matching_provides.end());
             break;
          }
       }
@@ -664,7 +675,7 @@ bool pkgAutoremove(pkgDepCache &Cache)
    // save unresolved virtual dependencies here to try resolving it
    std::map<const char*, std::set<pkgCache::PkgIterator> > unresolved_virtual_dependencies;
 
-   std::map<const char*, std::set<pkgCache::PkgIterator> > virtual_provides_map;
+   std::map<const char*, std::set<pkgCache::PrvIterator> > virtual_provides_map;
 
    // First gather all virtual provides
    for (pkgCache::PkgIterator pkg_iter = Cache.PkgBegin(); not pkg_iter.end(); ++pkg_iter)
@@ -674,7 +685,7 @@ bool pkgAutoremove(pkgDepCache &Cache)
          if (provs_iter.OwnerPkg()->CurrentState == pkgCache::State::Installed)
          {
             // format: virtual dependency = providing package
-            virtual_provides_map[pkg_iter.Name()].insert(provs_iter.OwnerPkg());
+            virtual_provides_map[pkg_iter.Name()].insert(provs_iter);
          }
       }
    }
