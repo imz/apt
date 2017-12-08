@@ -13,6 +13,7 @@
 
 #include <apt-pkg/pkgcache.h>
 #include <apt-pkg/depcache.h>
+#include <apt-pkg/packagemanager.h>
 
 using namespace std;
 
@@ -81,6 +82,7 @@ class Lua {
    void SetGlobal(const char *Name, pkgCache::Package *Value);
    void SetGlobal(const char *Name, vector<const char *> &Value,
 		  int Total=-1);
+   void SetGlobal(const char *Name, const std::vector<apt_item> &Value, int Total = -1);
    void SetGlobal(const char *Name, vector<string> &Value,
 		  int Total=-1);
    void SetGlobal(const char *Name, vector<pkgCache::Package*> &Value,

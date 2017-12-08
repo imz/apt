@@ -91,7 +91,14 @@ bool pkgDepCache::Init(OpProgress *Prog)
       // Find the proper cache slot
       StateCache &State = PkgState[I->ID];
       State.iFlags = 0;
-      
+
+      State.Flags = 0;
+
+      if (I->Flags & pkgCache::Flag::Auto)
+      {
+          State.Flags |= Flag::Auto;
+      }
+
       // Figure out the install version
       State.CandidateVer = GetCandidateVer(I);
       State.InstallVer = I.CurrentVer();
@@ -618,8 +625,6 @@ void pkgDepCache::Update(OpProgress *Prog)
 
    if (Prog != 0)      
       Prog->Progress(Done);
-
-   readStateFile(Prog);
 }
 									/*}}}*/
 // DepCache::Update - Update the deps list of a package	   		/*{{{*/
@@ -673,97 +678,6 @@ void pkgDepCache::Update(PkgIterator const &Pkg)
 }
 
 									/*}}}*/
-
-bool pkgDepCache::readStateFile(OpProgress * const /*prog*/)
-{
-   std::string AptMarkStorageFileName = _config->FindFile("Dir::State::apt_mark_storage");
-
-   std::set<std::string> auto_installed_packages;
-
-   {
-      std::ifstream StateFile(AptMarkStorageFileName);
-      std::string line;
-
-      if (!StateFile.is_open())
-      {
-         // No extended state file - just skip rest of function and exit
-         _error->Warning(_("Failed to open file: %s\n"), AptMarkStorageFileName.c_str());
-         return true;
-      }
-
-      while (std::getline(StateFile, line))
-      {
-         auto_installed_packages.insert(line);
-      }
-   }
-
-   for (auto iter = PkgBegin(); !iter.end(); ++iter)
-   {
-      if (auto_installed_packages.find(iter.Name()) != auto_installed_packages.end())
-      {
-         PkgState[iter->ID].Flags |= Flag::Auto;
-      }
-   }
-
-   return true;
-}
-
-bool pkgDepCache::writeStateFile(OpProgress * const /*prog*/) const
-{
-   std::string AptMarkStorageFileName = _config->FindFile("Dir::State::apt_mark_storage");
-
-   // create a temporary file in same directory
-   std::string AptMarkTempFileName;
-
-   {
-      std::string::size_type delim_index = AptMarkStorageFileName.rfind('/');
-      if ((delim_index == std::string::npos) || (delim_index == 0) || (delim_index == AptMarkStorageFileName.length()))
-      {
-         return _error->Error(_("Invalid value of \"Dir::State::apt_mark_storage\": %s"), AptMarkStorageFileName.c_str());
-      }
-
-      AptMarkTempFileName = AptMarkStorageFileName.substr(0, delim_index + 1) + ".__tmp__apt_mark_storage";
-   }
-
-   FileFd StateFile(AptMarkTempFileName, FileFd::WriteTemp, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
-   StateFile.EraseOnFailure();
-
-   {
-      std::string linestr;
-
-      for (auto iter = PkgBegin(); !iter.end(); ++iter)
-      {
-         StateCache const &stateCache = PkgState[iter->ID];
-
-         /* if package is auto, it's an existing installed package or new installed package, write it */
-         if (((stateCache.Flags & Flag::Auto) == Flag::Auto)
-            && (((stateCache.Mode == pkgDepCache::ModeKeep) && (iter->CurrentState == pkgCache::State::Installed))
-               || (stateCache.Mode == pkgDepCache::ModeInstall)))
-         {
-            linestr = iter.Name();
-            linestr += '\n';
-
-            if (!StateFile.Write(linestr.c_str(), linestr.length()))
-            {
-               return false;
-            }
-         }
-      }
-   }
-
-   if (!StateFile.Close())
-   {
-      return false;
-   }
-
-   if (rename(AptMarkTempFileName.c_str(), AptMarkStorageFileName.c_str()) != 0)
-   {
-      unlink(AptMarkTempFileName.c_str());
-      return _error->Error(_("Failed to replace file: %s"), AptMarkStorageFileName.c_str());
-   }
-
-   return true;
-}
 
 // DepCache::MarkKeep - Put the package in the keep state		/*{{{*/
 // ---------------------------------------------------------------------

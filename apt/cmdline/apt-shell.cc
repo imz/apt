@@ -302,7 +302,11 @@ bool InstallPackages(CacheFile &Cache,bool ShwKept,bool Ask = true,
 
    if (Cache->DelCount() == 0 && Cache->InstCount() == 0 &&
        Cache->BadCount() == 0)
-      return true;
+   {
+	   SPtr<pkgPackageManager> PM= _system->CreatePM(Cache);
+	   _system->UnLock();
+	   return PM->UpdateMarks();
+   }
 
    // No remove flag
    if (Cache->DelCount() != 0 && _config->FindB("APT::Get::Remove",true) == false)
@@ -563,7 +567,12 @@ bool InstallPackages(CacheFile &Cache,bool ShwKept,bool Ask = true,
 	       Ret &= DoClean(*CmdL);
 	    else if (_config->FindB("APT::Post-Install::AutoClean",false) == true) 
 	       Ret &= DoAutoClean(*CmdL);
-	    Cache->writeStateFile(0);
+
+	    if (Ret)
+	    {
+	        Ret &= PM->UpdateMarks();
+	    }
+
 	    return Ret;
 	 }
 	 
@@ -3451,14 +3460,7 @@ bool DoCommit(CommandLine &CmdL)
    }
    bool err = InstallPackages(*GCache,false);
    _config->Set("APT::Get::Fix-Broken",false);
-   if (err)
-   {
-	   pkgDepCache * const DepCache = static_cast<pkgDepCache*>(*GCache);
-	   if (DepCache != nullptr)
-	   {
-		   DepCache->writeStateFile(NULL);
-	   }
-   }
+
    return err;
 }
 

@@ -35,6 +35,7 @@
 #include <iostream>
 #include <cstring>
 #include <functional>
+#include <utility>
 
 #if RPM_VERSION >= 0x040100
 #include <rpm/rpmdb.h>
@@ -83,6 +84,11 @@ public:
 private:
    std::function<void()> m_function;
 };
+
+uint32_t collect_autoinstalled_flag(pkgDepCache &Cache, pkgCache::PkgIterator Pkg)
+{
+   return Cache.getMarkAuto(Pkg) ? 1 : 0;
+}
 
 } // unnamed namespace
 
@@ -286,10 +292,10 @@ bool pkgRPMPM::Go()
    if (RunScriptsWithPkgs("RPM::Pre-Install-Pkgs") == false)
       return false;
    
-   vector<const char*> install_or_upgrade;
-   vector<const char*> install;
-   vector<const char*> upgrade;
-   vector<const char*> uninstall;
+   vector<apt_item> install_or_upgrade;
+   vector<apt_item> install;
+   vector<apt_item> upgrade;
+   vector<apt_item> uninstall;
    vector<pkgCache::Package*> pkgs_install;
    vector<pkgCache::Package*> pkgs_uninstall;
 
@@ -327,7 +333,7 @@ bool pkgRPMPM::Go()
 	 // rpm versions don't support name.arch in RPMDBI_LABEL, oh well...
 	 Name = Name + "." + I->Pkg.CurrentVer().Arch();
 #endif
-	 uninstall.push_back(strdup(Name.c_str()));
+	 uninstall.push_back(apt_item(Name.c_str(), collect_autoinstalled_flag(Cache, I->Pkg)));
 	 unalloc.push_back(strdup(Name.c_str()));
 	 pkgs_uninstall.push_back(I->Pkg);
 	 break;
@@ -348,13 +354,13 @@ bool pkgRPMPM::Go()
 	       }
 	    }
 	    if (Installed)
-	       install.push_back(I->File.c_str());
+	       install.push_back(apt_item(I->File.c_str(), collect_autoinstalled_flag(Cache, I->Pkg)));
 	    else
-	       upgrade.push_back(I->File.c_str());
+	       upgrade.push_back(apt_item(I->File.c_str(), collect_autoinstalled_flag(Cache, I->Pkg)));
 	 } else {
-	    upgrade.push_back(I->File.c_str());
+	    upgrade.push_back(apt_item(I->File.c_str(), collect_autoinstalled_flag(Cache, I->Pkg)));
 	 }
-	 install_or_upgrade.push_back(I->File.c_str());
+	 install_or_upgrade.push_back(apt_item(I->File.c_str(), collect_autoinstalled_flag(Cache, I->Pkg)));
 	 pkgs_install.push_back(I->Pkg);
 	 break;
 	  
@@ -439,7 +445,7 @@ pkgRPMExtPM::~pkgRPMExtPM()
 }
 									/*}}}*/
 
-bool pkgRPMExtPM::ExecRPM(Item::RPMOps op, vector<const char*> &files)
+bool pkgRPMExtPM::ExecRPM(Item::RPMOps op, const std::vector<apt_item> &files)
 {
    const char *Args[10000];
    const char *operation;
@@ -584,9 +590,9 @@ bool pkgRPMExtPM::ExecRPM(Item::RPMOps op, vector<const char*> &files)
 	 int fd = mkstemp(ArgsFileName);
 	 if (fd != -1) {
 	    FileFd File(fd);
-	    for (vector<const char*>::iterator I = files.begin();
+	    for (auto I = files.begin();
 		 I != files.end(); I++) {
-	       File.Write(*I, strlen(*I));
+	       File.Write(I->file.c_str(), I->file.length());
 	       File.Write("\n", 1);
 	    }
 	    File.Close();
@@ -598,9 +604,9 @@ bool pkgRPMExtPM::ExecRPM(Item::RPMOps op, vector<const char*> &files)
 #endif
 
    if (FilesInArgs == true) {
-      for (vector<const char*>::iterator I = files.begin();
+      for (auto I = files.begin();
 	   I != files.end(); I++)
-	 Args[n++] = *I;
+	 Args[n++] = I->file.c_str();
    }
    
    Args[n++] = 0;
@@ -704,9 +710,9 @@ bool pkgRPMExtPM::ExecRPM(Item::RPMOps op, vector<const char*> &files)
    return true;
 }
 
-bool pkgRPMExtPM::Process(vector<const char*> &install, 
-		       vector<const char*> &upgrade,
-		       vector<const char*> &uninstall)
+bool pkgRPMExtPM::Process(const std::vector<apt_item> &install,
+		       const std::vector<apt_item> &upgrade,
+		       const std::vector<apt_item> &uninstall)
 {
    if (uninstall.empty() == false)
        ExecRPM(Item::RPMErase, uninstall);
@@ -732,13 +738,13 @@ pkgRPMLibPM::~pkgRPMLibPM()
 }
 									/*}}}*/
 
-bool pkgRPMLibPM::AddToTransaction(Item::RPMOps op, vector<const char*> &files)
+bool pkgRPMLibPM::AddToTransaction(Item::RPMOps op, const std::vector<apt_item> &files)
 {
    int rc;
    FD_t fd;
    rpmHeader hdr;
 
-   for (vector<const char*>::iterator I = files.begin(); I != files.end(); I++)
+   for (auto I = files.begin(); I != files.end(); I++)
    {
       int upgrade = 0;
 
@@ -748,42 +754,56 @@ bool pkgRPMLibPM::AddToTransaction(Item::RPMOps op, vector<const char*> &files)
 	    upgrade = 1;
 	 case Item::RPMInstall:
 		  {
-	    fd = Fopen(*I, "r.ufdio");
+	    fd = Fopen(I->file.c_str(), "r.ufdio");
 	    if (fd == NULL)
 	    {
-	       _error->Error(_("Failed opening %s"), *I);
+	       _error->Error(_("Failed opening %s"), I->file.c_str());
 	       return false;
 	    }
 
 		scope_exit close_fd(std::bind(&Fclose, fd));
 
 #if RPM_VERSION >= 0x040100
-            rc = rpmReadPackageFile(TS, fd, *I, &hdr);
+            rc = rpmReadPackageFile(TS, fd, I->file.c_str(), &hdr);
 	    if (rc != RPMRC_OK && rc != RPMRC_NOTTRUSTED && rc != RPMRC_NOKEY)
 		{
-	       _error->Error(_("Failed reading file %s"), *I);
+	       _error->Error(_("Failed reading file %s"), I->file.c_str());
 		   return false;
 		}
 
 		scope_exit free_hd(std::bind(&headerFree, hdr));
 
-	    rc = rpmtsAddInstallElement(TS, hdr, *I, upgrade, 0);
+		rc = headerPutUint32(hdr, RPMTAG_AUTOINSTALLED, &(I->autoinstalled), 1);
+		if (rc != 1)
+		{
+			_error->Error(_("Failed to add package flags for file %s"), I->file.c_str());
+			return false;
+		}
+
+	    rc = rpmtsAddInstallElement(TS, hdr, I->file.c_str(), upgrade, 0);
 #else
 	    rc = rpmReadPackageHeader(fd, &hdr, 0, NULL, NULL);
 	    if (rc)
 		{
-	       _error->Error(_("Failed reading file %s"), *I);
-		   return false;
+	       _error->Error(_("Failed reading file %s"), I->file.c_str());
+	       return false;
 		}
 
 		scope_exit free_hd(std::bind(&headerFree, hdr));
 
-	    rc = rpmtransAddPackage(TS, hdr, NULL, *I, upgrade, 0);
+	    rc = headerPutUint32(hdr, RPMTAG_AUTOINSTALLED, &(I->autoinstalled), 1);
+	    if (rc != 1)
+		{
+	        _error->Error(_("Failed to add package flags for file %s"), I->file.c_str());
+	        return false;
+		}
+
+	    rc = rpmtransAddPackage(TS, hdr, NULL, I->file.c_str(), upgrade, 0);
 #endif
 	    if (rc)
 		{
 	       _error->Error(_("Failed adding %s to transaction %s"),
-			     *I, "(install)");
+			     I->file.c_str(), "(install)");
 	       return false;
 		}
 		  }
@@ -793,9 +813,9 @@ bool pkgRPMLibPM::AddToTransaction(Item::RPMOps op, vector<const char*> &files)
 #if RPM_VERSION >= 0x040000
             rpmdbMatchIterator MI;
 #if RPM_VERSION >= 0x040100
-	    MI = rpmtsInitIterator(TS, (rpmTag)RPMDBI_LABEL, *I, 0);
+	    MI = rpmtsInitIterator(TS, (rpmTag)RPMDBI_LABEL, I->file.c_str(), 0);
 #else
-	    MI = rpmdbInitIterator(DB, RPMDBI_LABEL, *I, 0);
+	    MI = rpmdbInitIterator(DB, RPMDBI_LABEL, I->file.c_str(), 0);
 #endif
 	    while ((hdr = rpmdbNextIterator(MI)) != NULL) 
 	    {
@@ -809,7 +829,7 @@ bool pkgRPMLibPM::AddToTransaction(Item::RPMOps op, vector<const char*> &files)
 		  if (rc)
 		  {
 		     _error->Error(_("Failed adding %s to transaction %s"),
-				   *I, "(erase)");
+				   I->file.c_str(), "(erase)");
 			 return false;
 		  }
 	       }
@@ -817,7 +837,7 @@ bool pkgRPMLibPM::AddToTransaction(Item::RPMOps op, vector<const char*> &files)
 	    MI = rpmdbFreeIterator(MI);
 #else // RPM 3.X
 	    dbiIndexSet matches;
-	    rc = rpmdbFindByLabel(DB, *I, &matches);
+	    rc = rpmdbFindByLabel(DB, I->file.c_str(), &matches);
 	    if (rc == 0) {
 	       for (int i = 0; i < dbiIndexSetCount(matches); i++) {
 		  unsigned int recOffset = dbiIndexRecordOffset(matches, i);
@@ -832,9 +852,9 @@ bool pkgRPMLibPM::AddToTransaction(Item::RPMOps op, vector<const char*> &files)
    return true;
 }
 
-bool pkgRPMLibPM::Process(vector<const char*> &install, 
-			  vector<const char*> &upgrade,
-			  vector<const char*> &uninstall)
+bool pkgRPMLibPM::Process(const std::vector<apt_item> &install,
+			  const std::vector<apt_item> &upgrade,
+			  const std::vector<apt_item> &uninstall)
 {
    int rc = 0;
    bool Success = false;
@@ -1110,6 +1130,123 @@ bool pkgRPMLibPM::ParseRpmOpts(const char *Cnf, int *tsFlags, int *probFilter)
    }
    return true;
 } 
+
+bool pkgRPMLibPM::UpdateMarks()
+{
+   std::vector<apt_item> changed_packages;
+   int rc;
+
+   uint32_t important_flags = pkgCache::Flag::Auto;
+
+   for (PkgIterator I = Cache.PkgBegin(); not I.end(); ++I)
+   {
+      // If package is installed and any important flag changed
+      if ((I->CurrentState == pkgCache::State::Installed)
+         && ((Cache[I].Flags & important_flags) != (I->Flags & important_flags)))
+      {
+         changed_packages.push_back(apt_item(I.Name(), collect_autoinstalled_flag(Cache, I)));
+      }
+   }
+
+   if (changed_packages.empty())
+   {
+      return true;
+   }
+
+   std::string Dir = _config->Find("RPM::RootDir");
+
+   if (rpmReadConfigFiles(NULL, NULL) != 0)
+   {
+      return false;
+   }
+
+#if RPM_VERSION >= 0x040100
+   TS = rpmtsCreate();
+
+   scope_exit free_ts(std::bind(&rpmtsFree, TS));
+
+   rpmtsSetVSFlags(TS, (rpmVSFlags_e)-1);
+   // 4.1 needs this always set even if NULL,
+   // otherwise all scriptlets fail
+   rpmtsSetRootDir(TS, Dir.c_str());
+   if (rpmtsOpenDB(TS, O_RDWR) != 0)
+   {
+      _error->Error(_("Could not open RPM database"));
+      return false;
+   }
+#else
+   const char *RootDir = NULL;
+   if (!Dir.empty())
+   {
+      RootDir = Dir.c_str();
+   }
+
+   if (rpmdbOpen(RootDir, &DB, O_RDWR|O_CREAT, 0644) != 0)
+   {
+      _error->Error(_("Could not open RPM database"));
+      return false;
+   }
+   
+   scope_exit free_db(std::bind(&rpmdbClose, DB));
+
+   TS = rpmtransCreateSet(DB, Dir.c_str());
+#endif
+
+   for (auto iter = changed_packages.begin(); iter != changed_packages.end(); ++iter)
+   {
+      rpmdbMatchIterator MI;
+      
+#if RPM_VERSION >= 0x040100
+      MI = rpmtsInitIterator(TS, (rpmTag)RPMDBI_LABEL, iter->file.c_str(), 0);
+#else
+      MI = rpmdbInitIterator(DB, RPMDBI_LABEL, iter->file.c_str(), 0);
+#endif
+
+      scope_exit free_mi(std::bind(&rpmdbFreeIterator, MI));
+
+      rpmdbSetIteratorRewrite(MI, 1);
+
+      rpmHeader hdr;
+
+      while ((hdr = rpmdbNextIterator(MI)) != NULL)
+      {
+         rpmtd td = rpmtdNew();
+
+         scope_exit free_td(std::bind(rpmtdFree, td));
+
+         rc = headerGet(hdr, RPMTAG_AUTOINSTALLED, td, HEADERGET_MINMEM);
+         if (rc == 1)
+         {
+            // An element found, modify it
+            scope_exit free_td_data(std::bind(rpmtdFreeData, td));
+
+            uint32_t *value = rpmtdGetUint32(td);
+            if (value == nullptr)
+            {
+               _error->Error(_("Failed to change package flags for file %s"), iter->file.c_str());
+               return false;
+            }
+
+            *value = iter->autoinstalled;
+         }
+         else
+         {
+            // No element found, add one
+            rc = headerPutUint32(hdr, RPMTAG_AUTOINSTALLED, &(iter->autoinstalled), 1);
+            if (rc != 1)
+            {
+               _error->Error(_("Failed to add package flags for file %s"), iter->file.c_str());
+               return false;
+            }
+         }
+      }
+
+      rpmdbSetIteratorModified(MI, 1);
+   }
+
+   return true;
+}
+
 #endif /* HAVE_RPM */
 
 // vim:sts=3:sw=3

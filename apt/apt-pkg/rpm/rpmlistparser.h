@@ -72,6 +72,7 @@ class rpmListParser : public pkgCacheGenerator::ListParser
    virtual unsigned long Offset()
 	{return Handler->Offset();};
    virtual unsigned long Size();
+   virtual unsigned long Flags();
 
    virtual bool OrderedOffset()
    	{return Handler->OrderedOffset();};

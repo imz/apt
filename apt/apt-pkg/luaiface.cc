@@ -386,6 +386,25 @@ void Lua::SetGlobal(const char *Name, vector<string> &Value,
    Globals.push_back(Name);
 }
 
+void Lua::SetGlobal(const char *Name, const std::vector<apt_item> &Value, int Total)
+{
+   lua_newtable(L);
+
+   if ((Total < 0) || (Total > Value.size()))
+   {
+      Total = Value.size();
+   }
+   
+   for (int i = 0; i != Total; ++i)
+   {
+      lua_pushstring(L, Value[i].file.c_str());
+      lua_rawseti(L, -2, i+1);
+   }
+   
+   lua_setglobal(L, Name);
+   Globals.push_back(Name);
+}
+
 void Lua::SetGlobal(const char *Name, vector<pkgCache::Package*> &Value,
 		    int Total)
 {

@@ -52,6 +52,7 @@ class debListParser : public pkgCacheGenerator::ListParser
 			   pkgCache::VerIterator Ver);
    virtual unsigned long Offset() {return iOffset;};
    virtual unsigned long Size() {return Section.size();};
+   virtual unsigned long Flags() { return 0; }
 
    virtual bool Step();
    

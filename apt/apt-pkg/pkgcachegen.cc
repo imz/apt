@@ -132,6 +132,8 @@ bool pkgCacheGenerator::MergeList(ListParser &List,
 	    Progress->Progress(Counter);
       }
 
+      Pkg->Flags = List.Flags();
+
       /* Get a pointer to the version structure. We know the list is sorted
          so we use that fact in the search. Insertion of new versions is
 	 done with correct sorting */

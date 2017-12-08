@@ -27,8 +27,21 @@
 #pragma interface "apt-pkg/packagemanager.h"
 #endif
 
+#include <stdint.h>
 #include <string>
 #include <apt-pkg/pkgcache.h>
+
+struct apt_item
+{
+   std::string file;
+   uint32_t autoinstalled;
+
+   apt_item(const std::string &l_file, uint32_t l_autoinstalled)
+      : file(l_file),
+      autoinstalled(l_autoinstalled)
+   {
+   }
+};
 
 using std::string;
 
@@ -79,6 +92,9 @@ class pkgPackageManager : protected pkgCache::Namespace
    OrderResult DoInstall();
    bool FixMissing();
    
+   // If marks updating not supported, skip this step
+   virtual bool UpdateMarks() { return true; }
+
    pkgPackageManager(pkgDepCache *Cache);
    virtual ~pkgPackageManager();
 };

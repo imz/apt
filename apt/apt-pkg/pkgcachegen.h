@@ -120,6 +120,7 @@ class pkgCacheGenerator::ListParser
 			   pkgCache::VerIterator Ver) = 0;
    virtual unsigned long Offset() = 0;
    virtual unsigned long Size() = 0;
+   virtual unsigned long Flags() = 0;
 
    // CNC:2003-02-16 - If this is false, the Size of the pkgIndexFile must
    // 		       provide the number of elements, since a sequential

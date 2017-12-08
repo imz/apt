@@ -190,12 +190,6 @@ bool rpmSystem::Initialize(Configuration &Cnf)
 	 Cnf.Set("RPM::Options::", "--nodeps");
    }
 
-   // Apt-get from Debian uses file for similar purpose with name stored in configuration setting 'Dir::State::extended_states',
-   // but that file has different format,
-   // it contains much more information which isn't needed for current case, like package description, etc,
-   // and due to that different name was chosen here.
-   Cnf.CndSet("Dir::State::apt_mark_storage", "apt_mark_storage");
-
 #if RPM_VERSION >= 0x040201
    const char *RPMOptions[] =
    {

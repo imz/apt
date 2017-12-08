@@ -799,6 +799,27 @@ unsigned long rpmListParser::Size()
    return (size[0]+512)/1024;
 }
 
+unsigned long rpmListParser::Flags()
+{
+   unsigned long returnflags = 0;
+   
+   uint32_t *autoinstalled;
+   rpm_tagtype_t type;
+   rpm_count_t count;
+
+   if ((headerGetEntry(header, RPMTAG_AUTOINSTALLED, &type, (void**)&autoinstalled, &count) == 1)
+      && (type == RPM_INT32_TYPE)
+      && (count == 1))
+   {
+      if (*autoinstalled)
+      {
+         returnflags |= pkgCache::Flag::Auto;
+      }
+   }
+
+   return returnflags;
+}
+
 // This is a slightly complex operation. It must take a package, and
 // move every version to new packages, named accordingly to
 // Allow-Duplicated rules.

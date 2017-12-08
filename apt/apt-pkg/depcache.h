@@ -220,10 +220,6 @@ class pkgDepCache : protected pkgCache::Namespace
    
    // This is for debuging
    void Update(OpProgress *Prog = 0);
-   
-   // read and write persistent states
-   bool readStateFile(OpProgress * const prog);
-   bool writeStateFile(OpProgress * const prog) const;
 
    // Size queries
    inline double UsrSize() {return iUsrSize;};

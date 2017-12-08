@@ -15,6 +15,7 @@
 #include <apt-pkg/configuration.h>
 #include <apt-pkg/depcache.h>
 #include <apt-pkg/pkgcache.h>
+#include <apt-pkg/packagemanager.h>
 
 #include <errno.h>
 #include <fcntl.h>
@@ -30,6 +31,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <memory>
 
 #include <apti18n.h>
 
@@ -64,7 +66,9 @@ static bool DoAuto(CommandLine &CmdL)
 
    if ((AutoMarkChanged > 0) && (!_config->FindB("APT::Mark::Simulate", false)))
    {
-      return DepCache->writeStateFile(NULL);
+      std::unique_ptr<pkgPackageManager> PM(_system->CreatePM(Cache));
+      _system->UnLock();
+      return PM->UpdateMarks();
    }
 
    return true;
