@@ -34,6 +34,7 @@
 #include <stdio.h>
 #include <iostream>
 #include <cstring>
+#include <functional>
 
 #if RPM_VERSION >= 0x040100
 #include <rpm/rpmdb.h>
@@ -48,6 +49,42 @@
 #include "rpmshowprogress.h"
 #endif
 #endif
+
+namespace {
+
+class scope_exit
+{
+public:
+   explicit scope_exit(const std::function<void()> &l_function)
+      : m_function(l_function)
+   {
+   }
+
+   explicit scope_exit(const std::function<void()> &&l_function)
+      : m_function(std::move(l_function))
+   {
+   }
+
+   ~scope_exit()
+   {
+      try
+      {
+         if (m_function)
+         {
+            m_function();
+         }
+      }
+      catch (...)
+      {
+         // ignore
+      }
+   }
+
+private:
+   std::function<void()> m_function;
+};
+
+} // unnamed namespace
 
 // RPMPM::pkgRPMPM - Constructor					/*{{{*/
 // ---------------------------------------------------------------------
@@ -710,25 +747,46 @@ bool pkgRPMLibPM::AddToTransaction(Item::RPMOps op, vector<const char*> &files)
 	 case Item::RPMUpgrade:
 	    upgrade = 1;
 	 case Item::RPMInstall:
+		  {
 	    fd = Fopen(*I, "r.ufdio");
 	    if (fd == NULL)
+	    {
 	       _error->Error(_("Failed opening %s"), *I);
+	       return false;
+	    }
+
+		scope_exit close_fd(std::bind(&Fclose, fd));
+
 #if RPM_VERSION >= 0x040100
             rc = rpmReadPackageFile(TS, fd, *I, &hdr);
 	    if (rc != RPMRC_OK && rc != RPMRC_NOTTRUSTED && rc != RPMRC_NOKEY)
+		{
 	       _error->Error(_("Failed reading file %s"), *I);
+		   return false;
+		}
+
+		scope_exit free_hd(std::bind(&headerFree, hdr));
+
 	    rc = rpmtsAddInstallElement(TS, hdr, *I, upgrade, 0);
 #else
 	    rc = rpmReadPackageHeader(fd, &hdr, 0, NULL, NULL);
 	    if (rc)
+		{
 	       _error->Error(_("Failed reading file %s"), *I);
+		   return false;
+		}
+
+		scope_exit free_hd(std::bind(&headerFree, hdr));
+
 	    rc = rpmtransAddPackage(TS, hdr, NULL, *I, upgrade, 0);
 #endif
 	    if (rc)
+		{
 	       _error->Error(_("Failed adding %s to transaction %s"),
 			     *I, "(install)");
-	    headerFree(hdr);
-	    Fclose(fd);
+	       return false;
+		}
+		  }
 	    break;
 
 	 case Item::RPMErase:
@@ -749,8 +807,11 @@ bool pkgRPMLibPM::AddToTransaction(Item::RPMOps op, vector<const char*> &files)
 		  rc = rpmtransRemovePackage(TS, recOffset);
 #endif
 		  if (rc)
+		  {
 		     _error->Error(_("Failed adding %s to transaction %s"),
 				   *I, "(erase)");
+			 return false;
+		  }
 	       }
 	    }
 	    MI = rpmdbFreeIterator(MI);
@@ -859,11 +920,26 @@ bool pkgRPMLibPM::Process(vector<const char*> &install,
     }
 
    if (uninstall.empty() == false)
-       AddToTransaction(Item::RPMErase, uninstall);
+   {
+       if (not AddToTransaction(Item::RPMErase, uninstall))
+       {
+          goto exit;
+       }
+   }
    if (install.empty() == false)
-       AddToTransaction(Item::RPMInstall, install);
+   {
+       if (not AddToTransaction(Item::RPMInstall, install))
+       {
+          goto exit;
+       }
+   }
    if (upgrade.empty() == false)
-       AddToTransaction(Item::RPMUpgrade, upgrade);
+   {
+       if (not AddToTransaction(Item::RPMUpgrade, upgrade))
+       {
+          goto exit;
+       }
+   }
 
    // Setup the gauge used by rpmShowProgress.
    //packagesTotal = install.size()+upgrade.size();
