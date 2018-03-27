@@ -1,0 +1,2865 @@
+# Belarusian translation for APT.
+# Copyright (C) 2001-2003, 2004 Free Software Foundation, Inc.
+# 
+# 
+msgid ""
+msgstr ""
+"Project-Id-Version: apt-0.5.15cnc5-alt0.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2004-01-05 18:25+1200\n"
+"PO-Revision-Date: 2004-10-04 00:05+0300\n"
+"Last-Translator: Vital Khilko <vk@altlinux.ru>\n"
+"Language-Team: Belarusian <i18n@mova.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit"
+
+#: cmdline/acqprogress.cc:55
+msgid "Hit "
+msgstr "Адшукана "
+
+#: cmdline/acqprogress.cc:79
+msgid "Get:"
+msgstr "Атрымана: "
+
+#: cmdline/acqprogress.cc:110
+msgid "Ign "
+msgstr "Ігнараванае "
+
+#: cmdline/acqprogress.cc:114
+msgid "Err "
+msgstr "Памылка "
+
+#: cmdline/acqprogress.cc:135
+#, c-format
+msgid "Fetched %sB in %s (%sB/s)\n"
+msgstr "Атрымана %sB за %s (%sB/s).\n"
+
+#: cmdline/acqprogress.cc:225
+msgid " [Working]"
+msgstr " [Апрацоўка]"
+
+#: cmdline/acqprogress.cc:271
+#, c-format
+msgid ""
+"Media Change: Please insert the disc labeled\n"
+" '%s'\n"
+"in the drive '%s' and press enter\n"
+msgstr ""
+"Зьмена дыску: Устаўце, калі ласка, дыск з адзнакай '%s'\n"
+"у прыладу '%s' і націсьніце <Enter>.\n"
+
+#: cmdline/apt-cache.cc:157 cmdline/apt-shell.cc:3116
+#, c-format
+msgid "Package %s version %s has an unmet dep:\n"
+msgstr "Пакет %s вэрсіі %s мае незадаволеныя залежнасьці:\n"
+
+#: cmdline/apt-cache.cc:197 cmdline/apt-cache.cc:565 cmdline/apt-cache.cc:660
+#: cmdline/apt-cache.cc:750 cmdline/apt-cache.cc:1024
+#: cmdline/apt-cache.cc:1242 cmdline/apt-cache.cc:1621
+#: cmdline/apt-cache.cc:1772 cmdline/apt-shell.cc:2668
+#: cmdline/apt-shell.cc:2766 cmdline/apt-shell.cc:2859
+#: cmdline/apt-shell.cc:3159 cmdline/apt-shell.cc:3575
+#, c-format
+msgid "Unable to locate package %s"
+msgstr "Немагчыма адшукаць пакет %s"
+
+#: cmdline/apt-cache.cc:254
+msgid "Total Package Names : "
+msgstr "Агулам назваў пакетаў: "
+
+#: cmdline/apt-cache.cc:294
+msgid "  Normal Packages: "
+msgstr "  Нармальныя пакеты: "
+
+#: cmdline/apt-cache.cc:295
+msgid "  Pure Virtual Packages: "
+msgstr "  Цалкам віртуальныя пакеты: "
+
+#: cmdline/apt-cache.cc:296
+msgid "  Single Virtual Packages: "
+msgstr "  Асобныя віртуальныя пакеты: "
+
+#: cmdline/apt-cache.cc:297
+msgid "  Mixed Virtual Packages: "
+msgstr "  Зьмяшаныя віртуальныя пакеты: "
+
+#: cmdline/apt-cache.cc:298
+msgid "  Missing: "
+msgstr "  Адсутнічаюць: "
+
+#: cmdline/apt-cache.cc:300
+msgid "Total Distinct Versions: "
+msgstr "Агулам розных вэрсіяў: "
+
+#: cmdline/apt-cache.cc:302
+msgid "Total Dependencies: "
+msgstr "Агулам залежнасьцяў: "
+
+#: cmdline/apt-cache.cc:305
+msgid "Total Ver/File relations: "
+msgstr "Агулам стасункаў Вэрсія/Файл: "
+
+#: cmdline/apt-cache.cc:307
+msgid "Total Provides Mappings: "
+msgstr "Агулам адпаведнасьцяў сэрвісаў: "
+
+#: cmdline/apt-cache.cc:319
+msgid "Total Globbed Strings: "
+msgstr "Агулам супаўшых радкоў: "
+
+#: cmdline/apt-cache.cc:333
+msgid "Total Dependency Version space: "
+msgstr "Агулам залежнасьцяў: "
+
+#: cmdline/apt-cache.cc:338
+msgid "Total Slack space: "
+msgstr "Агулам занятае прасторы: "
+
+#: cmdline/apt-cache.cc:346
+msgid "Total Space Accounted for: "
+msgstr "Агулам будзе занятае места: "
+
+#: cmdline/apt-cache.cc:484 cmdline/apt-cache.cc:1452
+#: cmdline/apt-shell.cc:3237
+#, c-format
+msgid "Package file %s is out of sync."
+msgstr "Файл пакету %s выйшаў з-пад кантролю."
+
+#: cmdline/apt-cache.cc:1495 cmdline/apt-shell.cc:3283
+msgid "You must give exactly one pattern"
+msgstr "Неабходна пазначыць толькі адзін узор"
+
+#: cmdline/apt-cache.cc:1649 cmdline/apt-shell.cc:3603
+msgid "No packages found"
+msgstr "Не адшукана аніводнага пакету"
+
+#: cmdline/apt-cache.cc:1726
+msgid "Package Files:"
+msgstr "Файлы пакетаў:"
+
+#: cmdline/apt-cache.cc:1733 cmdline/apt-cache.cc:1819
+msgid "Cache is out of sync, can't x-ref a package file"
+msgstr "Зьмест кэшу састарэў, немагчыма атрымаць даньні аб пакеце."
+
+#: cmdline/apt-cache.cc:1734
+#, c-format
+msgid "%4i %s\n"
+msgstr "%4i %s\n"
+
+#: cmdline/apt-cache.cc:1746
+msgid "Pinned Packages:"
+msgstr "Пераважныя пакеты:"
+
+#: cmdline/apt-cache.cc:1758 cmdline/apt-cache.cc:1799
+msgid "(not found)"
+msgstr "(не адшукана)"
+
+#: cmdline/apt-cache.cc:1779
+msgid "  Installed: "
+msgstr "  Усталяваны: "
+
+#: cmdline/apt-cache.cc:1781 cmdline/apt-cache.cc:1789
+msgid "(none)"
+msgstr "(няма)"
+
+#: cmdline/apt-cache.cc:1786
+msgid "  Candidate: "
+msgstr "  Кандыдат: "
+
+#: cmdline/apt-cache.cc:1796
+msgid "  Package Pin: "
+msgstr "  Перавага: "
+
+#: cmdline/apt-cache.cc:1805
+msgid "  Version Table:"
+msgstr "  Табліца вэрсіяў:"
+
+#: cmdline/apt-cache.cc:1820
+#, c-format
+msgid "       %4i %s\n"
+msgstr "       %4i %s\n"
+
+#: cmdline/apt-cache.cc:1847 cmdline/apt-cdrom.cc:847 cmdline/apt-config.cc:72
+#: cmdline/apt-get.cc:2884 cmdline/apt-shell.cc:3622
+#, c-format
+msgid "%s %s for %s %s compiled on %s %s\n"
+msgstr "%s %s для %s %s сабраны %s %s\n"
+
+#: cmdline/apt-cache.cc:1854
+msgid ""
+"Usage: apt-cache [options] command\n"
+"       apt-cache [options] add file1 [file2 ...]\n"
+"       apt-cache [options] showpkg pkg1 [pkg2 ...]\n"
+"       apt-cache [options] showsrc pkg1 [pkg2 ...]\n"
+"\n"
+"apt-cache is a low-level tool used to manipulate APT's binary\n"
+"cache files, and query information from them\n"
+"\n"
+"Commands:\n"
+"   add - Add a package file to the source cache\n"
+"   gencaches - Build both the package and source cache\n"
+"   showpkg - Show some general information for a single package\n"
+"   showsrc - Show source records\n"
+"   stats - Show some basic statistics\n"
+"   dump - Show the entire file in a terse form\n"
+"   dumpavail - Print an available file to stdout\n"
+"   unmet - Show unmet dependencies\n"
+"   search - Search the package list for a regex pattern\n"
+"   show - Show a readable record for the package\n"
+"   depends - Show raw dependency information for a package\n"
+"   whatdepends - Show raw dependency information on a package\n"
+"   pkgnames - List the names of all packages\n"
+"   dotty - Generate package graphs for GraphVis\n"
+"   xvcg - Generate package graphs for xvcg\n"
+"   policy - Show policy settings\n"
+"\n"
+"Options:\n"
+"  -h   This help text.\n"
+"  -p=? The package cache.\n"
+"  -s=? The source cache.\n"
+"  -q   Disable progress indicator.\n"
+"  -i   Show only important deps for the unmet command.\n"
+"  -c=? Read this configuration file\n"
+"  -o=? Set an arbitary configuration option, eg -o dir::cache=/tmp\n"
+"See the apt-cache(8) and apt.conf(5) manual pages for more information.\n"
+msgstr ""
+"Выкарыстаньне: apt-cache [парамэтры] каманда\n"
+"               apt-cache [парамэтры] add файл1 [файл2 ...]\n"
+"               apt-cache [парамэтры] showpkg пакет1 [пакет2 ...]\n"
+"               apt-cache [парамэтры] showsrc пакет1 [пакет2 ...]\n"
+"\n"
+"apt-cache - нізкаўзроўневы сродак для працы з двайковымі файламі кэшу APT\n"
+"і атрыманьня з іх інфармацыі.\n"
+"\n"
+"Каманды:\n"
+"   add - Дадаць пакет у кэш крыніцы\n"
+"   gencaches - Стварыць файлы кэшаў пакетаў і крыніцаў\n"
+"   showpkg - Паказаць агульныя зьвесткі аб пакеце\n"
+"   showsrc - Паказаць агульныя зьвесткі аб крынічным пакеце\n"
+"   stats - Паказаць агульную статыстыку\n"
+"   dump - Выдаць увесь зьмест кэшу ў сьціснутай форме\n"
+"   dumpavail - Вывесьці сьпіс даступных пакетаў на стандартны вывад\n"
+"   unmet - Атрымаць сьпіс незадаволеных залежнасьцяў\n"
+"   search - Шукаць у сьпісе пакетаў з выкарыстаньнем рэгулярных выразаў\n"
+"   show - Паказаць зьвесткі аб пакеце ў зручнай для чытаньня форме\n"
+"   depends - Паказаць зьвесткі аб залежнасьцях пазначанага пакету\n"
+"   whatdepends - Паказаць зьвесткі аб пакетах, якія залежаць ад пазначанага "
+"пакету\n"
+"   pkgnames - Атрымаць поўны сьпіс назваў пакетаў з магчымасьцю заданьня "
+"цэдаляў\n"
+"   dotty - Пабудаваць граф Залежнасьцяў у фармаце GraphVis\n"
+"   xvcg - Пабудаваць граф Залежнасьцяў у фармаце xvcg\n"
+"   policy - Паведаміць зьвесткі аб прыярытэтах крыніцаў пакетаў\n"
+"\n"
+"Парамэтры:\n"
+"  -h   Скарочаная даведка\n"
+"  -p=? Назва файла для захаваньня кэшу пакетаў\n"
+"  -s=? Назва файла для захаваньня кэшу крыніцаў\n"
+"  -q   Адключыць індыкатар працэсу\n"
+"  -i   Паказваць толькі самыя важныя залежнасьці для каманды unmet\n"
+"  -c=? Выкарыстоўваць пазначаны файл канфігурацыі\n"
+"  -o=? Зьмяніць любы з парамэтраў наладкі (напрыклад: -o dir::cache=/"
+"tmp)\n"
+"Для больш падрабязнага апісаньня гл. старонкі кіраўніцтва: apt-cache(8) і apt.conf"
+"(5).\n"
+
+#: cmdline/apt-cdrom.cc:402 cmdline/apt-cdrom.cc:526
+#, c-format
+msgid "Failed to rename %s.new to %s"
+msgstr "Не атрымалася зьмяніць назву %s.new на %s"
+
+#: cmdline/apt-cdrom.cc:425 apt-pkg/sourcelist.cc:297
+#, c-format
+msgid "Opening %s"
+msgstr "Адкрыцьцё %s"
+
+#: cmdline/apt-cdrom.cc:432
+#, c-format
+msgid "Failed to open %s.new"
+msgstr "Не атрымалася адкрыць %s.new"
+
+#: cmdline/apt-cdrom.cc:571 cmdline/apt-cdrom.cc:812
+msgid "Using CD-ROM mount point "
+msgstr "Выкарыстоўваецца пункт мацаваньня CD-ROM "
+
+#: cmdline/apt-cdrom.cc:579 cmdline/apt-cdrom.cc:834 methods/cdrom.cc:160
+#, c-format
+msgid "Unable to read the cdrom database %s"
+msgstr "Немагчыма прачытаць базу даньняў кампакт-дыскаў у %s."
+
+#: cmdline/apt-cdrom.cc:596
+msgid "Unmounting CD-ROM"
+msgstr "Адмацаваньне аптычнага дыску"
+
+#: cmdline/apt-cdrom.cc:600
+msgid "Please insert a Disc in the drive and press enter"
+msgstr "Устаўце, калі ласка, дыск у прыладу й націсьніце <Enter>"
+
+#: cmdline/apt-cdrom.cc:601 cmdline/apt-cdrom.cc:813
+msgid "Mounting CD-ROM"
+msgstr "Замацоўваецца аптычны дыск"
+
+#: cmdline/apt-cdrom.cc:603 cmdline/apt-cdrom.cc:815
+msgid "Failed to mount the cdrom."
+msgstr "Не атрымалася замацаваць CD-ROM."
+
+#: cmdline/apt-cdrom.cc:607 cmdline/apt-cdrom.cc:818
+msgid "Identifying.. "
+msgstr "Вызначэньне.. "
+
+#: cmdline/apt-cdrom.cc:627
+msgid "Scanning Disc for index files..  "
+msgstr "Дыск скануецца ў пошуках індэксных файлаў..  "
+
+#: cmdline/apt-cdrom.cc:644
+msgid "I found (binary):"
+msgstr "Адшукана (бінарных):"
+
+#: cmdline/apt-cdrom.cc:647
+msgid "I found (source):"
+msgstr "Адшукана (крынічных):"
+
+#: cmdline/apt-cdrom.cc:662
+msgid "Found "
+msgstr "Адшукана "
+
+#: cmdline/apt-cdrom.cc:662
+msgid " package indexes and "
+msgstr " індэксаў пакетаў і "
+
+#: cmdline/apt-cdrom.cc:663
+msgid " source indexes."
+msgstr " індэксаў крынічных пакетаў."
+
+#: cmdline/apt-cdrom.cc:670
+msgid ""
+"Unable to locate any package files, perhaps this is not an APT enabled disc"
+msgstr ""
+"Немагчыма адшукаць аніводнага файлу пакетаў, магчыма гэты дыск не прызначаны "
+"для APT"
+
+#: cmdline/apt-cdrom.cc:694
+msgid "Found label '"
+msgstr "Адшукана адзнака '"
+
+#: cmdline/apt-cdrom.cc:703
+msgid "Please provide a name for this Disc, such as 'ALT Linux Disk 1'"
+msgstr ""
+"Калі ласка, задайце назву для гэтага дыску, напрыклад, 'Linux Disk 1'"
+
+#: cmdline/apt-cdrom.cc:712
+msgid "That is not a valid name, try again "
+msgstr "Гэтая назва памылковая, паспрабуйце зноў "
+
+#: cmdline/apt-cdrom.cc:726
+msgid "This Disc is called:"
+msgstr "Гэты дыск завецца:"
+
+#: cmdline/apt-cdrom.cc:759
+msgid "Source List entries for this Disc are:"
+msgstr "Сьпіс крынічных пакетаў для гэтага дыску:"
+
+#: cmdline/apt-cdrom.cc:792
+msgid "Repeat this process for the rest of the CDs in your set."
+msgstr "Паўтарыце гэтую працэдуру для астатніх дыскаў з вашага набору."
+
+#: cmdline/apt-cdrom.cc:837
+msgid "Stored Label: '"
+msgstr "Захаваная адзнака: '"
+
+#: cmdline/apt-cdrom.cc:853
+msgid ""
+"Usage: apt-cdrom [options] command\n"
+"\n"
+"apt-cdrom is a tool to add CDROM's to APT's source list. The\n"
+"CDROM mount point and device information is taken from apt.conf\n"
+"and /etc/fstab.\n"
+"\n"
+"Commands:\n"
+"   add - Add a CDROM\n"
+"   ident - Report the identity of a CDROM\n"
+"\n"
+"Options:\n"
+"  -h   This help text\n"
+"  -d   CD-ROM mount point\n"
+"  -r   Rename a recognized CD-ROM\n"
+"  -m   No mounting\n"
+"  -f   Fast mode, don't check package files\n"
+"  -a   Thorough scan mode\n"
+"  -c=? Read this configuration file\n"
+"  -o=? Set an arbitary configuration option, eg -o dir::cache=/tmp\n"
+"See fstab(5)\n"
+msgstr ""
+"Выкарыстаньне: apt-cdrom [парамэтры] каманда\n"
+"\n"
+"apt-cdrom гэта інструмэнт для даданьня CDROM дыскаў у сьпіс крыніцаў APT. "
+"Пункт\n"
+"мацаваньня аптычнага дыску й інфармацыя аб прыладзе атрымліваюцца з apt.conf\n"
+"і /etc/fstab.\n"
+"\n"
+"Каманды:\n"
+"   add - Дадаць CDROM\n"
+"   ident - Вывесьці ідэнтыфікацыйны запіс аптычнага дыску\n"
+"\n"
+"Парамэтры:\n"
+"  -h   Скарочаная даведка \n"
+"  -d   Пункт мацаваньня CD-ROM\n"
+"  -r   Зьмяніць назву ўжо распазнанага дыску\n"
+"  -m   Не замацоўваць дыск\n"
+"  -f   `Хуткі рэжым', не правяраць файлы пакетаў\n"
+"  -a   Стараны рэжым сканаваньня\n"
+"  -c=? Выкарыстоўваць пазначаны файл канфігурацыі\n"
+"  -o=? Зьмяніць любы з парамэтраў наладкі (напрыклад: -o dir::cache=/"
+"tmp)\n"
+"Гл. таксама fstab(5)\n"
+
+#: cmdline/apt-config.cc:43
+msgid "Arguments not in pairs"
+msgstr "Аргумэнты мусяць быць парнымі"
+
+#: cmdline/apt-config.cc:78
+msgid ""
+"Usage: apt-config [options] command\n"
+"\n"
+"apt-config is a simple tool to read the APT config file\n"
+"\n"
+"Commands:\n"
+"   shell - Shell mode\n"
+"   dump - Show the configuration\n"
+"\n"
+"Options:\n"
+"  -h   This help text.\n"
+"  -c=? Read this configuration file\n"
+"  -o=? Set an arbitary configuration option, eg -o dir::cache=/tmp\n"
+msgstr ""
+"Выкарыстаньне: apt-config [парамэтры] каманда\n"
+"\n"
+"apt-config - інструмэнт для чытаньня канфігурацыйнага файлу APT.\n"
+"\n"
+"Каманды:\n"
+"   shell - Рэжым абалонкі\n"
+"   dump - Паказаць наладкі\n"
+"\n"
+"Парамэтры:\n"
+"  -h   Скарочаная даведка\n"
+"  -c=? Выкарыстоўваць пазначаны файл канфігурацыі\n"
+"  -o=? Зьмяніць любы з парамэтраў наладкі (напрыклад: -o dir::cache=/"
+"tmp)\n"
+
+#: cmdline/apt-get.cc:156 cmdline/apt-shell.cc:180
+msgid "Y"
+msgstr "Y"
+
+#: cmdline/apt-get.cc:178 cmdline/apt-get.cc:1905 cmdline/apt-shell.cc:202
+#: cmdline/apt-shell.cc:1985
+#, c-format
+msgid "Regex compilation error - %s"
+msgstr "Памылка кампіляцыі рэгулярнага выразу - %s"
+
+#: cmdline/apt-get.cc:273 cmdline/apt-shell.cc:297
+msgid "The following packages have unmet dependencies:"
+msgstr "Наступныя пакеты маюць незадаволеныя залежнасьці:"
+
+#: cmdline/apt-get.cc:371 cmdline/apt-shell.cc:395
+#, c-format
+msgid "but %s is installed"
+msgstr "але %s ужо усталяваны"
+
+#: cmdline/apt-get.cc:373 cmdline/apt-shell.cc:397
+#, c-format
+msgid "but %s is to be installed"
+msgstr "але %s будзе ўсталяваны"
+
+#: cmdline/apt-get.cc:380 cmdline/apt-shell.cc:404
+msgid "but it is not installable"
+msgstr "але пакет не можа быць усталяваны"
+
+#: cmdline/apt-get.cc:382 cmdline/apt-shell.cc:406
+msgid "but it is a virtual package"
+msgstr "але пакет зьяўляецца віртуальным пакетам"
+
+#: cmdline/apt-get.cc:385 cmdline/apt-shell.cc:409
+msgid "but it is not installed"
+msgstr "але пакет не ўсталяваны"
+
+#: cmdline/apt-get.cc:385 cmdline/apt-shell.cc:409
+msgid "but it is not going to be installed"
+msgstr "але пакет не будзе ўсталяваны"
+
+#: cmdline/apt-get.cc:390 cmdline/apt-shell.cc:414
+msgid " or"
+msgstr " альбо"
+
+#: cmdline/apt-get.cc:419 cmdline/apt-shell.cc:444
+msgid "The following NEW packages will be installed:"
+msgstr "Наступныя НОВЫЯ пакеты будуць усталяваны:"
+
+#: cmdline/apt-get.cc:470 cmdline/apt-shell.cc:496
+msgid "The following packages will be REPLACED:"
+msgstr "Наступныя пакеты будуць ЗАМЕНЕНЫЯ:"
+
+#: cmdline/apt-get.cc:471 cmdline/apt-shell.cc:497
+msgid "The following packages will be REMOVED:"
+msgstr "Наступныя пакеты будуць ВЫТАКЛЕНЫЯ:"
+
+#: cmdline/apt-get.cc:493 cmdline/apt-shell.cc:526
+msgid "The following packages have been kept back"
+msgstr "Наступныя пакеты будуць ЗАХАВАНЫЯ:"
+
+#: cmdline/apt-get.cc:514 cmdline/apt-shell.cc:554
+msgid "The following packages will be upgraded"
+msgstr "Наступныя пакеты будуць АБНОЎЛЕНЫЯ:"
+
+#: cmdline/apt-get.cc:535 cmdline/apt-shell.cc:582
+msgid "The following packages will be DOWNGRADED"
+msgstr "Наступныя пакеты будуць ЗАМЕНЕНЫЯ БОЛЬШ СТАРЫМІ ВЭРСІЯМІ:"
+
+#: cmdline/apt-get.cc:555 cmdline/apt-shell.cc:604
+msgid "The following held packages will be changed:"
+msgstr "Наступныя утрыманыя пакеты будуць зьмененыя:"
+
+#: cmdline/apt-get.cc:644 cmdline/apt-shell.cc:695
+#, c-format
+msgid "%s (due to %s) "
+msgstr "%s (з-за %s)"
+
+#: cmdline/apt-get.cc:652 cmdline/apt-shell.cc:703
+msgid ""
+"WARNING: The following essential packages will be removed\n"
+"This should NOT be done unless you know exactly what you are doing!"
+msgstr ""
+"УВАГА: Будуць выдаленыя важныя для працы сыстэмы пакеты\n"
+"Звычайна гэта рабіць не варта. Вы мусіце дакладна разумець магчымыя "
+"наступствы!"
+
+#: cmdline/apt-get.cc:706 cmdline/apt-shell.cc:769
+#, c-format
+msgid "%lu upgraded, %lu newly installed, "
+msgstr "%lu будзе абноўлена, %lu новых усталявана, "
+
+#: cmdline/apt-get.cc:710 cmdline/apt-shell.cc:773
+#, c-format
+msgid "%lu reinstalled, "
+msgstr "%lu пакетаў будзе пераўсталявана, "
+
+#: cmdline/apt-get.cc:712 cmdline/apt-shell.cc:775
+#, c-format
+msgid "%lu downgraded, "
+msgstr "%lu пакетаў будзе заменена на старыя вэрсіі, "
+
+#: cmdline/apt-get.cc:715 cmdline/apt-shell.cc:778
+#, c-format
+msgid "%lu replaced, "
+msgstr "%lu пакетаў будзе заменена, "
+
+#: cmdline/apt-get.cc:718 cmdline/apt-shell.cc:782
+#, c-format
+msgid "%lu removed and %lu not upgraded.\n"
+msgstr "%lu пакетаў будзе выдалена й %lu не будзе абноўлена.\n"
+
+#: cmdline/apt-get.cc:722 cmdline/apt-shell.cc:789
+#, c-format
+msgid "%lu not fully installed or removed.\n"
+msgstr "%lu не ўсталявана ці не выдалена цалкам.\n"
+
+#: cmdline/apt-get.cc:744
+msgid "There are changes to be made"
+msgstr "Ёсьць зьмены, якія будуць зроблены"
+
+#: cmdline/apt-get.cc:810 cmdline/apt-shell.cc:917
+msgid "Correcting dependencies..."
+msgstr "Выпраўленьне залежнасьцяў..."
+
+#: cmdline/apt-get.cc:813 cmdline/apt-shell.cc:920
+msgid " failed."
+msgstr " немагчыма."
+
+#: cmdline/apt-get.cc:816 cmdline/apt-shell.cc:923
+msgid "Unable to correct dependencies"
+msgstr "Немагчыма выправіць залежнасьці"
+
+#: cmdline/apt-get.cc:819 cmdline/apt-shell.cc:926
+msgid "Unable to minimize the upgrade set"
+msgstr "Немагчыма паменшыць якасьць абнаўленьняў"
+
+#: cmdline/apt-get.cc:821 cmdline/apt-shell.cc:928
+msgid " Done"
+msgstr " Завершана"
+
+#: cmdline/apt-get.cc:825
+msgid "You might want to run `apt-get -f install' to correct these."
+msgstr ""
+"Магчыма, Вам спатрэбіцца запусьціць `apt-get -f install' для выпраўленьня."
+
+#: cmdline/apt-get.cc:828 cmdline/apt-shell.cc:935
+msgid "Unmet dependencies. Try using -f."
+msgstr "Незадаволеныя залежнасьці. Паспрабуйце дадаць парамэтар -f."
+
+#: cmdline/apt-get.cc:886 cmdline/apt-shell.cc:993
+msgid "Packages need to be removed but Remove is disabled."
+msgstr ""
+"Неабходна выдаліць некаторыя пакеты, але гэта было забаронена парамэтрам No "
+"Remove (не выдаляць)."
+
+#: cmdline/apt-get.cc:912 cmdline/apt-get.cc:2252 cmdline/apt-get.cc:2285
+#: cmdline/apt-shell.cc:1019 cmdline/apt-shell.cc:2247
+#: cmdline/apt-shell.cc:2283
+msgid "Unable to lock the download directory"
+msgstr "Немагчыма разблякаваць часовы каталёг для выгружаных файлаў"
+
+#: cmdline/apt-get.cc:922 cmdline/apt-get.cc:2333 cmdline/apt-get.cc:2577
+#: cmdline/apt-shell.cc:1029 cmdline/apt-shell.cc:2342 apt-pkg/cachefile.cc:71
+msgid "The list of sources could not be read."
+msgstr "Немагчыма прачытаць сьпіс крынічных пакетаў."
+
+#: cmdline/apt-get.cc:942 cmdline/apt-shell.cc:1049
+#, c-format
+msgid "Need to get %sB/%sB of archives.\n"
+msgstr "Неабходна атрымліваць %sB/%sB архіваў.\n"
+
+#: cmdline/apt-get.cc:945 cmdline/apt-shell.cc:1052
+#, c-format
+msgid "Need to get %sB of archives.\n"
+msgstr "Неабходна атрымаць %sB архіваў.\n"
+
+#: cmdline/apt-get.cc:950 cmdline/apt-shell.cc:836 cmdline/apt-shell.cc:1057
+#, c-format
+msgid "After unpacking %sB of additional disk space will be used.\n"
+msgstr ""
+"Пасьля распакоўкі спатрэбіцца дадаткова %sB дыскавае прасторы.\n"
+
+#: cmdline/apt-get.cc:953 cmdline/apt-shell.cc:839 cmdline/apt-shell.cc:1060
+#, c-format
+msgid "After unpacking %sB disk space will be freed.\n"
+msgstr "Пасьля распакоўкі будзе вызвалена %sB дыскавае прасторы.\n"
+
+#: cmdline/apt-get.cc:971 cmdline/apt-shell.cc:1078
+#, c-format
+msgid "You don't have enough free space in %s."
+msgstr "Недастаткова вольнае прасторы у %s"
+
+#: cmdline/apt-get.cc:980 cmdline/apt-shell.cc:1087
+msgid "There are problems and -y was used without --force-yes"
+msgstr "Праблемы, парамэтар -y быў скарыстаны без --force-yes"
+
+#: cmdline/apt-get.cc:986 cmdline/apt-get.cc:1006 cmdline/apt-shell.cc:1093
+#: cmdline/apt-shell.cc:1113
+msgid "Trivial Only specified but this is not a trivial operation."
+msgstr ""
+"Быў пазначаны парамэтар Trivial Only, але дзеяньне не датычацца да "
+"шэрагу трывіяльных."
+
+#: cmdline/apt-get.cc:988 cmdline/apt-shell.cc:1095
+msgid "Yes, do as I say!"
+msgstr "Yes, do as I say!"
+
+#: cmdline/apt-get.cc:990 cmdline/apt-shell.cc:1097
+#, c-format
+msgid ""
+"You are about to do something potentially harmful\n"
+"To continue type in the phrase '%s'\n"
+" ?] "
+msgstr ""
+"Вы робіце нешта патэнцыйнае небясьпечнае!\n"
+"Увядзіце фразу '%s' каб працягнуць.\n"
+" "
+
+#: cmdline/apt-get.cc:996 cmdline/apt-get.cc:1015 cmdline/apt-shell.cc:854
+#: cmdline/apt-shell.cc:1103 cmdline/apt-shell.cc:1122
+msgid "Abort."
+msgstr "Перарвана."
+
+#: cmdline/apt-get.cc:1011 cmdline/apt-shell.cc:852 cmdline/apt-shell.cc:1118
+msgid "Do you want to continue? [Y/n] "
+msgstr "Працягнуць? [Y/n] "
+
+#: cmdline/apt-get.cc:1086 cmdline/apt-get.cc:1191 cmdline/apt-get.cc:1635
+#: cmdline/apt-get.cc:2447 cmdline/apt-shell.cc:1195 cmdline/apt-shell.cc:1705
+#, c-format
+msgid "Failed to fetch %s  %s\n"
+msgstr "Немагчыма атрымаць %s  %s\n"
+
+#: cmdline/apt-get.cc:1104 cmdline/apt-shell.cc:1213
+msgid "Some files failed to download"
+msgstr "Некаторыя файлы не атрымалася выгрузіць"
+
+#: cmdline/apt-get.cc:1105 cmdline/apt-get.cc:2456 cmdline/apt-shell.cc:1214
+msgid "Download complete and in download only mode"
+msgstr "Выгрузка пакетаў завершана ў рэжыме 'толькі выгрузіць'."
+
+#: cmdline/apt-get.cc:1111 cmdline/apt-shell.cc:1220
+msgid ""
+"Unable to fetch some archives, maybe run apt-get update or try with --fix-"
+"missing?"
+msgstr ""
+"Атрымаць некаторыя архівы немагчыма. Поспрабуйце ўвесьці каманду apt-get "
+"update ці дадаць парамэтар --fix-missing."
+
+#: cmdline/apt-get.cc:1115 cmdline/apt-shell.cc:1224
+msgid "--fix-missing and media swapping is not currently supported"
+msgstr ""
+"Парамэтар --fix-missing і зьмена носьбітаў з архівамі зараз не падтрымліваюцца."
+
+#: cmdline/apt-get.cc:1120 cmdline/apt-shell.cc:1229
+msgid "Unable to correct missing packages."
+msgstr "Немагчыма выправіць адсутныя пакеты."
+
+#: cmdline/apt-get.cc:1121 cmdline/apt-shell.cc:1230
+msgid "Aborting Install."
+msgstr "Перарываньне усталёўкі."
+
+#: cmdline/apt-get.cc:1196 cmdline/apt-get.cc:2452
+msgid "Failed to fetch some archives."
+msgstr "Немагчыма выгрузіць некаторыя архівы."
+
+#: cmdline/apt-get.cc:1217 cmdline/apt-get.cc:1818 cmdline/apt-get.cc:1881
+#: cmdline/apt-get.cc:1916 cmdline/apt-shell.cc:1291 cmdline/apt-shell.cc:1961
+#: cmdline/apt-shell.cc:1996
+#, c-format
+msgid "Selecting %s for '%s'\n"
+msgstr "Выбрана %s для '%s'\n"
+
+#: cmdline/apt-get.cc:1247 cmdline/apt-shell.cc:1321
+#, c-format
+msgid "Internal error. Package %s doesn't provide %s\n"
+msgstr "Нутраная памылка. Пакет %s не прадстаўляе %s\n"
+
+#: cmdline/apt-get.cc:1259 cmdline/apt-shell.cc:1333
+#, c-format
+msgid "Skipping %s, it is already installed and upgrade is not set.\n"
+msgstr ""
+"Пакет %s прапушчаны, таму як ён ужо ўсталяваны, а каманды абнаўленьня не было.\n"
+
+#: cmdline/apt-get.cc:1277 cmdline/apt-shell.cc:1351
+#, c-format
+msgid "Package %s is not installed, so not removed\n"
+msgstr "Пакет %s не ўсталяваны, і не можа быць выдалены.\n"
+
+#: cmdline/apt-get.cc:1288 cmdline/apt-shell.cc:1362
+#, c-format
+msgid "Package %s is a virtual package provided by:\n"
+msgstr "Віртуальны пакет %s прадстаўляецца наступнымі пакетамі:\n"
+
+#: cmdline/apt-get.cc:1300 cmdline/apt-shell.cc:1374
+msgid " [Installed]"
+msgstr " [Усталявана]"
+
+#: cmdline/apt-get.cc:1305 cmdline/apt-shell.cc:1379
+msgid "You should explicitly select one to install."
+msgstr "Неабходна дакладна пазначыць, які з пакетаў мусіць быць усталяваны."
+
+#: cmdline/apt-get.cc:1310 cmdline/apt-shell.cc:1384
+#, c-format
+msgid ""
+"Package %s has no available version, but exists in the database.\n"
+"This typically means that the package was mentioned in a dependency and\n"
+"never uploaded, has been obsoleted or is not available with the contents\n"
+"of sources.list\n"
+msgstr ""
+"Пакет %s прысутнічае ў базе даньняў, але не мае даступнае вэрсіі.\n"
+"Як правіла гэта значыць, што хаця пакет і прысутнічае ў сьпісе залежнасьцяў,\n"
+"ён адсутнічае ў сховішчы, быў выціснуты, альбо ў sources.list няма адрасу\n"
+"сховішча, якое утрымлівае пакет.\n"
+
+#: cmdline/apt-get.cc:1332 cmdline/apt-shell.cc:1406
+msgid "However the following packages replace it:"
+msgstr "Тым ня менш, наступныя пакеты заменяць яго:"
+
+#: cmdline/apt-get.cc:1335 cmdline/apt-shell.cc:1409
+#, c-format
+msgid "Package %s has no installation candidate"
+msgstr "Для пакету %s не адшукана адпаведнага кандыдату для ўсталёўкі"
+
+#: cmdline/apt-get.cc:1355 cmdline/apt-shell.cc:1435
+#, c-format
+msgid "Reinstallation of %s is not possible, it cannot be downloaded.\n"
+msgstr "Пераўсталяваць %s немагчыма, таму што гэты пакет нельга выгрузіць.\n"
+
+#: cmdline/apt-get.cc:1363 cmdline/apt-shell.cc:1443
+#, c-format
+msgid "%s is already the newest version.\n"
+msgstr "Апошняя вэрсія %s ужо ўсталявана.\n"
+
+#: cmdline/apt-get.cc:1409 cmdline/apt-shell.cc:1489
+#, c-format
+msgid "Release %s'%s' for '%s' was not found"
+msgstr "Апісаньне %s'%s' для '%s' не адшукана."
+
+#: cmdline/apt-get.cc:1411 cmdline/apt-shell.cc:1491
+#, c-format
+msgid "Version %s'%s' for '%s' was not found"
+msgstr "Вэрсія %s'%s' для '%s' не адшукана"
+
+#: cmdline/apt-get.cc:1419 cmdline/apt-shell.cc:1499
+#, c-format
+msgid "Selected version %s (%s) for %s\n"
+msgstr "Выбрана вэрсія %s (%s) для %s\n"
+
+#: cmdline/apt-get.cc:1422 cmdline/apt-shell.cc:1502
+#, c-format
+msgid "Selected version %s for %s\n"
+msgstr "Выбрана вэрсія %s для %s\n"
+
+#: cmdline/apt-get.cc:1536
+msgid "The update command takes no arguments"
+msgstr "Для каманды абнаўленьня не патрабуюцца аргумэнты"
+
+#: cmdline/apt-get.cc:1559 cmdline/apt-shell.cc:1632
+#, c-format
+msgid "Sources list %s could not be read"
+msgstr "Немагчыма прачытаць сьпіс крыніцаў з %s"
+
+#: cmdline/apt-get.cc:1562 cmdline/apt-shell.cc:1635
+#, c-format
+msgid "Sources list %s doesn't exist"
+msgstr "Сьпіс крыніцаў %s адсутнічае."
+
+#: cmdline/apt-get.cc:1575 cmdline/apt-shell.cc:1647
+msgid "Unable to lock the list directory"
+msgstr "Немагчыма заблякаваць каталёг"
+
+#: cmdline/apt-get.cc:1607 cmdline/apt-shell.cc:1677
+msgid ""
+"Release files for some repositories could not be retrieved or authenticated. "
+"Such repositories are being ignored."
+msgstr ""
+"Немагчыма атрымаць ці праверыць файлы апісаньня некаторых сховішчаў. Гэтыя "
+"сховішчы будуць ігнаравацца."
+
+#: cmdline/apt-get.cc:1666 cmdline/apt-shell.cc:1730
+msgid ""
+"Some index files failed to download, they have been ignored, or old ones "
+"used instead."
+msgstr ""
+"Некаторыя індэксныя файлы не атрымалася выгрузіць, яны альбо былі праігнараваныя, "
+"альбо замест іх былі скарыстаныя старыя вэрсіі."
+
+#: cmdline/apt-get.cc:1685 cmdline/apt-shell.cc:1759
+msgid "Internal Error, AllUpgrade broke stuff"
+msgstr "Унутраная памылка, вынік працы AllUpgrade усё сапсаваў"
+
+#: cmdline/apt-get.cc:1779 cmdline/apt-get.cc:1796 cmdline/apt-shell.cc:1861
+#: cmdline/apt-shell.cc:1878
+#, c-format
+msgid "Couldn't parse name '%s'"
+msgstr "Немагчыма разабраць назву '%s'"
+
+#: cmdline/apt-get.cc:1891 cmdline/apt-get.cc:1930 cmdline/apt-shell.cc:1971
+#: cmdline/apt-shell.cc:2011
+#, c-format
+msgid "Couldn't find package %s"
+msgstr "Немагчыма адшукаць пакет %s"
+
+#: cmdline/apt-get.cc:1960
+msgid "You might want to run `apt-get -f install' to correct these:"
+msgstr ""
+"Магчыма, Вам спатрэбіцца запусьціць `apt-get -f install' для выпраўленьня:"
+
+#: cmdline/apt-get.cc:1963
+msgid ""
+"Unmet dependencies. Try 'apt-get -f install' with no packages (or specify a "
+"solution)."
+msgstr ""
+"Некаторыя залежнасьці не былі адшуканыя. Паспрабуйце `apt-get -f install' без "
+"пазначэньня пакетаў ці пазначце пакет рашэньне."
+
+#: cmdline/apt-get.cc:1985 cmdline/apt-shell.cc:2074
+msgid ""
+"Some packages could not be installed. This may mean that you have\n"
+"requested an impossible situation or if you are using the unstable\n"
+"distribution that some required packages have not yet been created\n"
+"or been moved out of Incoming."
+msgstr ""
+"Некаторыя пакеты ўсталяваць немагчыма. Гэта можа значыць, што Вы\n"
+"запатрабавалі немагчымае, альбо карыстаецеся нестабільным сховішчам.\n"
+"Частка неабходных пакетаў альбо яшчэ не створана, альбо была выдалена\n"
+"з каталёгу 'Уваходныя'."
+
+#: cmdline/apt-get.cc:1993 cmdline/apt-shell.cc:2082
+msgid ""
+"Since you only requested a single operation it is extremely likely that\n"
+"the package is simply not installable and a bug report against\n"
+"that package should be filed."
+msgstr ""
+"Таму як для выкананьня Вашага запыту дастаткова адной апэрацыі,\n"
+"хутчэй за ўсё гэты пакет проста немагчыма ўсталяваць. Паведаміце, калі ласка,\n"
+"пра гэта як пра адшуканую ў пакеце памылку."
+
+#: cmdline/apt-get.cc:1998 cmdline/apt-shell.cc:2087
+msgid "The following information may help to resolve the situation:"
+msgstr "Гэтыя зьвесткі могуць дапамагчы адшукаць выйсьця з сытуацыі:"
+
+#: cmdline/apt-get.cc:2001 cmdline/apt-shell.cc:2091
+msgid "Broken packages"
+msgstr "Выбачайце, `бітыя' пакеты"
+
+#: cmdline/apt-get.cc:2027
+msgid "The following extra packages will be installed:"
+msgstr "Наступныя дадатковыя пакеты будуць усталяваны:"
+
+#: cmdline/apt-get.cc:2107
+msgid "Suggested packages:"
+msgstr "Пераважныя пакеты:"
+
+#: cmdline/apt-get.cc:2108
+msgid "Recommended packages:"
+msgstr "Рэкамэндаваныя пакеты"
+
+#: cmdline/apt-get.cc:2132 cmdline/apt-shell.cc:2118
+msgid "Calculating Upgrade... "
+msgstr "Падлік абнаўленьняў... "
+
+#: cmdline/apt-get.cc:2135 cmdline/apt-shell.cc:2121 methods/connect.cc:102
+#: methods/ftp.cc:706
+msgid "Failed"
+msgstr "Памылка"
+
+#: cmdline/apt-get.cc:2151 cmdline/apt-shell.cc:2133
+msgid "Done"
+msgstr "Завершана"
+
+#: cmdline/apt-get.cc:2328
+msgid "Must specify at least one package to fetch source for"
+msgstr "Для выгрузкі крынічнага пакету неабходна пазначаць хаця б адзін пакет."
+
+#: cmdline/apt-get.cc:2355 cmdline/apt-get.cc:2595 cmdline/apt-shell.cc:2360
+#, c-format
+msgid "Unable to find a source package for %s"
+msgstr "Немагчыма адшукаць крынічны пакет для %s"
+
+#: cmdline/apt-get.cc:2407
+#, c-format
+msgid "You don't have enough free space in %s"
+msgstr "Недастаткова вольнае прасторы ў %s"
+
+#: cmdline/apt-get.cc:2412
+#, c-format
+msgid "Need to get %sB/%sB of source archives.\n"
+msgstr "Неабходна атрымаць %sB/%sB крынічных архіваў.\n"
+
+#: cmdline/apt-get.cc:2415
+#, c-format
+msgid "Need to get %sB of source archives.\n"
+msgstr "Неабходна атрымаць %sB крынічных архіваў.\n"
+
+#: cmdline/apt-get.cc:2421
+#, c-format
+msgid "Fetch Source %s\n"
+msgstr "Атрыманьне крынічнага пакету %s\n"
+
+#: cmdline/apt-get.cc:2485 cmdline/apt-get.cc:2536
+#, c-format
+msgid "Build command '%s' failed.\n"
+msgstr "Каманда зборкі пакету '%s' выклікала памылку.\n"
+
+#: cmdline/apt-get.cc:2497 cmdline/apt-get.cc:2519
+#, c-format
+msgid "Unpack command '%s' failed.\n"
+msgstr "Каманда распакоўкі '%s' выклікала памылку.\n"
+
+#: cmdline/apt-get.cc:2507
+#, c-format
+msgid "Skipping unpack of already unpacked source in %s\n"
+msgstr "Пропуск распакоўкі ўжо распакаваных крынічных кодаў пакету ў %s\n"
+
+#: cmdline/apt-get.cc:2556
+msgid "Child process failed"
+msgstr "Спадчынны працэс завяршыўся з памылкай"
+
+#: cmdline/apt-get.cc:2572 cmdline/apt-shell.cc:2337
+msgid "Must specify at least one package to check builddeps for"
+msgstr "Пазначце хаця б адзін пакет для праверкі яго зборачных залежнасьцяў."
+
+#: cmdline/apt-get.cc:2600 cmdline/apt-shell.cc:2365
+#, c-format
+msgid "Unable to get build-dependency information for %s"
+msgstr "Немагчыма вызначыць зборачныя залежнасьці для %s."
+
+#: cmdline/apt-get.cc:2620 cmdline/apt-shell.cc:2385
+#, c-format
+msgid "%s has no build depends.\n"
+msgstr "%s не мае зборачных залежнасьцяў.\n"
+
+#: cmdline/apt-get.cc:2691 cmdline/apt-shell.cc:2456
+#, c-format
+msgid ""
+"%s dependency for %s cannot be satisfied because the package %s cannot be "
+"found"
+msgstr ""
+"залежнасьць %s для %s не можа быць задаволена, таму як адсутнічае "
+"пакет %s."
+
+#: cmdline/apt-get.cc:2743 cmdline/apt-shell.cc:2508
+#, c-format
+msgid ""
+"%s dependency for %s cannot be satisfied because no available versions of "
+"package %s can satisfy version requirements"
+msgstr ""
+"залежнасьць %s для %s не можа быць задаволена, таму як аніводная з "
+"даступных вэрсіяў пакета %s, не можа яе задаволіць."
+
+#: cmdline/apt-get.cc:2778 cmdline/apt-shell.cc:2542
+#, c-format
+msgid "Failed to satisfy %s dependency for %s: Installed package %s is too new"
+msgstr ""
+"Немагчыма задаволіць %s залежнасьць для %s: Усталяваны пакет %s "
+"зановы."
+
+#: cmdline/apt-get.cc:2803 cmdline/apt-shell.cc:2567
+#, c-format
+msgid "Failed to satisfy %s dependency for %s: %s"
+msgstr "Немагчыма задаволіць %s залежнасьць для %s: %s"
+
+#: cmdline/apt-get.cc:2817 cmdline/apt-shell.cc:2581
+#, c-format
+msgid ""
+"Some broken packages were found while trying to process build-dependencies "
+"for %s.\n"
+"You might want to run `apt-get -f install' to correct these."
+msgstr ""
+"Адшуканы пашкоджаныя пакеты пры апрацоўцы зборачных залежнасьцяў для %s.\n"
+"Магчыма, спатрэбіцца запусьціць `apt-get -f install' для выпраўленьня."
+
+#: cmdline/apt-get.cc:2822
+msgid "Failed to process build dependencies"
+msgstr "Памылка апрацоўкі зборачных залежнасьцяў"
+
+#: cmdline/apt-get.cc:2889 cmdline/apt-shell.cc:3627
+msgid "Supported Modules:"
+msgstr "Модулі якія падтрымліваюцца:"
+
+#: cmdline/apt-get.cc:2930
+msgid ""
+"Usage: apt-get [options] command\n"
+"       apt-get [options] install|remove pkg1 [pkg2 ...]\n"
+"       apt-get [options] source pkg1 [pkg2 ...]\n"
+"\n"
+"apt-get is a simple command line interface for downloading and\n"
+"installing packages. The most frequently used commands are update\n"
+"and install.\n"
+"\n"
+"Commands:\n"
+"   update - Retrieve new lists of packages\n"
+"   upgrade - Perform an upgrade\n"
+"   install - Install new packages (pkg is libc6 not libc6.rpm)\n"
+"   remove - Remove packages\n"
+"   source - Download source archives\n"
+"   build-dep - Configure build-dependencies for source packages\n"
+"   dist-upgrade - Distribution upgrade, see apt-get(8)\n"
+"   clean - Erase downloaded archive files\n"
+"   autoclean - Erase old downloaded archive files\n"
+"   check - Verify that there are no broken dependencies\n"
+"\n"
+"Options:\n"
+"  -h  This help text.\n"
+"  -q  Loggable output - no progress indicator\n"
+"  -qq No output except for errors\n"
+"  -d  Download only - do NOT install or unpack archives\n"
+"  -s  No-act. Perform ordering simulation\n"
+"  -y  Assume Yes to all queries and do not prompt\n"
+"  -f  Attempt to continue if the integrity check fails\n"
+"  -m  Attempt to continue if archives are unlocatable\n"
+"  -u  Show a list of upgraded packages as well\n"
+"  -b  Build the source package after fetching it\n"
+"  -D  When removing packages, remove dependencies as possible\n"
+"  -V  Show verbose version numbers\n"
+"  -c=? Read this configuration file\n"
+"  -o=? Set an arbitary configuration option, eg -o dir::cache=/tmp\n"
+"See the apt-get(8), sources.list(5) and apt.conf(5) manual\n"
+"pages for more information and options.\n"
+"                       This APT has Super Cow Powers.\n"
+msgstr ""
+"Выкарыстаньне: apt-get [парамэтры] каманда\n"
+"               apt-get [парамэтры] install|remove пакет1 [пакет2 ...]\n"
+"               apt-get [парамэтры] source пакет1 [пакет2 ...]\n"
+"\n"
+"apt-get прадстаўляе просты камандны інтэрфэйс для атрыманьня й\n"
+"усталёўкі пакетаў. Часьцей за іншыя выкарыстоўваюцца каманды update (абнавіць)\n"
+"і install (усталяваць).\n"
+"\n"
+"Каманды:\n"
+"   update - Атрымаць абноўленыя сьпісы пакетаў\n"
+"   upgrade - Выканаць абнаўленьне\n"
+"   install - Усталяваць новыя пакеты\n"
+"   remove - Выдаліць пакеты\n"
+"   source - Выгрузіць архівы крынічнага коду\n"
+"   build-dep - Усталяваць усё неабходнае для зборкі крынічных пакетаў\n"
+"   dist-upgrade - Абнаўленьне сыстэмы цалкам, см. apt-get(8)\n"
+"   clean - Выдаліць выгружаныя раней архіўныя файлы\n"
+"   autoclean - Выдаліць даўно выгружаныя архіўныя файлы\n"
+"   check - Запэўніцца ў адсутнасьці незадаволеных залежнасьцяў\n"
+"\n"
+"Парамэтры:\n"
+"  -h  Скарочаная даведка\n"
+"  -q  Схаваць індыкатар працэсу\n"
+"  -qq Не паказваць анічога акрамя паведамленьняў аб памылках\n"
+"  -d  Атрымаць пакеты и выйсьці БЕЗ іх усталёўкі ці распакоўкі\n"
+"  -s  Сымуляваць упарадкаваньне замест рэальнага выкананьня\n"
+"  -y  Аўтаматычна адказаць 'ТАК' на ўсе пытаньні\n"
+"  -f  Спрабаваць выправіць незадаволеныя залежнасьці\n"
+"  -m  Спрабаваць працягваць калі частка архіваў недаступна\n"
+"  -u  Паказаць сьпіс пакетаў для абнаўленьня\n"
+"  -b  Сабраць пакет пасьля атрыманьня яго крынічнага коду\n"
+"  -D  Пры выдаленьні пакету спрабаваць выдаліць кампанэнты, ад якіх ён "
+"залежыць\n"
+"  -V  Падрабязна паказваць нумары вэрсіяў\n"
+"  -c=? Выкарыстоўваць пазначаны файл канфігурацыі\n"
+"  -o=? Зьмяніць любы з парамэтраў наладкі (напрыклад: -o dir::cache=/"
+"tmp)\n"
+"Больш поўнае апісаньне даступна на старонках кіраўніцтва man:\n"
+"apt-get(8), sources.list(5) и apt.conf(5).\n"
+"\n"
+
+#: cmdline/apt-shell.cc:151 cmdline/apt-shell.cc:4340
+msgid "There are broken packages. "
+msgstr "Прысутнічаюць пакеты з парушанымі залежнасьцямі."
+
+#: cmdline/apt-shell.cc:152 cmdline/apt-shell.cc:2044
+#: cmdline/apt-shell.cc:4341
+msgid "Run `check' to see them."
+msgstr "Запусьціце каманду `check', каб убачыць іх."
+
+#: cmdline/apt-shell.cc:153 cmdline/apt-shell.cc:2045
+#: cmdline/apt-shell.cc:4342
+msgid "You can try to fix them automatically with `install -f'."
+msgstr ""
+"Вы можаце паспрабаваць выправіць іх аўтаматычна, карыстаючыся камандай `install "
+"-f'."
+
+#: cmdline/apt-shell.cc:163
+msgid "Excessive arguments"
+msgstr "Пазначаны лішнія аргумэнты"
+
+#: cmdline/apt-shell.cc:785
+#, c-format
+msgid "%lu removed and %lu kept.\n"
+msgstr "%lu пакетаў будзе выдалена й %lu будзе захавана.\n"
+
+#: cmdline/apt-shell.cc:814
+#, c-format
+msgid "Will need more %sB of archives.\n"
+msgstr "Спатрэбіцца атрымаць больш за %sB архіваў.\n"
+
+#: cmdline/apt-shell.cc:817
+#, c-format
+msgid "Will need less %sB of archives.\n"
+msgstr "Спатрэбіцца атрымаць меней за %sB архіваў.\n"
+
+#: cmdline/apt-shell.cc:823
+#, c-format
+msgid "After unpacking will need more %sB of disk space.\n"
+msgstr "Пасьля распакоўкі спатрэбіцца болей за %sB дыскавае прасторы.\n"
+
+#: cmdline/apt-shell.cc:826
+#, c-format
+msgid "After unpacking will need less %sB of disk space.\n"
+msgstr "Пасьля распакоўкі спатрэбіцца меней за %sB дыскавае прасторы.\n"
+
+#: cmdline/apt-shell.cc:831
+#, c-format
+msgid "Will need %sB of archives.\n"
+msgstr "Спатрэбіцца атрымаць %sB архіваў.\n"
+
+#: cmdline/apt-shell.cc:849
+msgid "Unrequested changes are needed to execute this operation."
+msgstr ""
+"Каб выканаць гэтую апэрацыю неабходныя зьмены, якія не былі запытаныя."
+
+#: cmdline/apt-shell.cc:932
+msgid "You might want to run `install -f' to correct these."
+msgstr "Магчыма, Вам спатрэбіцца запусьціць `install -f' для выпраўленьня."
+
+#: cmdline/apt-shell.cc:1746 cmdline/apt-shell.cc:1784
+#: cmdline/apt-shell.cc:2109 cmdline/apt-shell.cc:2150
+#: cmdline/apt-shell.cc:2327 cmdline/apt-shell.cc:3939
+msgid "You have no permissions for that"
+msgstr "Вы не маеце неабходных правоў для гэтага"
+
+#: cmdline/apt-shell.cc:2043
+msgid "There are still broken packages. "
+msgstr "Усё яшчэ ёсьць пакеты з парушанымі залежнасьцямі."
+
+#: cmdline/apt-shell.cc:3456
+msgid "Name"
+msgstr "Імя"
+
+#: cmdline/apt-shell.cc:3457
+msgid "Installed"
+msgstr "Усталявана"
+
+#: cmdline/apt-shell.cc:3458
+msgid "Candidate"
+msgstr "Кандыдат"
+
+#: cmdline/apt-shell.cc:3668
+msgid ""
+"\n"
+"Main commands:\n"
+"   status - Show the current selections\n"
+"   install - Install new packages\n"
+"   remove - Remove packages\n"
+"   keep - Keep packages\n"
+"   upgrade - Perform a global upgrade\n"
+"   dist-upgrade - Perform a global distribution upgrade\n"
+"   build-dep - Install build-dependencies for source packages\n"
+"   update - Retrieve new lists of packages\n"
+"   commit - Apply the changes in the system\n"
+"   quit - Leave the APT shell\n"
+"\n"
+"Auxiliar commands:\n"
+"   show - Show a readable record for the package\n"
+"   showpkg - Show some general information for a single package\n"
+"   list/ls - List packages\n"
+"   search - Search the package list for a regex pattern\n"
+"   script - Run scripts.\n"
+"   depends - Show raw dependency information for a package\n"
+"   whatdepends - Show raw dependency information on a package\n"
+"   check - Verify that there are no broken dependencies\n"
+"   unmet - Show unmet dependencies\n"
+"   clean - Erase downloaded archive files\n"
+"   autoclean - Erase old downloaded archive files\n"
+"\n"
+"For more information type \"help <cmd>\" or \"<cmd> [-h|--help]\".\n"
+"\n"
+"                       This APT has Super Cow Powers.\n"
+msgstr ""
+"\n"
+"Галоўныя каманды:\n"
+"   status - Адлюстраваць дзейсны выбар\n"
+"   install - Усталяваць новыя пакеты\n"
+"   remove - Выдаліць пакеты\n"
+"   keep - Захаваць пакеты\n"
+"   upgrade - Выканаць абнаўленьне\n"
+"   dist-upgrade - Выканаць абнаўленьне сыстэмы цалкам\n"
+"   build-dep - Усталяваць усё неабходнае для зборкі крынічнага коду\n"
+"   update - Атрымаць абноўленыя сьпісы пакетаў\n"
+"   commit - Ужыць зьмены да сыстэмы\n"
+"   quit - Пакінуць APT shell\n"
+"\n"
+"Дадатковыя каманды:\n"
+"   show - Паказаць зьвесткі аб пакеце ў зручнай для чытаньня форме\n"
+"   showpkg - Паказаць агульныя зьвесткі аб пакеце\n"
+"   list/ls - Вывесьці сьпіс пакетаў\n"
+"   search - Шукаць у сьпісе з выкарыстаньнем рэгулярных выразаў\n"
+"   script - Выканаць сцэнары.\n"
+"   depends - Паказаць зьвесткі аб  залежнасьцях пазначанага пакету\n"
+"   whatdepends - Паказаць зьвесткі аб пакетах, якія залежаць ад пазначанага "
+"пакету\n"
+"   check - Упэўніцца ў адсутнасьці незадаволеных залежнасьцяў\n"
+"   unmet - Атрымаць сьпіс незадаволеных залежнасьцяў\n"
+"   clean - Выдаліць выгружаныя раней архіўныя файлы\n"
+"   autoclean - Выдаліць даўно выгружаныя архіўныя файлы\n"
+"\n"
+"Для атрыманьня дадатковае інфармацыі, скарыстайце каманды \"help <cmd>\" "
+"ці \"<cmd> [-h|--help]\".\n"
+"\n"
+"                       APT валодае супэр моцай.\n"
+
+#: cmdline/apt-shell.cc:3710
+msgid ""
+"Usage: install [options] pkg1[=ver] [pkg2 ...]\n"
+"\n"
+"Try to mark the given packages for installation (new packages,\n"
+"upgrades or downgrades) changing other packages if necessary.\n"
+"\n"
+"Options:\n"
+"  -h  This help text.\n"
+"  -y  Assume Yes to all queries and do not prompt\n"
+"  -f  Attempt to continue if the integrity check fails\n"
+"  -m  Attempt to continue if archives are unlocatable\n"
+"  -D  When removing packages, remove dependencies as possible\n"
+"  -o=? Set an arbitary configuration option, eg -o dir::cache=/tmp\n"
+"\n"
+msgstr ""
+"Выкарыстаньне: install [парамэтры] пакет1[=вэрсія] [пакет2 ...]\n"
+"\n"
+"Паспрабаваць пазначыць пакеты для усталёўкі (новыя пакеты,\n"
+"абнаўленьні ці замены старымі вэрсіямі), зьмяняючы іншыя пакеты, калі "
+"спатрэбіцца.\n"
+"\n"
+"Парамэтры:\n"
+"  -h  Скарочаная даведка.\n"
+"  -y  Аўтаматычна адказваць 'ТАК' на ўсе пытаньні\n"
+"  -f  Спрабаваць выправіць стан, калі адшуканы незадаволеныя "
+"залежнасьці\n"
+"  -m  Спрабаваць працягваць, калі частка архіваў недаступна\n"
+"  -D  Пры выдаленьні пакетаў спрабаваць выдаліць кампанэнты, ад якіх яны "
+"залежаць\n"
+"  -o=? Зьмяніць любы з парамэтраў наладкі (напрыклад: -o dir::cache=/"
+"tmp)\n"
+"\n"
+
+#: cmdline/apt-shell.cc:3728
+msgid ""
+"Usage: remove [options] pkg1 [pkg2 ...]\n"
+"\n"
+"Try to mark the given packages for deletion, changing other\n"
+"packages if necessary.\n"
+"\n"
+"Options:\n"
+"  -h  This help text.\n"
+"  -y  Assume Yes to all queries and do not prompt\n"
+"  -f  Attempt to continue if the integrity check fails\n"
+"  -m  Attempt to continue if archives are unlocatable\n"
+"  -D  When removing packages, remove dependencies as possible\n"
+"  -o=? Set an arbitary configuration option, eg -o dir::cache=/tmp\n"
+"\n"
+msgstr ""
+"Выкарыстаньне: remove [парамэтры] пакет1 [пакет2 ...]\n"
+"\n"
+"Паспрабаваць пазначыць пакеты для выдаленьня, замяняючы іншыя\n"
+"пакеты, калі спатрэбіцца.\n"
+"\n"
+"Парамэтры:\n"
+"  -h  Скарочаная даведка.\n"
+"  -y  Аўтаматычна адказваць 'ТАК' на усе пытаньні\n"
+"  -f  Спрабаваць выправіць стан, калі адшуканы незадаволеныя "
+"залежнасьці\n"
+"  -m  Спрабаваць працягваць, калі частка архіваў недаступна\n"
+"  -D  Пры выдаленьні пакетаў спрабаваць выдаліць кампанэнты, ад якіх яны "
+"залежаць\n"
+"  -o=? Зьмяніць любы з парамэтраў наладкі (напрыклад: -o dir::cache=/"
+"tmp)\n"
+"\n"
+
+#: cmdline/apt-shell.cc:3746
+msgid ""
+"Usage: keep [options] pkg1 [pkg2 ...]\n"
+"\n"
+"Try to keep the given packages, currently marked for deletion\n"
+"or installation, in the system, changing other packages if\n"
+"necessary.\n"
+"\n"
+"Options:\n"
+"  -h  This help text.\n"
+"  -y  Assume Yes to all queries and do not prompt\n"
+"  -f  Attempt to continue if the integrity check fails\n"
+"  -m  Attempt to continue if archives are unlocatable\n"
+"  -D  When removing packages, remove dependencies as possible\n"
+"  -o=? Set an arbitary configuration option, eg -o dir::cache=/tmp\n"
+"\n"
+msgstr ""
+"Выкарыстаньне: keep [парамэтры] пакет1 [пакет2 ...]\n"
+"\n"
+"Паспрабаваць захаваць пазначаныя для выдаленьня ці ўсталёўкі пакеты,\n"
+"замяняючы іншыя пакеты, калі гэта неабходна.\n"
+"\n"
+"Парамэтры:\n"
+"  -h  Скарочаная даведка.\n"
+"  -y  Аўтаматычна адказваць 'ТАК' на усе пытаньні\n"
+"  -f  Спрабаваць выправіць стан, калі адшуканы незадаволеныя "
+"залежнасьці\n"
+"  -m  Спрабаваць працягваць, калі частка архіваў недаступна\n"
+"  -D  Пры выдаленьні пакетаў спрабаваць выдаліць кампанэнты, ад якіх яны "
+"залежаць\n"
+"  -o=? Зьмяніць любы з парамэтраў наладкі (напрыклад: -o dir::cache=/"
+"tmp)\n"
+"\n"
+
+#: cmdline/apt-shell.cc:3765
+msgid ""
+"Usage: upgrade [options]\n"
+"\n"
+"Perform a global upgrade.\n"
+"\n"
+"Options:\n"
+"  -h  This help text.\n"
+"  -y  Assume Yes to all queries and do not prompt\n"
+"  -f  Attempt to continue if the integrity check fails\n"
+"  -m  Attempt to continue if archives are unlocatable\n"
+"  -D  When removing packages, remove dependencies as possible\n"
+"  -o=? Set an arbitary configuration option, eg -o dir::cache=/tmp\n"
+"\n"
+msgstr ""
+"Выкарыстаньне: upgrade [парамэтры]\n"
+"\n"
+"Выканаць абнаўленьне.\n"
+"\n"
+"Парамэтры:\n"
+"  -h  Скарочаная даведка.\n"
+"  -y  Аўтаматычна адказваць 'ТАК' на усе пытаньні\n"
+"  -f  Спрабаваць выправіць стан, калі адшуканы незадаволеныя "
+"залежнасьці\n"
+"  -m  Спрабаваць працягваць, калі частка архіваў недаступна\n"
+"  -D  Пры выдаленьні пакетаў спрабаваць выдаліць кампанэнты, ад якіх яны "
+"залежаць\n"
+"  -o=? Зьмяніць любы з парамэтраў наладкі (напрыклад: -o dir::cache=/"
+"tmp)\n"
+"\n"
+
+#: cmdline/apt-shell.cc:3781
+msgid ""
+"Usage: dist-upgrade [options]\n"
+"\n"
+"Perform a global distribution upgrade.\n"
+"\n"
+"Options:\n"
+"  -h  This help text.\n"
+"  -y  Assume Yes to all queries and do not prompt\n"
+"  -f  Attempt to continue if the integrity check fails\n"
+"  -m  Attempt to continue if archives are unlocatable\n"
+"  -D  When removing packages, remove dependencies as possible\n"
+"  -o=? Set an arbitary configuration option, eg -o dir::cache=/tmp\n"
+"\n"
+msgstr ""
+"Выкарыстаньне: dist-upgrade [парамэтры]\n"
+"\n"
+"Выканаць абнаўленьне сыстэмы цалкам.\n"
+"\n"
+"Парамэтры:\n"
+"  -h  Скарочаная даведка.\n"
+"  -y  Аўтаматычна адказваць 'ТАК' на усе пытаньні\n"
+"  -f  Спрабаваць выправіць стан, калі адшуканы незадаволеныя "
+"залежнасьці\n"
+"  -m  Спрабаваць працягваць, калі частка архіваў недаступна\n"
+"  -D  Пры выдаленьні пакетаў спрабаваць выдаліць кампанэнты, ад якіх яны "
+"залежаць\n"
+"  -o=? Зьмяніць любы з парамэтраў наладкі (напрыклад: -o dir::cache=/"
+"tmp)\n"
+"\n"
+
+#: cmdline/apt-shell.cc:3797
+msgid ""
+"Usage: showpkg [options] pkg1 [pkg2 ...]\n"
+"\n"
+"Show some general information for the given packages.\n"
+"\n"
+"Options:\n"
+"  -h  This help text.\n"
+"  -o=? Set an arbitary configuration option, eg -o dir::cache=/tmp\n"
+"\n"
+msgstr ""
+"Выкарыстаньне: showpkg [парамэтры] пакет1 [пакет2 ...]\n"
+"\n"
+"Паказаць агульныя зьвесткі аб пакеце.\n"
+"\n"
+"Парамэтры:\n"
+"  -h   Скарочаная даведка\n"
+"  -o=? Зьмяніць любы з парамэтраў наладкі (напрыклад: -o dir::cache=/"
+"tmp)\n"
+"\n"
+
+#: cmdline/apt-shell.cc:3810
+msgid ""
+"Usage: show [options] pkg1 [pkg2 ...]\n"
+"\n"
+"Show a readable record for the given packages.\n"
+"\n"
+"Options:\n"
+"  -h  This help text.\n"
+"  -a  Show information about all versions.\n"
+"  -o=? Set an arbitary configuration option, eg -o dir::cache=/tmp\n"
+"\n"
+msgstr ""
+"Выкарыстаньне: show [парамэтры] пакет1 [пакет2 ...]\n"
+"\n"
+"Паказаць зьвесткі аб пакеце у зручнай для чытаньня форме.\n"
+"\n"
+"Парамэтры:\n"
+"  -h  Скарочаная даведка\n"
+"  -a  Паказаць інфармацыю пра усе вэрсіі.\n"
+"  -o=? Зьмяніць любы з парамэтраў наладкі (напрыклад: -o dir::cache=/"
+"tmp)\n"
+"\n"
+
+#: cmdline/apt-shell.cc:3824
+msgid ""
+"Usage: depends [options] pkg1 [pkg2 ...]\n"
+"\n"
+"Show dependency relations for the given packages.\n"
+"\n"
+"Options:\n"
+"  -h  This help text.\n"
+"  -o=? Set an arbitary configuration option, eg -o dir::cache=/tmp\n"
+"\n"
+msgstr ""
+"Выкарыстаньне: depends [парамэтры] пакет1 [пакет2 ...]\n"
+"\n"
+"Паказаць зьвесткі аб залежнасьцях пазначанага пакету.\n"
+"\n"
+"Парамэтры:\n"
+"  -h  Скарочаная даведка\n"
+"  -o=? Зьмяніць любы з парамэтраў наладкі (напрыклад: -o dir::cache=/"
+"tmp)\n"
+"\n"
+
+#: cmdline/apt-shell.cc:3837
+msgid ""
+"Usage: whatdepends [options] pkg1 [pkg2 ...]\n"
+"\n"
+"Show dependency relations on the given packages.\n"
+"\n"
+"Options:\n"
+"  -h  This help text.\n"
+"  -o=? Set an arbitary configuration option, eg -o dir::cache=/tmp\n"
+"\n"
+msgstr ""
+"Выкарыстаньне: whatdepends [парамэтры] пакет1 [пакет2 ...]\n"
+"\n"
+"Паказаць зьвесткі аб пакетах, якія залежаць ад пазначанага пакету.\n"
+"\n"
+"Парамэтры:\n"
+"  -h  Скарочаная даведка.\n"
+"  -o=? Зьмяніць любы з парамэтраў наладкі (напрыклад: -o dir::cache=/"
+"tmp)\n"
+"\n"
+
+#: cmdline/apt-shell.cc:3850
+msgid ""
+"Usage: unmet [options]\n"
+"\n"
+"Show unsolvable relations in the cache.\n"
+"\n"
+"Options:\n"
+"  -h  This help text.\n"
+"  -o=? Set an arbitary configuration option, eg -o dir::cache=/tmp\n"
+"\n"
+msgstr ""
+"Выкарыстаньне: unmet [парамэтры]\n"
+"\n"
+"Атрымаць сьпіс незадаволеных залежнасьцяў.\n"
+"\n"
+"Парамэтры:\n"
+"  -h  Скарочаная даведка\n"
+"  -o=? Зьмяніць любы з парамэтраў наладкі (напрыклад: -o dir::cache=/"
+"tmp)\n"
+"\n"
+
+#: cmdline/apt-shell.cc:3863
+msgid ""
+"Usage: search [options] <regex>\n"
+"\n"
+"Search for the given regular expression in package names and\n"
+"descriptions.\n"
+"\n"
+"Options:\n"
+"  -h  This help text.\n"
+"  -n  Search only in package names.\n"
+"  -f  Show full records for found packages.\n"
+"  -o=? Set an arbitary configuration option, eg -o dir::cache=/tmp\n"
+"\n"
+msgstr ""
+"Выкарыстаньне: search [парамэтры] <рэгулярны выраз>\n"
+"\n"
+"Шукаць пазначаны рэгулярны выраз у назвах пакетаў і іх апісаньнях.\n"
+"\n"
+"Парамэтры:\n"
+"  -h  Скарочаная даведка.\n"
+"  -n  Шукаць толькі ў назвах пакетаў.\n"
+"  -f  Паказаць поўную інфармацыю аб адшуканых пакетах.\n"
+"  -o=? Зьмяніць любы з парамэтраў наладкі (напрыклад: -o dir::cache=/"
+"tmp)\n"
+"\n"
+
+#: cmdline/apt-shell.cc:3880
+msgid ""
+"Usage: list/ls [options] [pattern ...]\n"
+"\n"
+"List packages matching the given patterns, or all packages if\n"
+"no pattern is given. Wildcards are accepted.\n"
+"\n"
+"Options:\n"
+"  -h  This help text.\n"
+"  -i  Show only installed packages.\n"
+"  -u  Show only installed packages that are upgradable.\n"
+"  -v  Show installed and candidate versions.\n"
+"  -s  Show summaries.\n"
+"  -o=? Set an arbitary configuration option, eg -o dir::cache=/tmp\n"
+"\n"
+msgstr ""
+"Выкарыстаньне: list/ls [парамэтры] [шаблён ...]\n"
+"\n"
+"Вывесьці сьпіс пакетаў, якія задавальняюць шаблёну, ці ўсе пакеты, калі\n"
+"шаблён не быў пазначаны. Wildcards are accepted.\n"
+"\n"
+"Парамэтры:\n"
+"  -h  Скарочаная даведка.\n"
+"  -i  Паказаць толькі ўсталяваныя пакеты.\n"
+"  -u  Паказаць толькі ўсталяваныя пакеты, якія могуць быць абноўлены.\n"
+"  -v  Паказаць вэрсіі ўсталяванага пакету й пакету-кандыдату.\n"
+"  -s  Паказаць скарочаныя апісаньні пакетаў.\n"
+"  -o=? Зьмяніць любы з парамэтраў наладкі (напрыклад: -o dir::cache=/"
+"tmp)\n"
+"\n"
+
+#: cmdline/apt-shell.cc:3898
+msgid ""
+"Usage: commit [options]\n"
+"\n"
+"Apply the changes in the system.\n"
+"\n"
+"Options:\n"
+"  -h  This help text.\n"
+"  -o=? Set an arbitary configuration option, eg -o dir::cache=/tmp\n"
+"\n"
+msgstr ""
+"Выкарыстаньне: commit [парамэтры]\n"
+"\n"
+"Ужыць зьмены да сыстэмы.\n"
+"\n"
+"Парамэтры:\n"
+"  -h  Скарочаная даведка\n"
+"  -o=? Зьмяніць любы з парамэтраў наладкі (напрыклад: -o dir::cache=/"
+"tmp)\n"
+"\n"
+
+#: cmdline/apt-shell.cc:3911
+msgid ""
+"Usage: script [options] script1 [script2]\n"
+"\n"
+"Run the given scripts.\n"
+"\n"
+"Options:\n"
+"  -h  This help text.\n"
+"  -o=? Set an arbitary configuration option, eg -o dir::cache=/tmp\n"
+"\n"
+msgstr ""
+"Выкарыстаньне: script [парамэтры] сцэнар1 [сцэнар2]\n"
+"\n"
+"Выканаць пазначаныя сцэнары.\n"
+"\n"
+"Парамэтры:\n"
+"  -h  Скарочаная даведка\n"
+"  -o=? Зьмяніць любы з парамэтраў наладкі (напрыклад: -o dir::cache=/"
+"tmp)\n"
+"\n"
+
+#: cmdline/apt-shell.cc:3922
+msgid "No help for that"
+msgstr "Няма даведкі для гэтага"
+
+#: cmdline/apt-shell.cc:4350
+msgid "Welcome to the APT shell. Type \"help\" for more information."
+msgstr ""
+"Вітаем у APT shell. Скарыстайце каманду \"help\" для "
+"дадатковай інфармацыі."
+
+#: cmdline/apt-shell.cc:4388
+msgid "Exceeded maximum number of command arguments"
+msgstr "Перавышана максымальная колькасьць аргумэнтаў каманды"
+
+#: apt-pkg/contrib/cdromutl.cc:55
+#, c-format
+msgid "Unable to stat the mount point %s"
+msgstr "Не адшуканы пункт мацаваньня %s дыску"
+
+#: apt-pkg/contrib/cdromutl.cc:149 apt-pkg/acquire.cc:418 apt-pkg/clean.cc:44
+#, c-format
+msgid "Unable to change to %s"
+msgstr "Немагчыма перайсьці да %s"
+
+#: apt-pkg/contrib/cdromutl.cc:153 apt-pkg/contrib/configuration.cc:735
+#: apt-pkg/acquire.cc:412 apt-pkg/clean.cc:38 apt-pkg/sourcelist.cc:424
+#, c-format
+msgid "Unable to read %s"
+msgstr "Немагчыма прачытаць %s"
+
+#: apt-pkg/contrib/cdromutl.cc:190
+msgid "Failed to stat the cdrom"
+msgstr "Не адшуканы аптычны дыск."
+
+#: apt-pkg/contrib/cmndline.cc:80
+#, c-format
+msgid "Command line option '%c' [from %s] is not known."
+msgstr "Невядомы парамэтар '%c' [з %s]."
+
+#: apt-pkg/contrib/cmndline.cc:106 apt-pkg/contrib/cmndline.cc:114
+#: apt-pkg/contrib/cmndline.cc:122
+#, c-format
+msgid "Command line option %s is not understood"
+msgstr "Невядомы парамэтар %s."
+
+#: apt-pkg/contrib/cmndline.cc:127
+#, c-format
+msgid "Command line option %s is not boolean"
+msgstr "Парамэтар загаднага радку %s мусіць мець лягічнае значэньне."
+
+#: apt-pkg/contrib/cmndline.cc:166 apt-pkg/contrib/cmndline.cc:187
+#, c-format
+msgid "Option %s requires an argument."
+msgstr "Парамэтар %s патрабуе аргумэнт."
+
+#: apt-pkg/contrib/cmndline.cc:201 apt-pkg/contrib/cmndline.cc:207
+#, c-format
+msgid "Option %s: Configuration item specification must have an =<val>."
+msgstr ""
+"Парамэтар %s: Запіс парамэтру наладкі мусіць канчацца на =<значэньне>."
+
+#: apt-pkg/contrib/cmndline.cc:237
+#, c-format
+msgid "Option %s requires an integer argument, not '%s'"
+msgstr "Парамэтар %s патрабуе лічбавага аргумэнту замест '%s'"
+
+#: apt-pkg/contrib/cmndline.cc:268
+#, c-format
+msgid "Option '%s' is too long"
+msgstr "Задаўгі парамэтар '%s'"
+
+#: apt-pkg/contrib/cmndline.cc:301
+#, c-format
+msgid "Sense %s is not understood, try true or false."
+msgstr "Нераспазнанае значэньне %s, выкарыстоўвайце true ці false."
+
+#: apt-pkg/contrib/cmndline.cc:351
+#, c-format
+msgid "Invalid operation %s"
+msgstr "Памылковая апэрацыя %s"
+
+#: apt-pkg/contrib/configuration.cc:425
+#, c-format
+msgid "Unrecognized type abbreviation: '%c'"
+msgstr "Нераспазнаны тып скарачэньня: '%c'"
+
+#: apt-pkg/contrib/configuration.cc:483
+#, c-format
+msgid "Opening configuration file %s"
+msgstr "Адкрыцьцё канфігурацыйнага файла %s"
+
+#: apt-pkg/contrib/configuration.cc:593
+#, c-format
+msgid "Syntax error %s:%u: Block starts with no name."
+msgstr "Сынтаксычная памылка %s:%u: Пачатак блёку без назвы."
+
+#: apt-pkg/contrib/configuration.cc:612
+#, c-format
+msgid "Syntax error %s:%u: Malformed Tag"
+msgstr "Сынтаксычная памылка %s:%u: Памылковы тэг."
+
+#: apt-pkg/contrib/configuration.cc:629
+#, c-format
+msgid "Syntax error %s:%u: Extra junk after value"
+msgstr "Сынтаксычная памылка %s:%u: Лішнія сымбалі пасьля значэньня."
+
+#: apt-pkg/contrib/configuration.cc:669
+#, c-format
+msgid "Syntax error %s:%u: Directives can only be done at the top level"
+msgstr ""
+"Сынтаксычная памылка %s:%u: Дырэктывы могуць задавацца толькі на вышэйшым "
+"узроўні."
+
+#: apt-pkg/contrib/configuration.cc:676
+#, c-format
+msgid "Syntax error %s:%u: Too many nested includes"
+msgstr "Сынтаксычная памылка %s:%u: Зашмат укладзеных уключэньняў."
+
+#: apt-pkg/contrib/configuration.cc:680 apt-pkg/contrib/configuration.cc:685
+#, c-format
+msgid "Syntax error %s:%u: Included from here"
+msgstr "Сынтаксычная памылка %s:%u: Уключэньне з пазначанага месца."
+
+#: apt-pkg/contrib/configuration.cc:689
+#, c-format
+msgid "Syntax error %s:%u: Unsupported directive '%s'"
+msgstr "Сынтаксычная памылка %s:%u: Невядомая дырэктыва '%s'."
+
+#: apt-pkg/contrib/configuration.cc:723
+#, c-format
+msgid "Syntax error %s:%u: Extra junk at end of file"
+msgstr "Сынтаксычная памылка %s:%u: Лішнія даньні ў канцы файла."
+
+#: apt-pkg/contrib/fileutl.cc:83
+#, c-format
+msgid "Not using locking for read only lock file %s"
+msgstr "Блякаваньне адключана ў сувязі з недаступнасьцю файла %s на запіс"
+
+#: apt-pkg/contrib/fileutl.cc:88
+#, c-format
+msgid "Could not open lock file %s"
+msgstr "Немагчыма адкрыць файл блякаваньня %s"
+
+#: apt-pkg/contrib/fileutl.cc:106
+#, c-format
+msgid "Not using locking for nfs mounted lock file %s"
+msgstr ""
+"Блякаваньне адключана, таму што файл блякаваньня %s знаходзіцца на сеткавым "
+"падзеле nfs"
+
+#: apt-pkg/contrib/fileutl.cc:110
+#, c-format
+msgid "Could not get lock %s"
+msgstr "Немагчыма заблякаваць %s"
+
+#: apt-pkg/contrib/fileutl.cc:361
+#, c-format
+msgid "Waited, for %s but it wasn't there"
+msgstr "Падпрацэс %s не адказвае."
+
+#: apt-pkg/contrib/fileutl.cc:371
+#, c-format
+msgid "Sub-process %s received a segmentation fault."
+msgstr "Падпрацэс %s выканаў недапушчальную апэрацыю."
+
+#: apt-pkg/contrib/fileutl.cc:374 apt-pkg/rpm/rpmpm.cc:628
+#, c-format
+msgid "Sub-process %s returned an error code (%u)"
+msgstr "Падпрацэс %s завершаны з памылкай (%u)."
+
+#: apt-pkg/contrib/fileutl.cc:376 apt-pkg/rpm/rpmpm.cc:631
+#, c-format
+msgid "Sub-process %s exited unexpectedly"
+msgstr "Падпрацэс %s нечакана завершаны"
+
+#: apt-pkg/contrib/fileutl.cc:420
+#, c-format
+msgid "Could not open file %s"
+msgstr "Немагчыма адкрыць файл %s."
+
+#: apt-pkg/contrib/fileutl.cc:455 methods/ftp.cc:342 methods/rsh.cc:193
+msgid "Read error"
+msgstr "Памылка чытаньня"
+
+#: apt-pkg/contrib/fileutl.cc:476
+#, c-format
+msgid "read, still have %lu to read but none left"
+msgstr "Засталося прачытаць %lu, але быў дасягнуты канец файлу."
+
+#: apt-pkg/contrib/fileutl.cc:494
+msgid "Write error"
+msgstr "Памылка запісу"
+
+#: apt-pkg/contrib/fileutl.cc:506
+#, c-format
+msgid "write, still have %lu to write but couldn't"
+msgstr "Немагчыма запісаць %lu."
+
+#: apt-pkg/contrib/fileutl.cc:581
+msgid "Problem closing the file"
+msgstr "Памылка закрыцьця файлу."
+
+#: apt-pkg/contrib/fileutl.cc:587
+msgid "Problem unlinking the file"
+msgstr "Памылка адлучэньня файлу."
+
+#: apt-pkg/contrib/fileutl.cc:598
+msgid "Problem syncing the file"
+msgstr "Памылка сынхранізацыі файлу."
+
+#: apt-pkg/contrib/mmap.cc:82
+msgid "Can't mmap an empty file"
+msgstr "Немагчыма выканаць mmap для пустога файлу"
+
+#: apt-pkg/contrib/mmap.cc:87
+#, c-format
+msgid "Couldn't make mmap of %lu bytes"
+msgstr "Немагчыма выканаць mmap для %lu байтаў"
+
+#: apt-pkg/contrib/progress.cc:154
+#, c-format
+msgid "%c%s... Error!"
+msgstr "%c%s... Памылка!"
+
+#: apt-pkg/contrib/progress.cc:156
+#, c-format
+msgid "%c%s... Done"
+msgstr "%c%s... Завершана"
+
+#: apt-pkg/contrib/strutl.cc:941
+#, c-format
+msgid "Selection %s not found"
+msgstr "Радкоў, якія адпавядаюць %s, не адшукана."
+
+#: apt-pkg/rpm/rpmhandler.cc:101
+msgid "could not rewind RPMFileHandler"
+msgstr "адкат RPMFileHandler немагчымы"
+
+#: apt-pkg/rpm/rpmhandler.cc:160 apt-pkg/rpm/rpmhandler.cc:167
+#: apt-pkg/rpm/rpmpm.cc:688 apt-pkg/rpm/rpmpm.cc:693
+#, c-format
+msgid "Failed reading file %s"
+msgstr "Памылка чытаньня файлу %s"
+
+#: apt-pkg/rpm/rpmhandler.cc:327
+msgid "Unable to determine the file size"
+msgstr "Немагчыма вызначыць памер файлу"
+
+#: apt-pkg/rpm/rpmhandler.cc:372 apt-pkg/rpm/rpmhandler.cc:381
+msgid "could not open RPM database"
+msgstr "немагчыма адкрыць базу даньняў RPM"
+
+#: apt-pkg/rpm/rpmhandler.cc:388
+msgid "could not create RPM database iterator"
+msgstr "немагчыма стварыць ітэратар базы даньняў RPM"
+
+#: apt-pkg/rpm/rpmindexfile.cc:374
+#, c-format
+msgid "Problem with SelectFile %s"
+msgstr "Памылка SelectFile %s"
+
+#: apt-pkg/rpm/rpmindexfile.cc:383 apt-pkg/rpm/rpmindexfile.cc:570
+#, c-format
+msgid "Failed to stat %s"
+msgstr "Немагчыма атрымаць зьвесткі аб %s"
+
+#: apt-pkg/rpm/rpmindexfile.cc:392 apt-pkg/rpm/rpmindexfile.cc:428
+#, c-format
+msgid "Problem opening %s"
+msgstr "Памылка адкрыцьця %s"
+
+#: apt-pkg/rpm/rpmindexfile.cc:398 apt-pkg/rpm/rpmindexfile.cc:575
+#, c-format
+msgid "Problem with MergeList %s"
+msgstr "Памылка з MergeList %s"
+
+#: apt-pkg/rpm/rpmindexfile.cc:433 apt-pkg/rpm/rpmindexfile.cc:593
+#, c-format
+msgid "Problem with MergeFileProvides %s"
+msgstr "Памылка з MergeFileProvides %s"
+
+#: apt-pkg/rpm/rpmindexfile.cc:560 apt-pkg/rpm/rpmindexfile.cc:589
+msgid "Problem opening RPM database"
+msgstr "Памылка адкрыцьця базы даньняў RPM"
+
+#: apt-pkg/rpm/rpmindexfile.cc:564
+msgid "Problem with SelectFile RPM Database"
+msgstr "Памылка SelectFile базы даньняў RPM."
+
+#: apt-pkg/rpm/rpmlistparser.cc:111
+msgid "Corrupt pkglist: no RPMTAG_NAME in header entry"
+msgstr "Пашкоджаны pkglist: адсутнічае RPMTAG_NAME у загалоўку"
+
+#: apt-pkg/rpm/rpmlistparser.cc:130
+#, c-format
+msgid ""
+"There are multiple versions of \"%s\" in your system.\n"
+"\n"
+"This package won't be cleanly updated, unless you leave\n"
+"only one version. To leave multiple versions installed,\n"
+"you may remove that warning by setting the following\n"
+"option in your configuration file:\n"
+"\n"
+"RPM::Allow-Duplicated { \"^%s$\"; };\n"
+"\n"
+"To disable these warnings completely set:\n"
+"\n"
+"RPM::Allow-Duplicated-Warning \"false\";\n"
+msgstr ""
+"У Вашай сыстэме усталявана некалькі вэрсіяў пакету \"%s\".\n"
+"\n"
+"Гэты пакет не можа быць абноўлены звычайным шляхам да тае пары, покуль Вы не\n"
+"спыніце толькі адну яго вэрсію. Каб пакінуць усталяванымі некалькі "
+"вэрсіяў,\n"
+"і не атрымліваць болей гэтае папярэджаньне, Вы можаце усталяваць наступны "
+"парамэтар\n"
+"у Вашым файле канфігурацыі:\n"
+"\n"
+"RPM::Allow-Duplicated { \"^%s$\"; };\n"
+"\n"
+"Каб цалкам забараніць гэтае папярэджаньне, усталюйце парамэтар:\n"
+"\n"
+"RPM::Allow-Duplicated-Warning \"false\";\n"
+
+#: apt-pkg/rpm/rpmlistparser.cc:666
+msgid "Bad NotAutomatic flag"
+msgstr "Кепскі NotAutomatic сьцяг"
+
+#: apt-pkg/rpm/rpmpackagedata.cc:28
+#, c-format
+msgid "could not open package priority file %s"
+msgstr "немагчыма адкрыць файл з апісаньнем прыярытэтаў пакетаў %s"
+
+#: apt-pkg/rpm/rpmpackagedata.cc:37
+#, c-format
+msgid "no data in %s"
+msgstr "няма даньняў у %s"
+
+#: apt-pkg/rpm/rpmpackagedata.cc:87
+#, c-format
+msgid "Bad regular expression '%s' in option RPM::Hold."
+msgstr "Недапушчальны рэгулярны выраз '%s' у парамэтры RPM::Hold."
+
+#: apt-pkg/rpm/rpmpackagedata.cc:107
+#, c-format
+msgid "Bad regular expression '%s' in option RPM::Allow-Duplicated."
+msgstr ""
+"Недапушчальны рэгулярны выраз '%s' в парамэтры RPM::Allow-Duplicated."
+
+#: apt-pkg/rpm/rpmpackagedata.cc:124
+#, c-format
+msgid "Bad entry '%s' in option RPM::FakeProvides."
+msgstr "Недапушчальны запіс '%s' в парамэтры RPM::FakeProvides."
+
+#: apt-pkg/rpm/rpmpackagedata.cc:178
+#, c-format
+msgid "Bad regular expression '%s' in URI translation"
+msgstr "Недапушчальны рэгулярны выраз '%s' у URI translation"
+
+#: apt-pkg/rpm/rpmpm.cc:71
+#, c-format
+msgid "Internal Error, No file name for %s"
+msgstr "Унутраная памылка, Не пазначана назва файлу для пакету %s"
+
+#: apt-pkg/rpm/rpmpm.cc:140
+#, c-format
+msgid "Problem executing scripts %s '%s'"
+msgstr "Памылка выкананьня сцэнараў %s '%s'"
+
+#: apt-pkg/rpm/rpmpm.cc:151
+msgid "Sub-process returned an error code"
+msgstr "Падпрацэс завершаны з памылкай"
+
+#: apt-pkg/rpm/rpmpm.cc:177 methods/rsh.cc:94
+msgid "Failed to create IPC pipe to subprocess"
+msgstr "Немагчыма стварыць IPC канал для падпрацэсу"
+
+#: apt-pkg/rpm/rpmpm.cc:221 apt-pkg/rpm/rpmpm.cc:228
+#, c-format
+msgid "Failure running script %s"
+msgstr "Памылка выкананьня сцэнару %s"
+
+#: apt-pkg/rpm/rpmpm.cc:309
+msgid "Unknown pkgRPMPM operation."
+msgstr "Невядомая pkgRPMPM апэрацыя."
+
+#: apt-pkg/rpm/rpmpm.cc:554
+msgid "Executing RPM ("
+msgstr "Запуск RPM ("
+
+#: apt-pkg/rpm/rpmpm.cc:594
+msgid "Could not exec "
+msgstr "Немагчыма выканаць"
+
+#: apt-pkg/rpm/rpmpm.cc:609
+msgid "Couldn't wait for subprocess"
+msgstr "Немагчыма дачакацца падпроцэсу"
+
+#: apt-pkg/rpm/rpmpm.cc:625
+#, c-format
+msgid "Sub-process %s recieved a segmentation fault."
+msgstr "Падпрацэс %s выканаў недапушчальную апэрацыю."
+
+#: apt-pkg/rpm/rpmpm.cc:633 apt-pkg/rpm/rpmpm.cc:878
+msgid "Done."
+msgstr "Завершана."
+
+#: apt-pkg/rpm/rpmpm.cc:684
+#, c-format
+msgid "Failed opening %s"
+msgstr "Памылка адкрыцьця %s"
+
+#: apt-pkg/rpm/rpmpm.cc:697 apt-pkg/rpm/rpmpm.cc:721
+#, c-format
+msgid "Failed adding %s to transaction %s"
+msgstr "Памылка даданьня %s у трансакцыю %s"
+
+#: apt-pkg/rpm/rpmpm.cc:772 apt-pkg/rpm/rpmpm.cc:782
+msgid "Could not open RPM database"
+msgstr "Немагчыма адкрыць базу даньняў RPM"
+
+#: apt-pkg/rpm/rpmpm.cc:818 apt-pkg/rpm/rpmpm.cc:831
+msgid "Transaction set check failed"
+msgstr "Праверка групы трансакцыяў не атрымалася"
+
+#: apt-pkg/rpm/rpmpm.cc:850
+#, c-format
+msgid "Ordering failed for %d packages"
+msgstr "Упарадкаваньне не атрымалася для %d пакетаў"
+
+#: apt-pkg/rpm/rpmpm.cc:854
+msgid "Committing changes..."
+msgstr "Выконваем зьмены..."
+
+#: apt-pkg/rpm/rpmpm.cc:870
+msgid "Error while running transaction"
+msgstr "Памылка у часе выкананьня трансакцыі"
+
+#: apt-pkg/rpm/rpmpm.cc:876
+msgid "Some errors occurred while running transaction"
+msgstr "Адбыліся памылкі пры выкананьні трансакцыі"
+
+#: apt-pkg/rpm/rpmrecords.cc:206 apt-pkg/rpm/rpmsrcrecords.cc:229
+msgid "Could not allocate buffer for record text"
+msgstr "Немагчыма вылучыць буфэр для запісу тэксту"
+
+#: apt-pkg/rpm/rpmsrcrecords.cc:160 apt-pkg/rpm/rpmsrcrecords.cc:167
+#, c-format
+msgid "error parsing source list %s"
+msgstr "памылка апрацоўкі сьпісу крыніцаў %s"
+
+#: apt-pkg/rpm/rpmsystem.cc:408 apt-pkg/pkgcachegen.cc:714
+#: apt-pkg/pkgcachegen.cc:741 apt-pkg/pkgcachegen.cc:783
+#: apt-pkg/pkgcachegen.cc:788 apt-pkg/pkgcachegen.cc:992
+msgid "Reading Package Lists"
+msgstr "Чытаньне сьпісу пакетаў"
+
+#: apt-pkg/acquire.cc:61
+#, c-format
+msgid "Lists directory %spartial is missing."
+msgstr "Дырэкторыя са сьпісамі пакетаў %spartial адсутнічае."
+
+#: apt-pkg/acquire.cc:65
+#, c-format
+msgid "Archive directory %spartial is missing."
+msgstr "Дырэкторыя з архіўнымі пакетамі %spartial адсутнічае."
+
+#: apt-pkg/acquire-item.cc:169
+#, c-format
+msgid "rename failed, %s (%s -> %s)."
+msgstr "Памылка зьмены назвы, %s (%s -> %s)."
+
+#: apt-pkg/acquire-item.cc:213 apt-pkg/acquire-item.cc:406
+#, c-format
+msgid "%s is not listed in the checksum list for its repository"
+msgstr "%s адсутнічае ў сьпісе кантрольных сум свайго сховішча."
+
+#: apt-pkg/acquire-item.cc:233 apt-pkg/acquire-item.cc:426
+#, c-format
+msgid "Release information not available for %s"
+msgstr "Апісаньне %s не адшукана."
+
+#: apt-pkg/acquire-item.cc:283 apt-pkg/acquire-item.cc:559
+#: apt-pkg/acquire-item.cc:818
+msgid "Size mismatch"
+msgstr "Несупадзеньне памеру"
+
+#: apt-pkg/acquire-item.cc:294 apt-pkg/acquire-item.cc:569
+#: apt-pkg/acquire-item.cc:831
+msgid "MD5Sum mismatch"
+msgstr "Несупадзеньне кантрольнай сумы MD5"
+
+#: apt-pkg/acquire-item.cc:475
+msgid "No valid signatures found in Release file"
+msgstr "Не адшукана подпісаў у файле апісаньня"
+
+#: apt-pkg/acquire-item.cc:483
+msgid "Signature fingerprint of Release file does not match (expected "
+msgstr "Памылковы подпіс файла апісаньня (мусіць быць "
+
+#: apt-pkg/acquire-item.cc:484
+msgid ", got "
+msgstr ", атрымана "
+
+#: apt-pkg/acquire-item.cc:509
+msgid "Could not read checksum list from Release file"
+msgstr "Немагчыма прачытаць сьпіс кантрольных сум з файлу апісаньня."
+
+#: apt-pkg/acquire-item.cc:643
+#, c-format
+msgid ""
+"I wasn't able to locate a file for the %s package. This might mean you need "
+"to manually fix this package. (due to missing arch)"
+msgstr ""
+"Немагчыма адшукаць файл пакету %s. Магчыма, спатрэбіцца выправіць пакет "
+"асабіста (у сувязі з адсутнасьцю патрэбнай плятформы)."
+
+#: apt-pkg/acquire-item.cc:678
+#, c-format
+msgid ""
+"I wasn't able to locate file for the %s package. This might mean you need to "
+"manually fix this package."
+msgstr ""
+"Немагчыма адшукаць файл пакету %s. Магчыма, спатрэбіцца выправіць пакет "
+"асабіста."
+
+#: apt-pkg/acquire-item.cc:709
+#, c-format
+msgid ""
+"The package index files are corrupted. No Filename: field for package %s."
+msgstr "Пашкоджаны індэксныя файлы. Адсутнічае поле Filename: для пакету %s."
+
+#: apt-pkg/acquire-worker.cc:112
+#, c-format
+msgid "The method driver %s could not be found."
+msgstr "Праграма апрацоўкі мэтаду %s не адшукана."
+
+#: apt-pkg/acquire-worker.cc:161
+#, c-format
+msgid "Method %s did not start correctly"
+msgstr "Праграма апрацоўкі мэтаду %s не здолела правільна запусьціцца"
+
+#: apt-pkg/algorithms.cc:251
+#, c-format
+msgid ""
+"The package %s needs to be reinstalled, but I can't find an archive for it."
+msgstr ""
+"Неабходна пераўсталяваць пакет %s, але адшукаць яго архіўную копію немагчыма."
+
+#: apt-pkg/algorithms.cc:1152
+msgid ""
+"Error, pkgProblemResolver::Resolve generated breaks, this may be caused by "
+"held packages."
+msgstr ""
+"Памылка. Працэдура pkgProblemResolver::Resolve выклікала спыненьне. Гэта можа "
+"быць выклікана пакетамі што захоўваюцца (held)."
+
+#: apt-pkg/algorithms.cc:1154
+msgid "Unable to correct problems, you have held broken packages."
+msgstr ""
+"Вырашыць праблему немагчыма. Вы запатрабавалі захаваць пакеты з парушанымі "
+"залежнасьцямі."
+
+#: apt-pkg/cachefile.cc:77
+msgid "The package lists or status file could not be parsed or opened."
+msgstr "Немагчыма прачытаць сьпіс пакетаў ці файл стану."
+
+#: apt-pkg/cachefile.cc:81
+msgid "You may want to run apt-get update to correct these problems"
+msgstr "Магчыма, Вам спатрэбіцца запусьціць `apt-get update' для выпраўленьня."
+
+#: apt-pkg/clean.cc:61
+#, c-format
+msgid "Unable to stat %s."
+msgstr "Немагчыма прачытаць %s."
+
+#: apt-pkg/depcache.cc:67 apt-pkg/depcache.cc:96
+msgid "Building Dependency Tree"
+msgstr "Пабудова дрэва залежнасьцяў"
+
+#: apt-pkg/depcache.cc:68
+msgid "Candidate Versions"
+msgstr "Вызначэньне неабходных вэрсіяў"
+
+#: apt-pkg/depcache.cc:97
+msgid "Dependency Generation"
+msgstr "Стварэньне залежнасьцяў"
+
+#: apt-pkg/init.cc:142
+#, c-format
+msgid "Packaging system '%s' is not supported"
+msgstr "Пакетная сыстэма '%s' не падтрымліваецца."
+
+#: apt-pkg/init.cc:158
+msgid "Unable to determine a suitable system type"
+msgstr "Немагчыма вызначыць тып сыстэмы."
+
+#: apt-pkg/packagemanager.cc:402
+#, c-format
+msgid ""
+"This installation run will require temporarily removing the essential "
+"package %s due to a Conflicts/Pre-Depends loop. This is often bad, but if "
+"you really want to do it, activate the APT::Force-LoopBreak option."
+msgstr ""
+"Гэты сэанс усталёўкі патрабуе часовага выдаленьня сыстэмнага пакету %s у "
+"сувязі з канфліктам ці цыкляваньнем папярэдніх залежнасьцяў. Часьцей "
+"за ўсё гэта памылкова, але калі вы сапраўды гэтага жадаеце, тады "
+"актывізуйце парамэтар APT::Force-LoopBreak."
+
+#: apt-pkg/pkgcache.cc:133
+msgid "Empty package cache"
+msgstr "Буфэр пакетаў пусты."
+
+#: apt-pkg/pkgcache.cc:139
+msgid "The package cache file is corrupted"
+msgstr "Файл з кэшам пакетаў пашкоджаны"
+
+#: apt-pkg/pkgcache.cc:144
+msgid "The package cache file is an incompatible version"
+msgstr "Файл з кэшам пакетаў сфарміраваны несумяшчальнай вэрсіяй APT"
+
+#: apt-pkg/pkgcache.cc:149
+#, c-format
+msgid "This APT does not support the Versioning System '%s'"
+msgstr "Даная вэрсія APT не падтрымлівае сыстэму вэрсіяў '%s'."
+
+#: apt-pkg/pkgcache.cc:154
+msgid "The package cache was built for a different architecture"
+msgstr "Кэш пакетаў быў сабраны для іншай плятформы"
+
+#: apt-pkg/pkgcache.cc:252
+msgid "Depends"
+msgstr "Патрабуе"
+
+#: apt-pkg/pkgcache.cc:252
+msgid "PreDepends"
+msgstr "Для усталёўкі патрабуе"
+
+#: apt-pkg/pkgcache.cc:252
+msgid "Suggests"
+msgstr "Прапаноўвае"
+
+#: apt-pkg/pkgcache.cc:253
+msgid "Recommends"
+msgstr "Рэкамэндуе"
+
+#: apt-pkg/pkgcache.cc:253
+msgid "Conflicts"
+msgstr "Канфліктуе"
+
+#: apt-pkg/pkgcache.cc:253
+msgid "Replaces"
+msgstr "Замяняе"
+
+#: apt-pkg/pkgcache.cc:254
+msgid "Obsoletes"
+msgstr "Выціскае"
+
+#: apt-pkg/pkgcache.cc:265
+msgid "important"
+msgstr "важна"
+
+#: apt-pkg/pkgcache.cc:265
+msgid "required"
+msgstr "патрабуецца"
+
+#: apt-pkg/pkgcache.cc:265
+msgid "standard"
+msgstr "звычайна"
+
+#: apt-pkg/pkgcache.cc:266
+msgid "optional"
+msgstr "неабавязкова"
+
+#: apt-pkg/pkgcache.cc:266
+msgid "extra"
+msgstr "дадаткова"
+
+#: apt-pkg/pkgcachegen.cc:74
+msgid "Cache has an incompatible versioning system"
+msgstr "У кэшы скарыстана несумяшчальная сыстэма вэрсіяў"
+
+#: apt-pkg/pkgcachegen.cc:123
+#, c-format
+msgid "Error occured while processing %s (NewPackage)"
+msgstr "Пры апрацоўцы %s (NewPackage) адбылася памылка"
+
+#: apt-pkg/pkgcachegen.cc:140
+#, c-format
+msgid "Error occured while processing %s (UsePackage1)"
+msgstr "Пры апрацоўцы %s (UsePackage1) адбылася памылка"
+
+#: apt-pkg/pkgcachegen.cc:171
+#, c-format
+msgid "Error occured while processing %s (UsePackage2)"
+msgstr "Пры апрацоўцы %s (UsePackage2) узьнікла памылка"
+
+#: apt-pkg/pkgcachegen.cc:175
+#, c-format
+msgid "Error occured while processing %s (NewFileVer1)"
+msgstr "Пры апрацоўцы %s (NewFileVer1) узьнікла памылка"
+
+#: apt-pkg/pkgcachegen.cc:209
+#, c-format
+msgid "Error occured while processing %s (NewVersion1)"
+msgstr "Пры апрацоўцы %s (NewVersion1) узьнікла памылка"
+
+#: apt-pkg/pkgcachegen.cc:213
+#, c-format
+msgid "Error occured while processing %s (UsePackage3)"
+msgstr "Пры апрацоўцы %s (UsePackage2) узьнікла памылка"
+
+#: apt-pkg/pkgcachegen.cc:217
+#, c-format
+msgid "Error occured while processing %s (NewVersion2)"
+msgstr "Пры апрацоўцы %s (NewVersion2) узьнікла памылка"
+
+#: apt-pkg/pkgcachegen.cc:232
+msgid "Wow, you exceeded the number of package names this APT is capable of."
+msgstr ""
+"Колькасьць назваў пакетаў перавышае максымальна дапушчальнае для дадзенай вэрсіі "
+"APT!"
+
+#: apt-pkg/pkgcachegen.cc:235
+msgid "Wow, you exceeded the number of versions this APT is capable of."
+msgstr ""
+"Колькасьць розных вэрсіяў перавышае максымальнае дапушчальнае для дадзенай "
+"вэрсіі APT!"
+
+#: apt-pkg/pkgcachegen.cc:238
+msgid "Wow, you exceeded the number of dependencies this APT is capable of."
+msgstr ""
+"Колькасьць залежнасьцяў перавышае максымальнае дапушчальнае для дадзенай вэрсіі "
+"APT!"
+
+#: apt-pkg/pkgcachegen.cc:272
+#, c-format
+msgid "Error occured while processing %s (FindPkg)"
+msgstr "Пры апрацоўцы %s (FindPkg) адбылася памылка."
+
+#: apt-pkg/pkgcachegen.cc:295
+#, c-format
+msgid "Error occured while processing %s (CollectFileProvides)"
+msgstr "Пры апрацоўцы %s (CollectFileProvides) адбылася памылка."
+
+#: apt-pkg/pkgcachegen.cc:307
+#, c-format
+msgid "Package %s %s was not found while processing file dependencies"
+msgstr "Не адшукана пакету %s %s пры апрацоўцы файлавых залежнасьцяў."
+
+#: apt-pkg/pkgcachegen.cc:781
+#, c-format
+msgid "Unable to write to %s"
+msgstr "Запіс у %s немагчымы"
+
+#: apt-pkg/pkgcachegen.cc:796
+msgid "Error pre-processing package lists"
+msgstr "У часе папярэдняе апрацоўкі сьпісаў пакетаў адбылася памылка."
+
+#: apt-pkg/pkgcachegen.cc:913 apt-pkg/pkgcachegen.cc:920
+msgid "IO Error saving source cache"
+msgstr "Памылка ўводу-вываду ў часе захаваньня кэшу сховішча"
+
+#: apt-pkg/pkgrecords.cc:37
+#, c-format
+msgid "Index file type '%s' is not supported"
+msgstr "Тып індэкснага файлу '%s' не падтрымліваецца"
+
+#: apt-pkg/policy.cc:312
+msgid "Invalid record in the preferences file %s, no Package header"
+msgstr ""
+"Памылковы запіс у канфігурацыйным файле %s. Адсутнічае загаловак пакету."
+
+#: apt-pkg/policy.cc:334
+#, c-format
+msgid "Did not understand pin type %s"
+msgstr "Непрыдатны крытэр адбору пераважных пакетаў %s."
+
+#: apt-pkg/policy.cc:342
+msgid "No priority (or zero) specified for pin"
+msgstr "Не пазначаны (ці пазначаны нулявы) прыярытэт для перавагі"
+
+#: apt-pkg/repository.cc:40
+#, c-format
+msgid "could not open Release file '%s'"
+msgstr "Немагчыма адкрыць файл апісаньня '%s'."
+
+#: apt-pkg/repository.cc:55
+#, c-format
+msgid "No MD5Sum data in Release file '%s'"
+msgstr "В файле апісаньня '%s' няма кантрольнае сумы MD5."
+
+#: apt-pkg/repository.cc:72
+#, c-format
+msgid "Error parsing MD5Sum hash record on Release file '%s'"
+msgstr "Памылка атрыманьня хэш запісу MD5 з файла апісаньня '%s'."
+
+#: apt-pkg/sourcelist.cc:98
+#, c-format
+msgid "Malformed line %lu in source list %s (URI)"
+msgstr "Памылковы радок %lu у сьпісе крыніцаў %s (URI)"
+
+#: apt-pkg/sourcelist.cc:100
+#, c-format
+msgid "Malformed line %lu in source list %s (dist)"
+msgstr "Памылковы радок %lu у сьпісе крыніцаў %s (дыстрыбутыў)"
+
+#: apt-pkg/sourcelist.cc:103
+#, c-format
+msgid "Malformed line %lu in source list %s (URI parse)"
+msgstr "Памылковы радок %lu у сьпісе крыніцаў %s (апрацоўка URI)"
+
+#: apt-pkg/sourcelist.cc:109
+#, c-format
+msgid "Malformed line %lu in source list %s (Absolute dist)"
+msgstr ""
+"Памылковы радок %lu у сьпісе крыніцаў %s (абсалютны дыстрыбутыў)"
+
+#: apt-pkg/sourcelist.cc:116
+#, c-format
+msgid "Malformed line %lu in source list %s (dist parse)"
+msgstr ""
+"Памылковы радок %lu у сьпісе крыніцаў %s (апрацоўка дыстрыбутыву)"
+
+#: apt-pkg/sourcelist.cc:206 apt-pkg/sourcelist.cc:230
+#, c-format
+msgid "Vendor block %s is invalid"
+msgstr "Памылковы блёк даньняў пастаўшчыку %s."
+
+#: apt-pkg/sourcelist.cc:314
+#, c-format
+msgid "Line %u too long in source list %s."
+msgstr "Задаўгі запіс %u у сьпісе крыніцаў %s."
+
+#: apt-pkg/sourcelist.cc:334
+#, c-format
+msgid "Malformed line %u in source list %s (type)"
+msgstr "Памылковы запіс у радку %u у сьпісе крыніцаў %s (тып крыніцы)"
+
+#: apt-pkg/sourcelist.cc:338
+#, c-format
+msgid "Type '%s' is not known in on line %u in source list %s"
+msgstr "Невядомы тып '%s' у радку %u сьпісу крыніцаў %s."
+
+#: apt-pkg/sourcelist.cc:347 apt-pkg/sourcelist.cc:350
+#, c-format
+msgid "Malformed line %u in source list %s (vendor id)"
+msgstr "Памылковы радок %u у сьпісе крыніцаў %s (ID пастаўшчыку)"
+
+#: apt-pkg/sourcelist.cc:364
+#, c-format
+msgid "Unknown vendor ID '%s' in line %u of source list %s"
+msgstr "Невядомы ID пастаўшчыку '%s' у радку %u сьпісу крыніцаў %s."
+
+#: apt-pkg/srcrecords.cc:49
+msgid "You must put some 'source' URIs in your sources.list"
+msgstr "В sources.list мусяць быць пазначаны адрасы сховішчаў."
+
+#: apt-pkg/tagfile.cc:71
+#, c-format
+msgid "Unable to parse package file %s (1)"
+msgstr "Немагчыма прачытаць пакетны файл %s (1)"
+
+#: apt-pkg/tagfile.cc:158
+#, c-format
+msgid "Unable to parse package file %s (2)"
+msgstr "Немагчыма прачытаць пакетны файл %s (2)"
+
+#: methods/cdrom.cc:169
+msgid ""
+"Please use apt-cdrom to make this CD recognized by APT. apt-get update "
+"cannot be used to add new CDs"
+msgstr ""
+"Калі ласка, выкарыстоўвайце apt-cdrom, каб зрабіць гэты CD даступным APT. apt-"
+"get update не можа быць скарыстаны для даданьня новых CD дыскаў"
+
+#: methods/cdrom.cc:177 methods/cdrom.cc:215
+msgid "Wrong CD"
+msgstr "Памылковы CD"
+
+#: methods/cdrom.cc:210
+#, c-format
+msgid "Unable to unmount the CD-ROM in %s, it may still be in use."
+msgstr ""
+"Немагчыма размацаваць CD-ROM у %s, напэўна ён усё яшчэ выкарыстоўваецца"
+
+#: methods/cdrom.cc:233 methods/file.cc:82
+msgid "File not found"
+msgstr "Файл не адшуканы"
+
+#: methods/connect.cc:67
+#, c-format
+msgid "Connecting to %s (%s)"
+msgstr "Далучэньне да %s (%s)"
+
+#: methods/connect.cc:74
+#, c-format
+msgid "[IP: %s %s]"
+msgstr "[IP: %s %s]"
+
+#: methods/connect.cc:83
+#, c-format
+msgid "Could not create a socket for %s (f=%u t=%u p=%u)"
+msgstr "Немагчыма стварыць сокет для %s (f=%u t=%u p=%u)"
+
+#: methods/connect.cc:89
+#, c-format
+msgid "Cannot initiate the connection to %s:%s (%s)."
+msgstr "Немагчыма распачаць далучэньне да %s:%s (%s)."
+
+#: methods/connect.cc:95
+#, c-format
+msgid "Could not connect to %s:%s (%s), connection timed out"
+msgstr "Немагчыма далучыцца да %s:%s (%s), час далучэньня выйшаў"
+
+#: methods/connect.cc:107
+#, c-format
+msgid "Could not connect to %s:%s (%s)."
+msgstr "Немагчыма далучыцца да %s:%s (%s)."
+
+#: methods/connect.cc:135 methods/rsh.cc:428
+#, c-format
+msgid "Connecting to %s"
+msgstr "Далучэньне да %s"
+
+#: methods/connect.cc:166
+#, c-format
+msgid "Could not resolve '%s'"
+msgstr "Немагчыма вызначыць адрас для '%s'"
+
+#: methods/connect.cc:170
+#, c-format
+msgid "Temporary failure resolving '%s'"
+msgstr "Часовы збой пры вызначэньні адрасу для '%s'"
+
+#: methods/connect.cc:172
+#, c-format
+msgid "Something wicked happened resolving '%s:%s' (%i)"
+msgstr "Нешта дзіўнае адбылося пры вызначэньні адрасу для '%s:%s' (%i)"
+
+#: methods/connect.cc:219
+#, c-format
+msgid "Unable to connect to %s %s:"
+msgstr "Немагчыма далучыцца да  %s %s:"
+
+#: methods/copy.cc:45 methods/gzip.cc:136 methods/gzip.cc:145
+msgid "Failed to stat"
+msgstr "Немагчыма атрымаць інфармацыю"
+
+#: methods/copy.cc:82 methods/gzip.cc:142
+msgid "Failed to set modification time"
+msgstr "Немагчыма усталяваць час мадыфікацыі"
+
+#: methods/file.cc:45
+msgid "Invalid URI, local URIS must not start with //"
+msgstr "Памылковы URI, мясцовыя URIS не мусяць пачынацца з //"
+
+#: methods/ftp.cc:165
+msgid "Logging in"
+msgstr "Уваход у"
+
+#: methods/ftp.cc:171
+msgid "Unable to determine the peer name"
+msgstr "Немагчыма вызначыць назву аддаленай сыстэмы"
+
+#: methods/ftp.cc:176
+msgid "Unable to determine the local name"
+msgstr "Немагчыма вызначыць назву мясцовай сыстэмы."
+
+#: methods/ftp.cc:208 methods/ftp.cc:236
+#, c-format
+msgid "Server refused our connection and said: %s"
+msgstr "Паслужнік адмовіў у далучэньні й адказаў: %s"
+
+#: methods/ftp.cc:214
+#, c-format
+msgid "USER failed, server said: %s"
+msgstr "Каманда USER завершана няўдала, паслужнік адказаў: %s"
+
+#: methods/ftp.cc:221
+#, c-format
+msgid "PASS failed, server said: %s"
+msgstr "Каманда PASS завершана няўдала, паслужнік адказаў: %s"
+
+#: methods/ftp.cc:241
+msgid ""
+"A proxy server was specified but no login script, Acquire::ftp::ProxyLogin "
+"is empty."
+msgstr ""
+"Паўнамоцны паслужнік быў пазначаны, але адсутнічае login сцэнар, парамэтар Acquire::"
+"ftp::ProxyLogin пусты"
+
+#: methods/ftp.cc:269
+#, c-format
+msgid "Login script command '%s' failed, server said: %s"
+msgstr "Каманда '%s' login сцэнару завершана няўдала, паслужнік адказаў: %s"
+
+#: methods/ftp.cc:295
+#, c-format
+msgid "TYPE failed, server said: %s"
+msgstr "Каманда TYPE завершана няўдала, паслужнік адказаў: %s"
+
+#: methods/ftp.cc:333 methods/ftp.cc:444 methods/rsh.cc:186 methods/rsh.cc:229
+msgid "Connection timeout"
+msgstr "Час далучэньня выйшаў"
+
+#: methods/ftp.cc:339
+msgid "Server closed the connection"
+msgstr "Паслужнік закрыў далучэньне"
+
+#: methods/ftp.cc:349 methods/rsh.cc:200
+msgid "A response overflowed the buffer."
+msgstr "Адказ перапоўніў буфэр."
+
+#: methods/ftp.cc:366 methods/ftp.cc:378
+msgid "Protocol corruption"
+msgstr "Збой пратаколу"
+
+#: methods/ftp.cc:450 methods/rsh.cc:235
+msgid "Write Error"
+msgstr "Памылка запісу"
+
+#: methods/ftp.cc:691 methods/ftp.cc:697 methods/ftp.cc:733
+msgid "Could not create a socket"
+msgstr "Немагчыма стварыць сокет"
+
+#: methods/ftp.cc:702
+msgid "Could not connect data socket, connection timed out"
+msgstr "Немагчыма далучыць сокет даньняў, час далучэньня выйшаў"
+
+#: methods/ftp.cc:708
+msgid "Could not connect passive socket."
+msgstr "Немагчыма далучыць пасіўны сокет."
+
+#: methods/ftp.cc:726
+msgid "getaddrinfo was unable to get a listening socket"
+msgstr "функцыя getaddrinfo не здолела атрымаць сокет"
+
+#: methods/ftp.cc:740
+msgid "Could not bind a socket"
+msgstr "Немагчыма заняць сокет"
+
+#: methods/ftp.cc:744
+msgid "Could not listen on the socket"
+msgstr "Немагчыма праслухоўваць на сокеце"
+
+#: methods/ftp.cc:751
+msgid "Could not determine the socket's name"
+msgstr "Немагчыма вызначыць імя сокету"
+
+#: methods/ftp.cc:783
+msgid "Unable to send PORT command"
+msgstr "Немагчыма даслаць PORT каманду"
+
+#: methods/ftp.cc:793
+#, c-format
+msgid "Unknown address family %u (AF_*)"
+msgstr "Невядомае сямейства адрасоў %u (AF_*)"
+
+#: methods/ftp.cc:802
+#, c-format
+msgid "EPRT failed, server said: %s"
+msgstr "Каманда EPRT завершана няўдала, паслужнік адказаў: %s"
+
+#: methods/ftp.cc:822
+msgid "Data socket connect timed out"
+msgstr "Час далучэньня з сокетам даньняў выйшаў"
+
+#: methods/ftp.cc:829
+msgid "Unable to accept connection"
+msgstr "Немагчыма прыняць далучэньне"
+
+#: methods/ftp.cc:868 methods/http.cc:919 methods/rsh.cc:306
+msgid "Problem hashing file"
+msgstr "Памылка атрыманьня хэшу файла"
+
+#: methods/ftp.cc:881
+#, c-format
+msgid "Unable to fetch file, server said '%s'"
+msgstr "Немагчыма выгрузіць файл, паслужнік адказаў '%s'"
+
+#: methods/ftp.cc:896 methods/rsh.cc:325
+msgid "Data socket timed out"
+msgstr "Час сокету даньняў выйшаў"
+
+#: methods/ftp.cc:926
+#, c-format
+msgid "Data transfer failed, server said '%s'"
+msgstr "Перадача даньняў завяршылася няўдала, паслужнік адказаў '%s'"
+
+#: methods/ftp.cc:1001
+msgid "Query"
+msgstr "Запыт"
+
+#: methods/ftp.cc:1108
+msgid "Unable to invoke "
+msgstr "Немагчыма прачытаць "
+
+#: methods/gpg.cc:306
+msgid "Could not allocate memory"
+msgstr "Немагчыма вылучыць памяць"
+
+#: methods/gpg.cc:310
+msgid "Could not create temporary directory"
+msgstr "Немагчыма стварыць часовую дырэкторыю"
+
+#: methods/gzip.cc:60
+#, c-format
+msgid "Couldn't open pipe for %s"
+msgstr "Немагчыма адкрыць канал для %s."
+
+#: methods/gzip.cc:105
+#, c-format
+msgid "Read error from %s process"
+msgstr "Памылка чытаньня з %s працэсу"
+
+#: methods/http.cc:343
+msgid "Waiting for headers"
+msgstr "Чаканьне загалоўкаў"
+
+#: methods/http.cc:489
+#, c-format
+msgid "Got a single header line over %u chars"
+msgstr "Атрыманы адзіны радок загалоўку болей за %u сымбаляў"
+
+#: methods/http.cc:497
+msgid "Bad header line"
+msgstr "Кепскі радок загалоўку"
+
+#: methods/http.cc:516 methods/http.cc:523
+msgid "The http server sent an invalid reply header"
+msgstr "Ад http паслужніку атрыманы памылковы загаловак адказу"
+
+#: methods/http.cc:552
+msgid "The http server sent an invalid Content-Length header"
+msgstr "От http паслужніку атрыманы памылковы Content-Length загаловак"
+
+#: methods/http.cc:567
+msgid "The http server sent an invalid Content-Range header"
+msgstr "От http паслужніку атрыманы памылковы Content-Range загаловак"
+
+#: methods/http.cc:569
+msgid "This http server has broken range support"
+msgstr "Гэты http паслужнік мае памылковую падтрымку дыяпазонаў"
+
+#: methods/http.cc:593
+msgid "Unknown date format"
+msgstr "Невядомы фармат даты"
+
+#: methods/http.cc:740
+msgid "Select failed"
+msgstr "Выбар немагчымы"
+
+#: methods/http.cc:745
+msgid "Connection timed out"
+msgstr "Час злучэньня выйшаў"
+
+#: methods/http.cc:768
+msgid "Error writing to output file"
+msgstr "Памылка запісу ў выходны файл"
+
+#: methods/http.cc:796
+msgid "Error writing to file"
+msgstr "Памылка запісу ў файл"
+
+#: methods/http.cc:821
+msgid "Error writing to the file"
+msgstr "Памылка запісу ў файл"
+
+#: methods/http.cc:835
+msgid "Error reading from server Remote end closed connection"
+msgstr "Памылка чытаньня з паслужніку, аддалены бок закрыў далучэньне"
+
+#: methods/http.cc:837
+msgid "Error reading from server"
+msgstr "Памылка чытаньня з паслужніку"
+
+#: methods/http.cc:1068
+msgid "Bad header Data"
+msgstr "Кепскія даньні загалоўку"
+
+#: methods/http.cc:1085
+msgid "Connection failed"
+msgstr "Далучэньне завершана няўдала"
+
+#: methods/http.cc:1176
+msgid "Internal error"
+msgstr "Унутраная памылка"
+
+#: methods/rsh.cc:267
+msgid "File Not Found"
+msgstr "Файл не адшуканы"
+
+#: methods/rsh.cc:333
+msgid "Connection closed prematurely"
+msgstr "Далучэньне закрытае нечакана"
+
+#~ msgid "Note, selecting %s instead of %s\n"
+#~ msgstr "Обратите внимание: пакет %s выбран вместо %s.\n"
+
+#~ msgid "Note, selecting %s for regex '%s'\n"
+#~ msgstr "Обратите внимание: %s соответствует регулярному выражению '%s'\n"
+
+#~ msgid "Release '%s' for '%s' was not found"
+#~ msgstr "Описание '%s' для '%s' не найдено."
+
+#~ msgid "Version '%s' for '%s' was not found"
+#~ msgstr "Версия '%s' для '%s' не найдена"
+
+#~ msgid "error parsing file record %s"
+#~ msgstr "ошибка обработки файловой записи %s"
+
+#~ msgid "%s %s'%s' for '%s' was not found"
+#~ msgstr "%s %s'%s' для '%s' не найден(а)"
+
+#~ msgid "Release"
+#~ msgstr "Релиз"
+
+#~ msgid "Version"
+#~ msgstr "Версия"
+
+#~ msgid "Selected %s %s (%s) for %s\n"
+#~ msgstr "Выбран(а) %s %s (%s) для %s\n"
+
+#~ msgid "release"
+#~ msgstr "релиз"
+
+#~ msgid "version"
+#~ msgstr "версия"
+
+#~ msgid "The following packages will be kept back"
+#~ msgstr "Следующие пакеты будут СОХРАНЕНЫ:"
+
+#~ msgid "The list of sources from %s could not be read."
+#~ msgstr "Невозможно прочитать список источников из %s."
+
+#~ msgid "Collecting File Provides"
+#~ msgstr "Создание списка имён"

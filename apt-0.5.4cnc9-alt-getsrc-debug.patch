@@ -1,0 +1,17 @@
+helps to determine which of the branches is really used.
+Look at apt-0.5.4cnc9-alt-getsrc.patch for more info.
+
+imz@altlinux.ru, 28 Sep 2002.
+
+--- apt-0.5.4cnc9/cmdline/apt-get.cc.getsrc	2002-10-28 22:41:04 +0300
++++ apt-0.5.4cnc9/cmdline/apt-get.cc	2002-10-28 23:44:30 +0300
+@@ -1184,6 +1184,9 @@
+    }
+    
+    // No source package name..
++   // use the "matching against Binaries()" Find()'s feature.
++   // DEBUG:
++   printf("Src1 %s\n",Src.c_str());
+    if (Src.empty() == true)
+       Src = TmpSrc;
+    

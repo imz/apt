@@ -1,0 +1,7 @@
+copy: *.conf
+copy: *.old
+copy: *.patch
+copy: *.po
+copy: *.rsync
+tar: apt
+copy: genbasedir

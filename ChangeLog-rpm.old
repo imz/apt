@@ -1,0 +1,497 @@
+* Mon Jun 10 2002 Ivan Zakharyaschev <imz@altlinux.ru> 0.3.19cnc55-alt6
+
+- fixes in genbasedir from apt-utils:
+  + srclist generation: now it correctly includes the information on produced
+    binaries (the list was empty before), and also correctly treats --mapi
+    (the fixed bug caused misbehaviour of 'apt-get source', in the "2nd branch
+    of DoSource()" as referenced by me in previous changelogs);
+  + --flat option.
+
+* Sun Jun 09 2002 Ivan Zakharyaschev <imz@altlinux.ru> 0.3.19cnc55-alt5
+
+- renamed the 'build' subpackage to 'utils' (because there is already
+  an 'apt-build' project at freshmeat.net).
+
+* Sun Jun 09 2002 Ivan Zakharyaschev <imz@altlinux.ru> 0.3.19cnc55-alt4
+
+- separate subpkg 'build': analoguous to rpm-build, contains teh utilities to
+  generate indices (as a consequence less dependencies of 'apt' pkg,
+  little size);
+- fix the work of 'apt-get source' for source packages with multiple binaries
+  with help of feedback and debugging patches from Anton Denisov
+  <fire@kgpu.kamchatka.ru> (only the first branch of control flow in DoSource()
+  is fixed, but that should be enough for normal use).
+
+* Tue Mar 26 2002 Dmitry V. Levin <ldv@alt-linux.org> 0.3.19cnc55-alt3
+
+- Added librpm-4.0.4 build support.
+- Built with librpm-4.0.4, updated buildrequires.
+
+* Thu Mar 21 2002 Dmitry V. Levin <ldv@alt-linux.org> 0.3.19cnc55-alt2
+
+- Added kernel-aureal and NVIDIA_kernel to default AllowedDupPkgs.
+- Updated patch for pkgRPMPM::ExecRPM.
+- Reenabled rsh method.
+- Updated rpmpriorities.
+- fixed genbasedir patch.
+- Set explicit Packager tag.
+- Dropped obsolete trigger.
+- libapt: Conflicts: apt < %version-%release.
+- Renamed patches.
+
+* Wed Mar 13 2002 Alexander Bokovoy <ab@altlinux.ru> 0.3.19cnc55-alt1
+
+- apt-0.3.19cnc55 integrated
+- Fixed:
+    + rpmpm-exec_rpm patch
+    + genbasedir
+- Removed:
+    + rpmpm-nodeps patch (already upstream)
+    + rsh method (already upstream)
+
+* Mon Dec 10 2001 Dmitry V. Levin <ldv@alt-linux.org> 0.3.19cnc53-alt6
+
+- Fixed rpm --nodeps option usage in pkgRPMPM::ExecRPM (#0000215).
+
+* Fri Nov 23 2001 Dmitry V. Levin <ldv@alt-linux.org> 0.3.19cnc53-alt5
+
+- Applied scoring algorithm patch (Stelian Pop <stelian.pop@fr.alcove.com>)
+- Updated package requires.
+
+* Mon Nov 19 2001 Dmitry V. Levin <ldv@alt-linux.org> 0.3.19cnc53-alt4
+
+- Dropped outdated pofile (already upstream).
+- Corrected "Executing RPM" message generation.
+
+* Fri Nov 16 2001 Dmitry V. Levin <ldv@alt-linux.org> 0.3.19cnc53-alt3
+
+- Updated patches: genbasedir, configure-db3, i18n.
+
+* Thu Nov 15 2001 Alexander Bokovoy <ab@altlinux.ru> 0.3.19cnc53-alt2
+
++ apt-0.3.19cnc53-2cl integrated. Most of our patches moved to upstream
+- Fixed (from Conectiva's changelog):
+    + fixed bug in mirror patch
+    + cleaned up gen{pkg,src}list (Alexander Bokovoy <ab@altlinux.ru
+    + fixed crash bug in genpkglist
+    + configure.in patch to detect rpmdb (Stelian Pop <stelian.pop@fr.alcove.com>)
+    +       * Skips correctly over empty package directories
+    +       * Adds the --bz2only argument which makes genbasedir
+    +       to generate only the .bz2 compressed versions of pkglist
+    +       and srclist (space gain...)
+    +       * Doesn't change the timestamps on pkglists/srclists if
+    +       the contents are not modified (making possible for example
+    +       to make several consecutive runs of genbasedir without
+    +       having the apt clients download the indexes again and again).
+    +       * Some minor cleanups (remove the temporary files in /tmp
+    +       at the end of the script etc).
+    + (Stelian Pop <stelian.pop@fr.alcove.com>)
+    + cleanup patch for gensrclist (Stelian Pop <stelian.pop@fr.alcove.com>)
+    + fixed multi-arch pkg handling (Stelian Pop <stelian.pop@fr.alcove.com>)
+    + updated russian translation (Alexander Bokovoy <ab@altlinux.ru>
+    + updated i18n (Dmitry Levin <ldv@alt-linux.org>)
+    + replaced Apt::GPG::Pubring with Apt::GPG::PubringPath
+      also uses --homedir instead of --keyring in gpg
+      (Alexander Bokovoy <ab@altlinux.ru>)
+    + patch to detect replaced (instead of just removed) packages
+      Dmitry Levin <ldv@alt-linux.org>
+    + updated mirrors patch
+    + Fixed mirrors infinite loop bug (closes: #4420).
+    + Fixed error handling.
+- Added:
+    + added kernel-tape to default AllowedDupPkgs
+    + added patch to fix bug in genbasedir with empty dirs
+      (Stelian Pop <stelian.pop@fr.alcove.com>)
+    + added -K (RPM::Check-Signatures) option to verify rpm sigs
+    + Added mirrors patch.
+
+* Fri Nov 02 2001 Dmitry V. Levin <ldv@alt-linux.org> 0.3.19cnc52-alt6
+
+- Initial build with rpm4.
+
+* Thu Oct 04 2001 Dmitry V. Levin <ldv@altlinux.ru> 0.3.19cnc52-alt5
+
+- Fixed i18n support and probably smth else
+  (configure.in, config.h.in and i18n.h were broken, kojima sux).
+- Implemented 18n for apt-pkg/rpm, updated POTFILES.in and russian translation.
+
+* Mon Oct 01 2001 Dmitry V. Levin <ldv@altlinux.ru> 0.3.19cnc52-alt4
+
+- Removed "^(kernel|alsa)[0-9]*-headers" from RPM::HoldPkgs list.
+- Added (experimental) replaced packages support.
+
+* Fri Sep 07 2001 Ivan Zakharyaschev <imz@altlinux.ru> 0.3.19cnc52-alt3.1
+
+- apt-cdrom fix (patch 6) reworked: apt-cdrom used to not detect a second
+  list file (srclist) if both (pkglist and srclist) were present in one
+  directory on the disk (in non-thorough mode); hopefully now it works how
+  we expect it to do.
+
+* Thu Aug 09 2001 Dmitry V. Levin <ldv@altlinux.ru> 0.3.19cnc52-alt3
+
+- Libification.
+- Reworked compilation options again: we add only '-fno-exceptions' now.
+
+* Tue Aug 07 2001 Dmitry V. Levin <ldv@altlinux.ru> 0.3.19cnc52-alt2
+
+- More code cleanup in tools/gen{pkg,src}list.cc.
+- Added %optflags_nocpp to compilation options.
+
+* Mon Aug 06 2001 Alexander Bokovoy <ab@altlinux.ru> 0.3.19cnc52-alt1
+
+- cnc52, gcc 3 and Solaris fixes
+- RPM4 check is disabled for the moment
+- File method fix has been integrated into mainstream
+- RPM::RemoveOptions, RPM::UpdateOptions have been added
+- Generation of Package list fixed
+
+* Thu Aug 02 2001 Dmitry V. Levin <ldv@altlinux.ru> 0.3.19cnc51-alt4
+
+- Added trigger for better apt-conf-* migration.
+
+* Tue Jul 31 2001 Dmitry V. Levin <ldv@altlinux.ru> 0.3.19cnc51-alt3
+
+- Updated:
+  + rpmpriorities,
+  + AllowedDupPkgs,
+  + HoldPkgs.
+- Moved *.list to apt-conf-* packages.
+
+* Fri Jul 20 2001 Alexander Bokovoy <ab@altlinux.ru> 0.3.19cnc51-alt2
+
+- Fixed:
+  + Bug in file method which prevented authentication from working correctly
+
+* Fri Jul 20 2001 Alexander Bokovoy <ab@altlinux.ru> 0.3.19cnc51-alt1
+
+- cnc51
+
+* Wed Jun 27 2001 Alexander Bokovoy <ab@avilink.net> 0.3.19cnc46-alt2
+
+- cnc46
+- kernel(|24)-{headers,source} added to HoldPkgs
+- REPOSITORIO-APT-HOWTO added (Portugal)
+- AllowedDupPackages -> AllowedDupPkgs
+
+* Thu Jun 07 2001 Dmitry V. Levin <ldv@altlinux.ru> 0.3.19cnc38-alt4
+
+- Various fixes in /usr/bin/genbasedir.
+
+* Thu May 17 2001 Dmitry V. Levin <ldv@altlinux.ru> 0.3.19cnc38-alt3
+
+- Fixed build.
+- Updated rpmpriorities.
+
+* Mon Apr 16 2001 Alexander Bokovoy <ab@avilink.net> 0.3.19cnc38-alt2
+
+- More duplicate packages from kernel series allowed.
+
+* Sun Apr 15 2001 Alexander Bokovoy <ab@avilink.net> 0.3.19cnc38-alt1
+
+- cnc38
+- Updated:
+  + apt-cdrom now works correctly
+  + default architecture has been changed to i586
+  + ssh method as wrapper to rsh one
+
+* Mon Mar 19 2001 Alexander Bokovoy <ab@avilink.net> 0.3.19cnc37-ipl3mdk
+
+- Updated:
+  + New patch for genbasedir to allow pass default key to GnuPG
+
+* Sun Mar 18 2001 Dmitry V. Levin <ldv@altlinux.ru> 0.3.19cnc37-ipl2mdk
+
+- Fixed:
+  + Build/installation of manpages without yodl sources;
+  + Uncompressed small patches.
+- Updated:
+  + AllowedDupPackages list according to new kernel naming scheme;
+  + URLs to use new domain name.
+
+* Sat Mar 17 2001 Alexander Bokovoy <ab@avilink.net> 0.3.19cnc37-ipl1mdk
+
+- Fixed:
+    + APT::GPG::Pubring renamed to APT::GPG::PubringPath
+    + Pubring support patch changed to use --homedir instead of --keyring
+- Updated:
+    + APT cnc37
+    + Fingerprint and repository sources changed to reflect ALT Linux
+      new public key ring
+
+* Mon Feb 19 2001 Alexander Bokovoy <ab@avilink.net> 0.3.19cnc36-ipl4mdk
+
+- Sisyphus source repository added to sources.list
+
+* Mon Feb 19 2001 Alexander Bokovoy <ab@avilink.net> 0.3.19cnc36-ipl3mdk
+
+- New version
+
+* Fri Feb 16 2001 Alexander Bokovoy <ab@avilink.net> 0.3.19cnc35-ipl2mdk
+
+- Static library compilation added
+- Static library goes to apt-devel-static due sizes of library
+
+* Thu Feb 15 2001 Alexander Bokovoy <ab@avilink.net> 0.3.19cnc35-ipl1mdk
+
+- New version
+- Rsh method from upstream apt-get ported
+- Spec file follows libification of rpm now
+
+* Mon Jan 22 2001 Alexander Bokovoy <ab@avilink.net> 0.3.19cnc32-ipl4mdk
+
+- New upstream version
+- Russian translation updated
+- Rebuild with new RPM library
+
+* Mon Jan 22 2001 Alexander Bokovoy <ab@avilink.net> 0.3.19cnc28-ipl1mdk
+
+- New upstream version
+- cnc28 still lacks correct GNUPG checking code, our patch is neccessary.
+- Genbasedir slightly patched again.
+
+* Sun Jan 21 2001 Alexander Bokovoy <ab@avilink.net> ipl11mdk
+
+- Typo in methods/gpg.cc fixed.
+
+* Sun Jan 21 2001 Alexander Bokovoy <ab@avilink.net> ipl10mdk
+
+- APT::GPG::Pubring option to specify default gnupg public ring added to check
+  distributors' signs automatically via default pubring in RPM package
+- ftp user password changed to IPL one.
+
+* Tue Jan 09 2001 Dmitry V. Levin <ldv@fandra.org> 0.3.19cnc27-ipl7mdk
+
+- Specfile cleanup.
+
+* Mon Jan 08 2001 Alexander Bokovoy <ab@avilink.net> ipl5mdk
+
+- genbasedir help message fixed
+
+* Mon Jan 08 2001 Alexander Bokovoy <ab@avilink.net> ipl4mdk
+
+- Integration with main IPL package:
+- Russian translation for command line messages added
+- Russian translation of package summary/description
+
+* Thu Jan 04 2001 AEN <aen@logic.ru>
+
+- Real Sisyphus URL & IPLabs Fingerptint added
+- changed rpmpriorities
+
+* Thu Jan 04 2001 AEN <aen@logic.ru>
+
+- build for RE
+
+* Tue Dec 12 2000 Frederic Lepied <flepied@mandrakesoft.com> 0.3.19cnc27-1mdk
+
+- first mandrake version.
+
+* Thu Dec 07 2000 Andreas Hasenack <andreas@conectiva.com>
+
+- damn! Wrong URL in sources.list, atualizacoes.conectiva.com
+  doesn't exist, of course...
+
+* Thu Dec 07 2000 Andreas Hasenack <andreas@conectiva.com>
+
+- updated sources.list with new mirrors and new download tree
+- removed (noreplace) for the sources.list file for this
+  upgrade. It will be easier for the user. The (noreplace)
+  should be back in place after this update as we expect no
+  further big modifications for that file, only new mirrors.
+
+* Wed Dec 06 2000 Alfredo K. Kojima <kojima@conectiva.com.br>
+
+- fixed prob in vendors.list
+
+* Tue Dec 05 2000 Alfredo K. Kojima <kojima@conectiva.com.br>
+
+- released version 0.3.19cnc27
+
+* Wed Nov 08 2000 Alfredo K. Kojima <kojima@conectiva.com.br>
+
+- released version 0.3.19cnc26
+
+* Mon Nov 06 2000 Alfredo K. Kojima <kojima@conectiva.com.br>
+
+- released version 0.3.19cnc25
+
+* Thu Nov 02 2000 Alfredo K. Kojima <kojima@conectiva.com.br>
+
+- released version 0.3.19cnc24
+
+* Thu Nov 02 2000 Rud<E1> Moura <ruda@conectiva.com>
+
+- updated source.list (again)
+
+* Thu Nov 02 2000 Rud<E1> Moura <ruda@conectiva.com>
+
+- updated source.list
+
+* Wed Nov 01 2000 Alfredo K. Kojima <kojima@conectiva.com.br>
+
+- released version 0.3.19cnc23
+- added cache directories for gen{pkg,src}list
+- pt_BR manpages
+
+* Tue Oct 31 2000 Alfredo K. Kojima <kojima@conectiva.com.br>
+
+- released version 0.3.19cnc22
+- Requires -> PreReq in apt-devel
+
+* Mon Oct 30 2000 Alfredo Kojima <kojima@conectiva.com>
+
+- collapsed libapt-pkg-devel and -doc to apt-devel
+
+* Mon Oct 30 2000 Alfredo K. Kojima <kojima@conectiva.com.br>
+
+- released version 0.3.19cnc21
+
+* Sun Oct 29 2000 Alfredo K. Kojima <kojima@conectiva.com.br>
+
+- released version 0.3.19cnc20
+
+* Sun Oct 29 2000 Alfredo K. Kojima <kojima@conectiva.com.br>
+
+- released version 0.3.19cnc19
+- added gensrclist
+- support for apt-get source
+
+* Fri Oct 27 2000 Alfredo K. Kojima <kojima@conectiva.com.br>
+
+- released version 0.3.19cnc18
+
+* Thu Oct 26 2000 Alfredo K. Kojima <kojima@conectiva.com.br>
+
+- released version 0.3.19cnc17
+- new manpages
+
+* Wed Oct 25 2000 Alfredo K. Kojima <kojima@conectiva.com.br>
+
+- released version 0.3.19cnc16
+
+* Sun Oct 22 2000 Alfredo K. Kojima <kojima@conectiva.com.br>
+
+- released version 0.3.19cnc15
+
+* Sat Oct 21 2000 Alfredo K. Kojima <kojima@conectiva.com.br>
+
+- released version 0.3.19cnc14
+
+* Thu Oct 19 2000 Claudio Matsuoka <claudio@conectiva.com>
+
+- new upstream release: 0.3.9cnc13
+
+* Tue Oct 17 2000 Eliphas Levy Theodoro <eliphas@conectiva.com>
+
+- added rpmpriorities to filelist and install
+
+* Tue Oct 17 2000 Claudio Matsuoka <claudio@conectiva.com>
+
+- updated to 0.3.19cnc12
+- fresh CVS snapshot including: support to Acquire::ComprExtension,
+  debug messages removed, fixed apt-cdrom, RPM DB path, rpmlib call
+  in pkgRpmLock::Close(), package priority kludge removed, i18n
+  improvements, and genbasedir/genpkglist updates.
+- handling language setting in genpkglist to make aptitude happy
+
+* Wed Oct 11 2000 Alfredo K. Kojima <kojima@conectiva.com>
+
+- released version 0.3.19cnc11
+- fixed problem with shard lib symlinks
+
+* Tue Oct 10 2000 Alfredo K. Kojima <kojima@conectiva.com>
+
+- released version 0.3.19cnc10
+
+* Mon Oct 02 2000 Claudio Matsuoka <claudio@conectiva.com>
+
+- fixed brown paper bag bug with method permissions
+- added parameter --sign to genbasedir
+- added html/text doc files
+
+* Sat Sep 30 2000 Claudio Matsuoka <claudio@conectiva.com>
+
+- bumped to 0.3.19cnc9
+- added vendors.list
+- added gpg method
+- fixed minor stuff to make Aptitude work
+- added missing manpages
+- fixed shared libs
+- split in apt, libapt-pkg, libapt-pkg-devel, libapt-pkg-doc
+- rewrote genbasedir in shell script (original was in TCL)
+- misc cosmetic changes
+
+* Tue Sep 26 2000 Alfredo K. Kojima <kojima@conectiva.com>
+
+- released version 0.3.19cnc8
+
+* Wed Sep 20 2000 Alfredo K. Kojima <kojima@conectiva.com>
+
+- released version 0.3.19cnc7
+
+* Mon Sep 18 2000 Alfredo K. Kojima <kojima@conectiva.com>
+
+- released version 0.3.19cnc6
+
+* Sat Sep 16 2000 Alfredo K. Kojima <kojima@conectiva.com>
+
+- released version 0.3.19cnc5
+
+* Fri Sep 15 2000 Alfredo K. Kojima <kojima@conectiva.com>
+
+- released version 0.3.19cnc4
+
+* Tue Sep 12 2000 Alfredo K. Kojima <kojima@conectiva.com>
+
+- released version 0.3.19cnc3
+
+* Tue Sep 05 2000 Alfredo K. Kojima <kojima@conectiva.com>
+
+- renamed package to apt, with version 0.3.19cncV
+
+* Tue Sep 05 2000 Alfredo K. Kojima <kojima@conectiva.com>
+
+- 0.10
+- added genpkglist and rapt-config
+- program names changed back to apt-*
+
+* Mon Sep 04 2000 Alfredo K. Kojima <kojima@conectiva.com>
+
+- 0.9
+
+* Mon Sep 04 2000 Alfredo K. Kojima <kojima@conectiva.com>
+
+- 0.8
+
+* Mon Sep 04 2000 Alfredo K. Kojima <kojima@conectiva.com>
+
+- 0.7
+
+* Fri Sep 01 2000 Alfredo K. Kojima <kojima@conectiva.com>
+
+- fixed typo in sources.list
+
+* Thu Aug 31 2000 Alfredo K. Kojima <kojima@conectiva.com>
+
+- version 0.6
+
+* Thu Aug 31 2000 Alfredo K. Kojima <kojima@conectiva.com>
+
+- version 0.5
+
+* Thu Aug 31 2000 Alfredo K. Kojima <kojima@conectiva.com>
+
+- version 0.4
+
+* Wed Aug 30 2000 Alfredo K. Kojima <kojima@conectiva.com>
+
+- version 0.3
+
+* Mon Aug 28 2000 Alfredo K. Kojima <kojima@conectiva.com>
+
+- second try. new release with direct hdlist handling
+
+* Thu Aug 10 2000 Alfredo K. Kojima <kojima@conectiva.com>
+
+- initial package creation. Yeah, it's totally broken for sure.
+

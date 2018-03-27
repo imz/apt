@@ -1,0 +1,557 @@
+#! /bin/sh
+#
+# Modified by ALT Linux Team <apt@packages.altlinux.org>.
+# Last change by Sviatoslav Sviridov <svd@altlinux.ru>.
+# genbasedir was rewritten as mix of genbasedir scripts
+# from Connectiva's apt-0.5.4cnc9 and ALT Linux Team's
+# apt-0.3.19cnc55-alt9.
+#
+# The previous version from apt-0.5.4cnc9 was:
+# $Id: genbasedir,v 1.6 2002/09/04 22:48:37 niemeyer Exp $
+#
+# This script generates the contents of the base/ directory, by creating
+# the pkglists and the hash file. Update the components directory to contain
+# the components of your repository.
+#
+
+PROG="${0##*/}"
+
+topdir=
+
+basedir=.
+signature=
+listonly=
+hashonly=
+partial=
+newhashfile=1
+oldhashfile=1
+mapi=
+bz2only=
+updateinfo=
+progress=
+flat=
+defaultkey=
+topdir=
+create=
+verbose=
+
+# bloat is necessary for non-Conectiva distros, at least RH,
+# because they use file dependencies with a non-predictable
+# heuristic. So we can't strip-off paths that will probably
+# never appear in dependencies.
+bloat=""
+
+# Global release file sections
+origin="Unknown"
+label="Unknown"
+suite="Unknown"
+codename="Unknown"
+date="`date -R`"
+architectures="Unknown"
+description="Not Available"
+
+# Component release file sections
+archive="Unknown"
+version="Unknown"
+architecture="Unknown"
+notautomatic="false"
+
+GENPKGLIST=genpkglist
+GENSRCLIST=gensrclist
+
+Fatal()
+{
+	echo "${0##*/}: $*" >&2
+	exit 1
+}
+
+Verbose()
+{
+	if [ -n "$verbose" ]; then
+		echo "$@"
+	fi
+}
+
+USAGE()
+{
+	cat >&2 <<EOF
+Usage: ${0##*/} [<options>] <distribution> [<comp1> [<comp2> ...]]
+
+Options:
+   -s, --sign         Generate and sign hashfile
+   --default-key=ID   Use ID as gnupg secret key
+   --hashonly         Do hash stuff only
+   --listonly         Generate pkglists/srclists and quit
+   --partial          Update just some of the already existent components
+   --newhashfile      Enable generation of new style hashfile
+   --no-newhashfile   Disable generation of new style hashfile
+   --oldhashfile      Enable generation of old style hashfile
+   --no-oldhashfile   Disable generation of old style hashfile
+   --bz2only          Generate only compressed lists
+   --progress         Show progress bars for genpkglist/gensrclist;
+                      implies --verbose
+   -v, --verbose      Be more talkative
+   --silent           Be less talkative (default)
+   --topdir=dir       Top directory of repository
+   --updateinfo=FILE  Update information file
+   --mapi             List only those pkgs in srclist which generate
+                      some binaries
+   --flat             Use flat repository, where SRPMS and RPMS are in
+                      the topdir (SRPMS are usually in 'topdir/..')
+   --bloat            Do not strip the package file list. Needed for some
+                      distributions that use non-automatically generated
+                      file dependencies
+   --create           Create base directory if needed
+
+   --origin=ORIGIN    Set "Origin" field in global release file
+   --label=LABEL      Set "Label" field in global release file
+   --suite=SUITE      Set "Suite" field in global release file
+   --codename=CODENAME
+                      Set "Codename" field in global release file
+   --architectures=ARCHITECTURES
+                      Set "Architectures" field in global release file
+   --description=DESCRIPTION
+                      Set "Description" field in global release file
+
+   --archive=ARCHIVE  Set "Archive" field in component release file
+   --version=VERSION  Set "Version" field in component release file
+   --architecture=ARCHITECTURE
+                      Set "Architecture" field in component release file
+   --notautomatic=true|false  Set "NotAutomatic" field in component release file
+
+   -h,--help          Show this help screen
+
+Examples:
+
+   ${0##*/} --topdir=/var/ftp/pub/distributions/ALTLinux/Sisyphus i586
+   ${0##*/} --topdir=/var/ftp/pub/distributions/ALTLinux/Sisyphus i586 base kernel castle junior master contrib classic non-free
+EOF
+	[ -n "$1" ] && exit "$1" || exit
+}
+
+getsize()
+{
+    tmp=`wc -c $1`
+    echo $tmp|cut -f1 -d\  
+}
+
+phashstuff()
+{
+    size=`getsize "$1"`
+    md5=`md5sum "$1"|cut -f1 -d\  `
+    echo " $md5 $size $2"
+}
+
+TEMP=`getopt -n $PROG -o vhs -l help,mapi,listonly,bz2only,hashonly,updateinfo:,bloat,topdir:,sign,default-key:,progress,verbose,silent,oldhashfile,newhashfile,no-oldhashfile,no-newhashfile,partial,flat,create,origin:,label:,suite:,codename:,architectures:,description:,archive:,version:,architecture:,notautomatic: -- "$@"` || USAGE
+eval set -- "$TEMP"
+
+while :; do
+	case "$1" in
+		--listonly) shift; listonly=1
+			;;
+		--bz2only) shift; bz2only=1
+			;;
+		--hashonly) shift; hashonly=1
+			;;
+		-s|--sign) shift; signature=1
+			;;
+		--bloat) shift; bloat="--bloat"
+			;;
+		--mapi) shift; mapi="--mapi"
+			;;
+		--updateinfo) shift; updateinfo="$1"; shift
+			;;
+		--default-key) shift; defaultkey="$1"; shift
+			;;
+		--topdir) shift; topdir="$1"; shift
+			;;
+		--flat) shift; flat="--flat"
+			;;
+		--progress) shift; progress="--progress"; verbose=1
+			;;
+		-v|--verbose) shift; verbose=1
+			;;
+		--silent) shift; verbose=
+			;;
+		--partial) shift; partial=1
+			;;
+		--oldhashfile) shift; oldhashfile=1
+			;;
+		--no-oldhashfile) shift; oldhashfile=
+			;;
+		--newhashfile) shift; newhashfile=1
+			;;
+		--no-newhashfile) shift; newhashfile=
+			;;
+		-h|--help) USAGE 0
+			;;
+		--create) shift; create=1
+			;;
+		--origin) shift; origin="$1"; shift
+			;;
+		--label) shift; label="$1"; shift
+			;;
+		--suite) shift; suite="$1"; shift
+			;;
+		--codename) shift; codename="$1"; shift
+			;;
+		--architectures) shift; architectures="$1"; shift;
+			;;
+		--description) shift; description="$1"; shift;
+			;;
+		--archive) shift; archive="$1"; shift;
+			;;
+		--version) shift; version="$1"; shift;
+			;;
+		--architecture) shift; architecture="$1"; shift;
+			;;
+		--notautomatic) shift; notautomatic="$1"; shift;
+			;;
+		--) shift; break
+			;;
+		*) echo "$PROG: unrecognized option: $1" >&2; exit 1
+			;;
+	esac
+done
+
+topdir="`echo -n "$topdir" |tr -s /`"
+
+[ -n "$topdir" ] || Fatal 'TOPDIR not specified.'
+
+cd "$topdir" || Fatal "Invalid TOPDIR specified: $topdir"
+
+# this will fix the path if it was relative
+topdir=`pwd`
+
+distro="$1"
+shift
+
+components="$*"
+
+basedir_=base
+oldbasedir_="`echo "$distro/$basedir_"|tr -s /`"
+basedir="`echo "$topdir/$oldbasedir_"|tr -s /`"
+
+pkglist_=$basedir_/pkglist
+srclist_=$basedir_/srclist
+release_=$basedir_/release
+oldpkglist_=$oldbasedir_/pkglist
+oldsrclist_=$oldbasedir_/srclist
+oldrelease_=$oldbasedir_/release
+pkglist=$basedir/pkglist
+srclist=$basedir/srclist
+release=$basedir/release
+
+if [ -z "$flat" ]; then
+	srctopdir=`cd $topdir/$distro/..; pwd`
+else
+	srctopdir=`cd $topdir/$distro; pwd`
+fi
+
+WORKDIR=
+
+exit_handler()
+{
+	local rc=$?
+	trap - EXIT
+	[ -z "$WORKDIR" ] || rm -rf "$WORKDIR"
+	exit $rc
+}
+
+trap exit_handler SIGHUP SIGPIPE SIGINT SIGQUIT SIGTERM EXIT
+
+WORKDIR="$(mktemp -dt "$PROG.XXXXXXXXXX")" || exit
+
+if [ ! -d "$basedir" ]; then
+	if [ -n "$create" ]; then
+		Verbose -n 'Creating base directory... '
+		if ! mkdir -p "$basedir" >/dev/null 2>&1; then
+			Fatal 'Unable to create base directory'
+		fi
+		Verbose done
+	else
+		Fatal 'Base directory does not exist!'
+	fi
+fi
+
+if [ -z "$components" ]; then
+	# Try to guess components
+	comps=$WORKDIR/components
+	: >$comps
+	for dir in $topdir/$distro/RPMS.* $srctopdir/SRPMS.*; do
+		if [ -d $dir ]; then
+			echo $dir | sed 's/.*\.//' >> $comps
+		fi
+	done
+	components=`cat $comps|sort|uniq`
+	components=`echo $components` # eat newlines
+	rm -f $comps
+fi
+
+if [ -z "$components" ]; then
+	Fatal 'No components found'
+else
+	Verbose "Components: $components"
+fi
+
+SRCIDX="$WORKDIR/total"
+
+#SRCIDX_COMP will be of the form "$WORKDIR/$comp"
+
+saved_list=
+
+save_file()
+{
+	saved_list="$1"
+
+	if [ -f "$saved_list" ]; then
+		mv -f "$saved_list" "$saved_list.old"
+	else
+		saved_list=
+	fi
+}
+
+compare_file()
+{
+	if [ -n "$saved_list" -a -f "$saved_list.old" ]; then
+		if cmp -s "$saved_list.old" "$saved_list"; then
+			mv -f "$saved_list.old" "$saved_list"
+		else
+			rm -f "$saved_list.old"
+		fi
+	fi
+}
+
+if [ -z "$hashonly" ]; then
+# package lists
+# -------------
+
+	:>"$SRCIDX"
+
+	Verbose -n 'Processing pkglists... '
+	for comp in $components; do
+		if [ ! -d $topdir/$distro/RPMS.$comp ]; then
+			continue
+		fi
+
+		Verbose -n "$comp "
+
+		SRCIDX_COMP="$WORKDIR/$comp" # will be rewritten by genpkglist
+
+		#Verbose -n 'pkglist '
+
+		newlist="$basedir/pkglist.$comp"
+
+		# Save older pkglist
+		save_file "$newlist"
+
+		if [ -z "$updateinfo" ]; then
+			(cd "$basedir"; "$GENPKGLIST" $progress $bloat --index "$SRCIDX_COMP" "$topdir/$distro" "$comp")
+		else
+			(cd "$basedir"; "$GENPKGLIST" $progress $bloat --index "$SRCIDX_COMP" --info "$updateinfo" "$topdir/$distro" "$comp")
+		fi
+
+		if [ $? -ne 0 ]; then
+			echo
+			Fatal 'Error executing genpkglist.'
+		fi
+
+		# Compare with older pkglist.
+		compare_file
+
+		if [ -f "$newlist" ]; then
+			rm -f "$newlist.bz2"
+			bzip2 -9k "$newlist"
+		fi
+
+		cat "$SRCIDX_COMP" >> "$SRCIDX"
+
+	done
+	Verbose 'done'
+
+	Verbose -n 'Processing srclists... '
+	for comp in $components; do
+		if [ ! -d $srctopdir/SRPMS.$comp ]; then
+			continue
+		fi
+
+		Verbose -n " $comp "
+
+		SRCIDX_COMP="$WORKDIR/$comp" # created by genpkglist, used by gensrclist
+
+		#Verbose -n 'srclist '
+
+		newlist="$basedir/srclist.$comp"
+
+		# Save older srclist
+		save_file "$newlist"
+
+		if [ -z "$mapi" ]; then
+			# the default case: all .src.rpm in SRPMS.$comp get listed
+			(cd "$basedir"; "$GENSRCLIST" $progress $flat "$srctopdir" "$comp" "$SRCIDX")
+		else
+			# the special case: only those .src.rpm in SRPMS.$comp get listed
+			# which produce some binaries in RPMS.$comp
+			(cd "$basedir"; "$GENSRCLIST" $progress $flat $mapi "$srctopdir" "$comp" "$SRCIDX_COMP")
+		fi
+
+		if [ $? -ne 0 ]; then
+			echo
+			Fatal 'Error executing gensrclist.'
+		fi
+
+		# Compare with older srclist.
+		compare_file
+
+		if [ -f "$newlist" ]; then
+			rm -f "$newlist.bz2"
+			bzip2 -9k "$newlist"
+		fi
+
+	done
+	Verbose 'done'
+fi
+
+phash()
+{
+	if [ -f "$1" ]; then
+		phashstuff "$1" "$2" >> "$3"
+	fi
+}
+
+# Creating new style hashfile
+if [ -n "$newhashfile" -a -z "$listonly" ]; then
+	Verbose -n 'Creating component releases...'
+	for comp in $components; do
+		if [ ! -f "$release.$comp" ]; then
+			Verbose -n " $comp"
+			echo "Archive: $archive"           >> "$release.$comp"
+			echo "Component: $comp"            >> "$release.$comp"
+			echo "Version: $version"           >> "$release.$comp"
+			echo "Origin: $origin"             >> "$release.$comp"
+			echo "Label: $label"               >> "$release.$comp"
+			echo "Architecture: $architecture" >> "$release.$comp"
+			echo "NotAutomatic: $notautomatic" >> "$release.$comp"
+		fi
+	done
+	Verbose ' done'
+
+	if [ -f "$release" ]; then
+		save_file "$release"
+		if [ -z "$partial" ]; then
+			Verbose -n 'Updating global release file... '
+			sed -n -e "/^MD5Sum:/q" \
+				-e "s/^Date:.*\$/Date: $date/" \
+				-e "s/^Components:.*\$/Components: $components/" \
+				-e "p" "$release.old" > "$release"
+			echo "MD5Sum:" >> "$release"
+		else
+			Verbose -n 'Partially updating global release file... '
+			sed -n -e "/^\$/q" \
+				-e "s/^Date:.*\$/Date: $date/" \
+				-e "p" "$release.old" > "$release.pre"
+			for comp in $components; do
+				sed -e "\#^ .* $pkglist_.$comp\(.bz2\)\?\$#d" \
+				    -e "\#^ .* $srclist_.$comp\(.bz2\)\?\$#d" \
+				    -e "\#^ .* $release_.$comp\(.bz2\)\?\$#d" \
+				    -e "s/^\(Components:.*\) $comp\(.*\)\$/\1\2/" \
+					"$release.pre" > "$release.tmp"
+				mv -f "$release.tmp" "$release.pre"
+			done
+			sed -e "s/^\(Components:.*\)\$/\1 $components/" \
+				"$release.pre" > "$release"
+			rm -f "$release.pre"
+		fi
+		Verbose 'done'
+	else
+		Verbose -n 'Creating global release file... '
+		echo "Origin: $origin"               >> "$release"
+		echo "Label: $label"                 >> "$release"
+		echo "Suite: $suite"                 >> "$release"
+		echo "Codename: $codename"           >> "$release"
+		echo "Date: `date -R`"               >> "$release"
+		echo "Architectures: $architectures" >> "$release"
+		echo "Components: $components"       >> "$release"
+		echo "Description: $description"     >> "$release"
+		echo "MD5Sum:"                       >> "$release"
+		Verbose "done"
+	fi
+
+	Verbose -n 'Appending MD5Sum...'
+	for comp in $components; do
+		Verbose -n " $comp"
+		phash "$pkglist.$comp" "$pkglist_.$comp" "$release"
+		phash "$srclist.$comp" "$srclist_.$comp" "$release"
+		phash "$pkglist.$comp.bz2" "$pkglist_.$comp.bz2" "$release"
+		phash "$srclist.$comp.bz2" "$srclist_.$comp.bz2" "$release"
+		phash "$release.$comp" "$release_.$comp" "$release"
+	done
+	Verbose ' done'
+
+	echo >> "$release"
+
+	if [ -n "$signature" ]; then
+		if [ -n "$defaultkey" ]; then
+			gpg -armour --quiet --detach-sign --yes --default-key "$defaultkey" "$release"
+		else
+			gpg -armour --quiet --detach-sign --yes "$release"
+		fi
+
+		cat "$release.asc" >>"$release"
+		rm -f "$release.asc"
+	fi
+
+	# Compare with older release
+	compare_file
+fi
+
+# Creating old style hashfile
+if [ -n "$oldhashfile" -a -z "$listonly" ]; then
+	hf="$basedir/hashfile"
+	save_file "$hf"
+	: > "$hf"
+
+	# TODO: handle 'partial' option
+
+	Verbose -n 'Creating legacy hashfile...'
+	echo "MD5SUM:" >> $hf
+
+	for comp in $components; do
+		Verbose -n " $comp"
+
+		phash "$pkglist.$comp" "$oldpkglist_.$comp" "$hf"
+		phash "$srclist.$comp" "$oldsrclist_.$comp" "$hf"
+		phash "$pkglist.$comp.bz2" "$oldpkglist_.$comp.bz2" "$hf"
+		phash "$srclist.$comp.bz2" "$oldsrclist_.$comp.bz2" "$hf"
+		phash "$release.$comp" "$oldrelease_.$comp" "$hf"
+	done
+	Verbose ' done'
+	echo >> $hf
+
+	compare_file
+
+	if [ -n "$signature" ]; then
+		# Save older hashfile.gpg
+		save_file "$basedir/hashfile.gpg"
+
+		if [ -n "$defaultkey" ]; then
+			gpg -armour --quiet --sign --yes -o "$basedir/hashfile.gpg" --default-key "$defaultkey" "$basedir/hashfile"
+		else
+			gpg -armour --quiet --sign --yes -o "$basedir/hashfile.gpg" "$basedir/hashfile"
+		fi
+
+		# Compare with older hashfile.gpg
+		compare_file
+	fi
+fi
+
+# Removing not compressed index files
+if [ -n "$bz2only" ]; then
+	for comp in $components; do
+		rm -f "$pkglist.$comp" "$srclist.$comp"
+	done
+fi
+
+Verbose 'All your base are belong to us!!!'
+
+# vim:ts=4:sw=4
