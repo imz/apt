@@ -1,0 +1,5 @@
+(TODO: review more thoroughly for new bugs.) Let's assume this is an equivalent rewrite of the code.
+
+Perhaps it would be easier to review if non-similar changes were
+placed in separate commits (grouping the similar changes such as:
+"Replace legacy int types.")
