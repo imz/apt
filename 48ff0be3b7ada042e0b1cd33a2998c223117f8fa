@@ -5,3 +5,6 @@ I don't understand the comment and the following code yet:
 
        // In apt-get it's called 'Dir::State::apt_mark_storage', but format used here is incompatible, due to that name is different
        Cnf.CndSet("Dir::State::apt_mark_storage", "apt_mark_storage");
+
+After reading the next commit, I've understood that "apt_mark_storage"
+is the default filename where to store the state of the auto-marks.
