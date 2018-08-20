@@ -1,0 +1,14 @@
+This code uses the filename from the config parameter introduced in
+the prev.commit. A few things are not clear in the code:
+
+1. What the value of delim_index is expected to be here? In the default value (from prev.commit) there is no '/'.
+
+               AptMarkTempFileName = AptMarkStorageFileName.substr(0, delim_index + 1) + ".__tmp__apt_mark_storage";
+
+2. Why is iter not dereferenced here:
+
+                               linestr = iter.Name();
+
+though its other previous uses are written with dereferencing, e.g.:
+
+                       StateCache const &stateCache = PkgState[iter->ID];
