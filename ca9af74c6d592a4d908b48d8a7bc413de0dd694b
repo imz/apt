@@ -3,13 +3,15 @@ read/writeStateFile() were injected into the old code (in the
 prev.commit) and they might contain an error/crash. However,
 practically, if there are no errors, no direct effect on the old
 behavior is expected because their return codes do not affect anything
-at the places where they are called. Though, I'm not sure about the
+at the places where they are called. (Though, I'm not sure about the
 effect of things like:
 
  return _error->Error(_("Failed to replace file: %s"), AptMarkStorageFileName.c_str());
 
--- whther this would give a normal return code that is ignored
-or _error->Error() would somehow interrupt the normal execution?
+-- whther this would give a normal return code that is ignored or
+_error->Error() would somehow interrupt the normal execution? No, it
+won't interrupt the execution -- I've checked the sources for
+GlobalError::Error.)
 
 BTW, writeStateFile() should be a const method, why not?
 
