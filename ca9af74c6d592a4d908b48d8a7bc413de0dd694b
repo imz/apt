@@ -11,6 +11,8 @@ effect of things like:
 -- whther this would give a normal return code that is ignored
 or _error->Error() would somehow interrupt the normal execution?
 
+BTW, writeStateFile() should be a const method, why not?
+
 This code uses the filename from the config parameter introduced in
 the prev.commit. A few things are not clear in the code:
 
