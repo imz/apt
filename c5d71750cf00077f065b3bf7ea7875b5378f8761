@@ -1,4 +1,4 @@
-quite clear
+quite clear, although this seems to be 2 logically separate changes
 
 Effects on the old behavior: no
 (only errors in MarkAuto() might theoretically affect it)
