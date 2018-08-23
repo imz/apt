@@ -1,0 +1,14 @@
+Effects on the old behavior: can be either on APT, or on RPM
+(modifying the database).
+
+I haven't thoroughly studied this code. I have already got the
+understanding that the auto-flags are read or written package by
+package. (Before, I used to think that there is a way to get the data
+with one sweep.)
+
+Also, an idea/question appeared to me: if this information is stored
+in the RPM db, there could be a way to change these flags not by means
+of APT, but rather through RPM's command-line interface. Is there
+something like this? vseleznv@ said that there is apparently no way to
+do this through RPM now, but it has been discussed in RPM mailing
+lists.
