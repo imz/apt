@@ -1,4 +1,4 @@
-This change might theoretically affect the old code, because calls to
+Effects on the old behavior: theoretically possible, because calls to
 read/writeStateFile() were injected into the old code (in the
 prev.commit) and they might contain an error/crash. However,
 practically, if there are no errors, no direct effect on the old
@@ -15,8 +15,8 @@ GlobalError::Error.)
 
 BTW, writeStateFile() should be a const method, why not?
 
-This code uses the filename from the config parameter introduced in
-the prev.commit. A few things are not clear in the code:
+Another comment: This code uses the filename from the config parameter
+introduced in the prev.commit. A few things are not clear in the code:
 
 1. What the value of delim_index is expected to be here? In the default value (from prev.commit) there is no '/'.
 
