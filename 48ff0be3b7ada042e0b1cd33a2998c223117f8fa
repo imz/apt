@@ -1,5 +1,6 @@
-This must not change the behavior of old commands, because the calls
-to readStateFile() and writeStateFile() do nothing as of now.
+Effects on the old behavior: This does not change the behavior of old
+commands, because the calls to read/writeStateFile() do nothing as of
+now.
 
 1. I don't understand the comment and the following code yet:
 
@@ -17,3 +18,7 @@ special comment in apt/apt-pkg/depcache.cc is strange (and unexplained):
  }
 
 -                                                                       /*}}}*/
+
+3. The spacing (with tabs) in apt/apt-pkg/rpm/rpmsystem.cc is not
+consistent with how the code is indented nearby. (Although I don't
+like their mix of tabs and spaces.)
