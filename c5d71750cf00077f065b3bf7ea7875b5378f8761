@@ -1,4 +1,7 @@
-quite clear; seems not to touch the old code
+quite clear
+
+Effects on the old behavior: no
+(only errors in MarkAuto() might theoretically affect it)
 
 1. The spacing (with tabs) in apt/apt-pkg/rpm/rpmsystem.cc is not
 consistent with how the code is indented nearby. (Although I don't
