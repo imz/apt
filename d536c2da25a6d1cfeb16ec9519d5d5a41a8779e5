@@ -1,14 +1,32 @@
 Effects on the old behavior: can be either on APT, or on RPM
 (modifying the database).
 
-I haven't thoroughly studied this code. I have already got the
-understanding that the auto-flags are read or written package by
-package. (Before, I used to think that there is a way to get the data
-with one sweep.)
+I haven't thoroughly studied this code.
+
+I've noticed an interesting thing for me: that the auto-flags are
+read/written in a package-by-package manner. Previously, I used to
+think that there is a way to get the data with one sweep. The writing
+is simply done in UpdateMarks() by iterating through the packages; and
+also immediately whenever rpm-install etc is done: see
+pkgRPMLibPM::AddToTransaction(). The reading happens in
+rpmListParser::Flags()--for a single package; this function is called
+in pkgcachegen.cc in pkgCacheGenerator::MergeList() during an
+iteration over a list of packages like this:
+
+  NewPackage(Pkg,PackageName)
+  ...
+  Pkg->Flags = List.Flags();
+  ...
+
+whereas NewPackage() allocates a structure for the package and
+"registers" it in the cache etc.
 
 Also, an idea/question appeared to me: if this information is stored
 in the RPM db, there could be a way to change these flags not by means
-of APT, but rather through RPM's command-line interface. Is there
-something like this? vseleznv@ said that there is apparently no way to
-do this through RPM now, but it has been discussed in RPM mailing
-lists.
+of APT, but rather through RPM's command-line interface (because these
+flags make sense without APT, for a substitute of APT; they are even
+stored in the common RPM db). Is there something like this? vseleznv@
+said that there is apparently no way to do this through RPM now, but
+it has been discussed in RPM mailing lists. In a sense, of course,
+apt-mark is such a tool, but it has "apt" in its name (and uses APT
+libs)...
