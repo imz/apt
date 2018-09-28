@@ -4632,7 +4632,10 @@ int main(int argc,const char *argv[])
    {
       bool Errors = _error->PendingError();
       _error->DumpErrors();
-      return Errors == true?100:0;
+      if (Errors)
+      {
+          return 100;
+      }
    }
 
    if (GCache->CheckDeps(true) == false) {
