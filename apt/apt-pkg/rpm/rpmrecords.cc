@@ -15,6 +15,7 @@
 #include <config.h>
 
 #ifdef HAVE_RPM
+#include <stdint.h>
 
 #include <assert.h>
 
@@ -321,7 +322,7 @@ void rpmRecordParser::GetRec(const char *&Start,const char *&Stop)
    char *str;
    char **strv;
    char **strv2;
-   int_32 *numv;
+   int32_t *numv;
    char buf[32];
 
    BufUsed = 0;

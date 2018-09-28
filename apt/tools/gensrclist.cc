@@ -16,6 +16,7 @@
 #include <unistd.h>
 #include <assert.h>
 #include <locale.h>
+#include <stdint.h>
 
 #include <map>
 #include <list>
@@ -137,8 +138,8 @@ void usage()
 #if RPM_VERSION >= 0x040000
 extern "C" {
 // No prototype from rpm after 4.0.
-int headerGetRawEntry(Header h, int_32 tag, int_32 * type,
-		      void *p, int_32 *c);
+int headerGetRawEntry(Header h, int32_t tag, int32_t * type,
+		      void *p, int32_t *c);
 }
 #endif
 
@@ -151,7 +152,7 @@ int main(int argc, char ** argv)
    struct dirent **dirEntries;
    int rc, i;
    Header h;
-   int_32 size[1];
+   int32_t size[1];
    int entry_no, entry_cur;
    CachedMD5 *md5cache;
    map<string, list<char*>* > rpmTable; // table that maps srpm -> generated rpm

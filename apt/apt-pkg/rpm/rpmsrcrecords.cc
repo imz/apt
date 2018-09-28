@@ -16,6 +16,7 @@
 #include <config.h>
 
 #ifdef HAVE_RPM
+#include <stdint.h>
 
 #include <assert.h>
 
@@ -153,7 +154,7 @@ string rpmSrcRecordParser::Package() const
 string rpmSrcRecordParser::Version() const
 {
    char *version, *release;
-   int_32 *epoch;
+   int32_t *epoch;
    rpm_tagtype_t type;
    rpm_count_t count;
    int rc;
@@ -343,7 +344,7 @@ string rpmSrcRecordParser::AsStr()
    char **strv;
    char **strv2;
    int num;
-   int_32 *numv;
+   int32_t *numv;
    char buf[32];
 
    BufUsed = 0;

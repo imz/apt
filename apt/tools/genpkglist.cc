@@ -16,6 +16,7 @@
 #include <unistd.h>
 #include <assert.h>
 #include <locale.h>
+#include <stdint.h>
 
 #include <map>
 #include <iostream>
@@ -184,7 +185,7 @@ void copyStrippedFileList(Header h1, Header h2)
    rpm_tagtype_t bnt = 0, dnt = 0, dit = 0;
    struct {
       const char **bn, **dn;
-      int_32 *di;
+      int32_t *di;
       rpm_count_t bnc, dnc, dic;
    } l1 = {0}, l2 = {0};
 
@@ -212,7 +213,7 @@ void copyStrippedFileList(Header h1, Header h2)
       if (!l2.bn) {
          l2.bn = new const char*[l1.bnc];
          l2.dn = new const char*[l1.dnc];
-         l2.di = new int_32[l1.dic];
+         l2.di = new int32_t[l1.dic];
       }
 
       l2.bn[l2.bnc++] = b;
@@ -283,8 +284,8 @@ bool loadUpdateInfo(char *path, map<string,UpdateInfo> &map)
 #if RPM_VERSION >= 0x040000
 // No prototype from rpm after 4.0.
 extern "C" {
-int headerGetRawEntry(Header h, int_32 tag, int_32 * type,
-		      void *p, int_32 *c);
+int headerGetRawEntry(Header h, int32_t tag, int32_t * type,
+		      void *p, int32_t *c);
 }
 #endif
 
@@ -294,13 +295,13 @@ bool copyFields(Header h, Header newHeader,
 		bool fullFileList)
 {
    int i;
-   int_32 size[1];
+   int32_t size[1];
 
    size[0] = filesize;
    
    // the std tags
    for (i = 0; i < numTags; i++) {
-      int_32 type, count;
+      int32_t type, count;
       void *data;
       int res;
       
@@ -709,7 +710,7 @@ int main(int argc, char ** argv)
             char *pkg = NULL;
             rpm_tagtype_t pkgt = 0;
             const char **bn = NULL, **dn = NULL;
-            int_32 *di = NULL;
+            int32_t *di = NULL;
             rpm_tagtype_t bnt = 0, dnt = 0, dit = 0;
             rpm_count_t bnc = 0;
             rc = headerGetEntry(h, RPMTAG_NAME, &pkgt, (void**)&pkg, NULL)
