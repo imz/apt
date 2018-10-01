@@ -3,8 +3,11 @@
 Effect on the old behavior: must be equivalent (not checked thoroughly).
 
 1. Perhaps it would be easier to review if non-similar changes were
-placed in separate commits (grouping the similar changes such as:
-"Replace legacy int types.")
+placed in separate commits (grouping the similar changes such as
+getting rid of the stupid " == true"). This commit should only
+move some existing code, so that "git show -w --color-moved ...."
+shows all lines as moved (yellow, cyan, magenta, blue; in Git>=2.15)
+except for the minimal necessary changes (due to the relocations).
 
 2. Was it necessary to make the changes in spacing (which can be
 hidden with git diff -w)? If yes, it would be easier to review if they
