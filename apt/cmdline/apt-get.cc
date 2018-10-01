@@ -80,31 +80,32 @@ unsigned int ScreenWidth = 80;
 #ifdef WITH_LUA
 class AptGetLuaCache : public LuaCacheControl
 {
-   public:
+public:
+   std::unique_ptr<CacheFile> Cache;
 
-   CacheFile *Cache;
-
-   virtual pkgDepCache *Open(bool Write)
+   virtual pkgDepCache* Open(bool Write)
    {
-      if (Cache == NULL) {
-	 Cache = new CacheFile(c1out);
-	 if (Cache->Open(Write) == false)
-	    return NULL;
-	 if (Cache->CheckDeps() == false)
-	    return NULL;
+      if (!Cache)
+      {
+         Cache.reset(new CacheFile(c1out));
+         if (!Cache->Open(Write))
+         {
+            return NULL;
+         }
+
+         if (!Cache->CheckDeps())
+         {
+            return NULL;
+         }
       }
+
       return *Cache;
    }
 
    virtual void Close()
    {
-      if (Cache) {
-	 delete Cache;
-	 Cache = NULL;
-      }
-   };
-
-   AptGetLuaCache() : Cache(0) {};
+      Cache.reset();
+   }
 };
 #endif
 

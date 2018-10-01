@@ -60,7 +60,7 @@ class pkgCacheFile
 class CacheFile: public pkgCacheFile
 {
 public:
-   pkgCache::Package **List;
+   std::unique_ptr<pkgCache::Package*[]> List;
 
    explicit CacheFile(std::ostream &c1out);
 
