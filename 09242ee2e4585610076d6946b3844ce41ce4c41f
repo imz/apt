@@ -1,0 +1,31 @@
+Effects on the old behavior: theoretically possible, because calls to
+read/writeStateFile() were injected into the old code (in the
+prev.commit) and they might contain an error/crash. However,
+practically, if there are no errors, no direct effect on the old
+behavior is expected because their return codes do not affect anything
+at the places where they are called. (Though, I'm not sure about the
+effect of things like:
+
+ return _error->Error(_("Failed to replace file: %s"), AptMarkStorageFileName.c_str());
+
+-- whther this would give a normal return code that is ignored or
+_error->Error() would somehow interrupt the normal execution? No, it
+won't interrupt the execution -- I've checked the sources for
+GlobalError::Error.)
+
+BTW, writeStateFile() should be a const method, why not?
+
+Another comment: This code uses the filename from the config parameter
+introduced in the prev.commit. A few things are not clear in the code:
+
+1. What the value of delim_index is expected to be here? In the default value (from prev.commit) there is no '/'.
+
+               AptMarkTempFileName = AptMarkStorageFileName.substr(0, delim_index + 1) + ".__tmp__apt_mark_storage";
+
+2. Why is iter not dereferenced here:
+
+                               linestr = iter.Name();
+
+though its other previous uses are written with dereferencing, e.g.:
+
+                       StateCache const &stateCache = PkgState[iter->ID];
