@@ -23,6 +23,8 @@
 
 #include <apt-pkg/depcache.h>
 
+#include <memory>
+
 class pkgPolicy;
 class pkgCacheFile
 {
@@ -53,5 +55,84 @@ class pkgCacheFile
    pkgCacheFile();
    ~pkgCacheFile();
 };
+
+// class CacheFile - Cover class for some dependency cache functions
+class CacheFile: public pkgCacheFile
+{
+public:
+   pkgCache::Package **List;
+
+   explicit CacheFile(std::ostream &c1out);
+
+   void Sort();
+
+   // CacheFile::CheckDeps - Open the cache file
+   // ---------------------------------------------------------------------
+   /* This routine generates the caches and then opens the dependency cache
+      and verifies that the system is OK. */
+   bool CheckDeps(bool AllowBroken = false);
+   bool BuildCaches(bool WithLock = true);
+   bool Open(bool WithLock = true);
+   bool OpenForInstall();
+
+   bool CanCommit() const;
+
+private:
+   std::ostream &m_c1out;
+   bool m_is_root;
+
+   static pkgCache *SortCache;
+
+   // CacheFile::NameComp - QSort compare by name
+   static int NameComp(const void *a, const void *b);
+};
+
+// ShowList - Show a list
+// ---------------------------------------------------------------------
+/* This prints out a string of space separated words with a title and
+a two space indent line wraped to the current screen width. */
+bool ShowList(std::ostream &out, const std::string &Title, std::string List, const std::string &VersionsList, size_t l_ScreenWidth);
+
+// ShowBroken - Debugging aide
+// ---------------------------------------------------------------------
+/* This prints out the names of all the packages that are broken along
+with the name of each each broken dependency and a quite version
+description.
+
+The output looks like:
+The following packages have unmet dependencies:
+exim: Depends: libc6 (>= 2.1.94) but 2.1.3-10 is to be installed
+Depends: libldap2 (>= 2.0.2-2) but it is not going to be installed
+Depends: libsasl7 but it is not going to be installed
+*/
+void ShowBroken(std::ostream &out, CacheFile &Cache, bool Now);
+
+// ShowNew - Show packages to newly install
+void ShowNew(std::ostream &out, std::ostream &l_c3out, CacheFile &Cache, pkgDepCache::State *State, size_t l_ScreenWidth);
+
+// ShowDel - Show packages to delete
+void ShowDel(std::ostream &out, std::ostream &l_c3out, CacheFile &Cache, pkgDepCache::State *State, size_t l_ScreenWidth);
+
+// ShowKept - Show kept packages
+void ShowKept(std::ostream &out, std::ostream &l_c3out, CacheFile &Cache, pkgDepCache::State *State, size_t l_ScreenWidth);
+
+// ShowUpgraded - Show upgraded packages
+void ShowUpgraded(std::ostream &out, std::ostream &l_c3out, CacheFile &Cache, pkgDepCache::State *State, size_t l_ScreenWidth);
+
+// ShowDowngraded - Show downgraded packages
+bool ShowDowngraded(std::ostream &out, std::ostream &l_c3out, CacheFile &Cache, pkgDepCache::State *State, size_t l_ScreenWidth);
+
+// ShowHold - Show held but changed packages
+bool ShowHold(std::ostream &out, std::ostream &l_c3out, CacheFile &Cache, pkgDepCache::State *State, size_t l_ScreenWidth);
+
+// ShowEssential - Show an essential package warning
+// ---------------------------------------------------------------------
+/* This prints out a warning message that is not to be ignored. It shows
+all essential packages and their dependents that are to be removed.
+It is insanely risky to remove the dependents of an essential package! */
+bool ShowEssential(std::ostream &out, std::ostream &l_c3out, CacheFile &Cache, pkgDepCache::State *State, size_t l_ScreenWidth);
+
+// Stats - Show some statistics
+void Stats(std::ostream &out, std::ostream &l_c3out, pkgDepCache &Dep, pkgDepCache::State *State);
 
 #endif
