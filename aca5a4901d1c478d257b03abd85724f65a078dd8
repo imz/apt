@@ -1,0 +1,3 @@
+Effects on the old behavior: This does not change the behavior of old
+commands, because the calls to read/writeStateFile() do nothing as of
+now.
