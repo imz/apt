@@ -1,9 +1,3 @@
 Effects on the old behavior: no (it's a new command)
 
-Should I try to check the algorithm or the interested users will be
-testing it when using?..
-
-1. Although that's not very important for us, but I don't see a reason
-for the 2 deletions (in algorithms.cc, apt-get.cc):
-
--                                                                       /*}}}*/
+(As for the algorithm, the interested users will be testing it when using.)
