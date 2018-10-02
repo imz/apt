@@ -1,0 +1,14 @@
+quite clear, but: this seems to be 2 logically separate changes
+
+Effects on the old behavior: no
+(only errors in MarkAuto() might theoretically affect it)
+
+1. The spacing (with tabs) in apt/apt-pkg/rpm/rpmsystem.cc is not
+consistent with how the code is indented nearby. (Although I don't
+like their mix of tabs and spaces, because it assumes that a tab is
+always 8 spaces...)
+
+I'd also have a look at the current indentation practice in the
+current Debian APT sources, and if they are more sensible I would
+probably re-indent according to their rules all our sources before
+introducing new changes. (In a hope to exchange some minor patches.)
