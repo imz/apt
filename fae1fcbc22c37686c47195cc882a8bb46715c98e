@@ -1,6 +1,7 @@
 (TODO: review more thoroughly for new bugs.) Let's assume this is an equivalent rewrite of the code.
 
-Effect on the old behavior: must be equivalent (not checked thoroughly).
+Effect on the old behavior: must be equivalent (not checked thoroughly
+the modifications on top of the moved code).
 
 1. Perhaps it would be easier to review if non-similar changes were
 placed in separate commits (grouping the similar changes such as
@@ -9,6 +10,17 @@ move some existing code, so that "git show -w --color-moved ...."
 shows all lines as moved (yellow, cyan, magenta, blue; in Git>=2.15)
 except for the minimal necessary changes (due to the relocations).
 
-2. Was it necessary to make the changes in spacing (which can be
-hidden with git diff -w)? If yes, it would be easier to review if they
-were in a separate commit.
+A few modifications (in green/red color) still remain in this commit:
+
+* function declarations (perhaps, that's necessary when moving the
+  code);
+
+* working with the output (is it really necessary or this can be made
+  in a separate commit before or after this one?);
+
+* a few " == true" etc. removals still remain in this commit (they
+  should be placed in a separate commit);
+
+2. Please add a note into the commit message concerning the use of
+"git show -w --color-moved ...." to check this commit; this would be
+useful for those who read this commit in future.
