@@ -3,16 +3,17 @@ quite clear, but: this seems to be 2 logically separate changes
 Effects on the old behavior: no
 (only errors in MarkAuto() might theoretically affect it)
 
-1. The spacing (with tabs) in:
+1. The spacing (for indentation) is not consistent with how the code
+is indented nearby in:
 
 apt/apt-pkg/contrib/configuration.cc
 apt/apt/apt-pkg/depcache.cc
 apt/cmdline/apt-get.cc (the surrounding code is indented with crazy 3 spaces)
 apt/cmdline/apt-shell.cc (the surrounding code is indented with crazy 3 spaces)
 
-is not consistent with how the code is indented nearby. (Although I don't
-like their mix of tabs and spaces, because it assumes that a tab is
-always 8 spaces...)
+(Although I don't like their mix of tabs and spaces, because it
+assumes that a tab is always 8 spaces... but we must not break the
+surrounding spacing/indentation rules.)
 
 I'd also have a look at the current indentation practice in the
 current Debian APT sources, and if they are more sensible I would
