@@ -3,19 +3,24 @@ read/writeStateFile() were injected into the old code (in the
 prev.commit) and they might contain an error/crash. However,
 practically, if there are no errors (crashes), no direct effect on the old
 behavior is expected because their return codes do not affect anything
-at the places where they are called. (Though, I'm not sure about the
+at the places where they are called.
+
+BTW, writeStateFile() should be a const method, why not?
+
+* * *
+
+Some additional explanations (but not criticisms; thanks darktemplar@
+for the last two explanations):
+
+0. As for the side-effects of writeStateFile(), I was not sure about the
 effect of things like:
 
  return _error->Error(_("Failed to replace file: %s"), AptMarkStorageFileName.c_str());
 
--- whether this would give a normal return code that is ignored or
+-- whether this would give a normal return code (which is ignored) or
 _error->Error() would somehow interrupt the normal execution? No, it
 won't interrupt the execution -- I've checked the sources for
-GlobalError::Error.)
-
-BTW, writeStateFile() should be a const method, why not?
-
-Other comments (thanks darktemplar@ for the explanations):
+GlobalError::Error.
 
 1. This code uses the filename from the config parameter
 introduced in the prev.commit like this:
@@ -23,21 +28,27 @@ introduced in the prev.commit like this:
   Cnf.CndSet("Dir::State::apt_mark_storage", "apt_mark_storage");
 
 Note that it has no dir component in the path. However, when it is
-retrieved here, it is expected to have a non-empty leading directory
-in the path:
+retrieved here like this:
 
   std::string AptMarkStorageFileName = _config->FindFile("Dir::State::apt_mark_storage");
 
+it is expected to have a non-empty leading directory in the path,
 and therefore delim_index (the position of '/') is expected to be
 something "non-trivial". The temporary file is then to be created in
 the same directory:
 
   AptMarkTempFileName = AptMarkStorageFileName.substr(0, delim_index + 1) + ".__tmp__apt_mark_storage";
 
-2. Why is iter not dereferenced here:
+2. Why is "iter" not dereferenced here:
 
                                linestr = iter.Name();
 
 though its other previous uses are written with dereferencing, e.g.:
 
                        StateCache const &stateCache = PkgState[iter->ID];
+
+This "iter" is an instance of class "pkgCache::PkgIterator", which is not
+actually a std::iterator.
+It has function "Name()", which returns package name, and it has "operator->",
+which returns pointer to another class "Package".
+It also has other functions. It's defined at cacheiterators.h.
