@@ -1,0 +1,19 @@
+1. The parameter name "AptMarkInheritance" does not clarify whether the
+"auto" or "manual" mark is set on the condition named by the value of
+the parameter (like "at_least_one" etc.); I mean that something like
+"AptAutoMarkInheritance" would make it more clear for users looking at
+the configuration. Has this paramater name been copied from Debian? If
+so, then it's better not change it, probably, although it might be not
+very clear.
+
+TODO: review the rest of the code more thoroughly.
+
+2. The spacing (with tabs) in apt/apt-pkg/rpm/rpmsystem.cc is not
+consistent with how the code is indented nearby. (Although I don't
+like their mix of tabs and spaces, because it assumes that a tab is
+always 8 spaces...)
+
+I'd also have a look at the current indentation practice in the
+current Debian APT sources, and if they are more sensible I would
+probably re-indent according to their rules all our sources before
+introducing new changes. (In a hope to exchange some minor patches.)
