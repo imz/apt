@@ -15,12 +15,24 @@ GlobalError::Error.)
 
 BTW, writeStateFile() should be a const method, why not?
 
-Another comment: This code uses the filename from the config parameter
-introduced in the prev.commit. A few things are not clear in the code:
+Other comments (thanks darktemplar@ for the explanations):
 
-1. What the value of delim_index is expected to be here? In the default value (from prev.commit) there is no '/'.
+1. This code uses the filename from the config parameter
+introduced in the prev.commit like this:
 
-               AptMarkTempFileName = AptMarkStorageFileName.substr(0, delim_index + 1) + ".__tmp__apt_mark_storage";
+  Cnf.CndSet("Dir::State::apt_mark_storage", "apt_mark_storage");
+
+Note that it has no dir component in the path. However, when it is
+retrieved here, it is expected to have a non-empty leading directory
+in the path:
+
+  std::string AptMarkStorageFileName = _config->FindFile("Dir::State::apt_mark_storage");
+
+and therefore delim_index (the position of '/') is expected to be
+something "non-trivial". The temporary file is then to be created in
+the same directory:
+
+  AptMarkTempFileName = AptMarkStorageFileName.substr(0, delim_index + 1) + ".__tmp__apt_mark_storage";
 
 2. Why is iter not dereferenced here:
 
