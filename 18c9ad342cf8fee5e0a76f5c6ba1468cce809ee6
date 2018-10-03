@@ -7,3 +7,8 @@ one of the old commits as in this one after the movement.
 2. Write this hint down in the commit message
 (to view with "git show -w --color-moved") so that future readers
 can reproduce our experience.
+
+Effects on the old bahavior: none (except for a fixed bug in apt-shell perhaps)
+
+If this is an independent bug, wouldn't it be better to fix it in a
+separate commit (so that it can be cherry-picked into other versions)?
