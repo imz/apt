@@ -3,6 +3,18 @@ Effects on the old behavior: can be either on APT, or on RPM
 
 I haven't thoroughly studied this code.
 
+1. The indentations spacing doesn't match the surrounding file in:
+
+apt/apt-pkg/luaiface.cc
+apt/apt-pkg/packagemanager.h
+apt/apt-pkg/rpm/rpmlistparser.cc
+apt/apt-pkg/rpm/rpmpm.cc
+apt/cmdline/apt-shell.cc
+
+Some observations (not criticisms) follow:
+
+* * *
+
 I've noticed an interesting thing for me: that the auto-flags are
 read/written in a package-by-package manner. Previously, I used to
 think that there is a way to get the data with one sweep. The writing
@@ -21,6 +33,17 @@ iteration over a list of packages like this:
 whereas NewPackage() allocates a structure for the package and
 "registers" it in the cache etc.
 
+darktemplar@:
+
+Since this information is now stored as a tag in package header, there's no API
+AFAIK to read this tag for every package at once,
+same goes for adding it. As for modifying the tag's value, you can see ugly
+approach (IIRC, proposed by upstream) at function
+"pkgRPMLibPM::UpdateMarks(...)". You can't just remove tag for a header stored
+at RPMDB, it'll go insane.
+
+***
+
 Also, an idea/question appeared to me: if this information is stored
 in the RPM db, there could be a way to change these flags not by means
 of APT, but rather through RPM's command-line interface (because these
@@ -30,3 +53,15 @@ said that there is apparently no way to do this through RPM now, but
 it has been discussed in RPM mailing lists. In a sense, of course,
 apt-mark is such a tool, but it has "apt" in its name (and uses APT
 libs)...
+
+darktemplar@ (and I agree):
+
+Yes, currently there are no tools to change these tags via rpm. As mentioned
+above, it doesn't even have a proper API for changing tags.
+It's easy to implement a tool for just one specific tag (and thus one specific
+tag type and tag items count).
+Making a generic tool is a much bigger task, but would it really be needed?
+AFAIK, this is only tag that is getting changed without package reinstallation.
+As for non-generic tool, just for "autoinstalled" tag, the question is
+following: would upstream accept it? I don't think so. And for downstream
+solution apt-mark is not much different from rpm-mark.
