@@ -1,0 +1,44 @@
+Some general thoughts on the whole series of changes.
+
+1. It would be interesting to see a comparison of these changes in
+APT-RPM to the analogous code in Debian APT. It is not wanted to
+maintain a project which is further diverging.
+
+2. For discussion, I'd group the changes into 3 groups:
+
+- Refactoring.
+- Setting the flags during the actions (such as install, dist-upgrade).
+- Autoremove algorithm and action, apt-mark additional tool.
+
+IMO, it's important that the "Setting the flags during the actions
+(such as install, dist-upgrade)" part works correctly, and--of
+course--that the refactoring leads to equivalent/better code. As for
+the autoremove algorithm (the really useful thing for the user), it
+can be easily modified or re-implemented on top of the flags if the
+users are not satisfied. (Perhaps, it's even possible experiment in
+Lua and make use of the auto-flags from Lua, isn't it?)
+
+The refactoring changes have not yet been checked thoroughly by me (I
+need some tools or comments to demonstrate they are OK).
+
+After my review, I believe the "Setting the flags during different
+actions (such as install, dist-upgrade)" does not break the old
+behavior.
+
+As for the interaction with RPM, I don't have a good knowledge of the
+RPM API to check it.
+
+3. An idea came up to me after reading these changes: it concerns the
+"Setting the flags during different actions (such as install,
+dist-upgrade)" part, how to make it more clear and convincing.
+However, I would not like to suggest it if it diverges from
+Debian even more.
+
+To make sure that the decision how to change the flag was conciously
+made by the programmer in all cases, I'd add the value of the
+auto-flag as an obligatory parameter to all functions which create
+packages or modify their state, such as NewPackage(), MarkInstall()
+etc. and perhaps everything that modifies StateCache structure. (If
+the auto-flag value is explicit, then it is an explicit decision how
+to change the auto-flag on every kind of change and no cases are
+overlooked.)
