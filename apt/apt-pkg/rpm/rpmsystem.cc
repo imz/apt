@@ -190,6 +190,9 @@ bool rpmSystem::Initialize(Configuration &Cnf)
 	 Cnf.Set("RPM::Options::", "--nodeps");
    }
 
+   // If set to true, apt-get reinstall will remove 'auto' mark from package
+   Cnf.CndSet("APT::Get::ReInstall::MarkManual", true);
+
 #if RPM_VERSION >= 0x040201
    const char *RPMOptions[] =
    {

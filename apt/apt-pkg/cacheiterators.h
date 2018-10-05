@@ -78,7 +78,6 @@ class pkgCache::PkgIterator
    inline bool Purge() const {return Pkg->CurrentState == pkgCache::State::Purge ||
 	 (Pkg->CurrentVer == 0 && Pkg->CurrentState == pkgCache::State::NotInstalled);};
    inline VerIterator VersionList() const;
-   inline VerIterator TargetVer() const;
    inline VerIterator CurrentVer() const;
    inline DepIterator RevDependsList() const;
    inline PrvIterator ProvidesList() const;

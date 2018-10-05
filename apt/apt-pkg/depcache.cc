@@ -1023,9 +1023,18 @@ void pkgDepCache::SetReInstall(PkgIterator const &Pkg,bool To)
    
    StateCache &P = PkgState[Pkg->ID];
    if (To == true)
+   {
       P.iFlags |= ReInstall;
+
+      if (_config->FindB("APT::Get::ReInstall::MarkManual", true))
+      {
+         MarkAuto(Pkg, false);
+      }
+   }
    else
+   {
       P.iFlags &= ~ReInstall;
+   }
    
    AddStates(Pkg);
    AddSizes(Pkg);

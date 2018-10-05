@@ -334,6 +334,21 @@ void Configuration::CndSet(const char *Name,string Value)
    if (Itm->Value.empty() == true)
       Itm->Value = Value;
 }
+
+void Configuration::CndSet(const char *Name,int Value)
+{
+   Item *Itm = Lookup(Name,true);
+   if (Itm == 0)
+   {
+      return;
+   }
+
+   if (Itm->Value.empty())
+   {
+      Itm->Value = std::to_string(Value);
+   }
+}
+
 									/*}}}*/
 // Configuration::Set - Set a value					/*{{{*/
 // ---------------------------------------------------------------------
