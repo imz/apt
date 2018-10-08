@@ -714,8 +714,7 @@ static int AptAux_mark(lua_State *L, int Kind)
 	    DepCache->MarkKeep(PkgI);
 	    break;
 	 case MARK_INSTALL:
-	    DepCache->MarkInstall(PkgI);
-	    DepCache->MarkAuto(PkgI, false);
+	    DepCache->MarkInstall(PkgI,pkgDepCache::AutoMarkFlag::Manual);
 	    break;
 	 case MARK_REINSTALL:
 	    DepCache->SetReInstall(PkgI, true);
@@ -752,8 +751,7 @@ static int AptAux_marksimple(lua_State *L, int Kind)
 	    DepCache->MarkKeep(PkgI);
 	    break;
 	 case MARK_INSTALL:
-	    DepCache->MarkInstall(PkgI, false);
-	    DepCache->MarkAuto(PkgI, false);
+	    DepCache->MarkInstall(PkgI,pkgDepCache::AutoMarkFlag::Manual, false);
 	    break;
 	 case MARK_REMOVE:
 	    DepCache->MarkDelete(PkgI);

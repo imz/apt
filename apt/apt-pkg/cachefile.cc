@@ -1098,7 +1098,7 @@ bool pkgDoAuto(std::ostream &c1out, const CommandLine &CmdL, int &auto_mark_chan
             ioprintf(c1out,_("%s set to automatically installed.\n"), pkgiter.Name());
          }
 
-         Dep.MarkAuto(pkgiter, MarkAuto);
+         Dep.MarkAuto(pkgiter, MarkAuto ? pkgDepCache::AutoMarkFlag::Auto : pkgDepCache::AutoMarkFlag::Manual);
          ++AutoMarkChanged;
       }
    }

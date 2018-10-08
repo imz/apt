@@ -767,21 +767,27 @@ void pkgDepCache::MarkDelete(PkgIterator const &Pkg, bool rPurge)
    AddSizes(Pkg);
 }
 
-void pkgDepCache::MarkAuto(const PkgIterator &Pkg, bool Auto)
+void pkgDepCache::MarkAuto(const PkgIterator &Pkg, pkgDepCache::AutoMarkFlag AutoFlag)
 {
    StateCache &state = PkgState[Pkg->ID];
 
-   if (Auto)
+   switch (AutoFlag)
    {
+   case AutoMarkFlag::Auto:
       state.Flags |= Flag::Auto;
-   }
-   else
-   {
+      break;
+
+   case AutoMarkFlag::Manual:
       state.Flags &= ~Flag::Auto;
+      break;
+
+   case AutoMarkFlag::DontChange:
+   default:
+      break;
    }
 }
 
-bool pkgDepCache::getMarkAuto(const PkgIterator &Pkg, bool installing_behaves_as_installed, bool value_if_package_not_installed) const
+pkgDepCache::AutoMarkFlag pkgDepCache::getMarkAuto(const PkgIterator &Pkg, bool installing_behaves_as_installed, pkgDepCache::AutoMarkFlag value_if_package_not_installed) const
 {
    if ((!installing_behaves_as_installed) || (PkgState[Pkg->ID].Mode != pkgDepCache::ModeInstall))
    {
@@ -791,7 +797,7 @@ bool pkgDepCache::getMarkAuto(const PkgIterator &Pkg, bool installing_behaves_as
       }
    }
 
-   return ((PkgState[Pkg->ID].Flags & Flag::Auto) == Flag::Auto);
+   return (((PkgState[Pkg->ID].Flags & Flag::Auto) == Flag::Auto) ? AutoMarkFlag::Auto : AutoMarkFlag::Manual);
 }
 
 									/*}}}*/
@@ -1016,13 +1022,15 @@ void pkgDepCache::MarkInstall2(PkgIterator const &Pkg)
    }
 }
 
-void pkgDepCache::MarkInstall(PkgIterator const &Pkg,bool AutoInst,
+void pkgDepCache::MarkInstall(PkgIterator const &Pkg, pkgDepCache::AutoMarkFlag AutoFlag, bool AutoInst,
 			      unsigned long Depth)
 {
    if (AutoInst == false)
       MarkInstall0(Pkg);
    else
       MarkInstall2(Pkg);
+
+   MarkAuto(Pkg, AutoFlag);
 }
 									/*}}}*/
 // DepCache::SetReInstall - Set the reinstallation flag			/*{{{*/
@@ -1040,14 +1048,14 @@ void pkgDepCache::SetReInstall(PkgIterator const &Pkg,bool To)
 
       if (_config->FindB("APT::Get::ReInstall::MarkManual", true))
       {
-         MarkAuto(Pkg, false);
+         MarkAuto(Pkg, pkgDepCache::AutoMarkFlag::Manual);
       }
    }
    else
    {
       P.iFlags &= ~ReInstall;
    }
-   
+
    AddStates(Pkg);
    AddSizes(Pkg);
 }

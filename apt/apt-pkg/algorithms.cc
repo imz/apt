@@ -91,7 +91,7 @@ bool pkgSimulate::Install(PkgIterator iPkg,string /*File*/)
    
    cout << "Inst ";
    Describe(Pkg,cout,true);
-   Sim.MarkInstall(Pkg,false);
+   Sim.MarkInstall(Pkg,pkgDepCache::AutoMarkFlag::DontChange,false);
    
    // Look for broken conflicts+predepends.
    for (PkgIterator I = Sim.PkgBegin(); I.end() == false; I++)
@@ -250,7 +250,7 @@ bool pkgApplyStatus(pkgDepCache &Cache)
 	    // Is this right? Will dpkg choke on an upgrade?
 	    if (Cache[I].CandidateVer != 0 &&
 		 Cache[I].CandidateVerIter(Cache).Downloadable() == true)
-	       Cache.MarkInstall(I);
+	       Cache.MarkInstall(I,pkgDepCache::AutoMarkFlag::DontChange);
 	    else
 	       return _error->Error(_("The package %s needs to be reinstalled, "
 				    "but I can't find an archive for it."),I.Name());
@@ -272,7 +272,7 @@ bool pkgApplyStatus(pkgDepCache &Cache)
 	 {
 	    if (Cache[I].CandidateVer != 0 &&
 		 Cache[I].CandidateVerIter(Cache).Downloadable() == true)
-	       Cache.MarkInstall(I);
+	       Cache.MarkInstall(I,pkgDepCache::AutoMarkFlag::DontChange);
 	    else
 	       Cache.MarkDelete(I);
 	 }
@@ -301,7 +301,7 @@ bool pkgFixBroken(pkgDepCache &Cache)
    // Auto upgrade all broken packages
    for (pkgCache::PkgIterator I = Cache.PkgBegin(); I.end() == false; I++)
       if (Cache[I].NowBroken() == true)
-	 Cache.MarkInstall(I,true);
+	 Cache.MarkInstall(I,pkgDepCache::AutoMarkFlag::DontChange,true);
    
    /* Fix packages that are in a NeedArchive state but don't have a
       downloadable install version */
@@ -314,7 +314,7 @@ bool pkgFixBroken(pkgDepCache &Cache)
       if (Cache[I].InstVerIter(Cache).Downloadable() == false)
 	 continue;
 
-      Cache.MarkInstall(I,true);      
+      Cache.MarkInstall(I,pkgDepCache::AutoMarkFlag::DontChange,true);
    }
    
    pkgProblemResolver Fix(&Cache);
@@ -329,15 +329,15 @@ bool pkgFixBroken(pkgDepCache &Cache)
    return Fix.Resolve(true);
 }
 
-static bool replacingPackageMarkedAuto(
+static pkgDepCache::AutoMarkFlag replacingPackageMarkedAuto(
    pkgDepCache &Cache,
    const pkgCache::PkgIterator &obsoleted_package,
    const pkgCache::PkgIterator &replacing_package)
 {
    std::string apt_inheritance_value = _config->Find("APT::Get::Obsoletes::AptMarkInheritanceAuto", "all");
 
-   bool obsoleted_package_auto = Cache.getMarkAuto(obsoleted_package);
-   bool replacing_package_auto = Cache.getMarkAuto(replacing_package);
+   pkgDepCache::AutoMarkFlag obsoleted_package_auto = Cache.getMarkAuto(obsoleted_package);
+   pkgDepCache::AutoMarkFlag replacing_package_auto = Cache.getMarkAuto(replacing_package);
 
    if (apt_inheritance_value.compare("obsoleted") == 0)
    {
@@ -349,19 +349,23 @@ static bool replacingPackageMarkedAuto(
    }
    else if (apt_inheritance_value.compare("at_least_one") == 0)
    {
-      return obsoleted_package_auto || replacing_package_auto;
+      return ((obsoleted_package_auto == pkgDepCache::AutoMarkFlag::Auto)
+         || (replacing_package_auto == pkgDepCache::AutoMarkFlag::Auto))
+         ? pkgDepCache::AutoMarkFlag::Auto : pkgDepCache::AutoMarkFlag::Manual;
    }
    else if (apt_inheritance_value.compare("never") == 0)
    {
-      return false;
+      return pkgDepCache::AutoMarkFlag::Manual;
    }
    else if (apt_inheritance_value.compare("always") == 0)
    {
-      return true;
+      return pkgDepCache::AutoMarkFlag::Auto;
    }
    else /* if (apt_inheritance_value.compare("all") == 0) */
    {
-      return obsoleted_package_auto && replacing_package_auto;
+      return ((obsoleted_package_auto == pkgDepCache::AutoMarkFlag::Auto)
+         && (replacing_package_auto == pkgDepCache::AutoMarkFlag::Auto))
+         ? pkgDepCache::AutoMarkFlag::Auto : pkgDepCache::AutoMarkFlag::Manual;
    }
 }
 									/*}}}*/
@@ -398,7 +402,7 @@ bool pkgDistUpgrade(pkgDepCache &Cache)
 	    }
 	 }
 	 if (Obsoleted == false)
-	    Cache.MarkInstall(I,false);
+	    Cache.MarkInstall(I,pkgDepCache::AutoMarkFlag::DontChange,false);
       }
 
    /* Auto upgrade all installed packages, this provides the basis 
@@ -419,15 +423,14 @@ bool pkgDistUpgrade(pkgDepCache &Cache)
 	        Cache.VS().CheckDep(I.CurrentVer().VerStr(), D) == true &&
 		Cache.GetPkgPriority(D.ParentPkg()) >= Cache.GetPkgPriority(I))
 	    {
-	       bool newMarkAuto = replacingPackageMarkedAuto(Cache, I, D.ParentPkg());
-	       Cache.MarkInstall(D.ParentPkg(),true);
-	       Cache.MarkAuto(D.ParentPkg(), newMarkAuto);
+	       pkgDepCache::AutoMarkFlag newMarkAuto = replacingPackageMarkedAuto(Cache, I, D.ParentPkg());
+	       Cache.MarkInstall(D.ParentPkg(), newMarkAuto, true);
 	       Obsoleted = true;
 	       break;
 	    }
 	 }
 	 if (Obsoleted == false)
-	    Cache.MarkInstall(I,true);
+	    Cache.MarkInstall(I,pkgDepCache::AutoMarkFlag::DontChange,true);
       }
    }
 
@@ -435,7 +438,7 @@ bool pkgDistUpgrade(pkgDepCache &Cache)
       the essential packages are present and working */
    for (pkgCache::PkgIterator I = Cache.PkgBegin(); I.end() == false; I++)
       if ((I->Flags & pkgCache::Flag::Essential) == pkgCache::Flag::Essential)
-	 Cache.MarkInstall(I,true);
+	 Cache.MarkInstall(I,pkgDepCache::AutoMarkFlag::DontChange,true);
    
    /* We do it again over all previously installed packages to force 
       conflict resolution on them all. */
@@ -455,15 +458,14 @@ bool pkgDistUpgrade(pkgDepCache &Cache)
 	        Cache.VS().CheckDep(I.CurrentVer().VerStr(), D) == true &&
 		Cache.GetPkgPriority(D.ParentPkg()) >= Cache.GetPkgPriority(I))
 	    {
-	       bool newMarkAuto = replacingPackageMarkedAuto(Cache, I, D.ParentPkg());
-	       Cache.MarkInstall(D.ParentPkg(),false);
-	       Cache.MarkAuto(D.ParentPkg(), newMarkAuto);
+	       pkgDepCache::AutoMarkFlag newMarkAuto = replacingPackageMarkedAuto(Cache, I, D.ParentPkg());
+	       Cache.MarkInstall(D.ParentPkg(),newMarkAuto,false);
 	       Obsoleted = true;
 	       break;
 	    }
 	 }
 	 if (Obsoleted == false)
-	    Cache.MarkInstall(I,false);
+	    Cache.MarkInstall(I,pkgDepCache::AutoMarkFlag::DontChange,false);
       }
    }
 
@@ -516,7 +518,7 @@ bool pkgAllUpgrade(pkgDepCache &Cache)
 	    continue;
       
       if (I->CurrentVer != 0 && Cache[I].InstallVer != 0)
-	 Cache.MarkInstall(I,false);
+	 Cache.MarkInstall(I,pkgDepCache::AutoMarkFlag::DontChange,false);
    }
 
    // CNC:2002-07-04
@@ -550,7 +552,7 @@ bool pkgMinimizeUpgrade(pkgDepCache &Cache)
 	 // Keep it and see if that is OK
 	 Cache.MarkKeep(I);
 	 if (Cache.BrokenCount() != 0)
-	    Cache.MarkInstall(I,false);
+	    Cache.MarkInstall(I,pkgDepCache::AutoMarkFlag::DontChange,false);
 	 else
 	 {
 	    // If keep didnt actually do anything then there was no change..
@@ -694,7 +696,7 @@ bool pkgAutoremove(pkgDepCache &Cache)
    for (pkgCache::PkgIterator pkg_iter = Cache.PkgBegin(); not pkg_iter.end(); ++pkg_iter)
    {
       // Skip packages not installed, and automatically installed ones too
-      if ((pkg_iter->CurrentState == pkgCache::State::Installed) && (!Cache.getMarkAuto(pkg_iter)))
+      if ((pkg_iter->CurrentState == pkgCache::State::Installed) && (Cache.getMarkAuto(pkg_iter) != pkgDepCache::AutoMarkFlag::Manual))
       {
          if (!find_all_required_dependencies(Cache, pkg_iter, kept_packages, unresolved_virtual_dependencies, virtual_provides_map))
          {
@@ -1042,7 +1044,7 @@ bool pkgProblemResolver::DoUpgrade(pkgCache::PkgIterator Pkg)
    Flags[Pkg->ID] &= ~Upgradable;
    
    bool WasKept = Cache[Pkg].Keep();
-   Cache.MarkInstall(Pkg,false);
+   Cache.MarkInstall(Pkg,pkgDepCache::AutoMarkFlag::DontChange,false);
 
    // This must be a virtual package or something like that.
    if (Cache[Pkg].InstVerIter(Cache).end() == true)
@@ -1169,7 +1171,7 @@ bool pkgProblemResolver::Resolve(bool BrokenFix)
 	 {
 	    if (Cache[I].InstBroken() == true && BrokenFix == true)
 	    {
-	       Cache.MarkInstall(I,false);
+	       Cache.MarkInstall(I,pkgDepCache::AutoMarkFlag::DontChange,false);
 	       if (Cache[I].Install() == true)
 		  Again = true;
 	    }
@@ -1235,7 +1237,7 @@ bool pkgProblemResolver::Resolve(bool BrokenFix)
 	    pkgCache::Version *OldVer = Cache[I].InstallVer;
 	    Flags[I->ID] &= ReInstateTried;
 	    
-	    Cache.MarkInstall(I,false);
+	    Cache.MarkInstall(I,pkgDepCache::AutoMarkFlag::DontChange,false);
 	    if (Cache[I].InstBroken() == true || 
 		OldBreaks < Cache.BrokenCount())
 	    {
@@ -1383,7 +1385,7 @@ bool pkgProblemResolver::Resolve(bool BrokenFix)
 		     
 		     // Restore
 		     if (InOr == true && Installed == true)
-			Cache.MarkInstall(I,false);
+			Cache.MarkInstall(I,pkgDepCache::AutoMarkFlag::DontChange,false);
 		     
 		     if (Debug == true)
 			clog << "  Holding Back " << I.Name() << " rather than change " << Start.TargetPkg().Name() << endl;
@@ -1475,7 +1477,7 @@ bool pkgProblemResolver::Resolve(bool BrokenFix)
 		  
 		  // Restore
 		  if (InOr == true && Installed == true)
-		     Cache.MarkInstall(I,false);
+		     Cache.MarkInstall(I,pkgDepCache::AutoMarkFlag::DontChange,false);
 		  
 		  if (Debug == true)
 		     clog << "  Holding Back " << I.Name() << " because I can't find " << Start.TargetPkg().Name() << endl;
@@ -1686,7 +1688,7 @@ void pkgProblemResolver::InstallProtect()
 	 if ((Flags[I->ID] & ToRemove) == ToRemove)
 	    Cache.MarkDelete(I);
 	 else
-	    Cache.MarkInstall(I,false);
+	    Cache.MarkInstall(I,pkgDepCache::AutoMarkFlag::DontChange,false);
       }
    }   
 }

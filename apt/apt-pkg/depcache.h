@@ -65,6 +65,13 @@ class pkgDepCache : protected pkgCache::Namespace
       
    enum VersionTypes {NowVersion, InstallVersion, CandidateVersion};
    enum ModeList {ModeDelete = 0, ModeKeep = 1, ModeInstall = 2};
+   
+   enum class AutoMarkFlag {
+      Manual = 0,
+      Auto,
+      DontChange /* Keep current flag, must not be returned by getMarkAuto() function; If it's used to install new package via MarkInstall function, package will end up marked as Autoinstalled */
+   };
+   
    struct StateCache
    {
       // Epoch stripped text versions of the two version fields
@@ -199,9 +206,9 @@ class pkgDepCache : protected pkgCache::Namespace
    void MarkDelete(PkgIterator const &Pkg,bool Purge = false);
 
    /** Set the "is automatically installed" flag of Pkg. */
-   void MarkAuto(const PkgIterator &Pkg, bool Auto);
+   void MarkAuto(const PkgIterator &Pkg, AutoMarkFlag AutoFlag);
 
-   bool getMarkAuto(const PkgIterator &Pkg, bool installing_behaves_as_installed = true, bool value_if_package_not_installed = true) const;
+   AutoMarkFlag getMarkAuto(const PkgIterator &Pkg, bool installing_behaves_as_installed = true, AutoMarkFlag value_if_package_not_installed = AutoMarkFlag::Auto) const;
 
    // shallow mark; ret: -1 err, 0 already marked, 1 just marked
    int MarkInstall0(PkgIterator const &Pkg);
@@ -210,7 +217,7 @@ class pkgDepCache : protected pkgCache::Namespace
    // full wavefront recursive mark
    void MarkInstall2(PkgIterator const &Pkg);
    // compat
-   void MarkInstall(PkgIterator const &Pkg,bool AutoInst = true,
+   void MarkInstall(PkgIterator const &Pkg, AutoMarkFlag AutoFlag, bool AutoInst = true,
 		    unsigned long Depth = 0);
    // implementation
    void MarkInstallRec(PkgIterator const &Pkg,
