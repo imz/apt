@@ -1,6 +1,6 @@
 Name: apt
 Version: 0.5.15lorg2
-Release: alt53.4.0.e2k.1
+Release: alt53.5
 
 Summary: Debian's Advanced Packaging Tool with RPM support
 Summary(ru_RU.UTF-8): Debian APT - Усовершенствованное средство управления пакетами с поддержкой RPM
@@ -292,8 +292,8 @@ unset RPM_PYTHON
 # Probably %%doc with README.rsync?
 
 %changelog
-* Tue Mar 27 2018 Grigory Ustinov <grenka@altlinux.org> 0.5.15lorg2-alt53.4.0.e2k.1
-- NMU: Replace e2k arch name with %%e2k macro.
+* Tue Oct 30 2018 Michael Shigorin <mike@altlinux.org> 0.5.15lorg2-alt53.5
+- Replace e2k arch name with %%e2k macro (grenka@).
 
 * Fri Oct 06 2017 Michael Shigorin <mike@altlinux.org> 0.5.15lorg2-alt53.4
 - E2K: use lua5.1 instead of 5.3 (thanks vseleznv@).
