@@ -1,0 +1,8 @@
+1. Since unique_ptr is from C++11, the initialization can be probably
+also done nicer than with memset -- https://stackoverflow.com/a/7546745/94687 :
+
+  new T[n]()
+
+2. sizeof(*List) (2 times) looked less prone to errors (possible after
+type modifications in future) than the new code:
+sizeof(pkgCache::Package*)
