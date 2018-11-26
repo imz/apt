@@ -79,42 +79,32 @@ unsigned int ScreenWidth = 80;
 // class CacheFile - Cover class for some dependency cache functions	/*{{{*/
 // ---------------------------------------------------------------------
 /* */
-class CacheFile : public pkgCacheFile
+class CacheFile: public pkgCacheFile
 {
-   static pkgCache *SortCache;
-   static int NameComp(const void *a,const void *b);
-   
-   public:
+public:
    pkgCache::Package **List;
+
+   CacheFile();
+
    
    void Sort();
+
+   // CacheFile::CheckDeps - Open the cache file
+   // ---------------------------------------------------------------------
+   /* This routine generates the caches and then opens the dependency cache
+      and verifies that the system is OK. */
    bool CheckDeps(bool AllowBroken = false);
-   bool BuildCaches(bool WithLock = true)
-   {
-      OpTextProgress Prog(*_config);
-      if (pkgCacheFile::BuildCaches(Prog,WithLock) == false)
-	 return false;
-      return true;
-   }
-   bool Open(bool WithLock = true) 
-   {
-      OpTextProgress Prog(*_config);
-      if (pkgCacheFile::Open(Prog,WithLock) == false)
-	 return false;
-      Sort();
-      
-      return true;
-   };
-   bool OpenForInstall()
-   {
-      // CNC:2004-03-07 - dont take lock if in download mode
-      if (_config->FindB("APT::Get::Print-URIs") == true ||
-	  _config->FindB("APT::Get::Download-only") == true)
-	 return Open(false);
-      else
-	 return Open(true);
-   }
-   CacheFile() : List(0) {};
+   bool BuildCaches(bool WithLock = true);
+   bool Open(bool WithLock = true);
+   bool OpenForInstall();
+
+   bool CanCommit() const;
+
+private:
+   static pkgCache *SortCache;
+
+   // CacheFile::NameComp - QSort compare by name
+   static int NameComp(const void *a, const void *b);
 };
 									/*}}}*/
 
@@ -773,6 +763,9 @@ bool CheckOnly(CacheFile &Cache)
 // ---------------------------------------------------------------------
 /* */
 pkgCache *CacheFile::SortCache = 0;
+
+CacheFile::CacheFile(): List(0) {}
+
 int CacheFile::NameComp(const void *a,const void *b)
 {
    if (*(pkgCache::Package **)a == 0 || *(pkgCache::Package **)b == 0)
@@ -851,6 +844,34 @@ bool CacheFile::CheckDeps(bool AllowBroken)
    return true;
 }
 									/*}}}*/
+
+bool CacheFile::BuildCaches(bool WithLock)
+{
+   OpTextProgress Prog(*_config);
+   if (pkgCacheFile::BuildCaches(Prog,WithLock) == false)
+      return false;
+   return true;
+}
+
+bool CacheFile::Open(bool WithLock)
+{
+   OpTextProgress Prog(*_config);
+   if (pkgCacheFile::Open(Prog,WithLock) == false)
+      return false;
+   Sort();
+   return true;
+};
+
+bool CacheFile::OpenForInstall()
+{
+   // CNC:2004-03-07 - dont take lock if in download mode
+   if (_config->FindB("APT::Get::Print-URIs") == true ||
+   _config->FindB("APT::Get::Download-only") == true)
+  return Open(false);
+   else
+  return Open(true);
+}
+
 // CNC:2002-07-06
 bool DoClean(CommandLine &CmdL);
 bool DoAutoClean(CommandLine &CmdL);

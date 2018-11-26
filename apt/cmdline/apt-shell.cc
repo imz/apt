@@ -84,40 +84,33 @@ unsigned int ScreenWidth = 80;
 // class CacheFile - Cover class for some dependency cache functions	/*{{{*/
 // ---------------------------------------------------------------------
 /* */
-class CacheFile : public pkgCacheFile
+class CacheFile: public pkgCacheFile
 {
-   static pkgCache *SortCache;
-   static int NameComp(const void *a,const void *b);
-   bool IsRoot;
-   
-   public:
+public:
    pkgCache::Package **List;
-   
+
+   CacheFile();
+
    void Sort();
+
+   // CacheFile::CheckDeps - Open the cache file
+   // ---------------------------------------------------------------------
+   /* This routine generates the caches and then opens the dependency cache
+      and verifies that the system is OK. */
    bool CheckDeps(bool AllowBroken = false);
-   bool BuildCaches()
-   {
-      OpTextProgress Prog(*_config);
-      if (pkgCacheFile::BuildCaches(Prog,IsRoot) == false)
-	 return false;
-      return true;
-   }
-   bool Open() 
-   {
-      OpTextProgress Prog(*_config);
-      if (pkgCacheFile::Open(Prog,IsRoot) == false)
-	 return false;
-      Sort();
-      return true;
-   };
-   bool CanCommit()
-   {
-      return IsRoot;
-   }
-   CacheFile() : List(0)
-   {
-      IsRoot = (geteuid() == 0);
-   };
+   bool BuildCaches();
+   bool Open();
+   bool OpenForInstall();
+
+   bool CanCommit() const;
+
+private:
+   static pkgCache *SortCache;
+
+   // CacheFile::NameComp - QSort compare by name
+   static int NameComp(const void *a, const void *b);
+
+   bool IsRoot;
 };
 									/*}}}*/
 
@@ -298,7 +291,7 @@ bool ShowList(ostream &out,string Title,string List,string VersionsList)
            Depends: libldap2 (>= 2.0.2-2) but it is not going to be installed
            Depends: libsasl7 but it is not going to be installed   
  */
-void ShowBroken(ostream &out,CacheFile &Cache,bool Now,pkgDepCache::State *State=NULL)
+void ShowBroken(std::ostream &out,CacheFile &Cache,bool Now)
 {
    out << _("The following packages have unmet dependencies:") << endl;
    for (unsigned J = 0; J < Cache->Head().PackageCount; J++)
@@ -431,7 +424,7 @@ void ShowBroken(ostream &out,CacheFile &Cache,bool Now,pkgDepCache::State *State
 // ShowNew - Show packages to newly install				/*{{{*/
 // ---------------------------------------------------------------------
 /* */
-void ShowNew(ostream &out,CacheFile &Cache,pkgDepCache::State *State=NULL)
+void ShowNew(std::ostream &out, CacheFile &Cache, pkgDepCache::State *State)
 {
    /* Print out a list of packages that are going to be installed extra
       to what the user asked */
@@ -453,7 +446,7 @@ void ShowNew(ostream &out,CacheFile &Cache,pkgDepCache::State *State=NULL)
 // ShowDel - Show packages to delete					/*{{{*/
 // ---------------------------------------------------------------------
 /* */
-void ShowDel(ostream &out,CacheFile &Cache,pkgDepCache::State *State=NULL)
+void ShowDel(std::ostream &out, CacheFile &Cache, pkgDepCache::State *State)
 {
    /* Print out a list of packages that are going to be removed extra
       to what the user asked */
@@ -507,7 +500,7 @@ void ShowDel(ostream &out,CacheFile &Cache,pkgDepCache::State *State=NULL)
 // ShowKept - Show kept packages					/*{{{*/
 // ---------------------------------------------------------------------
 /* */
-void ShowKept(ostream &out,CacheFile &Cache,pkgDepCache::State *State=NULL)
+void ShowKept(std::ostream &out, CacheFile &Cache, pkgDepCache::State *State)
 {
    string List;
    string VersionsList;
@@ -536,7 +529,7 @@ void ShowKept(ostream &out,CacheFile &Cache,pkgDepCache::State *State=NULL)
 // ShowUpgraded - Show upgraded packages				/*{{{*/
 // ---------------------------------------------------------------------
 /* */
-void ShowUpgraded(ostream &out,CacheFile &Cache,pkgDepCache::State *State=NULL)
+void ShowUpgraded(std::ostream &out, CacheFile &Cache, pkgDepCache::State *State)
 {
    string List;
    string VersionsList;
@@ -564,7 +557,7 @@ void ShowUpgraded(ostream &out,CacheFile &Cache,pkgDepCache::State *State=NULL)
 // ShowDowngraded - Show downgraded packages				/*{{{*/
 // ---------------------------------------------------------------------
 /* */
-bool ShowDowngraded(ostream &out,CacheFile &Cache,pkgDepCache::State *State=NULL)
+bool ShowDowngraded(std::ostream &out, CacheFile &Cache, pkgDepCache::State *State)
 {
    string List;
    string VersionsList;
@@ -592,7 +585,7 @@ bool ShowDowngraded(ostream &out,CacheFile &Cache,pkgDepCache::State *State=NULL
 // ShowHold - Show held but changed packages				/*{{{*/
 // ---------------------------------------------------------------------
 /* */
-bool ShowHold(ostream &out,CacheFile &Cache,pkgDepCache::State *State=NULL)
+bool ShowHold(std::ostream &out, CacheFile &Cache, pkgDepCache::State *State)
 {
    string List;
    string VersionsList;
@@ -616,7 +609,7 @@ bool ShowHold(ostream &out,CacheFile &Cache,pkgDepCache::State *State=NULL)
 /* This prints out a warning message that is not to be ignored. It shows
    all essential packages and their dependents that are to be removed. 
    It is insanely risky to remove the dependents of an essential package! */
-bool ShowEssential(ostream &out,CacheFile &Cache,pkgDepCache::State *State=NULL)
+bool ShowEssential(std::ostream &out, CacheFile &Cache, pkgDepCache::State *State)
 {
    string List;
    string VersionsList;
@@ -714,7 +707,7 @@ bool ShowEssential(ostream &out,CacheFile &Cache,pkgDepCache::State *State=NULL)
 // Stats - Show some statistics						/*{{{*/
 // ---------------------------------------------------------------------
 /* */
-void Stats(ostream &out,pkgDepCache &Dep,pkgDepCache::State *State=NULL)
+void Stats(std::ostream &out, pkgDepCache &Dep, pkgDepCache::State *State)
 {
    unsigned long Upgrade = 0;
    unsigned long Downgrade = 0;
@@ -870,6 +863,12 @@ bool ConfirmChanges(CacheFile &Cache, AutoRestore &StateGuard)
 // ---------------------------------------------------------------------
 /* */
 pkgCache *CacheFile::SortCache = 0;
+
+CacheFile::CacheFile() : List(0)
+{
+   IsRoot = (geteuid() == 0);
+}
+
 int CacheFile::NameComp(const void *a,const void *b)
 {
    if (*(pkgCache::Package **)a == 0 || *(pkgCache::Package **)b == 0)
@@ -906,9 +905,12 @@ bool CacheFile::CheckDeps(bool AllowBroken)
    if (_error->PendingError() == true)
       return false;
 
+// CNC:2003-03-19 - Might be changed by some extension.
+#if 0
    // Check that the system is OK
-   //if (DCache->DelCount() != 0 || DCache->InstCount() != 0)
-   //   return _error->Error("Internal Error, non-zero counts");
+   if (DCache->DelCount() != 0 || DCache->InstCount() != 0)
+      return _error->Error("Internal Error, non-zero counts");
+#endif
    
    // Apply corrections for half-installed packages
    if (pkgApplyStatus(*DCache) == false)
@@ -945,6 +947,38 @@ bool CacheFile::CheckDeps(bool AllowBroken)
    return true;
 }
 									/*}}}*/
+
+bool CacheFile::BuildCaches()
+{
+   OpTextProgress Prog(*_config);
+   if (pkgCacheFile::BuildCaches(Prog,IsRoot) == false)
+      return false;
+   return true;
+}
+
+bool CacheFile::Open()
+{
+   OpTextProgress Prog(*_config);
+   if (pkgCacheFile::Open(Prog,IsRoot) == false)
+      return false;
+   Sort();
+   return true;
+}
+
+bool CacheFile::OpenForInstall()
+{
+   // CNC:2004-03-07 - dont take lock if in download mode
+   if (_config->FindB("APT::Get::Print-URIs") == true ||
+   _config->FindB("APT::Get::Download-only") == true)
+  return Open(false);
+   else
+  return Open(true);
+}
+
+bool CacheFile::CanCommit() const
+{
+   return IsRoot;
+}
 
 // CNC:2002-07-06
 bool DoClean(CommandLine &CmdL);
