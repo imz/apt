@@ -84,40 +84,34 @@ unsigned int ScreenWidth = 80;
 // class CacheFile - Cover class for some dependency cache functions	/*{{{*/
 // ---------------------------------------------------------------------
 /* */
-class CacheFile : public pkgCacheFile
+class CacheFile: public pkgCacheFile
 {
-   static pkgCache *SortCache;
-   static int NameComp(const void *a,const void *b);
-   bool IsRoot;
-   
-   public:
+public:
    pkgCache::Package **List;
-   
+
+   explicit CacheFile(std::ostream &c1out);
+
    void Sort();
+
+   // CacheFile::CheckDeps - Open the cache file
+   // ---------------------------------------------------------------------
+   /* This routine generates the caches and then opens the dependency cache
+      and verifies that the system is OK. */
    bool CheckDeps(bool AllowBroken = false);
-   bool BuildCaches()
-   {
-      OpTextProgress Prog(*_config);
-      if (pkgCacheFile::BuildCaches(Prog,IsRoot) == false)
-	 return false;
-      return true;
-   }
-   bool Open() 
-   {
-      OpTextProgress Prog(*_config);
-      if (pkgCacheFile::Open(Prog,IsRoot) == false)
-	 return false;
-      Sort();
-      return true;
-   };
-   bool CanCommit()
-   {
-      return IsRoot;
-   }
-   CacheFile() : List(0)
-   {
-      IsRoot = (getuid() == 0);
-   };
+   bool BuildCaches(bool WithLock = true);
+   bool Open(bool WithLock = true);
+   bool OpenForInstall();
+
+   bool CanCommit() const;
+
+private:
+   std::ostream &m_c1out;
+   bool m_is_root;
+
+   static pkgCache *SortCache;
+
+   // CacheFile::NameComp - QSort compare by name
+   static int NameComp(const void *a, const void *b);
 };
 									/*}}}*/
 
@@ -150,8 +144,8 @@ class AutoReOpenCache
 	 delete *Cache;
 	 if (_error->PendingError())
 		 _error->PushState();
-	 *Cache = new CacheFile;
-	 (*Cache)->Open();
+	 *Cache = new CacheFile(c1out);
+	 (*Cache)->Open((*Cache)->CanCommit());
 	 _error->PopState();
 	 if ((*Cache)->CheckDeps(true) == false) {
 	    c1out << _("There are broken packages. ")
@@ -230,7 +224,7 @@ bool AnalPrompt(const char *Text)
 // ---------------------------------------------------------------------
 /* This prints out a string of space separated words with a title and 
    a two space indent line wraped to the current screen width. */
-bool ShowList(ostream &out,string Title,string List,string VersionsList)
+bool ShowList(std::ostream &out, const std::string &Title, std::string List, const std::string &VersionsList, size_t l_ScreenWidth)
 {
    if (List.empty() == true)
       return true;
@@ -244,7 +238,7 @@ bool ShowList(ostream &out,string Title,string List,string VersionsList)
    }
 
    // Acount for the leading space
-   int ScreenWidth = ::ScreenWidth - 3;
+   l_ScreenWidth = l_ScreenWidth - 3;
       
    out << Title << endl;
    string::size_type Start = 0;
@@ -264,20 +258,20 @@ bool ShowList(ostream &out,string Title,string List,string VersionsList)
             ")" << endl;
 
 	 if (End == string::npos || End < Start)
-	    End = Start + ScreenWidth;
+	    End = Start + l_ScreenWidth;
 
          Start = End + 1;
          VersionsStart = VersionsEnd + 1;
       } else {
          string::size_type End;
 
-         if (Start + ScreenWidth >= List.size())
+         if (Start + l_ScreenWidth >= List.size())
             End = List.size();
          else
-            End = List.rfind(' ',Start+ScreenWidth);
+            End = List.rfind(' ',Start+l_ScreenWidth);
 
          if (End == string::npos || End < Start)
-            End = Start + ScreenWidth;
+            End = Start + l_ScreenWidth;
          out << "  " << string(List,Start,End - Start) << endl;
          Start = End + 1;
       }
@@ -298,7 +292,7 @@ bool ShowList(ostream &out,string Title,string List,string VersionsList)
            Depends: libldap2 (>= 2.0.2-2) but it is not going to be installed
            Depends: libsasl7 but it is not going to be installed   
  */
-void ShowBroken(ostream &out,CacheFile &Cache,bool Now,pkgDepCache::State *State=NULL)
+void ShowBroken(ostream &out,CacheFile &Cache,bool Now)
 {
    out << _("The following packages have unmet dependencies:") << endl;
    for (unsigned J = 0; J < Cache->Head().PackageCount; J++)
@@ -431,7 +425,7 @@ void ShowBroken(ostream &out,CacheFile &Cache,bool Now,pkgDepCache::State *State
 // ShowNew - Show packages to newly install				/*{{{*/
 // ---------------------------------------------------------------------
 /* */
-void ShowNew(ostream &out,CacheFile &Cache,pkgDepCache::State *State=NULL)
+void ShowNew(std::ostream &out, std::ostream &l_c3out, CacheFile &Cache, pkgDepCache::State *State, size_t l_ScreenWidth)
 {
    /* Print out a list of packages that are going to be installed extra
       to what the user asked */
@@ -447,13 +441,14 @@ void ShowNew(ostream &out,CacheFile &Cache,pkgDepCache::State *State=NULL)
       }
    }
    
-   ShowList(out,_("The following NEW packages will be installed:"),List,VersionsList);
+   if (!List.empty()) l_c3out<<"apt-get:install-list:"<<List<<endl;
+   ShowList(out,_("The following NEW packages will be installed:"),List,VersionsList,l_ScreenWidth);
 }
 									/*}}}*/
 // ShowDel - Show packages to delete					/*{{{*/
 // ---------------------------------------------------------------------
 /* */
-void ShowDel(ostream &out,CacheFile &Cache,pkgDepCache::State *State=NULL)
+void ShowDel(std::ostream &out, std::ostream &l_c3out, CacheFile &Cache, pkgDepCache::State *State, size_t l_ScreenWidth)
 {
    /* Print out a list of packages that are going to be removed extra
       to what the user asked */
@@ -500,14 +495,16 @@ void ShowDel(ostream &out,CacheFile &Cache,pkgDepCache::State *State=NULL)
    }
    
    // CNC:2002-07-25
-   ShowList(out,_("The following packages will be REPLACED:"),RepList,VersionsList);
-   ShowList(out,_("The following packages will be REMOVED:"),List,VersionsList);
+   if (!RepList.empty()) l_c3out<<"apt-get:replace-list:"<<RepList<<endl;;
+   ShowList(out,_("The following packages will be REPLACED:"),RepList,VersionsList,l_ScreenWidth);
+   if (!List.empty()) l_c3out<<"apt-get:remove-list:"<<List<<endl;
+   ShowList(out,_("The following packages will be REMOVED:"),List,VersionsList,l_ScreenWidth);
 }
 									/*}}}*/
 // ShowKept - Show kept packages					/*{{{*/
 // ---------------------------------------------------------------------
 /* */
-void ShowKept(ostream &out,CacheFile &Cache,pkgDepCache::State *State=NULL)
+void ShowKept(std::ostream &out, std::ostream &l_c3out, CacheFile &Cache, pkgDepCache::State *State, size_t l_ScreenWidth)
 {
    string List;
    string VersionsList;
@@ -530,13 +527,14 @@ void ShowKept(ostream &out,CacheFile &Cache,pkgDepCache::State *State=NULL)
       List += string(I.Name()) + " ";
       VersionsList += string(Cache[I].CurVersion) + " => " + Cache[I].CandVersion + "\n";
    }
-   ShowList(out,_("The following packages have been kept back"),List,VersionsList);
+   if (!List.empty()) l_c3out<<"apt-get:keep-list:"<<List<<endl;
+   ShowList(out,_("The following packages have been kept back"),List,VersionsList,l_ScreenWidth);
 }
 									/*}}}*/
 // ShowUpgraded - Show upgraded packages				/*{{{*/
 // ---------------------------------------------------------------------
 /* */
-void ShowUpgraded(ostream &out,CacheFile &Cache,pkgDepCache::State *State=NULL)
+void ShowUpgraded(std::ostream &out, std::ostream &l_c3out, CacheFile &Cache, pkgDepCache::State *State, size_t l_ScreenWidth)
 {
    string List;
    string VersionsList;
@@ -558,13 +556,14 @@ void ShowUpgraded(ostream &out,CacheFile &Cache,pkgDepCache::State *State=NULL)
       List += string(I.Name()) + " ";
       VersionsList += string(Cache[I].CurVersion) + " => " + Cache[I].CandVersion + "\n";
    }
-   ShowList(out,_("The following packages will be upgraded"),List,VersionsList);
+   if (!List.empty()) l_c3out<<"apt-get:upgrade-list:"<<List<<endl;
+   ShowList(out,_("The following packages will be upgraded"),List,VersionsList,l_ScreenWidth);
 }
 									/*}}}*/
 // ShowDowngraded - Show downgraded packages				/*{{{*/
 // ---------------------------------------------------------------------
 /* */
-bool ShowDowngraded(ostream &out,CacheFile &Cache,pkgDepCache::State *State=NULL)
+bool ShowDowngraded(std::ostream &out, std::ostream &l_c3out, CacheFile &Cache, pkgDepCache::State *State, size_t l_ScreenWidth)
 {
    string List;
    string VersionsList;
@@ -586,13 +585,14 @@ bool ShowDowngraded(ostream &out,CacheFile &Cache,pkgDepCache::State *State=NULL
       List += string(I.Name()) + " ";
       VersionsList += string(Cache[I].CurVersion) + " => " + Cache[I].CandVersion + "\n";
    }
-   return ShowList(out,_("The following packages will be DOWNGRADED"),List,VersionsList);
+   if (!List.empty()) l_c3out<<"apt-get:downgrade-list:"<<List<<endl;
+   return ShowList(out,_("The following packages will be DOWNGRADED"),List,VersionsList,l_ScreenWidth);
 }
 									/*}}}*/
 // ShowHold - Show held but changed packages				/*{{{*/
 // ---------------------------------------------------------------------
 /* */
-bool ShowHold(ostream &out,CacheFile &Cache,pkgDepCache::State *State=NULL)
+bool ShowHold(std::ostream &out, std::ostream &l_c3out, CacheFile &Cache, pkgDepCache::State *State, size_t l_ScreenWidth)
 {
    string List;
    string VersionsList;
@@ -607,8 +607,9 @@ bool ShowHold(ostream &out,CacheFile &Cache,pkgDepCache::State *State=NULL)
 	 VersionsList += string(Cache[I].CurVersion) + " => " + Cache[I].CandVersion + "\n";
       }
    }
-
-   return ShowList(out,_("The following held packages will be changed:"),List,VersionsList);
+   
+   if (!List.empty()) l_c3out<<"apt-get:hold-list:"<<List<<endl;
+   return ShowList(out,_("The following held packages will be changed:"),List,VersionsList,l_ScreenWidth);
 }
 									/*}}}*/
 // ShowEssential - Show an essential package warning			/*{{{*/
@@ -616,7 +617,7 @@ bool ShowHold(ostream &out,CacheFile &Cache,pkgDepCache::State *State=NULL)
 /* This prints out a warning message that is not to be ignored. It shows
    all essential packages and their dependents that are to be removed. 
    It is insanely risky to remove the dependents of an essential package! */
-bool ShowEssential(ostream &out,CacheFile &Cache,pkgDepCache::State *State=NULL)
+bool ShowEssential(std::ostream &out, std::ostream &l_c3out, CacheFile &Cache, pkgDepCache::State *State, size_t l_ScreenWidth)
 {
    string List;
    string VersionsList;
@@ -707,14 +708,15 @@ bool ShowEssential(ostream &out,CacheFile &Cache,pkgDepCache::State *State=NULL)
    }
    
    delete [] Added;
+   if (!List.empty()) l_c3out<<"apt-get:essential-list:"<<List<<endl;
    return ShowList(out,_("WARNING: The following essential packages will be removed\n"
-			 "This should NOT be done unless you know exactly what you are doing!"),List,VersionsList);
+			 "This should NOT be done unless you know exactly what you are doing!"),List,VersionsList,l_ScreenWidth);
 }
 									/*}}}*/
 // Stats - Show some statistics						/*{{{*/
 // ---------------------------------------------------------------------
 /* */
-void Stats(ostream &out,pkgDepCache &Dep,pkgDepCache::State *State=NULL)
+void Stats(std::ostream &out, std::ostream &l_c3out, pkgDepCache &Dep, pkgDepCache::State *State)
 {
    unsigned long Upgrade = 0;
    unsigned long Downgrade = 0;
@@ -772,6 +774,12 @@ void Stats(ostream &out,pkgDepCache &Dep,pkgDepCache::State *State=NULL)
 	       (State == NULL || !((*State)[I].iFlags & pkgDepCache::ReInstall)))
 	 ReInstall++;
    }   
+   l_c3out<<"apt-get:status:upgrade:"<<Upgrade<<endl;
+   l_c3out<<"apt-get:status:downgrade:"<<Downgrade<<endl;
+   l_c3out<<"apt-get:status:install:"<<Install<<endl;
+   l_c3out<<"apt-get:status:re-install:"<<ReInstall<<endl;
+   l_c3out<<"apt-get:status:replace:"<<Replace<<endl;
+   l_c3out<<"apt-get:status:remove:"<<Remove<<endl;
 
    ioprintf(out,_("%lu upgraded, %lu newly installed, "),
 	    Upgrade,Install);
@@ -804,15 +812,15 @@ void Stats(ostream &out,pkgDepCache &Dep,pkgDepCache::State *State=NULL)
 /* */
 bool ShowChanges(CacheFile &Cache,pkgDepCache::State *State=NULL)
 {
-   ShowUpgraded(c1out,Cache,State);
-   ShowDel(c1out,Cache,State);
-   ShowNew(c1out,Cache,State);
+   ShowUpgraded(c1out,devnull,Cache,State,ScreenWidth);
+   ShowDel(c1out,devnull,Cache,State,ScreenWidth);
+   ShowNew(c1out,devnull,Cache,State,ScreenWidth);
    if (State != NULL)
-      ShowKept(c1out,Cache,State);
-   ShowHold(c1out,Cache,State);
-   ShowDowngraded(c1out,Cache,State);
-   ShowEssential(c1out,Cache,State);
-   Stats(c1out,Cache,State);
+      ShowKept(c1out,devnull,Cache,State,ScreenWidth);
+   ShowHold(c1out,devnull,Cache,State,ScreenWidth);
+   ShowDowngraded(c1out,devnull,Cache,State,ScreenWidth);
+   ShowEssential(c1out,devnull,Cache,State,ScreenWidth);
+   Stats(c1out,devnull,Cache,State);
 
    if (State != NULL) {
       double DebBytes = Cache->DebSize()-State->DebSize();
@@ -870,6 +878,14 @@ bool ConfirmChanges(CacheFile &Cache, AutoRestore &StateGuard)
 // ---------------------------------------------------------------------
 /* */
 pkgCache *CacheFile::SortCache = 0;
+
+CacheFile::CacheFile(std::ostream &c1out)
+   : m_c1out(c1out),
+   m_is_root((geteuid() == 0))
+{
+   List = 0;
+}
+
 int CacheFile::NameComp(const void *a,const void *b)
 {
    if (*(pkgCache::Package **)a == 0 || *(pkgCache::Package **)b == 0)
@@ -906,9 +922,12 @@ bool CacheFile::CheckDeps(bool AllowBroken)
    if (_error->PendingError() == true)
       return false;
 
+// CNC:2003-03-19 - Might be changed by some extension.
+#if 0
    // Check that the system is OK
-   //if (DCache->DelCount() != 0 || DCache->InstCount() != 0)
-   //   return _error->Error("Internal Error, non-zero counts");
+   if (DCache->DelCount() != 0 || DCache->InstCount() != 0)
+      return _error->Error("Internal Error, non-zero counts");
+#endif
    
    // Apply corrections for half-installed packages
    if (pkgApplyStatus(*DCache) == false)
@@ -921,23 +940,23 @@ bool CacheFile::CheckDeps(bool AllowBroken)
    // Attempt to fix broken things
    if (_config->FindB("APT::Get::Fix-Broken",false) == true)
    {
-      c1out << _("Correcting dependencies...") << flush;
+      m_c1out << _("Correcting dependencies...") << flush;
       if (pkgFixBroken(*DCache) == false || DCache->BrokenCount() != 0)
       {
-	 c1out << _(" failed.") << endl;
-	 ShowBroken(c1out,*this,true);
+	 m_c1out << _(" failed.") << endl;
+	 ShowBroken(m_c1out,*this,true);
 
 	 return _error->Error(_("Unable to correct dependencies"));
       }
       if (pkgMinimizeUpgrade(*DCache) == false)
 	 return _error->Error(_("Unable to minimize the upgrade set"));
       
-      c1out << _(" Done") << endl;
+      m_c1out << _(" Done") << endl;
    }
    else
    {
-      c1out << _("You might want to run `install --fix-broken' to correct these.") << endl;
-      ShowBroken(c1out,*this,true);
+      m_c1out << _("You might want to run `apt-get --fix-broken install' to correct these.") << endl;
+      ShowBroken(m_c1out,*this,true);
 
       return _error->Error(_("Unmet dependencies. Try using --fix-broken."));
    }
@@ -945,6 +964,39 @@ bool CacheFile::CheckDeps(bool AllowBroken)
    return true;
 }
 									/*}}}*/
+
+bool CacheFile::BuildCaches(bool WithLock)
+{
+   OpTextProgress Prog(*_config);
+   if (pkgCacheFile::BuildCaches(Prog,WithLock) == false)
+  return false;
+   return true;
+}
+
+bool CacheFile::Open(bool WithLock) 
+{
+   OpTextProgress Prog(*_config);
+   if (pkgCacheFile::Open(Prog,WithLock) == false)
+  return false;
+   Sort();
+   
+   return true;
+}
+
+bool CacheFile::OpenForInstall()
+{
+   // CNC:2004-03-07 - dont take lock if in download mode
+   if (_config->FindB("APT::Get::Print-URIs") == true ||
+   _config->FindB("APT::Get::Download-only") == true)
+  return Open(false);
+   else
+  return Open(true);
+}
+
+bool CacheFile::CanCommit() const
+{
+   return m_is_root;
+}
 
 // CNC:2002-07-06
 bool DoClean(CommandLine &CmdL);
@@ -973,16 +1025,16 @@ bool InstallPackages(CacheFile &Cache,bool ShwKept,bool Ask = true,
    // Show all the various warning indicators
    // CNC:2002-03-06 - Change Show-Upgraded default to true, and move upwards.
    if (_config->FindB("APT::Get::Show-Upgraded",true) == true)
-      ShowUpgraded(c1out,Cache);
-   ShowDel(c1out,Cache);
-   ShowNew(c1out,Cache);
+      ShowUpgraded(c1out,devnull,Cache,nullptr,ScreenWidth);
+   ShowDel(c1out,devnull,Cache,nullptr,ScreenWidth);
+   ShowNew(c1out,devnull,Cache,nullptr,ScreenWidth);
    if (ShwKept == true)
-      ShowKept(c1out,Cache);
-   Fail |= !ShowHold(c1out,Cache);
-   Fail |= !ShowDowngraded(c1out,Cache);
-   Essential = !ShowEssential(c1out,Cache);
+      ShowKept(c1out,devnull,Cache,nullptr,ScreenWidth);
+   Fail |= !ShowHold(c1out,devnull,Cache,nullptr,ScreenWidth);
+   Fail |= !ShowDowngraded(c1out,devnull,Cache,nullptr,ScreenWidth);
+   Essential = !ShowEssential(c1out,devnull,Cache,nullptr,ScreenWidth);
    Fail |= Essential;
-   Stats(c1out,Cache);
+   Stats(c1out,devnull,Cache,nullptr);
    
    // Sanity check
    if (Cache->BrokenCount() != 0)
@@ -1492,7 +1544,7 @@ bool TryToInstall(pkgCache::PkgIterator Pkg,pkgDepCache &Cache,
 	    List += string(Dep.ParentPkg().Name()) + " ";
             //VersionsList += string(Dep.ParentPkg().CurVersion) + "\n"; ???
 	 }	    
-	 ShowList(c1out,_("However the following packages replace it:"),List,VersionsList);
+	 ShowList(c1out,_("However the following packages replace it:"),List,VersionsList,ScreenWidth);
       }
       
       _error->Error(_("Package %s has no installation candidate"),Pkg.Name());
@@ -2398,7 +2450,7 @@ bool DoAutoClean(CommandLine &CmdL)
    
    CacheFile &Cache = *GCache;
 #if 0
-   if (Cache.Open() == false)
+   if (Cache.Open(Cache.CanCommit()) == false)
       return false;
 #endif
    
@@ -4469,8 +4521,8 @@ int aptpipe_init(void)
 	_config->Set("Acquire::CDROM::Copy-All", "false");
 
 	// Prepare the cache
-	GCache = new CacheFile();
-	GCache->Open();
+	GCache = new CacheFile(c1out);
+	GCache->Open(GCache->CanCommit());
 
 	if (_error->empty() == false) {
 		bool Errors = _error->PendingError();
@@ -4624,8 +4676,8 @@ int main(int argc,const char *argv[])
    SigWinch(0);
 
    // Prepare the cache
-   GCache = new CacheFile();
-   GCache->Open();
+   GCache = new CacheFile(c1out);
+   GCache->Open(GCache->CanCommit());
 
    // CNC:2004-02-18
    if (_error->empty() == false)
