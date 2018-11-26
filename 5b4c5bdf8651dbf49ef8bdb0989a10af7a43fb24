@@ -11,6 +11,17 @@ sizeof(pkgCache::Package*)
 commit is just about an equiv.rewrite of the code to make it nicer;
 this makes the new behavior non-equivalent (in apt/apt-pkg/cachefile.cc):
 
+       {
+-        m_c1out << _(" failed.") << endl;
+-        ShowBroken(cerr,*this,true);
++         m_c1out << _(" failed.") << std::endl;
++         ShowBroken(m_c1out, *this, true);
+
+          return _error->Error(_("Unable to correct dependencies"));
+       }
+
+...
+
     {
 -      m_c1out << _("You might want to run `apt-get --fix-broken install' to correct these.") << endl;
 -      ShowBroken(cerr,*this,true);
