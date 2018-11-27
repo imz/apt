@@ -6,7 +6,9 @@ the configuration. Has this paramater name been copied from Debian? If
 so, then it's better not change it, probably, although it might be not
 very clear.
 
-TODO: review the rest of the code more thoroughly.
+TODO: review the rest of the code more thoroughly. (I feel that it
+would be more clear to me that everything is alright if the API change
+of MarkInstall would be before.)
 
 2. The spacing (with tabs) is not consistent with how the code is
 indented nearby in:
