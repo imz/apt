@@ -1,23 +1,3 @@
-3. cerr is changed to m_c1out in this commit, although the rest of the
-commit is just about an equiv.rewrite of the code to make it nicer;
-this makes the new behavior non-equivalent (in apt/apt-pkg/cachefile.cc):
+looks like an equiv.rewrite (read through)
 
-       {
--        m_c1out << _(" failed.") << endl;
--        ShowBroken(cerr,*this,true);
-+         m_c1out << _(" failed.") << std::endl;
-+         ShowBroken(m_c1out, *this, true);
-
-          return _error->Error(_("Unable to correct dependencies"));
-       }
-
-...
-
-    {
--      m_c1out << _("You might want to run `apt-get --fix-broken install' to correct these.") << endl;
--      ShowBroken(cerr,*this,true);
-+      m_c1out << _("You might want to run `install --fix-broken' to correct these.") << std::endl;
-+      ShowBroken(m_c1out, *this, true);
-
-       return _error->Error(_("Unmet dependencies. Try using --fix-broken."));
-    }
+Effects on the old behavior: no
