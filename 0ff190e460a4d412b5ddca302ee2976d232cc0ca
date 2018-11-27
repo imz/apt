@@ -5,8 +5,6 @@ practically, if there are no errors (crashes), no direct effect on the old
 behavior is expected because their return codes do not affect anything
 at the places where they are called.
 
-BTW, writeStateFile() should be a const method, why not?
-
 * * *
 
 Some additional explanations (but not criticisms; thanks darktemplar@
