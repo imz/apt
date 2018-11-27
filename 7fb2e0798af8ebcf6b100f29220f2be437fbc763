@@ -1,5 +1,1 @@
 quite clear
-
-1. The indentation spacing doesn't match the surrounding code in:
-
-apt/cmdline/apt-shell.cc (they use 3 spaces)
