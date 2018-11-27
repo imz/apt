@@ -1,7 +1,3 @@
 Effects on the old behavior: no
 (This is just a change in the calculation algorithm for the new
 autoremove feature.)
-
-1. The indentation spacing doesn't match the old code in:
-
-apt/apt-pkg/algorithms.cc (they use 3 spaces)
