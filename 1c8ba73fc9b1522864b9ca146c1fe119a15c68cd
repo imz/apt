@@ -9,9 +9,3 @@ very clear.
 TODO: review the rest of the code more thoroughly. (I feel that it
 would be more clear to me that everything is alright if the API change
 of MarkInstall would be before.)
-
-2. The spacing (with tabs) is not consistent with how the code is
-indented nearby in:
-
-apt/apt-pkg/algorithms.cc
-apt/apt-pkg/depcache.cc
