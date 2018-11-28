@@ -1,3 +1,4 @@
-looks like an equiv.rewrite (have read through)
+Effects on the old behavior: none (looks like an equiv.rewrite, have read through)
 
-Effects on the old behavior: no
+1. New idea: let's use ioprintf() instead of asprintf() -- as anywhere
+else in APT sources. (It comes from apt/apt-pkg/contrib/strutl.h )
