@@ -2,3 +2,9 @@ Effects on the old behavior: none (looks like an equiv.rewrite, have read throug
 
 1. New idea: let's use ioprintf() instead of asprintf() -- as anywhere
 else in APT sources. (It comes from apt/apt-pkg/contrib/strutl.h )
+
+BTW (to the discussion of converging with Debian), Debian APT has also
+moved utility functions to separate modules (e.g.,
+https://salsa.debian.org/apt-team/apt/blob/master/apt-private/private-output.h ).
+However, without the additional parameters needed by apt-shell.
+(They don't have this apt-shell.)
