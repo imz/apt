@@ -833,10 +833,19 @@ bool TryToInstall(pkgCache::PkgIterator Pkg,pkgDepCache &Cache,
       else
       {
 	 if (AllowFail == true)
+	 {
 	    ioprintf(c1out,_("%s is already the newest version.\n"),
 		     Pkg.Name());
-	    // FIXME: should we set it in this case?
-	    // under if: Cache.MarkAuto(Pkg, pkgDepCache::AutoMarkFlag::Manual);
+	    // The desired new state after a successful "apt-get install"
+	    // command is thought to be independent of whether
+	    // a package was installed in the system or not.
+	    if (Cache.getMarkAuto(Pkg) != pkgDepCache::AutoMarkFlag::Manual)
+	    {
+	       Cache.MarkAuto(Pkg, pkgDepCache::AutoMarkFlag::Manual);
+	       ioprintf(c1out,_("%s will be marked as manually installed.\n"),
+		        Pkg.Name());
+	    }
+	 }
       }      
    }   
    else
