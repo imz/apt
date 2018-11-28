@@ -816,7 +816,7 @@ bool TryToInstall(pkgCache::PkgIterator Pkg,pkgDepCache &Cache,
    }
    
    // Install it
-   Cache.MarkInstall(Pkg,pkgDepCache::AutoMarkFlag::DontChange,false);
+   Cache.MarkInstall(Pkg,pkgDepCache::AutoMarkFlag::Manual,false);
    if (State.Install() == false)
    {
       if (_config->FindB("APT::Get::ReInstall",false) == true)
@@ -835,12 +835,13 @@ bool TryToInstall(pkgCache::PkgIterator Pkg,pkgDepCache &Cache,
 	 if (AllowFail == true)
 	    ioprintf(c1out,_("%s is already the newest version.\n"),
 		     Pkg.Name());
+	    // FIXME: should we set it in this case?
+	    // under if: Cache.MarkAuto(Pkg, pkgDepCache::AutoMarkFlag::Manual);
       }      
    }   
    else
    {
       ExpectedInst++;
-      Cache.MarkAuto(Pkg, pkgDepCache::AutoMarkFlag::Manual);
    }
    
    // Install it with autoinstalling enabled.

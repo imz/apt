@@ -1030,7 +1030,10 @@ void pkgDepCache::MarkInstall(PkgIterator const &Pkg, pkgDepCache::AutoMarkFlag 
    else
       MarkInstall2(Pkg);
 
-   MarkAuto(Pkg, AutoFlag);
+   if ((*this)[Pkg].Install())
+   {
+      MarkAuto(Pkg, AutoFlag);
+   }
 }
 									/*}}}*/
 // DepCache::SetReInstall - Set the reinstallation flag			/*{{{*/
