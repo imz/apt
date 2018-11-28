@@ -1,0 +1,27 @@
+One place is perhaps not so nice, because the decision about the flag
+is done later in SetReInstall() or with MarkAuto(), but it's difficult
+to write it better:
+
+   // Install it
+   Cache.MarkInstall(Pkg,pkgDepCache::AutoMarkFlag::DontChange,false);
+   if (State.Install() == false)
+   {
+      if (_config->FindB("APT::Get::ReInstall",false) == true)
+      {
+	 if (Pkg->CurrentVer == 0)
+         ...
+	 else
+	 {
+	    Cache.SetReInstall(Pkg,true);
+	 }
+      }
+      else
+      {
+      ...
+      }
+   }
+   else
+   {
+      ExpectedInst++;
+      Cache.MarkAuto(Pkg, pkgDepCache::AutoMarkFlag::Manual);
+   }
