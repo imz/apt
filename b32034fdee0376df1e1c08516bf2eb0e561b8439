@@ -3,17 +3,14 @@ Effects on the old behavior: can be either on APT, or on RPM
 
 I haven't thoroughly studied this code.
 
-1. The indentations spacing doesn't match the surrounding file in:
-
-apt/apt-pkg/luaiface.cc
-apt/apt-pkg/packagemanager.h
-apt/apt-pkg/rpm/rpmlistparser.cc
-apt/apt-pkg/rpm/rpmpm.cc
-apt/cmdline/apt-shell.cc
-
 Some observations (not criticisms) follow:
 
 * * *
+
+The spacing of apt/apt-pkg/rpm/rpmpm.cc was already inconsistent with
+the rest of the APT project, so I wouldn't care much about the spacing
+there. (At least, in this patch, the new functions seem to be indented
+similarly to the rest of the APT project, and I wouldn't say that's bad.)
 
 I've noticed an interesting thing for me: that the auto-flags are
 read/written in a package-by-package manner. Previously, I used to
