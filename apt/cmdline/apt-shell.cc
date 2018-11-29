@@ -256,24 +256,24 @@ bool ShowList(std::ostream &out, const std::string &Title, std::string List, con
 
          out << "   " << string(List,Start,End - Start) << " (" << 
             string(VersionsList,VersionsStart,VersionsEnd - VersionsStart) << 
-            ")" << endl;
+            ")" << std::endl;
 
-	 if (End == string::npos || End < Start)
+	 if (End == std::string::npos || End < Start)
 	    End = Start + l_ScreenWidth;
 
          Start = End + 1;
          VersionsStart = VersionsEnd + 1;
       } else {
-         string::size_type End;
+         std::string::size_type End;
 
          if (Start + l_ScreenWidth >= List.size())
             End = List.size();
          else
             End = List.rfind(' ',Start+l_ScreenWidth);
 
-         if (End == string::npos || End < Start)
+         if (End == std::string::npos || End < Start)
             End = Start + l_ScreenWidth;
-         out << "  " << string(List,Start,End - Start) << endl;
+         out << "  " << string(List,Start,End - Start) << std::endl;
          Start = End + 1;
       }
    }   
@@ -295,7 +295,7 @@ bool ShowList(std::ostream &out, const std::string &Title, std::string List, con
  */
 void ShowBroken(std::ostream &out,CacheFile &Cache,bool Now)
 {
-   out << _("The following packages have unmet dependencies:") << endl;
+   out << _("The following packages have unmet dependencies:") << std::endl;
    for (unsigned J = 0; J < Cache->Head().PackageCount; J++)
    {
       pkgCache::PkgIterator I(Cache,Cache.List[J]);
