@@ -457,11 +457,10 @@ void ShowDel(ostream &out,CacheFile &Cache)
 	       List += string(I.Name()) + " ";
 	 }
      
-     // CNC:2004-03-09 
+     // CNC:2004-03-09
      VersionsList += string(I.CurrentVer().VerStr())+ "\n";
       }
    }
-   
    
    // CNC:2002-07-25
    if (!RepList.empty()) c3out<<"apt-get:replace-list:"<<RepList<<endl;;
