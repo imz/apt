@@ -83,12 +83,14 @@
  cmdline/apt-cache.cc             |  15 +-
  cmdline/apt-cdrom.cc             |  42 +--
  cmdline/apt-config.cc            |   7 +-
- cmdline/apt-get.cc               | 321 ++++++++++++++++++----
+ cmdline/apt-get.cc               | 340 ++++++++++++++++++-----
  cmdline/apt-pipe.c               | 389 ++++++++++++++++++++++++++
  cmdline/apt-shell.cc             | 294 +++++++++++++++++---
  cmdline/indexcopy.cc             |   2 +
  cmdline/rpmindexcopy.cc          |   2 +
  configure.in                     |  28 +-
+ contrib/apt-wrapper/apt          |   2 +-
+ contrib/apt-wrapper/apt.1        |   4 +-
  doc/apt.ent                      |   4 +-
  methods/Makefile.am              |   3 +-
  methods/cdrom.cc                 |  14 +-
@@ -123,7 +125,7 @@
  tools/countpkglist.cc            |   3 +
  tools/genpkglist.cc              | 326 +++++++++++++++-------
  tools/gensrclist.cc              |   5 +-
- 125 files changed, 3064 insertions(+), 631 deletions(-)
+ 127 files changed, 3067 insertions(+), 653 deletions(-)
 
 diff --git a/Makefile.am b/Makefile.am
 index 415e0b5..d410113 100644
@@ -4005,7 +4007,7 @@ index 084314b..723e33c 100644
        _error->DumpErrors();
        return 100;
 diff --git a/cmdline/apt-get.cc b/cmdline/apt-get.cc
-index c0749e6..ea35356 100644
+index c0749e6..3e2f505 100644
 --- a/cmdline/apt-get.cc
 +++ b/cmdline/apt-get.cc
 @@ -25,6 +25,8 @@
@@ -4632,7 +4634,32 @@ index c0749e6..ea35356 100644
  	 return _error->Error(_("Some broken packages were found while trying to process build-dependencies for %s.\n"
  				"You might want to run `apt-get --fix-broken install' to correct these."),*I);
        }
-@@ -3151,6 +3337,7 @@ int main(int argc,const char *argv[])
+@@ -2965,24 +3151,6 @@ bool DoBuildDep(CommandLine &CmdL)
+ }
+ 									/*}}}*/
+ 
+-// DoMoo - Never Ask, Never Tell					/*{{{*/
+-// ---------------------------------------------------------------------
+-/* */
+-bool DoMoo(CommandLine &CmdL)
+-{
+-   cout << 
+-      "         (__) \n"
+-      "         (oo) \n"
+-      "   /------\\/ \n"
+-      "  / |    ||   \n" 
+-      " *  /\\---/\\ \n"
+-      "    ~~   ~~   \n"
+-      "....\"Have you mooed today?\"...\n";
+-			    
+-   return true;
+-}
+-									/*}}}*/
+-
+ // CNC:2003-03-18
+ // DoScript - Scripting stuff.						/*{{{*/
+ // ---------------------------------------------------------------------
+@@ -3151,6 +3319,7 @@ int main(int argc,const char *argv[])
        {'v',"version","version",0},
        {'V',"verbose-versions","APT::Get::Show-Versions",0},
        {'q',"quiet","quiet",CommandLine::IntLevel},
@@ -4640,7 +4667,7 @@ index c0749e6..ea35356 100644
        {'q',"silent","quiet",CommandLine::IntLevel},
        {'d',"download-only","APT::Get::Download-Only",0},
        {'b',"compile","APT::Get::Compile",0},
-@@ -3186,6 +3373,7 @@ int main(int argc,const char *argv[])
+@@ -3186,6 +3355,7 @@ int main(int argc,const char *argv[])
        {0,"check-only","APT::Get::Check-Only",0}, // CNC:2003-03-06
        {'c',"config-file",0,CommandLine::ConfigFile},
        {'o',"option",0,CommandLine::ArbItem},
@@ -4648,7 +4675,15 @@ index c0749e6..ea35356 100644
        {0,0,0,0}};
     CommandLine::Dispatch Cmds[] = {{"update",&DoUpdate},
                                     {"upgrade",&DoUpgrade},
-@@ -3215,8 +3403,8 @@ int main(int argc,const char *argv[])
+@@ -3200,7 +3370,6 @@ int main(int argc,const char *argv[])
+                                    {"autoclean",&DoAutoClean},
+                                    {"check",&DoCheck},
+ 				   {"source",&DoSource},
+-				   {"moo",&DoMoo},
+ 				   {"help",&ShowHelp},
+ // CNC:2003-03-19
+ #ifdef WITH_LUA
+@@ -3215,8 +3384,8 @@ int main(int argc,const char *argv[])
     // Parse the command line and initialize the package library
     CommandLine CmdL(Args,_config);
     if (pkgInitConfig(*_config) == false ||
@@ -4659,7 +4694,7 @@ index c0749e6..ea35356 100644
     {
        if (_config->FindB("version") == true)
  	 ShowHelp(CmdL);
-@@ -3225,6 +3413,27 @@ int main(int argc,const char *argv[])
+@@ -3225,6 +3394,27 @@ int main(int argc,const char *argv[])
        return 100;
     }
  
@@ -4687,7 +4722,7 @@ index c0749e6..ea35356 100644
     // See if the help should be shown
     if (_config->FindB("help") == true ||
         _config->FindB("version") == true ||
-@@ -3244,7 +3453,9 @@ int main(int argc,const char *argv[])
+@@ -3244,7 +3434,9 @@ int main(int argc,const char *argv[])
  	 if (strstr(*I, "://") != NULL)
  	 {
  	    URLLst.push_back(*I);
@@ -4698,7 +4733,7 @@ index c0749e6..ea35356 100644
  	 }
        }
  
-@@ -3263,9 +3474,21 @@ int main(int argc,const char *argv[])
+@@ -3263,9 +3455,21 @@ int main(int argc,const char *argv[])
        _config->Set("quiet","1");
  
     // Setup the output streams
@@ -5810,6 +5845,41 @@ index 00366c5..5cb6d06 100644
  	  apt-pkg/Makefile
  	  methods/Makefile
  	  cmdline/Makefile
+diff --git a/contrib/apt-wrapper/apt b/contrib/apt-wrapper/apt
+index 4241971..a85ccc3 100644
+--- a/contrib/apt-wrapper/apt
++++ b/contrib/apt-wrapper/apt
+@@ -55,7 +55,7 @@ while [ $# -gt 0 ]; do
+ 		;;
+ 
+ 	update|upgrade|install|remove|dist-upgrade|\
+-	  build-dep|clean|autoclean|check|source|moo|script|reinstall|\
++	  build-dep|clean|autoclean|check|source|script|reinstall|\
+ 	  groupinstall|groupremove)
+ 		APTCMD=apt-get
+ 		break
+diff --git a/contrib/apt-wrapper/apt.1 b/contrib/apt-wrapper/apt.1
+index c1b38a2..f2f43a5 100644
+--- a/contrib/apt-wrapper/apt.1
++++ b/contrib/apt-wrapper/apt.1
+@@ -42,7 +42,7 @@ Detailed information about each apt command and its options can be found in the
+ .SH "ACTIONS"
+ 
+ .PP
+-Actions supported by \fBapt\fR: add, autoclean, build\-dep, check, clean, depends, dist\-upgrade, dotty, dump, dumpavail, gencaches, groupinstall, groupremove, ident, install, list\-extras, list\-nodeps, moo, pkgnames, policy, query, querytags, rdepends\&. reinstall\&. remove, script, search, show, showgroup, showgroups, showpkg, showsrc, source, stats, unmet, update, upgrade, whatdepends, xvcg\&.
++Actions supported by \fBapt\fR: add, autoclean, build\-dep, check, clean, depends, dist\-upgrade, dotty, dump, dumpavail, gencaches, groupinstall, groupremove, ident, install, list\-extras, list\-nodeps, pkgnames, policy, query, querytags, rdepends\&. reinstall\&. remove, script, search, show, showgroup, showgroups, showpkg, showsrc, source, stats, unmet, update, upgrade, whatdepends, xvcg\&.
+ 
+ .TP
+ groupinstall
+@@ -81,7 +81,7 @@ The functionality of the remaining actions are provided by other apt tools\&. Th
+ 
+ .TP
+ \fBapt\-get\fR
+-autoclean, build\-dep, check, clean, dist\-upgrade, install, moo, remove, reinstall\&. script, source, update, upgrade\&.
++autoclean, build\-dep, check, clean, dist\-upgrade, install, remove, reinstall\&. script, source, update, upgrade\&.
+ 
+ .TP
+ \fBapt\-cache\fR
 diff --git a/doc/apt.ent b/doc/apt.ent
 index 647c1e5..93f4709 100644
 --- a/doc/apt.ent
