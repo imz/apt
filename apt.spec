@@ -193,6 +193,7 @@ sed -i 's,/usr/share/common-licenses/GPL,/usr/share/license/GPL,' COPYING
 sed -i 's, > /dev/null 2>&1,,' buildlib/tools.m4
 
 %autoreconf
+%add_optflags -std=c++11
 %add_optflags -DPKG_NEVRA=\\\"%name-%{?epoch:%epoch:}%version-%release.%_target_cpu\\\"
 %configure --includedir=%_includedir/apt-pkg %{subst_enable static}
 
