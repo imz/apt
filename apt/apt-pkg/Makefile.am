@@ -96,6 +96,7 @@ libapt_pkg_la_SOURCES = \
 	policy.h \
 	repository.cc \
 	repository.h \
+	scopeexit.h \
 	sourcelist.cc \
 	sourcelist.h \
 	srcrecords.cc \
