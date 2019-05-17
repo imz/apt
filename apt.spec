@@ -43,6 +43,7 @@ BuildPreReq: setproctitle-devel
 
 # Automatically added by buildreq on Sun Mar 30 2008
 BuildRequires: bzlib-devel cvs docbook-utils gcc-c++ liblua5-devel libreadline-devel librpm-devel setproctitle-devel zlib-devel
+BuildRequires: libgnutls-devel
 
 %package -n libapt
 Summary: APT's core libraries
@@ -130,6 +131,11 @@ This package contains method 'rsync' for APT.
 
 %risk_usage_en
 
+%description https
+This package contains method 'https' for APT.
+
+%risk_usage_en
+
 %description -n libapt -l ru_RU.UTF-8
 В этом пакете находится библиотеки управления пакетами
 из комплекта APT. В отличие от оригинальной версии для Debian, этот
@@ -164,6 +170,11 @@ This package contains method 'rsync' for APT.
 
 %description rsync -l ru_RU.UTF-8
 В этом пакете находится метод 'rsync' для APT
+
+%risk_usage
+
+%description https -l ru_RU.UTF-8
+В этом пакете находится метод 'https' для APT
 
 %risk_usage
 
@@ -252,6 +263,7 @@ unset RPM_PYTHON
 %_bindir/apt-*
 %_libdir/%name
 %exclude %_libdir/%name/methods/rsync
+%exclude %_libdir/%name/methods/https
 %dir %_sysconfdir/%name
 %config(noreplace) %_sysconfdir/%name/%name.conf
 %dir %_sysconfdir/%name/*.d
@@ -283,7 +295,16 @@ unset RPM_PYTHON
 %_libdir/%name/methods/rsync
 # Probably %%doc with README.rsync?
 
+%files https
+%dir %_libdir/%name
+%dir %_libdir/%name/methods
+%_libdir/%name/methods/https
+
 %changelog
+* Fri May 31 2019 Aleksei Nikiforov <darktemplar@altlinux.org> 0.5.15lorg2-alt53.M80C.2
+- Ported https support from Debian via https method to apt-https package.
+- Dropped processing Realm name in http/https methods.
+
 * Mon May 13 2019 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt53.M80P.1
 - Add buildtime to VerStrs (used by APT to identify package versions).
   This data is used in several manners:
