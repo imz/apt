@@ -94,7 +94,7 @@ void CircleBuf::Reset()
 // ---------------------------------------------------------------------
 /* This fills up the buffer with as much data as is in the FD, assuming it
    is non-blocking.. */
-bool CircleBuf::Read(int Fd)
+bool CircleBuf::Read(const std::unique_ptr<MethodFd> &Fd)
 {
    while (1)
    {
@@ -104,7 +104,7 @@ bool CircleBuf::Read(int Fd)
       
       // Write the buffer segment
       int Res;
-      Res = read(Fd,Buf + (InP%Size),LeftRead());
+      Res = Fd->Read(Buf + (InP%Size),LeftRead());
       
       if (Res == 0)
 	 return false;
@@ -165,7 +165,7 @@ void CircleBuf::FillOut()
 // CircleBuf::Write - Write from the buffer into a FD			/*{{{*/
 // ---------------------------------------------------------------------
 /* This empties the buffer into the FD. */
-bool CircleBuf::Write(int Fd)
+bool CircleBuf::Write(const std::unique_ptr<MethodFd> &Fd)
 {
    while (1)
    {
@@ -180,7 +180,7 @@ bool CircleBuf::Write(int Fd)
       
       // Write the buffer segment
       int Res;
-      Res = write(Fd,Buf + (OutP%Size),LeftWrite());
+      Res = Fd->Write(Buf + (OutP%Size), LeftWrite());
 
       if (Res == 0)
 	 return false;
@@ -269,7 +269,7 @@ ServerState::ServerState(URI Srv,HttpMethod *Owner) : Owner(Owner),
 bool ServerState::Open()
 {
    // Use the already open connection if possible.
-   if (ServerFd != -1)
+   if (ServerFd && (ServerFd->Fd() != -1))
       return true;
    
    Close();
@@ -330,8 +330,9 @@ bool ServerState::Open()
 /* */
 bool ServerState::Close()
 {
-   close(ServerFd);
-   ServerFd = -1;
+   if (ServerFd)
+      ServerFd->Close();
+   ServerFd.reset();
    return true;
 }
 									/*}}}*/
@@ -724,9 +725,11 @@ void HttpMethod::SendReq(FetchItem *Itm,CircleBuf &Out)
 bool HttpMethod::Go(bool ToFile,ServerState *Srv)
 {
    // Server has closed the connection
-   if (Srv->ServerFd == -1 && (Srv->In.WriteSpace() == false || 
-			       ToFile == false))
+   if (((!Srv->ServerFd) || (Srv->ServerFd->Fd() == -1))
+      && (Srv->In.WriteSpace() == false || ToFile == false))
+   {
       return false;
+   }
    
    fd_set rfds,wfds;
    FD_ZERO(&rfds);
@@ -734,27 +737,25 @@ bool HttpMethod::Go(bool ToFile,ServerState *Srv)
    
    /* Add the server. We only send more requests if the connection will 
       be persisting */
-   if (Srv->Out.WriteSpace() == true && Srv->ServerFd != -1 
+   if (Srv->Out.WriteSpace() == true && Srv->ServerFd && Srv->ServerFd->Fd() != -1
        && Srv->Persistent == true)
-      FD_SET(Srv->ServerFd,&wfds);
-   if (Srv->In.ReadSpace() == true && Srv->ServerFd != -1)
-      FD_SET(Srv->ServerFd,&rfds);
+      FD_SET(Srv->ServerFd->Fd(),&wfds);
+   if (Srv->In.ReadSpace() == true && Srv->ServerFd && Srv->ServerFd->Fd() != -1)
+      FD_SET(Srv->ServerFd->Fd(),&rfds);
    
    // Add the file
-   int FileFD = -1;
-   if (File != 0)
-      FileFD = File->Fd();
-   
-   if (Srv->In.WriteSpace() == true && ToFile == true && FileFD != -1)
-      FD_SET(FileFD,&wfds);
+   auto FileFD = MethodFd::FromFd((File != 0) ? File->Fd() : -1);
+
+   if (Srv->In.WriteSpace() == true && ToFile == true && FileFD->Fd() != -1)
+      FD_SET(FileFD->Fd(),&wfds);
    
    // Add stdin
    FD_SET(STDIN_FILENO,&rfds);
 	  
    // Figure out the max fd
-   int MaxFd = FileFD;
-   if (MaxFd < Srv->ServerFd)
-      MaxFd = Srv->ServerFd;
+   int MaxFd = FileFD->Fd();
+   if (MaxFd < Srv->ServerFd->Fd())
+      MaxFd = Srv->ServerFd->Fd();
 
    // Select
    struct timeval tv;
@@ -775,14 +776,14 @@ bool HttpMethod::Go(bool ToFile,ServerState *Srv)
    }
    
    // Handle server IO
-   if (Srv->ServerFd != -1 && FD_ISSET(Srv->ServerFd,&rfds))
+   if (Srv->ServerFd && Srv->ServerFd->Fd() != -1 && FD_ISSET(Srv->ServerFd->Fd(),&rfds))
    {
       errno = 0;
       if (Srv->In.Read(Srv->ServerFd) == false)
 	 return ServerDie(Srv);
    }
 	 
-   if (Srv->ServerFd != -1 && FD_ISSET(Srv->ServerFd,&wfds))
+   if (Srv->ServerFd && Srv->ServerFd->Fd() != -1 && FD_ISSET(Srv->ServerFd->Fd(),&wfds))
    {
       errno = 0;
       if (Srv->Out.Write(Srv->ServerFd) == false)
@@ -790,7 +791,7 @@ bool HttpMethod::Go(bool ToFile,ServerState *Srv)
    }
 
    // Send data to the file
-   if (FileFD != -1 && FD_ISSET(FileFD,&wfds))
+   if (FileFD->Fd() != -1 && FD_ISSET(FileFD->Fd(),&wfds))
    {
       if (Srv->In.Write(FileFD) == false)
 	 return _error->Errno("write",_("Error writing to output file"));
@@ -820,7 +821,8 @@ bool HttpMethod::Flush(ServerState *Srv)
       
       while (Srv->In.WriteSpace() == true)
       {
-	 if (Srv->In.Write(File->Fd()) == false)
+	 auto FileFD = MethodFd::FromFd(File->Fd());
+	 if (Srv->In.Write(FileFD) == false)
 	    return _error->Errno("write",_("Error writing to file"));
 	 if (Srv->In.IsLimit() == true)
 	    return true;
@@ -845,7 +847,8 @@ bool HttpMethod::ServerDie(ServerState *Srv)
       SetNonBlock(File->Fd(),false);
       while (Srv->In.WriteSpace() == true)
       {
-	 if (Srv->In.Write(File->Fd()) == false)
+	 auto FileFD = MethodFd::FromFd(File->Fd());
+	 if (Srv->In.Write(FileFD) == false)
 	    return _error->Errno("write",_("Error writing to the file"));
 
 	 // Done
@@ -1175,7 +1178,7 @@ int HttpMethod::Loop()
 	 Server->Close();
       
       // Reset the pipeline
-      if (Server->ServerFd == -1)
+      if ((!Server->ServerFd) || (Server->ServerFd->Fd() == -1))
 	 QueueBack = Queue;	 
 	 
       // Connnect to the host
