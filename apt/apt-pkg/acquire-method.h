@@ -87,6 +87,7 @@ class pkgAcqMethod
 
    void Log(const char *Format,...);
    void Status(const char *Format,...);
+   void Warning(const char *Format,...);
    void Redirect(const string &NewURI);
 
    int Run(bool Single = false);
