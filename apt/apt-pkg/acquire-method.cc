@@ -489,6 +489,7 @@ void pkgAcqMethod::Log(const char *Format,...)
 			       "Message: ",CurrentURI.c_str());
 
    vsnprintf(S+Len,sizeof(S)-4-Len,Format,args);
+   va_end(args);
    strcat(S,"\n\n");
    
    if (write(STDOUT_FILENO,S,strlen(S)) != (signed)strlen(S))
@@ -513,12 +514,37 @@ void pkgAcqMethod::Status(const char *Format,...)
    // sprintf the description
    char Buf[1024];
    vsnprintf(Buf,sizeof(Buf)-4,Format,args);
+   va_end(args);
    s << Buf << "\n\n";
 
    string S = s.str();
    if (write(STDOUT_FILENO,S.c_str(),S.size()) != (ssize_t)S.size())
       exit(100);
 }
+
+void pkgAcqMethod::Warning(const char *Format,...)
+{
+   string CurrentURI = "<UNKNOWN>";
+   if (Queue != 0)
+      CurrentURI = Queue->Uri;
+
+   va_list args;
+   va_start(args,Format);
+
+   ostringstream s;
+   s << "104 Warning\nURI: " << CurrentURI << "\nMessage: ";
+
+   // sprintf the description
+   char Buf[1024];
+   vsnprintf(Buf,sizeof(Buf)-4,Format,args);
+   va_end(args);
+   s << Buf << "\n\n";
+
+   string S = s.str();
+   if (write(STDOUT_FILENO,S.c_str(),S.size()) != (ssize_t)S.size())
+      exit(100);
+}
+
 									/*}}}*/
 // AcqMethod::Redirect - Send a redirect message			/*{{{*/
 // ---------------------------------------------------------------------
