@@ -323,6 +323,7 @@ The methods supplied by the stock apt are:
 <item>file - For local files
 <item>gzip - (internal) For decompression
 <item>http - For HTTP servers
+<item>https - For HTTPS servers
 </enumlist>
 
 <p>

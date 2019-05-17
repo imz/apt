@@ -38,6 +38,14 @@ SOCKETLIBS="$LIBS"
 AC_SUBST(SOCKETLIBS)
 LIBS="$SAVE_LIBS"
  
+dnl Checks for gnutls
+SAVE_LIBS="$LIBS"
+LIBS=""
+AC_CHECK_LIB(gnutls, gnutls_init, [], [AC_MSG_ERROR([library 'gnutls' is required for TLS support])])
+TLSLIBS="-lgnutls"
+AC_SUBST(TLSLIBS)
+LIBS="$SAVE_LIBS"
+
 dnl Checks for pthread -- disabled due to glibc bugs jgg
 dnl AC_CHECK_LIB(pthread, pthread_create,[AC_DEFINE(HAVE_PTHREAD) PTHREADLIB="-lpthread"])
 AC_SUBST(PTHREADLIB)
