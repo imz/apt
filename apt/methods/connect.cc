@@ -26,6 +26,11 @@
 #include <arpa/inet.h>
 #include <netdb.h>
 
+#ifdef USE_TLS
+#include <gnutls/gnutls.h>
+#include <gnutls/x509.h>
+#endif /* USE_TLS */
+
 // CNC:2003-02-20 - Moved header to fix compilation error when
 // 		    --disable-nls is used.
 #include <apti18n.h>
@@ -251,3 +256,237 @@ bool Connect(string Host,int Port,const char *Service,int DefPort,std::unique_pt
    return _error->Error(_("Unable to connect to %s %s:"),Host.c_str(),ServStr);
 }
 									/*}}}*/
+
+#ifdef USE_TLS
+// UnwrapTLS - Handle TLS connections 					/*{{{*/
+// ---------------------------------------------------------------------
+/* Performs a TLS handshake on the socket */
+struct TlsFd : public MethodFd
+{
+   std::unique_ptr<MethodFd> UnderlyingFd;
+   gnutls_session_t session;
+   gnutls_certificate_credentials_t credentials;
+   std::string hostname;
+   bool session_need_shutdown;
+
+   int Fd() override { return UnderlyingFd->Fd(); }
+
+   ssize_t Read(void *buf, size_t count) override
+   {
+      return HandleError(gnutls_record_recv(session, buf, count));
+   }
+   ssize_t Write(const void *buf, size_t count) override
+   {
+      return HandleError(gnutls_record_send(session, buf, count));
+   }
+
+   template <typename T>
+   T HandleError(T err)
+   {
+      if (err < 0 && gnutls_error_is_fatal(err))
+	 errno = EIO;
+      else if (err < 0)
+	 errno = EAGAIN;
+      else
+	 errno = 0;
+      return err;
+   }
+
+   int Close() override
+   {
+      int err = 0;
+
+      if (session)
+      {
+         if (session_need_shutdown)
+            err = HandleError(gnutls_bye(session, GNUTLS_SHUT_RDWR));
+         if (credentials)
+         {
+            gnutls_certificate_free_credentials(credentials);
+            credentials = nullptr;
+         }
+         gnutls_deinit(session);
+         session = nullptr;
+      }
+
+      int lower = (UnderlyingFd ? UnderlyingFd->Close() : 0);
+      return (err < 0) ? HandleError(err) : lower;
+   }
+
+   bool HasPending() override
+   {
+      return gnutls_record_check_pending(session) > 0;
+   }
+};
+
+bool UnwrapTLS(const std::string &Host, std::unique_ptr<MethodFd> &Fd,
+		      unsigned long Timeout, pkgAcqMethod *Owner)
+{
+   int err;
+   TlsFd *tlsFd = nullptr;
+
+   // Set the FD now, so closing it works reliably.
+   {
+      std::unique_ptr<TlsFd> tlsFdUnique(new TlsFd());
+      tlsFdUnique->hostname = Host;
+      tlsFdUnique->UnderlyingFd = std::move(Fd);
+
+      tlsFd = tlsFdUnique.get();
+      Fd = std::move(tlsFdUnique);
+   }
+
+   if ((err = gnutls_init(&tlsFd->session, GNUTLS_CLIENT | GNUTLS_NONBLOCK)) < 0)
+   {
+      _error->Error(_("Internal error: could not allocate credentials: %s"), gnutls_strerror(err));
+      return false;
+   }
+
+   FdFd *fdfd = dynamic_cast<FdFd *>(tlsFd->UnderlyingFd.get());
+   if (fdfd != nullptr)
+   {
+      gnutls_transport_set_int(tlsFd->session, fdfd->fd);
+   }
+   else
+   {
+      gnutls_transport_set_ptr(tlsFd->session, tlsFd->UnderlyingFd.get());
+      gnutls_transport_set_pull_function(tlsFd->session,
+					 [](gnutls_transport_ptr_t p, void *buf, size_t size) -> ssize_t {
+					    return reinterpret_cast<MethodFd *>(p)->Read(buf, size);
+					 });
+      gnutls_transport_set_push_function(tlsFd->session,
+					 [](gnutls_transport_ptr_t p, const void *buf, size_t size) -> ssize_t {
+					    return reinterpret_cast<MethodFd *>(p)->Write(buf, size);
+					 });
+   }
+
+   if ((err = gnutls_certificate_allocate_credentials(&tlsFd->credentials)) < 0)
+   {
+      _error->Error(_("Internal error: could not allocate credentials: %s"), gnutls_strerror(err));
+      return false;
+   }
+
+   // Credential setup
+   std::string fileinfo = _config->Find("Acquire::https::CaInfo");
+   if (fileinfo.empty())
+   {
+      // No CaInfo specified, use system trust store.
+      err = gnutls_certificate_set_x509_system_trust(tlsFd->credentials);
+      if (err == 0)
+	 Owner->Warning(_("No system certificates available. Try installing ca-certificates."));
+      else if (err < 0)
+      {
+	 _error->Error(_("Could not load system TLS certificates: %s"), gnutls_strerror(err));
+	 return false;
+      }
+   }
+   else
+   {
+      // CA location has been set, use the specified one instead
+      gnutls_certificate_set_verify_flags(tlsFd->credentials, GNUTLS_VERIFY_ALLOW_X509_V1_CA_CRT);
+      err = gnutls_certificate_set_x509_trust_file(tlsFd->credentials, fileinfo.c_str(), GNUTLS_X509_FMT_PEM);
+      if (err < 0)
+      {
+	 _error->Error(_("Could not load certificates from %s (CaInfo option): %s"), fileinfo.c_str(), gnutls_strerror(err));
+	 return false;
+      }
+   }
+
+   // For client authentication, certificate file ...
+   std::string const cert = _config->Find("Acquire::https::SslCert");
+   std::string const key = _config->Find("Acquire::https::SslKey");
+   if (!cert.empty())
+   {
+      if ((err = gnutls_certificate_set_x509_key_file(
+	       tlsFd->credentials,
+	       cert.c_str(),
+	       key.empty() ? cert.c_str() : key.c_str(),
+	       GNUTLS_X509_FMT_PEM)) < 0)
+      {
+	 _error->Error(_("Could not load client certificate (%s, SslCert option) or key (%s, SslKey option): %s"), cert.c_str(), key.c_str(), gnutls_strerror(err));
+	 return false;
+      }
+   }
+
+   // CRL file
+   std::string const crlfile = _config->Find("Acquire::https::CrlFile");
+   if (!crlfile.empty())
+   {
+      if ((err = gnutls_certificate_set_x509_crl_file(tlsFd->credentials,
+						      crlfile.c_str(),
+						      GNUTLS_X509_FMT_PEM)) < 0)
+      {
+	 _error->Error(_("Could not load custom certificate revocation list %s (CrlFile option): %s"), crlfile.c_str(), gnutls_strerror(err));
+	 return false;
+      }
+   }
+
+   if ((err = gnutls_credentials_set(tlsFd->session, GNUTLS_CRD_CERTIFICATE, tlsFd->credentials)) < 0)
+   {
+      _error->Error(_("Internal error: Could not add certificates to session: %s"), gnutls_strerror(err));
+      return false;
+   }
+
+   if ((err = gnutls_set_default_priority(tlsFd->session)) < 0)
+   {
+      _error->Error(_("Internal error: Could not set algorithm preferences: %s"), gnutls_strerror(err));
+      return false;
+   }
+
+   if (_config->FindB("Acquire::https::Verify-Peer", true))
+   {
+      gnutls_session_set_verify_cert(tlsFd->session, _config->FindB("Acquire::https::Verify-Host", true) ? tlsFd->hostname.c_str() : nullptr, 0);
+   }
+
+   // set SNI only if the hostname is really a name and not an address
+   {
+      struct in_addr addr4;
+      struct in6_addr addr6;
+
+      if (inet_pton(AF_INET, tlsFd->hostname.c_str(), &addr4) == 1 ||
+	  inet_pton(AF_INET6, tlsFd->hostname.c_str(), &addr6) == 1)
+	 /* not a host name */;
+      else if ((err = gnutls_server_name_set(tlsFd->session, GNUTLS_NAME_DNS, tlsFd->hostname.c_str(), tlsFd->hostname.length())) < 0)
+      {
+	 _error->Error(_("Could not set host name %s to indicate to server: %s"), tlsFd->hostname.c_str(), gnutls_strerror(err));
+	 return false;
+      }
+   }
+
+   // Do the handshake. Our socket is non-blocking, so we need to call WaitFd()
+   // accordingly.
+   do
+   {
+      err = gnutls_handshake(tlsFd->session);
+      if ((err == GNUTLS_E_INTERRUPTED || err == GNUTLS_E_AGAIN) &&
+	  WaitFd(Fd->Fd(), gnutls_record_get_direction(tlsFd->session) == 1, Timeout) == false)
+      {
+	 _error->Errno("select", _("Could not wait for server fd"));
+	 return false;
+      }
+   } while (err < 0 && gnutls_error_is_fatal(err) == 0);
+
+   tlsFd->session_need_shutdown = true;
+
+   if (err < 0)
+   {
+      // Print reason why validation failed.
+      if (err == GNUTLS_E_CERTIFICATE_VERIFICATION_ERROR)
+      {
+	 gnutls_datum_t txt;
+	 auto type = gnutls_certificate_type_get(tlsFd->session);
+	 auto status = gnutls_session_get_verify_cert_status(tlsFd->session);
+	 if (gnutls_certificate_verification_status_print(status,
+							  type, &txt, 0) == 0)
+	 {
+	    _error->Error(_("Certificate verification failed: %s"), txt.data);
+	 }
+	 gnutls_free(txt.data);
+      }
+      _error->Error("Could not handshake: %s", gnutls_strerror(err));
+      return false;
+   }
+
+   return true;
+}
+									/*}}}*/
+#endif /* USE_TLS */

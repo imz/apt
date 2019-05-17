@@ -1,6 +1,6 @@
 
 methodsdir=${libdir}/apt/methods
-methods_PROGRAMS = cdrom copy file ftp gpg gzip bzip2 http rsh ssh rsync
+methods_PROGRAMS = cdrom copy file ftp gpg gzip bzip2 http https rsh ssh rsync
 
 LDADD = ../apt-pkg/libapt-pkg.la
 
@@ -22,6 +22,16 @@ http_SOURCES = \
 	       connect.cc \
 	       connect.h
 http_LDADD = $(LDADD) @SOCKETLIBS@
+
+https_SOURCES = \
+	       http.cc \
+	       http.h \
+	       rfc2553emu.cc \
+	       rfc2553emu.h \
+	       connect.cc \
+	       connect.h
+https_LDADD = $(LDADD) @SOCKETLIBS@ @TLSLIBS@
+https_CPPFLAGS = -DUSE_TLS
 
 ftp_SOURCES = \
 	       ftp.cc \

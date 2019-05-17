@@ -226,6 +226,30 @@ DPkg::Pre-Install-Pkgs {"/usr/sbin/dpkg-preconfigure --apt";};
      </Para></ListItem>
      </VarListEntry>
 
+     <VarListEntry><Term>https</Term>
+     <ListItem><Para>
+     This method inherits all configuration settings from http method except for
+     proxy settings and has some additional settings related to TLS configuration.
+     </Para><Para>
+     Variable <literal/Acquire::https::CaInfo/ allows setting path to
+     certificate bundle file in PEM format to be used instead of system certificate store.
+     </Para><Para>
+     Variables <literal/Acquire::https::SslCert/ and <literal/Acquire::https::SslKey/
+     allow specifying path to client certificate and client certificate key files.
+     If such files are specified and present, they'll be used to negotiate connection
+     with server.
+     </Para><Para>
+     Variable <literal/Acquire::https::CrlFile/ allows to specify
+     path to custom certificate revocation list file.
+     </Para><Para>
+     Variable <literal/Acquire::https::Verify-Peer/ allows to disable
+     remote server verification if set to false.
+     </Para><Para>
+     Variable <literal/Acquire::https::Verify-Host/ allows to disable
+     verification of remote host's hostname if set to false.
+     </Para></ListItem>
+     </VarListEntry>
+
      <VarListEntry><Term>ftp</Term>
      <ListItem><Para>
      FTP URIs; ftp::Proxy is the default proxy server to use. It is in the 

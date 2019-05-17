@@ -64,6 +64,14 @@ unsigned long TimeOut = 120;
 bool ChokePipe = true;
 bool Debug = false;
 
+#ifdef USE_TLS
+#define service_name "https"
+#define default_port 443
+#else /* USE_TLS */
+#define service_name "http"
+#define default_port 80
+#endif /* USE_TLS */
+
 // CircleBuf::CircleBuf - Circular input buffer				/*{{{*/
 // ---------------------------------------------------------------------
 /* */
@@ -276,7 +284,8 @@ bool ServerState::Open()
    In.Reset();
    Out.Reset();
    Persistent = true;
-   
+
+#ifndef USE_TLS
    // Determine the proxy setting
    if (getenv("http_proxy") == 0)
    {
@@ -301,15 +310,19 @@ bool ServerState::Open()
       if (CheckDomainList(ServerName.Host,getenv("no_proxy")) == true)
 	 Proxy = "";
    }
+#endif /* !USE_TLS */
    
    // Determine what host and port to use based on the proxy settings
    int Port = 0;
    string Host;   
+#ifndef USE_TLS
    if (Proxy.empty() == true || Proxy.Host.empty() == true)
    {
+#endif /* !USE_TLS */
       if (ServerName.Port != 0)
 	 Port = ServerName.Port;
       Host = ServerName.Host;
+#ifndef USE_TLS
    }
    else
    {
@@ -317,11 +330,17 @@ bool ServerState::Open()
 	 Port = Proxy.Port;
       Host = Proxy.Host;
    }
-   
+#endif /* !USE_TLS */
+
    // Connect to the remote server
-   if (Connect(Host,Port,"http",80,ServerFd,TimeOut,Owner) == false)
+   if (Connect(Host,Port,service_name,default_port,ServerFd,TimeOut,Owner) == false)
       return false;
-   
+
+#ifdef USE_TLS
+   if (!UnwrapTLS(ServerName.Host, ServerFd, TimeOut, Owner))
+      return false;
+#endif /* USE_TLS */
+
    return true;
 }
 									/*}}}*/
@@ -954,7 +973,7 @@ int HttpMethod::DealWithHeaders(FetchResult &Res,ServerState *Srv)
       {
 	 Description = ParsedURI.Host + ":" + Srv->Realm;
 
-#ifdef WITH_SSL
+#ifdef USE_TLS
 	 if (ParsedURI.Access == "https")
 	    Description += string(" (secure)");
 #endif
