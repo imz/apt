@@ -39,6 +39,36 @@ static int LastPort = 0;
 static struct addrinfo *LastHostAddr = 0;
 static struct addrinfo *LastUsed = 0;
 
+// File Descriptor based Fd /*{{{*/
+struct FdFd: public MethodFd
+{
+   int fd = -1;
+
+   int Fd() override { return fd; }
+   ssize_t Read(void *buf, size_t count) override { return ::read(fd, buf, count); }
+   ssize_t Write(const void *buf, size_t count) override { return ::write(fd, buf, count); }
+   int Close() override
+   {
+      int result = 0;
+      if (fd != -1)
+         result = ::close(fd);
+      fd = -1;
+      return result;
+   }
+};
+
+bool MethodFd::HasPending()
+{
+   return false;
+}
+
+std::unique_ptr<MethodFd> MethodFd::FromFd(int iFd)
+{
+   FdFd *fd = new FdFd();
+   fd->fd = iFd;
+   return std::unique_ptr<MethodFd>(fd);
+}
+
 // RotateDNS - Select a new server from a DNS rotation			/*{{{*/
 // ---------------------------------------------------------------------
 /* This is called during certain errors in order to recover by selecting a 
@@ -55,7 +85,7 @@ void RotateDNS()
 // ---------------------------------------------------------------------
 /* This helper function attempts a connection to a single address. */
 static bool DoConnect(struct addrinfo *Addr,string Host,
-		      unsigned long TimeOut,int &Fd,pkgAcqMethod *Owner)
+		      unsigned long TimeOut,std::unique_ptr<MethodFd> &Fd,pkgAcqMethod *Owner)
 {
    // Show a status indicator
    char Name[NI_MAXHOST];
@@ -80,27 +110,27 @@ static bool DoConnect(struct addrinfo *Addr,string Host,
       Owner->SetFailExtraMsg("");
       
    // Get a socket
-   if ((Fd = socket(Addr->ai_family,Addr->ai_socktype,
-		    Addr->ai_protocol)) < 0)
+   Fd = MethodFd::FromFd(socket(Addr->ai_family,Addr->ai_socktype, Addr->ai_protocol));
+   if (Fd->Fd() < 0)
       return _error->Errno("socket",_("Could not create a socket for %s (f=%u t=%u p=%u)"),
 			   Name,Addr->ai_family,Addr->ai_socktype,Addr->ai_protocol);
    
-   SetNonBlock(Fd,true);
-   if (connect(Fd,Addr->ai_addr,Addr->ai_addrlen) < 0 &&
+   SetNonBlock(Fd->Fd(),true);
+   if (connect(Fd->Fd(),Addr->ai_addr,Addr->ai_addrlen) < 0 &&
        errno != EINPROGRESS)
       return _error->Errno("connect",_("Cannot initiate the connection "
 			   "to %s:%s (%s)."),Host.c_str(),Service,Name);
    
    /* This implements a timeout for connect by opening the connection
       nonblocking */
-   if (WaitFd(Fd,true,TimeOut) == false)
+   if (WaitFd(Fd->Fd(),true,TimeOut) == false)
       return _error->Error(_("Could not connect to %s:%s (%s), "
 			   "connection timed out"),Host.c_str(),Service,Name);
 
    // Check the socket for an error condition
    unsigned int Err;
    unsigned int Len = sizeof(Err);
-   if (getsockopt(Fd,SOL_SOCKET,SO_ERROR,&Err,&Len) != 0)
+   if (getsockopt(Fd->Fd(),SOL_SOCKET,SO_ERROR,&Err,&Len) != 0)
       return _error->Errno("getsockopt",_("Failed"));
    
    if (Err != 0)
@@ -116,7 +146,7 @@ static bool DoConnect(struct addrinfo *Addr,string Host,
 // Connect - Connect to a server					/*{{{*/
 // ---------------------------------------------------------------------
 /* Performs a connection to the server */
-bool Connect(string Host,int Port,const char *Service,int DefPort,int &Fd,
+bool Connect(string Host,int Port,const char *Service,int DefPort,std::unique_ptr<MethodFd> &Fd,
 	     unsigned long TimeOut,pkgAcqMethod *Owner)
 {
    if (_error->PendingError() == true)
@@ -193,8 +223,9 @@ bool Connect(string Host,int Port,const char *Service,int DefPort,int &Fd,
 	 LastUsed = CurHost;
 	 return true;
       }      
-      close(Fd);
-      Fd = -1;
+      if (Fd)
+         Fd->Close();
+      Fd.reset();
       
       // Ignore UNIX domain sockets
       do
