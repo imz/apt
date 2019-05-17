@@ -29,6 +29,9 @@
 #ifdef USE_TLS
 #include <gnutls/gnutls.h>
 #include <gnutls/x509.h>
+#include <gnutls/pkcs11.h>
+
+#include "apt-pkg/scopeexit.h"
 #endif /* USE_TLS */
 
 // CNC:2003-02-20 - Moved header to fix compilation error when
@@ -484,6 +487,80 @@ bool UnwrapTLS(const std::string &Host, std::unique_ptr<MethodFd> &Fd,
       }
       _error->Error("Could not handshake: %s", gnutls_strerror(err));
       return false;
+   }
+
+   std::string pinned_cert_filename = _config->Find("Acquire::https::PinnedCert");
+   if (!pinned_cert_filename.empty())
+   {
+      gnutls_datum_t pinned_cert_data;
+
+      if ((err = gnutls_load_file(pinned_cert_filename.c_str(), &pinned_cert_data)) != GNUTLS_E_SUCCESS)
+      {
+         _error->Error(_("Failed to load pinned certificate data from file %s: %s"), pinned_cert_filename.c_str(), gnutls_strerror(err));
+         return false;
+      }
+
+      scope_exit free_pinned_cert_data([&pinned_cert_data]() { gnutls_free(pinned_cert_data.data); });
+
+      gnutls_x509_crt_t pinned_cert;
+
+      if ((err = gnutls_x509_crt_init(&pinned_cert)) != GNUTLS_E_SUCCESS)
+      {
+         _error->Error(_("Failed to initialize pinned certificate: %s"), gnutls_strerror(err));
+         return false;
+      }
+
+      scope_exit free_pinned_cert([&pinned_cert]() { gnutls_x509_crt_deinit(pinned_cert); });
+
+      if ((err = gnutls_x509_crt_import(pinned_cert, &pinned_cert_data, GNUTLS_X509_FMT_PEM)) != GNUTLS_E_SUCCESS)
+      {
+         _error->Error(_("Failed to import pinned certificate data: %s"), gnutls_strerror(err));
+         return false;
+      }
+
+      unsigned int list_size = 0;
+      const gnutls_datum_t *cert_datum = gnutls_certificate_get_peers(tlsFd->session, &list_size);
+      if ((cert_datum == NULL) || (list_size == 0))
+      {
+         _error->Error(_("Failed to retrieve server certificate for verification against pinned certificate"));
+         return false;
+      }
+
+      // While server's certificate should be first in list,
+      // there are implementations which don't follow this rule.
+      // Check all certificates
+
+      bool found_matching_certificate = false;
+
+      for (unsigned int i = 0; (i < list_size) && (!found_matching_certificate); ++i)
+      {
+         gnutls_x509_crt_t checked_cert;
+
+         if ((err = gnutls_x509_crt_init(&checked_cert)) != GNUTLS_E_SUCCESS)
+         {
+            _error->Error(_("Failed to initialize checked certificate: %s"), gnutls_strerror(err));
+            return false;
+         }
+
+         scope_exit free_checked_cert([&checked_cert]() { gnutls_x509_crt_deinit(checked_cert); });
+
+         if ((err = gnutls_x509_crt_import(checked_cert, &cert_datum[i], GNUTLS_X509_FMT_DER)) != GNUTLS_E_SUCCESS)
+         {
+            _error->Error(_("Failed to import checked certificate data: %s"), gnutls_strerror(err));
+            return false;
+         }
+
+         if (gnutls_x509_crt_equals(pinned_cert, checked_cert) != 0)
+         {
+            found_matching_certificate = true;
+         }
+      }
+
+      if (!found_matching_certificate)
+      {
+         _error->Error(_("Certificate received from server doesn't match pinned certificate"));
+         return false;
+      }
    }
 
    return true;
