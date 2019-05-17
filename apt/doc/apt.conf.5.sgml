@@ -247,6 +247,10 @@ DPkg::Pre-Install-Pkgs {"/usr/sbin/dpkg-preconfigure --apt";};
      </Para><Para>
      Variable <literal/Acquire::https::Verify-Host/ allows to disable
      verification of remote host's hostname if set to false.
+     </Para><Para>
+     Variable <literal/Acquire::https::PinnedCert/ allows to specify
+     location of pinned certificate file which will be used to compare with
+     certificate retrieved from server.
      </Para></ListItem>
      </VarListEntry>
 
