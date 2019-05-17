@@ -41,4 +41,8 @@ bool Connect(string To,int Port,const char *Service,int DefPort,
 	     std::unique_ptr<MethodFd> &Fd,unsigned long TimeOut,pkgAcqMethod *Owner);
 void RotateDNS();
 
+#ifdef USE_TLS
+bool UnwrapTLS(const std::string &To, std::unique_ptr<MethodFd> &Fd, unsigned long Timeout, pkgAcqMethod *Owner);
+#endif /* USE_TLS */
+
 #endif
