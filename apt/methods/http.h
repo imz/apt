@@ -54,11 +54,11 @@ class CircleBuf
    Hashes *Hash;
    
    // Read data in
-   bool Read(int Fd);
+   bool Read(const std::unique_ptr<MethodFd> &Fd);
    bool Read(string Data);
    
    // Write data out
-   bool Write(int Fd);
+   bool Write(const std::unique_ptr<MethodFd> &Fd);
    bool WriteTillEl(string &Data,bool Single = false);
    
    // Control the write limit
@@ -105,14 +105,14 @@ struct ServerState
    // This is the connection itself. Output is data FROM the server
    CircleBuf In;
    CircleBuf Out;
-   int ServerFd;
+   std::unique_ptr<MethodFd> ServerFd;
    URI ServerName;
   
    bool HeaderLine(string Line);
    bool Comp(URI Other) {return Other.Host == ServerName.Host && Other.Port == ServerName.Port;};
    void Reset() {Major = 0; Minor = 0; Result = 0; Size = 0; StartPos = 0;
-                 Encoding = Closes; time(&Date); ServerFd = -1; 
-                 Pipeline = true;};
+                 Encoding = Closes; time(&Date); ServerFd.reset();
+                 Pipeline = true; };
    int RunHeaders();
    bool RunData();
    
