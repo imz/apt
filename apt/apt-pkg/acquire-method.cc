@@ -489,6 +489,7 @@ void pkgAcqMethod::Log(const char *Format,...)
 			       "Message: ",CurrentURI.c_str());
 
    vsnprintf(S+Len,sizeof(S)-4-Len,Format,args);
+   va_end(args);
    strcat(S,"\n\n");
    
    if (write(STDOUT_FILENO,S,strlen(S)) != (signed)strlen(S))
@@ -513,6 +514,7 @@ void pkgAcqMethod::Status(const char *Format,...)
    // sprintf the description
    char Buf[1024];
    vsnprintf(Buf,sizeof(Buf)-4,Format,args);
+   va_end(args);
    s << Buf << "\n\n";
 
    string S = s.str();
