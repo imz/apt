@@ -331,14 +331,14 @@ bool UnwrapHTTPConnect(std::string Host, int Port, URI Proxy, std::unique_ptr<Me
    std::string ProperHost;
 
    if (Host.find(':') != std::string::npos)
-      ProperHost = '[' + Proxy.Host + ']';
+      ProperHost = '[' + Host + ']';
    else
-      ProperHost = Proxy.Host;
+      ProperHost = Host;
 
    // Build the connect
    Req << "CONNECT " << Host << ":" << std::to_string(Port) << " HTTP/1.1\r\n";
    if (Proxy.Port != 0)
-      Req << "Host: " << ProperHost << ":" << std::to_string(Proxy.Port) << "\r\n";
+      Req << "Host: " << ProperHost << ":" << std::to_string(Port) << "\r\n";
    else
       Req << "Host: " << ProperHost << "\r\n";
    ;
