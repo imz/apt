@@ -1,6 +1,6 @@
 Name: apt
 Version: 0.5.15lorg2
-Release: alt64
+Release: alt65
 
 Summary: Debian's Advanced Packaging Tool with RPM support
 Summary(ru_RU.UTF-8): Debian APT - Усовершенствованное средство управления пакетами с поддержкой RPM
@@ -310,7 +310,7 @@ unset RPM_PYTHON
 %_libdir/%name/methods/https
 
 %changelog
-* Mon May 13 2019 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt53.M80P.1
+* Thu May 30 2019 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt65
 - Add buildtime to VerStrs (used by APT to identify package versions).
   This data is used in several manners:
   * by CheckDep() (only when matching a dependency with a real package);
@@ -320,7 +320,8 @@ unset RPM_PYTHON
   can be called through the API with some externally supplied versions.
   In order to honor buildtime without changing the API and its clients, we pass
   buildtime inside the existing argument. (Also fixes ALT#36528)
-- Cherry-picked individual changes from:
+- Increase default APT::Cache-Limit in 1.5 times due to the extension of VerStrs
+  (ALT#36775).
 
 * Fri May 17 2019 Aleksei Nikiforov <darktemplar@altlinux.org> 0.5.15lorg2-alt64
 - Ported https support from Debian via https method to apt-https package (Closes: #33732).
