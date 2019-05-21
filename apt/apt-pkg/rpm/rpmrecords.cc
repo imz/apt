@@ -347,6 +347,10 @@ void rpmRecordParser::GetRec(const char *&Start,const char *&Stop)
    BufCat(buf);
    headerGetEntry(HeaderP, RPMTAG_RELEASE, &type, (void **)&str, &count);
    BufCat(str);
+   if (headerGetEntry(HeaderP, RPMTAG_DISTTAG, &type, (void **)&str, &count)==1) {
+       snprintf(buf, sizeof(buf), ":%s", str);
+       BufCat(buf);
+   }
    if (headerGetEntry(HeaderP, RPMTAG_BUILDTIME, &type, (void **)&numv, &count)==1) {
        snprintf(buf, sizeof(buf), "@%i", numv[0]);
        BufCat(buf);
