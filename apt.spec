@@ -221,7 +221,6 @@ sed -i 's, > /dev/null 2>&1,,' buildlib/tools.m4
 printf '%_target_cpu\t%_target_cpu' >> buildlib/archtable
 
 %autoreconf
-%add_optflags -std=c++11
 %add_optflags -DAPTRPM_ID=\\\"%name-%{?epoch:%epoch:}%version-%release%{?disttag::%disttag}.%_target_cpu\\\"
 %configure --includedir=%_includedir/apt-pkg %{subst_enable static}
 
