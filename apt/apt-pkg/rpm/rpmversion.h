@@ -19,6 +19,12 @@
 #include <apt-pkg/strutl.h>    
 
 std::ptrdiff_t index_of_EVR_postfix(const char * evrt);
+void parseEVRDT(char * evrt,
+                const char ** ep,
+                const char ** vp,
+                const char ** rp,
+                const char ** dp,
+                const char ** tp);
 
 class rpmVersioningSystem : public pkgVersioningSystem
 {     

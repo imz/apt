@@ -60,12 +60,12 @@ std::ptrdiff_t index_of_EVR_postfix(const char * const evrt)
    e.g., free(*vp) in subsequent code would be invalid.
    (And that's good because it's just a pointer into a larger allocated chunk.)
 */
-static void parseEVRDT(char * const evrt,
-                       const char ** const ep,
-                       const char ** const vp,
-                       const char ** const rp,
-                       const char ** const dp,
-                       const char ** const tp)
+void parseEVRDT(char * const evrt,
+                const char ** const ep,
+                const char ** const vp,
+                const char ** const rp,
+                const char ** const dp,
+                const char ** const tp)
 {
    char *buildtime = NULL;
    {
