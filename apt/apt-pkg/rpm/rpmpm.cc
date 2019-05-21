@@ -68,17 +68,15 @@ std::string rpm_name_conversion(const pkgCache::PkgIterator &Pkg)
       loc == Name.length() - strlen(".32bit"))
       Name = Name.substr(0,loc);
    if (NeedLabel) {
-      const char *VerStr = Pkg.CurrentVer().VerStr();
-      {
-         const std::ptrdiff_t EVR_len = index_of_EVR_postfix(VerStr);
-         if (EVR_len >= 0)
-            VerStr = strndupa(VerStr, (std::size_t)EVR_len);
-      }
-      const char *Epoch = strchr(VerStr, ':');
-      if (Epoch)
-         VerStr = Epoch + 1;
+      const char *Epoch, *Version, *Release, *Disttag, *Buildtime;
+      char * const VerStr = strdupa(Pkg.CurrentVer().VerStr());
+      parseEVRDT(VerStr, &Epoch, &Version, &Release, &Disttag, &Buildtime);
+      std::assert (Version);
       Name += "-";
-      Name += VerStr;
+      Name += Version;
+      std::assert (Release);
+      Name += "-";
+      Name += Release;
    }
 
 #if RPM_VERSION >= 0x040202
