@@ -41,6 +41,7 @@ int tags[] =  {
        RPMTAG_EPOCH,
        RPMTAG_VERSION,
        RPMTAG_RELEASE,
+       RPMTAG_DISTTAG,
        RPMTAG_BUILDTIME,
        RPMTAG_GROUP,
        RPMTAG_ARCH,
