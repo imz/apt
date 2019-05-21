@@ -77,6 +77,10 @@ std::string rpm_name_conversion(const pkgCache::PkgIterator &Pkg)
       std::assert (Release);
       Name += "-";
       Name += Release;
+      if (Buildtime) {
+         Name += "@";
+         Name += Buildtime;
+      }
    }
 
 #if RPM_VERSION >= 0x040202
