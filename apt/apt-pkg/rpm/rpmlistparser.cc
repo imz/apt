@@ -200,9 +200,9 @@ string rpmListParser::Version()
 #endif
 
    char *ver, *rel;
-   int32_t *ser;
+   uint32_t *ser;
    bool has_epoch = false;
-   int32_t *btime;
+   uint32_t *btime;
    bool has_btime = false;
    int type, count;
    stringstream ss;

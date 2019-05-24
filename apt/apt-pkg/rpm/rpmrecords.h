@@ -21,6 +21,7 @@
 #include <apt-pkg/pkgrecords.h>
 #include <apt-pkg/fileutl.h>
 #include <rpm/rpmlib.h>
+#include <cinttypes>
 
   
 class RPMHandler;
@@ -39,7 +40,7 @@ class rpmRecordParser : public pkgRecords::Parser
    void BufCat(const char *text);
    void BufCat(const char *begin, const char *end);
    void BufCatTag(const char *tag, const char *value);
-   void BufCatDep(const char *pkg, const char *version, int flags);
+   void BufCatDep(const char *pkg, const char *version, uint32_t flags);
    void BufCatDescr(const char *descr);
 
    protected:
