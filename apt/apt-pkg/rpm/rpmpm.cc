@@ -21,7 +21,6 @@
 #include <apt-pkg/luaiface.h>
 #include <apt-pkg/depcache.h>
 #include <apt-pkg/scopeexit.h>
-#include <apt-pkg/rpmversion.h>
 
 #include <apti18n.h>
 
@@ -69,11 +68,6 @@ std::string rpm_name_conversion(const pkgCache::PkgIterator &Pkg)
       Name = Name.substr(0,loc);
    if (NeedLabel) {
       const char *VerStr = Pkg.CurrentVer().VerStr();
-      {
-         const std::ptrdiff_t EVR_len = index_of_EVR_postfix(VerStr);
-         if (EVR_len >= 0)
-            VerStr = strndupa(VerStr, (std::size_t)EVR_len);
-      }
       const char *Epoch = strchr(VerStr, ':');
       if (Epoch)
          VerStr = Epoch + 1;
