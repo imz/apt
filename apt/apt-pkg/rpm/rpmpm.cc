@@ -100,9 +100,6 @@ std::string rpm_name_conversion(const pkgCache::PkgIterator &Pkg)
       Name = Name.substr(0,loc);
    if (NeedLabel) {
       const char *VerStr = Pkg.CurrentVer().VerStr();
-      const char *Epoch = strchr(VerStr, ':');
-      if (Epoch)
-         VerStr = Epoch + 1;
       Name += "-";
       Name += VerStr;
    }
