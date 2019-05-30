@@ -311,10 +311,8 @@ unset RPM_PYTHON
 %_libdir/%name/methods/https
 
 %changelog
-* Tue May 21 2019 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt53.M80P.2
+* Thu May 30 2019 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt66
 - Add disttag to VerStrs (used by APT to identify package versions).
-- Increase default APT::Cache-Limit in 1.5 times due to the extension of VerStrs
-  (ALT#36775).
 
 * Thu May 30 2019 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt65
 - Add buildtime to VerStrs (used by APT to identify package versions).
