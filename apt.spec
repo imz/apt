@@ -32,7 +32,7 @@ Requires: gnupg, alt-gpgkeys
 
 # Older versions of update-kernel misunderstood the @-postfix with buildtime,
 # which is now added by APT to verstrs and the names of allow-duplicated pkgs.
-Conflicts: update-kernel < 0.9.12-alt1
+Conflicts: update-kernel < 0.9.13-alt1
 
 # for autopoint.
 BuildPreReq: cvs
