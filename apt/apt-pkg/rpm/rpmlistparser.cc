@@ -187,6 +187,9 @@ string rpmListParser::Architecture()
    return string(res?arch:"");
 }
                                                                         /*}}}*/
+
+#include <sstream>
+
 // ListParser::Version - Return the version string			/*{{{*/
 // ---------------------------------------------------------------------
 /* This is to return the string describing the version in RPM form,
@@ -200,12 +203,13 @@ string rpmListParser::Version()
 #endif
 
    char *ver, *rel;
-   int32_t *ser;
+   uint32_t *ser;
    bool has_epoch = false;
+   uint32_t *btime;
+   bool has_btime = false;
    rpm_tagtype_t type;
    rpm_count_t count;
-   string str;
-   str.reserve(10);
+   stringstream ss;
 
    if (headerGetEntry(header, RPMTAG_EPOCH, &type, (void **)&ser, &count) == 1
        && count > 0) 
@@ -214,21 +218,18 @@ string rpmListParser::Version()
    headerGetEntry(header, RPMTAG_VERSION, &type, (void **)&ver, &count);
    headerGetEntry(header, RPMTAG_RELEASE, &type, (void **)&rel, &count);
 
-   if (has_epoch == true) {
-      char buf[32];
-      snprintf(buf, sizeof(buf), "%i", ser[0]);
-      str += buf;
-      str += ":";
-      str += ver;
-      str += "-";
-      str += rel;
+   if (headerGetEntry(header, RPMTAG_BUILDTIME, &type, (void **)&btime, &count) == 1
+       && count > 0)
+      has_btime = true;
+
+   if (has_epoch) {
+      ss << ser[0] << ":";
    }
-   else {
-      str += ver;
-      str += "-";
-      str += rel;
+   ss << ver << "-" << rel;
+   if (has_btime) {
+      ss << "@" << btime[0];
    }
-   return str;
+   return ss.str();
 }
                                                                         /*}}}*/
 // ListParser::NewVersion - Fill in the version structure		/*{{{*/
@@ -710,21 +711,9 @@ bool rpmListParser::Step()
       if (RpmData->IgnorePackage(RealName) == true)
 	 continue;
  
-#if OLD_BESTARCH
-      bool archOk = false;
-      string tmp = rpmSys.BestArchForPackage(RealName);
-      if (tmp.empty() == true && // has packages for a single arch only
-	  rpmMachineScore(RPM_MACHTABLE_INSTARCH, arch.c_str()) > 0)
-	 archOk = true;
-      else if (arch == tmp)
-	 archOk = true;
-      if (Handler->IsDatabase() == true || archOk == true)
-	 return true;
-#else
       if (Handler->IsDatabase() == true ||
 	  RpmData->ArchScore(Architecture().c_str()) > 0)
 	 return true;
-#endif
    }
    header = NULL;
    return false;

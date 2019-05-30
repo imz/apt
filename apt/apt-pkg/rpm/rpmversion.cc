@@ -1,4 +1,3 @@
-// -*- mode: cpp; mode: fold -*-
 // Description								/*{{{*/
 // $Id: rpmversion.cc,v 1.4 2002/11/19 13:03:29 niemeyer Exp $
 /* ######################################################################
@@ -42,53 +41,56 @@ rpmVersioningSystem::rpmVersioningSystem()
    Label = "Standard .rpm";
 }
 									/*}}}*/
-// rpmVS::ParseVersion - Parse a version into it's components           /*{{{*/
-// ---------------------------------------------------------------------
-/* Code ripped from rpmlib */
-void rpmVersioningSystem::ParseVersion(const char *V, const char *VEnd,
-				       char **Epoch, 
-				       char **Version,
-				       char **Release)
+std::ptrdiff_t index_of_EVR_postfix(const char * const evrt)
 {
-   string tmp = string(V, VEnd);
-   char *evr = strdup(tmp.c_str());
-   const char *epoch = NULL;
-   const char *version = NULL;
-   const char *release = NULL;
-   char *s;
-
-   assert(evr != NULL);
-   
-   s = strrchr(evr, '-');
-   if (s) {
-      *s++ = '\0';
-      release = s;
+   const char *s = &evrt[strlen(evrt)];
+   while (s != evrt) {
+      --s;
+      if (*s == '@') {
+         return s - evrt;
+      }
+      if (!isdigit(*s))
+         break;
    }
-   s = evr;
-   while (isdigit(*s)) s++;
-   if (*s == ':')
-   {
-      epoch = evr;
-      *s++ = '\0';
-      version = s;
-      if (*epoch == '\0') epoch = "0";
-   }
-   else
-   {
-#if RPM_VERSION >= 0x040100
-      epoch = "0";
-#endif
-      version = evr;
-   }
-
-#define Xstrdup(a) (a) ? strdup(a) : NULL
-   *Epoch = Xstrdup(epoch);
-   *Version = Xstrdup(version);
-   *Release = Xstrdup(release);
-#undef Xstrdup
-   free(evr);
+   return -1;
 }
-									/*}}}*/
+
+/* Having the const modifier on the values of the output parameters may seem
+   unjustified, but this has the nice property that they cannot be freed;
+   e.g., free(*vp) in subsequent code would be invalid.
+   (And that's good because it's just a pointer into a larger allocated chunk.)
+*/
+static void parseEVRT(char * const evrt,
+                      const char ** const ep,
+                      const char ** const vp,
+                      const char ** const rp,
+                      const char ** const tp)
+{
+   char *buildtime = NULL;
+   {
+      const std::ptrdiff_t i = index_of_EVR_postfix(evrt);
+      if (i >= 0) {
+         evrt[i] = '\0';
+         buildtime = &evrt[i+1];
+      }
+   }
+   parseEVR(evrt, ep, vp, rp);
+   if (tp) *tp = buildtime;
+}
+
+static int intcmp(const char * const A, const char * const B)
+{
+   const unsigned long long Ai = strtoull(A, NULL, 10);
+   const unsigned long long Bi = strtoull(B, NULL, 10);
+   if (Ai < Bi)
+      return -1;
+   else if (Ai > Bi)
+      return 1;
+   else
+      return 0;
+}
+
+
 // rpmVS::CmpVersion - Comparison for versions				/*{{{*/
 // ---------------------------------------------------------------------
 /* This fragments the version into E:V-R triples and compares each 
@@ -96,25 +98,19 @@ void rpmVersioningSystem::ParseVersion(const char *V, const char *VEnd,
 int rpmVersioningSystem::DoCmpVersion(const char *A,const char *AEnd,
 				      const char *B,const char *BEnd)
 {
-   char *AE, *AV, *AR;
-   char *BE, *BV, *BR;
+   char * const tmpA = strndupa(A, (size_t)(AEnd-A));
+   char * const tmpB = strndupa(B, (size_t)(BEnd-B));
+   const char *AE, *AV, *AR, *AT;
+   const char *BE, *BV, *BR, *BT;
    int rc = 0;
-   ParseVersion(A, AEnd, &AE, &AV, &AR);
-   ParseVersion(B, BEnd, &BE, &BV, &BR);
+   parseEVRT(tmpA, &AE, &AV, &AR, &AT);
+   parseEVRT(tmpB, &BE, &BV, &BR, &BT);
    if (AE && !BE)
        rc = 1;
    else if (!AE && BE)
        rc = -1;
    else if (AE && BE)
-   {
-      int AEi, BEi;
-      AEi = atoi(AE);
-      BEi = atoi(BE);
-      if (AEi < BEi)
-	  rc = -1;
-      else if (AEi > BEi)
-	  rc = 1;
-   }
+      rc = intcmp(AE, BE);
    if (rc == 0)
    {
       rc = rpmvercmp(AV, BV);
@@ -125,10 +121,16 @@ int rpmVersioningSystem::DoCmpVersion(const char *A,const char *AEnd,
 	      rc = -1;
 	  else if (AR && BR)
 	      rc = rpmvercmp(AR, BR);
+          if (rc == 0) {
+             if (AT && !BT)
+                rc = 1;
+             else if (!AT && BT)
+                rc = -1;
+             else if (AT && BT)
+                rc = intcmp(AT, BT);
+          }
       }
    }
-   free(AE);free(AV);free(AR);;
-   free(BE);free(BV);free(BR);;
    return rc;
 }
 									/*}}}*/
@@ -164,8 +166,7 @@ bool rpmVersioningSystem::CheckDep(const char *PkgVer,
    int PkgFlags = RPMSENSE_EQUAL;
    int DepFlags = 0;
    bool invert = false;
-   int rc;
-   
+
    switch (Op & 0x0F)
    {
     case pkgCache::Dep::LessEq:
@@ -201,14 +202,25 @@ bool rpmVersioningSystem::CheckDep(const char *PkgVer,
       break;
    }
 
-   // optimize: equal version strings => equal versions
-   if ((DepFlags & RPMSENSE_SENSEMASK) == RPMSENSE_EQUAL)
-      if (PkgVer && DepVer)
-	 if (strcmp(PkgVer, DepVer) == 0)
-	    return invert ? false : true;
+   if (PkgVer) {
+      const std::ptrdiff_t PkgVer_len = index_of_EVR_postfix(PkgVer);
+
+      // optimize: equal version strings => equal versions
+      if (DepVer && (DepFlags & RPMSENSE_SENSEMASK) == RPMSENSE_EQUAL) {
+         const bool rc = (PkgVer_len >= 0) ?
+            strncmp(PkgVer, DepVer, (std::size_t)PkgVer_len) == 0
+            && DepVer[PkgVer_len] == '\0'
+            : strcmp(PkgVer, DepVer) == 0;
+         if (rc)
+            return invert ? false : true;
+      }
+
+      if (PkgVer_len >= 0)
+         PkgVer = strndupa(PkgVer, (std::size_t)PkgVer_len);
+   }
 
 #if HAVE_RPMRANGESOVERLAP && RPM_VERSION >= 0x040d00 /* 4.13.0 (ALT specific) */
-   rc = rpmRangesOverlap("", PkgVer, PkgFlags, "", DepVer, DepFlags, _rpmds_nopromote);
+   const int rc = rpmRangesOverlap("", PkgVer, PkgFlags, "", DepVer, DepFlags, _rpmds_nopromote);
 #elif RPM_VERSION >= 0x040100
    rpmds pds = rpmdsSingle(RPMTAG_PROVIDENAME, "", PkgVer, PkgFlags);
    rpmds dds = rpmdsSingle(RPMTAG_REQUIRENAME, "", DepVer, DepFlags);
@@ -216,11 +228,11 @@ bool rpmVersioningSystem::CheckDep(const char *PkgVer,
    rpmdsSetNoPromote(pds, _rpmds_nopromote);
    rpmdsSetNoPromote(dds, _rpmds_nopromote);
 # endif
-   rc = rpmdsCompare(pds, dds);
+   const int rc = rpmdsCompare(pds, dds);
    rpmdsFree(pds);
    rpmdsFree(dds);
 #else 
-   rc = rpmRangesOverlap("", PkgVer, PkgFlags, "", DepVer, DepFlags);
+   const int rc = rpmRangesOverlap("", PkgVer, PkgFlags, "", DepVer, DepFlags);
 #endif
     
    return (!invert && rc) || (invert && !rc);

@@ -1,4 +1,3 @@
-// -*- mode: cpp; mode: fold -*-
 // Description								/*{{{*/
 // $Id: rpmversion.h,v 1.1 2002/07/23 17:54:51 niemeyer Exp $
 /* ######################################################################
@@ -18,12 +17,11 @@
 
 #include <apt-pkg/version.h>
 #include <apt-pkg/strutl.h>    
-    
+
+std::ptrdiff_t index_of_EVR_postfix(const char * evrt);
+
 class rpmVersioningSystem : public pkgVersioningSystem
 {     
-   void ParseVersion(const char *V, const char *VEnd, 
-		     char **Epoch, char **Version, char **Release);
-   
    public:
    
    // Compare versions..

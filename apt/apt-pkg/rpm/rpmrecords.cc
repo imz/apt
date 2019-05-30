@@ -1,4 +1,3 @@
-// -*- mode: cpp; mode: fold -*-
 // Description								/*{{{*/
 /* ######################################################################
    
@@ -252,7 +251,7 @@ void rpmRecordParser::BufCatTag(const char *tag, const char *value)
 
 void rpmRecordParser::BufCatDep(const char *pkg,
 			        const char *version,
-				int flags)
+				uint32_t flags)
 {
    char buf[16];
    char *ptr = buf;
@@ -322,7 +321,7 @@ void rpmRecordParser::GetRec(const char *&Start,const char *&Stop)
    char *str;
    char **strv;
    char **strv2;
-   int32_t *numv;
+   uint32_t *numv;
    char buf[32];
 
    BufUsed = 0;
@@ -336,7 +335,7 @@ void rpmRecordParser::GetRec(const char *&Start,const char *&Stop)
    BufCatTag("\nSection: ", str);
 
    headerGetEntry(HeaderP, RPMTAG_SIZE, &type, (void **)&numv, &count);
-   snprintf(buf, sizeof(buf), "%d", numv[0]);
+   snprintf(buf, sizeof(buf), "%" PRIu32, numv[0]);
    BufCatTag("\nInstalled Size: ", buf);
 
    str = NULL;
@@ -348,12 +347,16 @@ void rpmRecordParser::GetRec(const char *&Start,const char *&Stop)
    BufCat("\nVersion: ");
    headerGetEntry(HeaderP, RPMTAG_VERSION, &type, (void **)&str, &count);
    if (headerGetEntry(HeaderP, RPMTAG_EPOCH, &type, (void **)&numv, &count)==1)
-       snprintf(buf, sizeof(buf), "%i:%s-", numv[0], str);
+       snprintf(buf, sizeof(buf), "%" PRIu32 ":%s-", numv[0], str);
    else
        snprintf(buf, sizeof(buf), "%s-", str);
    BufCat(buf);
    headerGetEntry(HeaderP, RPMTAG_RELEASE, &type, (void **)&str, &count);
    BufCat(str);
+   if (headerGetEntry(HeaderP, RPMTAG_BUILDTIME, &type, (void **)&numv, &count)==1) {
+       snprintf(buf, sizeof(buf), "@%" PRIu32, numv[0]);
+       BufCat(buf);
+   }
 
 //   headerGetEntry(HeaderP, RPMTAG_DISTRIBUTION, &type, (void **)&str, &count);
 //   fprintf(f, "Distribution: %s\n", str);

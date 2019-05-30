@@ -1,4 +1,3 @@
-// -*- mode: cpp; mode: fold -*-
 // Description								/*{{{*/
 // $Id: rpmsystem.cc,v 1.9 2002/11/25 18:25:28 niemeyer Exp $
 /* ######################################################################
@@ -384,136 +383,6 @@ static void gatherFileDependencies(map<string,int> &filedeps, Header header)
 #endif
 
 
-#ifdef OLD_BESTARCH
-bool rpmSystem::processIndexFile(rpmIndexFile *Index,OpProgress &Progress)
-{
-   Header hdr;
-   map<string,string> archmap;
-   
-   RPMHandler *Handler = Index->CreateHandler();
-   if (_error->PendingError() == true)
-      return false;
-
-   Progress.SubProgress(0, Index->Describe());
-   
-   Handler->Rewind();
-
-   while (Handler->Skip() == true)
-   {
-      int res;
-      rpm_tagtype_t type;
-      rpm_count_t count;
-      char *arch;
-
-      hdr = Handler->GetHeader();
-      if (!hdr)
-	  break;
-
-#ifdef OLD_FILEDEPS
-      gatherFileDependencies(FileDeps, hdr);
-#endif
-      
-      /*
-       * Make it so that for each version, we keep track of the best
-       * architecture.
-       */
-      res = headerGetEntry(hdr, RPMTAG_ARCH, &type,
-			   (void **)&arch, &count);
-      assert(type == RPM_STRING_TYPE);
-      if (res) 
-      {
-	 char *name;
-	 char *version;
-	 char *release;
-	 int32_t *epoch;
-	 int res;
-	 char buf[256];
-	 
-	 headerGetEntry(hdr, RPMTAG_NAME, &type,
-			(void **)&name, &count);
-	 headerGetEntry(hdr, RPMTAG_VERSION, &type,
-			(void **)&version, &count);
-	 headerGetEntry(hdr, RPMTAG_RELEASE, &type,
-			(void **)&release, &count);
-	 res = headerGetEntry(hdr, RPMTAG_EPOCH, &type,
-			      (void **)&epoch, &count);
-	 
-	 if (res == 1)
-	    snprintf(buf, sizeof(buf), "%i:%s-%s", *epoch, version, release);
-	 else
-	    snprintf(buf, sizeof(buf), "%s-%s", version, release);
-	 string n = string(name)+"#"+string(buf);
-	 
-	 if (archmap.find(n) != archmap.end()) 
-	 {
-	    if (strcmp(archmap[n].c_str(), arch) != 0) 
-	    {
-	       int a = rpmMachineScore(RPM_MACHTABLE_INSTARCH, archmap[n].c_str());
-	       int b = rpmMachineScore(RPM_MACHTABLE_INSTARCH, arch);
-	       
-	       if (b < a) 
-	       {
-		  MultiArchPkgs[n] = string(arch);
-		  // this is a multiarch pkg
-		  archmap[n] = MultiArchPkgs[n];
-	       }
-	       else 
-	       {
-		  MultiArchPkgs[n] = archmap[n];
-	       }
-	    }
-	 }
-	 else 
-	 {
-	    archmap[n] = string(arch);
-	 }
-      }
-   }
-   
-   if (Handler->IsDatabase() == false)
-       delete Handler;
-
-   return true;
-}
-
-
-bool rpmSystem::PreProcess(pkgIndexFile **Start,pkgIndexFile **End,
-			   OpProgress &Progress)
-{
-   string ListDir = _config->FindDir("Dir::State::lists");
-   unsigned total, complete;
-   unsigned long TotalSize = 0, CurrentSize = 0;
-
-   // calculate size of files
-   
-   for (; Start != End; Start++)
-   {
-      if ((*Start)->HasPackages() == false)
-	  continue;
-      
-      if ((*Start)->Exists() == false)
-	  continue;
-      
-      unsigned long Size = (*Start)->Size();
-      Progress.OverallProgress(CurrentSize,TotalSize,Size,_("Reading Package Lists"));
-      CurrentSize += Size;
-
-      if (processIndexFile((rpmIndexFile*)*Start,Progress) == false)
-	 return false;
-   }
-  
-   return true;
-}
-
-string rpmSystem::BestArchForPackage(string Pkg)
-{
-   if (MultiArchPkgs.find(Pkg) != MultiArchPkgs.end())
-      return MultiArchPkgs[Pkg];
-   else
-       return string();
-}
-#endif
-
 #ifdef OLD_FILEDEPS
 bool rpmSystem::IsFileDep(string File)
 {
@@ -622,8 +491,8 @@ static void HashOptionFile(unsigned long &Hash, const char *Name)
 unsigned long rpmSystem::OptionsHash() const
 {
    unsigned long Hash = 0;
-#ifdef PKG_NEVRA
-   HashString(Hash, PKG_NEVRA);
+#ifdef APTRPM_ID
+   HashString(Hash, APTRPM_ID);
 #endif
    HashOption(Hash, "RPM::Architecture");
    HashOptionTree(Hash, "RPM::Allow-Duplicated");
