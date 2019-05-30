@@ -266,10 +266,9 @@ struct pkgCache::VerFile
 struct pkgCache::Version
 {
    map_ptrloc VerStr;            // Stringtable
-   map_ptrloc BTime;             // int
    map_ptrloc Section;           // StringTable (StringItem)
    map_ptrloc Arch;              // StringTable
-
+      
    // Lists
    map_ptrloc FileList;          // VerFile
    map_ptrloc NextVer;           // Version
