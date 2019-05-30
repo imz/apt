@@ -202,7 +202,8 @@ string rpmListParser::Version()
       return VI->VerStr();
 #endif
 
-   char *ver, *rel;
+   char *ver, *rel, *dtag;
+   bool has_dtag = false;
    uint32_t *ser;
    bool has_epoch = false;
    uint32_t *btime;
@@ -218,6 +219,10 @@ string rpmListParser::Version()
    headerGetEntry(header, RPMTAG_VERSION, &type, (void **)&ver, &count);
    headerGetEntry(header, RPMTAG_RELEASE, &type, (void **)&rel, &count);
 
+   if (headerGetEntry(header, RPMTAG_DISTTAG, &type, (void **)&dtag, &count) == 1
+       && count > 0)
+      has_dtag = true;
+
    if (headerGetEntry(header, RPMTAG_BUILDTIME, &type, (void **)&btime, &count) == 1
        && count > 0)
       has_btime = true;
@@ -226,6 +231,9 @@ string rpmListParser::Version()
       ss << ser[0] << ":";
    }
    ss << ver << "-" << rel;
+   if (has_dtag) {
+      ss << ":" << dtag;
+   }
    if (has_btime) {
       ss << "@" << btime[0];
    }

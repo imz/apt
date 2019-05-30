@@ -60,11 +60,12 @@ std::ptrdiff_t index_of_EVR_postfix(const char * const evrt)
    e.g., free(*vp) in subsequent code would be invalid.
    (And that's good because it's just a pointer into a larger allocated chunk.)
 */
-static void parseEVRT(char * const evrt,
-                      const char ** const ep,
-                      const char ** const vp,
-                      const char ** const rp,
-                      const char ** const tp)
+static void parseEVRDT(char * const evrt,
+                       const char ** const ep,
+                       const char ** const vp,
+                       const char ** const rp,
+                       const char ** const dp,
+                       const char ** const tp)
 {
    char *buildtime = NULL;
    {
@@ -74,22 +75,9 @@ static void parseEVRT(char * const evrt,
          buildtime = &evrt[i+1];
       }
    }
-   parseEVR(evrt, ep, vp, rp);
+   parseEVRD(evrt, ep, vp, rp, dp);
    if (tp) *tp = buildtime;
 }
-
-static int intcmp(const char * const A, const char * const B)
-{
-   const unsigned long long Ai = strtoull(A, NULL, 10);
-   const unsigned long long Bi = strtoull(B, NULL, 10);
-   if (Ai < Bi)
-      return -1;
-   else if (Ai > Bi)
-      return 1;
-   else
-      return 0;
-}
-
 
 // rpmVS::CmpVersion - Comparison for versions				/*{{{*/
 // ---------------------------------------------------------------------
@@ -100,38 +88,16 @@ int rpmVersioningSystem::DoCmpVersion(const char *A,const char *AEnd,
 {
    char * const tmpA = strndupa(A, (size_t)(AEnd-A));
    char * const tmpB = strndupa(B, (size_t)(BEnd-B));
-   const char *AE, *AV, *AR, *AT;
-   const char *BE, *BV, *BR, *BT;
-   int rc = 0;
-   parseEVRT(tmpA, &AE, &AV, &AR, &AT);
-   parseEVRT(tmpB, &BE, &BV, &BR, &BT);
-   if (AE && !BE)
-       rc = 1;
-   else if (!AE && BE)
-       rc = -1;
-   else if (AE && BE)
-      rc = intcmp(AE, BE);
-   if (rc == 0)
-   {
-      rc = rpmvercmp(AV, BV);
-      if (rc == 0) {
-	  if (AR && !BR)
-	      rc = 1;
-	  else if (!AR && BR)
-	      rc = -1;
-	  else if (AR && BR)
-	      rc = rpmvercmp(AR, BR);
-          if (rc == 0) {
-             if (AT && !BT)
-                rc = 1;
-             else if (!AT && BT)
-                rc = -1;
-             else if (AT && BT)
-                rc = intcmp(AT, BT);
-          }
-      }
-   }
-   return rc;
+   const char *AE, *AV, *AR, *AD, *AT;
+   const char *BE, *BV, *BR, *BD, *BT;
+   parseEVRDT(tmpA, &AE, &AV, &AR, &AD, &AT);
+   parseEVRDT(tmpB, &BE, &BV, &BR, &BD, &BT);
+   const unsigned long long AEi = AE ? strtoull(AE, NULL, 10) : /* unused */ 0;
+   const unsigned long long BEi = BE ? strtoull(BE, NULL, 10) : /* unused */ 0;
+   const unsigned long long ATi = AT ? strtoull(AT, NULL, 10) : /* unused */ 0;
+   const unsigned long long BTi = BT ? strtoull(BT, NULL, 10) : /* unused */ 0;
+   return rpmEVRDTCompare(AE ? &AEi : NULL, AV, AR, AD, AT ? &ATi : NULL,
+                          BE ? &BEi : NULL, BV, BR, BD, BT ? &BTi : NULL);
 }
 									/*}}}*/
 // rpmVS::DoCmpVersionArch - Compare versions, using architecture	/*{{{*/
