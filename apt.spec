@@ -23,7 +23,9 @@ Patch: apt-%version-%release.patch
 Patch101: apt-0.5.4cnc9-alt-getsrc-debug.patch
 
 Requires: libapt = %version-%release
-Requires: rpm >= 4.0.4-alt28, /etc/apt/pkgpriorities, apt-conf
+# We need (lib)rpm which finds pkgs by labels in N-E:V-R@T format (w/ buildtime)
+Requires: rpm >= 4.0.4-alt101.M80P.5.3
+Requires: /etc/apt/pkgpriorities, apt-conf
 # for methods.
 Requires: gzip, bzip2, xz
 Requires: gnupg, alt-gpgkeys
