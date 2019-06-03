@@ -60,11 +60,12 @@ std::ptrdiff_t index_of_EVR_postfix(const char * const evrt)
    e.g., free(*vp) in subsequent code would be invalid.
    (And that's good because it's just a pointer into a larger allocated chunk.)
 */
-static void parseEVRT(char * const evrt,
-                      const char ** const ep,
-                      const char ** const vp,
-                      const char ** const rp,
-                      const char ** const tp)
+static void parseEVRDT(char * const evrt,
+                       const char ** const ep,
+                       const char ** const vp,
+                       const char ** const rp,
+                       const char ** const dp,
+                       const char ** const tp)
 {
    char *buildtime = NULL;
    {
@@ -74,22 +75,33 @@ static void parseEVRT(char * const evrt,
          buildtime = &evrt[i+1];
       }
    }
-   parseEVR(evrt, ep, vp, rp);
+   parseEVRD(evrt, ep, vp, rp, dp);
    if (tp) *tp = buildtime;
 }
 
-static int intcmp(const char * const A, const char * const B)
+static void parseEVRDTstruct(char * const s,
+                             struct rpmEVRDT * const res)
 {
-   const unsigned long long Ai = strtoull(A, NULL, 10);
-   const unsigned long long Bi = strtoull(B, NULL, 10);
-   if (Ai < Bi)
-      return -1;
-   else if (Ai > Bi)
-      return 1;
-   else
-      return 0;
+   const char *EpochStr, *BuildtimeStr;
+   parseEVRDT(s,
+              &EpochStr,
+              &res->version, &res->release, &res->disttag,
+              &BuildtimeStr);
+   if (EpochStr) {
+      res->has_epoch = true;
+      res->epoch = strtoull(EpochStr, NULL, 10);
+   }
+   else {
+      res->has_epoch = false;
+   }
+   if (BuildtimeStr) {
+      res->has_buildtime = true;
+      res->buildtime = strtoull(BuildtimeStr, NULL, 10);
+   }
+   else {
+      res->has_buildtime = false;
+   }
 }
-
 
 // rpmVS::CmpVersion - Comparison for versions				/*{{{*/
 // ---------------------------------------------------------------------
@@ -98,40 +110,12 @@ static int intcmp(const char * const A, const char * const B)
 int rpmVersioningSystem::DoCmpVersion(const char *A,const char *AEnd,
 				      const char *B,const char *BEnd)
 {
+   struct rpmEVRDT AVerInfo, BVerInfo;
    char * const tmpA = strndupa(A, (size_t)(AEnd-A));
    char * const tmpB = strndupa(B, (size_t)(BEnd-B));
-   const char *AE, *AV, *AR, *AT;
-   const char *BE, *BV, *BR, *BT;
-   int rc = 0;
-   parseEVRT(tmpA, &AE, &AV, &AR, &AT);
-   parseEVRT(tmpB, &BE, &BV, &BR, &BT);
-   if (AE && !BE)
-       rc = 1;
-   else if (!AE && BE)
-       rc = -1;
-   else if (AE && BE)
-      rc = intcmp(AE, BE);
-   if (rc == 0)
-   {
-      rc = rpmvercmp(AV, BV);
-      if (rc == 0) {
-	  if (AR && !BR)
-	      rc = 1;
-	  else if (!AR && BR)
-	      rc = -1;
-	  else if (AR && BR)
-	      rc = rpmvercmp(AR, BR);
-          if (rc == 0) {
-             if (AT && !BT)
-                rc = 1;
-             else if (!AT && BT)
-                rc = -1;
-             else if (AT && BT)
-                rc = intcmp(AT, BT);
-          }
-      }
-   }
-   return rc;
+   parseEVRDTstruct(tmpA, &AVerInfo);
+   parseEVRDTstruct(tmpB, &BVerInfo);
+   return rpmEVRDTCompare(&AVerInfo, &BVerInfo);
 }
 									/*}}}*/
 // rpmVS::DoCmpVersionArch - Compare versions, using architecture	/*{{{*/

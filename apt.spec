@@ -1,6 +1,6 @@
 Name: apt
 Version: 0.5.15lorg2
-Release: alt65
+Release: alt66
 
 Summary: Debian's Advanced Packaging Tool with RPM support
 Summary(ru_RU.UTF-8): Debian APT - Усовершенствованное средство управления пакетами с поддержкой RPM
@@ -23,7 +23,8 @@ Patch: apt-%version-%release.patch
 Patch101: apt-0.5.4cnc9-alt-getsrc-debug.patch
 
 Requires: libapt = %EVR
-# We need (lib)rpm which finds pkgs by labels in N-E:V-R@T format (w/ buildtime)
+# We need (lib)rpm which finds pkgs by labels in N-E:V-R:D@T format
+# (with disttag and buildtime)
 Requires: rpm >= 4.13.0.1-alt7
 Requires: /etc/apt/pkgpriorities, apt-conf
 # for methods.
@@ -310,6 +311,11 @@ unset RPM_PYTHON
 %_libdir/%name/methods/https
 
 %changelog
+* Tue May 21 2019 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt53.M80P.2
+- Add disttag to VerStrs (used by APT to identify package versions).
+- Increase default APT::Cache-Limit in 1.5 times due to the extension of VerStrs
+  (ALT#36775).
+
 * Thu May 30 2019 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt65
 - Add buildtime to VerStrs (used by APT to identify package versions).
   This data is used in several manners:
