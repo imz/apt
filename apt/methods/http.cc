@@ -773,7 +773,7 @@ bool HttpMethod::Go(bool ToFile,ServerState *Srv)
 	  
    // Figure out the max fd
    int MaxFd = FileFD->Fd();
-   if (MaxFd < Srv->ServerFd->Fd())
+   if ((Srv->ServerFd) && (MaxFd < Srv->ServerFd->Fd()))
       MaxFd = Srv->ServerFd->Fd();
 
    // Select
