@@ -94,7 +94,6 @@ struct ServerState
    enum {Header, Data} State;
    bool Persistent;
    string Location;
-   string Realm, ProxyRealm;
    
    // This is a Persistent attribute of the server itself.
    bool Pipeline;
@@ -127,7 +126,6 @@ class HttpMethod : public pkgAcqMethod
    struct AuthRec
    {
       string Host;
-      string Realm;
       string User;
       string Password;
    };

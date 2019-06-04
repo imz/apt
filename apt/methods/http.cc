@@ -623,25 +623,6 @@ bool ServerState::HeaderLine(string Line)
       return true;
    }
 
-   if (stringcasecmp(Tag,"WWW-Authenticate:") == 0 ||
-       stringcasecmp(Tag,"Proxy-Authenticate:") == 0)
-   {
-      string::size_type SplitPoint = Val.find(' ');
-      string AuthType = Val.substr(0, SplitPoint);
-      string RealmStr = Val.substr(SplitPoint + 1, 
-				   Val.length() - SplitPoint - 1);
-      SplitPoint = RealmStr.find('=');
-      string FoundRealm = RealmStr.substr(SplitPoint, 
-					  RealmStr.length() - SplitPoint);
-
-      if (stringcasecmp(Tag,"WWW-Authenticate:") == 0)
-	 Realm = FoundRealm;
-      else
-	 ProxyRealm = FoundRealm;
-
-      return true;
-   }
-
    return true;
 }
 									/*}}}*/
@@ -957,8 +938,7 @@ int HttpMethod::DealWithHeaders(FetchResult &Res,ServerState *Srv)
       {
 	 for (CurrentAuth = AuthList.begin(); CurrentAuth != AuthList.end();
 	      CurrentAuth++)
-	    if (CurrentAuth->Host == Srv->ServerName.Host &&
-		CurrentAuth->Realm == Srv->Realm)
+	    if (CurrentAuth->Host == Srv->ServerName.Host)
 	    {
 	       AuthUser = CurrentAuth->User;
 	       AuthPass = CurrentAuth->Password;
@@ -971,7 +951,7 @@ int HttpMethod::DealWithHeaders(FetchResult &Res,ServerState *Srv)
       // Nope - get username and password
       if (CurrentAuth == AuthList.end())
       {
-	 Description = ParsedURI.Host + ":" + Srv->Realm;
+	 Description = ParsedURI.Host;
 
 #ifdef USE_TLS
 	 if (ParsedURI.Access == "https")
@@ -984,14 +964,12 @@ int HttpMethod::DealWithHeaders(FetchResult &Res,ServerState *Srv)
 	    AuthRec NewAuthInfo;
 
 	    NewAuthInfo.Host = Srv->ServerName.Host;
-	    NewAuthInfo.Realm = Srv->Realm;
 	    NewAuthInfo.User = AuthUser;
 	    NewAuthInfo.Password = AuthPass;
 
 	    for (CurrentAuth = AuthList.begin(); CurrentAuth != AuthList.end();
 		 CurrentAuth++)
-	       if (CurrentAuth->Host == Srv->ServerName.Host &&
-		   CurrentAuth->Realm == Srv->Realm)
+	       if (CurrentAuth->Host == Srv->ServerName.Host)
 	       {
 		  *CurrentAuth = NewAuthInfo;
 		  break;
