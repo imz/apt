@@ -165,7 +165,7 @@ string rpmListParser::Version()
 // ListParser::NewVersion - Fill in the version structure		/*{{{*/
 // ---------------------------------------------------------------------
 /* */
-bool rpmListParser::NewVersion(pkgCache::VerIterator Ver)
+bool rpmListParser::NewVersion(pkgCache::VerIterator &Ver)
 {
 #if WITH_VERSION_CACHING
    // Cache it for future usage.
@@ -203,8 +203,8 @@ bool rpmListParser::NewVersion(pkgCache::VerIterator Ver)
 // ---------------------------------------------------------------------
 /* This is called to update the package with any new information
    that might be found in the section */
-bool rpmListParser::UsePackage(pkgCache::PkgIterator Pkg,
-			       pkgCache::VerIterator Ver)
+bool rpmListParser::UsePackage(pkgCache::PkgIterator &Pkg,
+			       pkgCache::VerIterator &Ver)
 {
    string PkgName = Pkg.Name();
    if (SeenPackages != NULL)
@@ -282,8 +282,8 @@ unsigned short rpmListParser::VersionHash()
 
 // ListParser::ParseStatus - Parse the status field			/*{{{*/
 // ---------------------------------------------------------------------
-bool rpmListParser::ParseStatus(pkgCache::PkgIterator Pkg,
-				pkgCache::VerIterator Ver)
+bool rpmListParser::ParseStatus(pkgCache::PkgIterator &Pkg,
+				pkgCache::VerIterator &Ver)
 {
    if (!Handler->IsDatabase())  // this means we're parsing an hdlist, so it's not installed
       return true;
@@ -304,7 +304,7 @@ bool rpmListParser::ParseStatus(pkgCache::PkgIterator Pkg,
 // ---------------------------------------------------------------------
 /* This is the higher level depends parser. It takes a tag and generates
  a complete depends tree for the given version. */
-bool rpmListParser::ParseDepends(pkgCache::VerIterator Ver, unsigned int Type)
+bool rpmListParser::ParseDepends(pkgCache::VerIterator &Ver, unsigned int Type)
 {
    vector<Dependency*> Deps;
 
@@ -322,7 +322,7 @@ bool rpmListParser::ParseDepends(pkgCache::VerIterator Ver, unsigned int Type)
 }
                                                                         /*}}}*/
 bool rpmListParser::CollectFileProvides(pkgCache &Cache,
-					pkgCache::VerIterator Ver)
+					pkgCache::VerIterator &Ver)
 {
    vector<string> Files;
 
@@ -355,7 +355,7 @@ bool rpmListParser::CollectFileProvides(pkgCache &Cache,
 // ListParser::ParseProvides - Parse the provides list			/*{{{*/
 // ---------------------------------------------------------------------
 /* */
-bool rpmListParser::ParseProvides(pkgCache::VerIterator Ver)
+bool rpmListParser::ParseProvides(pkgCache::VerIterator &Ver)
 {
    vector<Dependency*> Deps;
 
@@ -404,7 +404,7 @@ bool rpmListParser::Step()
 // ListParser::LoadReleaseInfo - Load the release information		/*{{{*/
 // ---------------------------------------------------------------------
 /* */
-bool rpmListParser::LoadReleaseInfo(pkgCache::PkgFileIterator FileI,
+bool rpmListParser::LoadReleaseInfo(pkgCache::PkgFileIterator &FileI,
 				    FileFd &File)
 {
    pkgTagFile Tags(&File);

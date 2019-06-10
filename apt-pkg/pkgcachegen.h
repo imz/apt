@@ -102,10 +102,10 @@ class pkgCacheGenerator::ListParser
    inline unsigned long WriteUniqString(const char *S,unsigned int Size) {return Owner->WriteUniqString(S,Size);}
    inline unsigned long WriteString(const string &S) {return Owner->WriteStringInMap(S);}
    inline unsigned long WriteString(const char *S,unsigned int Size) {return Owner->WriteStringInMap(S,Size);}
-   bool NewDepends(pkgCache::VerIterator Ver, const string &Package,
+   bool NewDepends(pkgCache::VerIterator &Ver, const string &Package,
 		   const string &Version,unsigned int Op,
 		   unsigned int Type);
-   bool NewProvides(pkgCache::VerIterator Ver,const string &Package, const string &Version);
+   bool NewProvides(pkgCache::VerIterator &Ver,const string &Package, const string &Version);
 
    public:
 
@@ -114,10 +114,10 @@ class pkgCacheGenerator::ListParser
    virtual string Version() = 0;
    // CNC:2002-07-09
    virtual string Architecture() {return string();}
-   virtual bool NewVersion(pkgCache::VerIterator Ver) = 0;
+   virtual bool NewVersion(pkgCache::VerIterator &Ver) = 0;
    virtual unsigned short VersionHash() = 0;
-   virtual bool UsePackage(pkgCache::PkgIterator Pkg,
-			   pkgCache::VerIterator Ver) = 0;
+   virtual bool UsePackage(pkgCache::PkgIterator &Pkg,
+			   pkgCache::VerIterator &Ver) = 0;
    virtual unsigned long Offset() = 0;
    virtual unsigned long Size() = 0;
    virtual unsigned long Flags() = 0;
@@ -138,7 +138,7 @@ class pkgCacheGenerator::ListParser
 
    inline bool HasFileDeps() {return FoundFileDeps;}
    virtual bool CollectFileProvides(pkgCache &Cache,
-				    pkgCache::VerIterator Ver) {return true;}
+				    pkgCache::VerIterator &Ver) {return true;}
 
    ListParser() : FoundFileDeps(false) {}
    virtual ~ListParser() {}
