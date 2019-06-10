@@ -65,15 +65,15 @@ class RPMFileHandler : public RPMHandler
 
    public:
 
-   virtual bool Skip();
-   virtual bool Jump(unsigned int Offset);
-   virtual void Rewind();
-   virtual inline bool IsDatabase() {return false;};
+   virtual bool Skip() override;
+   virtual bool Jump(unsigned int Offset) override;
+   virtual void Rewind() override;
+   virtual inline bool IsDatabase() override {return false;};
 
-   virtual string FileName();
-   virtual string Directory();
-   virtual unsigned long FileSize();
-   virtual string MD5Sum();
+   virtual string FileName() override;
+   virtual string Directory() override;
+   virtual unsigned long FileSize() override;
+   virtual string MD5Sum() override;
 
    RPMFileHandler(FileFd *File);
    RPMFileHandler(string File);
@@ -88,15 +88,15 @@ class RPMSingleFileHandler : public RPMFileHandler
 
    public:
 
-   virtual bool Skip();
-   virtual bool Jump(unsigned int Offset);
-   virtual void Rewind();
+   virtual bool Skip() override;
+   virtual bool Jump(unsigned int Offset) override;
+   virtual void Rewind() override;
 
-   virtual string FileName() {return sFilePath;};
-   virtual string Directory() {return "";};
-   virtual unsigned long FileSize();
-   virtual string MD5Sum();
-   virtual bool ProvideFileName() {return true;};
+   virtual string FileName() override {return sFilePath;};
+   virtual string Directory() override {return "";};
+   virtual unsigned long FileSize() override;
+   virtual string MD5Sum() override;
+   virtual bool ProvideFileName() override {return true;};
 
    RPMSingleFileHandler(string File) : RPMFileHandler(File), sFilePath(File) {};
    virtual ~RPMSingleFileHandler() {};
@@ -124,14 +124,14 @@ class RPMDBHandler : public RPMHandler
    public:
 
    static string DataPath(bool DirectoryOnly=true);
-   virtual bool Skip();
-   virtual bool Jump(unsigned Offset);
-   virtual void Rewind();
-   virtual inline bool IsDatabase() {return true;};
+   virtual bool Skip() override;
+   virtual bool Jump(unsigned Offset) override;
+   virtual void Rewind() override;
+   virtual inline bool IsDatabase() override {return true;};
    virtual bool HasWriteLock() {return WriteLock;};
    virtual time_t Mtime() {return DbFileMtime;}
    virtual unsigned long Mnanotime() {return DbFileMnanotime;}
-   virtual bool OrderedOffset() {return false;};
+   virtual bool OrderedOffset() override {return false;};
 
    RPMDBHandler(bool WriteLock=false);
    virtual ~RPMDBHandler();
@@ -154,14 +154,14 @@ class RPMDirHandler : public RPMHandler
 
    public:
 
-   virtual bool Skip();
-   virtual bool Jump(unsigned int Offset);
-   virtual void Rewind();
-   virtual inline bool IsDatabase() {return false;};
+   virtual bool Skip() override;
+   virtual bool Jump(unsigned int Offset) override;
+   virtual void Rewind() override;
+   virtual inline bool IsDatabase() override {return false;};
 
-   virtual string FileName() {return (Dir == NULL)?"":sFileName;};
-   virtual unsigned long FileSize();
-   virtual string MD5Sum();
+   virtual string FileName() override {return (Dir == NULL)?"":sFileName;};
+   virtual unsigned long FileSize() override;
+   virtual string MD5Sum() override;
 
    RPMDirHandler(string DirName);
    virtual ~RPMDirHandler();

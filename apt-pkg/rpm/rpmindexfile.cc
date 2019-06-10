@@ -682,7 +682,7 @@ class rpmSLTypeRpm : public rpmSLTypeGen
 
    bool CreateItem(vector<pkgIndexFile *> &List,
 		   string URI, string Dist, string Section,
-		   pkgSourceList::Vendor const *Vendor) const
+		   pkgSourceList::Vendor const *Vendor) const override
    {
       pkgRepository *Rep = GetRepository(URI,Dist,Vendor);
       List.push_back(new rpmPkgListIndex(URI,Dist,Section,Rep));
@@ -702,7 +702,7 @@ class rpmSLTypeSrpm : public rpmSLTypeGen
 
    bool CreateItem(vector<pkgIndexFile *> &List,
 		   string URI, string Dist, string Section,
-		   pkgSourceList::Vendor const *Vendor) const
+		   pkgSourceList::Vendor const *Vendor) const override
    {
       pkgRepository *Rep = GetRepository(URI,Dist,Vendor);
       List.push_back(new rpmSrcListIndex(URI,Dist,Section,Rep));
@@ -722,7 +722,7 @@ class rpmSLTypeRpmDir : public rpmSLTypeGen
 
    bool CreateItem(vector<pkgIndexFile *> &List,
 		   string URI, string Dist, string Section,
-		   pkgSourceList::Vendor const *Vendor) const
+		   pkgSourceList::Vendor const *Vendor) const override
    {
       pkgRepository *Rep = GetRepository(URI,Dist,Vendor);
       List.push_back(new rpmPkgDirIndex(URI,Dist,Section,Rep));
@@ -742,7 +742,7 @@ class rpmSLTypeSrpmDir : public rpmSLTypeGen
 
    bool CreateItem(vector<pkgIndexFile *> &List,
 		   string URI, string Dist, string Section,
-		   pkgSourceList::Vendor const *Vendor) const
+		   pkgSourceList::Vendor const *Vendor) const override
    {
       pkgRepository *Rep = GetRepository(URI,Dist,Vendor);
       List.push_back(new rpmSrcDirIndex(URI,Dist,Section,Rep));
@@ -772,7 +772,7 @@ class rpmIFTypePkg : public pkgIndexFile::Type
 {
    public:
 
-   virtual pkgRecords::Parser *CreatePkgParser(pkgCache::PkgFileIterator File) const
+   virtual pkgRecords::Parser *CreatePkgParser(pkgCache::PkgFileIterator File) const override
    {
       return new rpmRecordParser(File.FileName(),*File.Cache());
    };
@@ -782,7 +782,7 @@ class rpmIFTypeDatabase : public pkgIndexFile::Type
 {
    public:
 
-   virtual pkgRecords::Parser *CreatePkgParser(pkgCache::PkgFileIterator File) const
+   virtual pkgRecords::Parser *CreatePkgParser(pkgCache::PkgFileIterator File) const override
    {
       return new rpmRecordParser(File.FileName(),*File.Cache());
    };
