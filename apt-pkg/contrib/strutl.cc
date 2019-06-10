@@ -921,12 +921,14 @@ unsigned long RegexChoice(RxChoiceList *Rxs,const char **ListBegin,
    and to allow reordering of parameters */
 void ioprintf(ostream &out,const char *format,...)
 {
-   va_list args;
-   va_start(args,format);
-
    // sprintf the description
    char S[400];
+
+   va_list args;
+   va_start(args,format);
    vsnprintf(S,sizeof(S),format,args);
+   va_end(args);
+
    out << S;
 }
 									/*}}}*/
@@ -938,15 +940,16 @@ void ioprintf(ostream &out,const char *format,...)
    consecutive snprintfs. */
 char *safe_snprintf(char *Buffer,char *End,const char *Format,...)
 {
-   va_list args;
    unsigned long Did;
-
-   va_start(args,Format);
 
    if (End <= Buffer)
       return End;
 
+   va_list args;
+   va_start(args,Format);
    Did = vsnprintf(Buffer,End - Buffer,Format,args);
+   va_end(args);
+
    if (Did < 0 || Buffer + Did > End)
       return End;
    return Buffer + Did;

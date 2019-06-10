@@ -207,12 +207,14 @@ bool RSHConn::ReadLine(string &Text)
    once the command completes. */
 bool RSHConn::WriteMsg(string &Text,bool Sync,const char *Fmt,...)
 {
-   va_list args;
-   va_start(args,Fmt);
-
    // sprintf the description
    char S[512];
+
+   va_list args;
+   va_start(args,Fmt);
    vsnprintf(S,sizeof(S) - 4,Fmt,args);
+   va_end(args);
+
    if (Sync == true)
       strcat(S," 2> /dev/null || echo\n");
    else
