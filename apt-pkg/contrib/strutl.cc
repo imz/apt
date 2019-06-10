@@ -22,6 +22,7 @@
 
 #include <apti18n.h>
 
+#include <sstream>
 #include <ctype.h>
 #include <string.h>
 #include <stdio.h>
@@ -217,23 +218,24 @@ string QuoteString(string Str,const char *Bad)
 /* This undoes QuoteString */
 string DeQuoteString(string Str)
 {
-   string Res;
-   for (string::const_iterator I = Str.begin(); I != Str.end(); I++)
+   std::stringstream Res;
+
+   for (size_t i = 0; i < Str.size(); ++i)
    {
-      if (*I == '%' && I + 2 < Str.end())
+      if ((Str[i] == '%') && (i + 2 < Str.size()))
       {
 	 char Tmp[3];
-	 Tmp[0] = I[1];
-	 Tmp[1] = I[2];
+	 Tmp[0] = Str[i+1];
+	 Tmp[1] = Str[i+2];
 	 Tmp[2] = 0;
-	 Res += (char)strtol(Tmp,0,16);
-	 I += 2;
+	 Res << (char)strtol(Tmp,0,16);
+	 i += 2;
 	 continue;
       }
       else
-	 Res += *I;
+	 Res << Str[i];
    }
-   return Res;
+   return Res.str();
 }
 
                                                                         /*}}}*/
@@ -384,24 +386,24 @@ string Base64Encode(string S)
 
    /* Transform the 3x8 bits to 4x6 bits, as required by
       base64.  */
-   for (string::const_iterator I = S.begin(); I < S.end(); I += 3)
+   for (size_t i = 0; i < S.size(); i += 3)
    {
       char Bits[3] = {0,0,0};
-      Bits[0] = I[0];
-      if (I + 1 < S.end())
-	 Bits[1] = I[1];
-      if (I + 2 < S.end())
-	 Bits[2] = I[2];
+      Bits[0] = S[i];
+      if (i + 1 < S.size())
+	 Bits[1] = S[i+1];
+      if (i + 2 < S.size())
+	 Bits[2] = S[i+2];
 
       Final += tbl[Bits[0] >> 2];
       Final += tbl[((Bits[0] & 3) << 4) + (Bits[1] >> 4)];
 
-      if (I + 1 >= S.end())
+      if (i + 1 >= S.size())
 	 break;
 
       Final += tbl[((Bits[1] & 0xf) << 2) + (Bits[2] >> 6)];
 
-      if (I + 2 >= S.end())
+      if (i + 2 >= S.size())
 	 break;
 
       Final += tbl[Bits[2] & 0x3f];
