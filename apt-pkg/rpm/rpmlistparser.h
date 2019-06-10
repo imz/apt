@@ -39,9 +39,9 @@ class rpmListParser : public pkgCacheGenerator::ListParser
 
    bool Duplicated;
 
-   bool ParseStatus(pkgCache::PkgIterator Pkg,pkgCache::VerIterator Ver);
-   bool ParseDepends(pkgCache::VerIterator Ver, unsigned int Type);
-   bool ParseProvides(pkgCache::VerIterator Ver);
+   bool ParseStatus(pkgCache::PkgIterator &Pkg,pkgCache::VerIterator &Ver);
+   bool ParseDepends(pkgCache::VerIterator &Ver, unsigned int Type);
+   bool ParseProvides(pkgCache::VerIterator &Ver);
 
  public:
 
@@ -49,10 +49,10 @@ class rpmListParser : public pkgCacheGenerator::ListParser
    virtual string Package() override;
    virtual string Version() override;
    virtual string Architecture() override;
-   virtual bool NewVersion(pkgCache::VerIterator Ver) override;
+   virtual bool NewVersion(pkgCache::VerIterator &Ver) override;
    virtual unsigned short VersionHash() override;
-   virtual bool UsePackage(pkgCache::PkgIterator Pkg,
-			   pkgCache::VerIterator Ver) override;
+   virtual bool UsePackage(pkgCache::PkgIterator &Pkg,
+			   pkgCache::VerIterator &Ver) override;
    virtual unsigned long Offset() override
 	{return Handler->Offset();}
    virtual unsigned long Size() override;
@@ -65,10 +65,10 @@ class rpmListParser : public pkgCacheGenerator::ListParser
 	{return Handler->IsDatabase();}
 
    virtual bool CollectFileProvides(pkgCache &Cache,
-				    pkgCache::VerIterator Ver) override;
+				    pkgCache::VerIterator &Ver) override;
    virtual bool Step() override;
 
-   bool LoadReleaseInfo(pkgCache::PkgFileIterator FileI,FileFd &File);
+   bool LoadReleaseInfo(pkgCache::PkgFileIterator &FileI,FileFd &File);
 
    void VirtualizePackage(const string &Name);
 
