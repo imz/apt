@@ -20,19 +20,19 @@ class rpmVersioningSystem : public pkgVersioningSystem
 
    // Compare versions..
    virtual int DoCmpVersion(const char *A,const char *Aend,
-			    const char *B,const char *Bend);
+			    const char *B,const char *Bend) override;
    virtual int DoCmpVersionArch(const char *A,const char *Aend,
 				const char *AA,const char *AAend,
 				const char *B,const char *Bend,
-				const char *BA,const char *BAend);
-   virtual bool CheckDep(const char *PkgVer,int Op,const char *DepVer);
-   virtual bool CheckDep(const char *PkgVer,pkgCache::DepIterator Dep);
+				const char *BA,const char *BAend) override;
+   virtual bool CheckDep(const char *PkgVer,int Op,const char *DepVer) override;
+   virtual bool CheckDep(const char *PkgVer,pkgCache::DepIterator Dep) override;
    virtual int DoCmpReleaseVer(const char *A,const char *Aend,
-			     const char *B,const char *Bend)
+			     const char *B,const char *Bend) override
    {
       return DoCmpVersion(A,Aend,B,Bend);
    }
-   virtual string UpstreamVersion(const char *A);
+   virtual string UpstreamVersion(const char *A) override;
 
    rpmVersioningSystem();
 };

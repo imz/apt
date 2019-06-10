@@ -100,9 +100,9 @@ class pkgAcqIndex : public pkgAcquire::Item
 
    // Specialized action members
    virtual void Done(string Message,unsigned long Size,string Md5Hash,
-		     pkgAcquire::MethodConfig *Cnf);
-   virtual string Custom600Headers();
-   virtual string DescURI() {return RealURI;}; // CNC:2003-02-14
+		     pkgAcquire::MethodConfig *Cnf) override;
+   virtual string Custom600Headers() override;
+   virtual string DescURI() override {return RealURI;}; // CNC:2003-02-14
 
    // CNC:2002-07-03
    pkgAcqIndex(pkgAcquire *Owner,pkgRepository *Repository,string URI,
@@ -126,11 +126,11 @@ class pkgAcqIndexRel : public pkgAcquire::Item
    public:
 
    // Specialized action members
-   virtual void Failed(string Message,pkgAcquire::MethodConfig *Cnf);
+   virtual void Failed(string Message,pkgAcquire::MethodConfig *Cnf) override;
    virtual void Done(string Message,unsigned long Size,string Md5Hash,
-		     pkgAcquire::MethodConfig *Cnf);
-   virtual string Custom600Headers();
-   virtual string DescURI() {return RealURI;};
+		     pkgAcquire::MethodConfig *Cnf) override;
+   virtual string Custom600Headers() override;
+   virtual string DescURI() override {return RealURI;};
 
    // CNC:2002-07-03
    pkgAcqIndexRel(pkgAcquire *Owner,pkgRepository *Repository,string URI,
@@ -158,12 +158,12 @@ class pkgAcqArchive : public pkgAcquire::Item
    public:
 
    // Specialized action members
-   virtual void Failed(string Message,pkgAcquire::MethodConfig *Cnf);
+   virtual void Failed(string Message,pkgAcquire::MethodConfig *Cnf) override;
    virtual void Done(string Message,unsigned long Size,string Md5Hash,
-		     pkgAcquire::MethodConfig *Cnf);
-   virtual string MD5Sum() {return MD5;};
-   virtual string DescURI() {return Desc.URI;};
-   virtual void Finished();
+		     pkgAcquire::MethodConfig *Cnf) override;
+   virtual string MD5Sum() override {return MD5;};
+   virtual string DescURI() override {return Desc.URI;};
+   virtual void Finished() override;
 
    pkgAcqArchive(pkgAcquire *Owner,pkgSourceList *Sources,
 		 pkgRecords *Recs,pkgCache::VerIterator const &Version,
@@ -180,11 +180,11 @@ class pkgAcqFile : public pkgAcquire::Item
    public:
 
    // Specialized action members
-   virtual void Failed(string Message,pkgAcquire::MethodConfig *Cnf);
+   virtual void Failed(string Message,pkgAcquire::MethodConfig *Cnf) override;
    virtual void Done(string Message,unsigned long Size,string Md5Hash,
-		     pkgAcquire::MethodConfig *Cnf);
-   virtual string MD5Sum() {return Md5Hash;};
-   virtual string DescURI() {return Desc.URI;};
+		     pkgAcquire::MethodConfig *Cnf) override;
+   virtual string MD5Sum() override {return Md5Hash;};
+   virtual string DescURI() override {return Desc.URI;};
 
    pkgAcqFile(pkgAcquire *Owner,string URI,string MD5,unsigned long Size,
 		  string Desc,string ShortDesc);
