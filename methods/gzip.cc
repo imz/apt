@@ -31,7 +31,7 @@ const char *Prog;
 
 class GzipMethod : public pkgAcqMethod
 {
-   virtual bool Fetch(FetchItem *Itm);
+   virtual bool Fetch(FetchItem *Itm) override;
 
    public:
 

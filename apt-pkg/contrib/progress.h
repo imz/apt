@@ -71,12 +71,12 @@ class OpTextProgress : public OpProgress
    bool NoUpdate;
    bool NoDisplay;
    unsigned long LastLen;
-   virtual void Update();
+   virtual void Update() override;
    void Write(const char *S);
 
    public:
 
-   virtual void Done();
+   virtual void Done() override;
 
    OpTextProgress(bool NoUpdate = false) : NoUpdate(NoUpdate),
                 NoDisplay(false), LastLen(0) {};

@@ -32,23 +32,23 @@ class rpmSystem : public pkgSystem
 
    RPMDBHandler *GetDBHandler();
 
-   virtual bool LockRead();
-   virtual bool Lock();
-   virtual bool UnLock(bool NoErrors = false);
-   virtual pkgPackageManager *CreatePM(pkgDepCache *Cache) const;
-   virtual bool Initialize(Configuration &Cnf);
-   virtual bool ArchiveSupported(const char *Type);
-   virtual signed Score(Configuration const &Cnf);
-   virtual string DistroVer(Configuration const &Cnf);
-   virtual bool AddStatusFiles(vector<pkgIndexFile *> &List);
-   virtual void AddSourceFiles(vector<pkgIndexFile *> &List);
+   virtual bool LockRead() override;
+   virtual bool Lock() override;
+   virtual bool UnLock(bool NoErrors = false) override;
+   virtual pkgPackageManager *CreatePM(pkgDepCache *Cache) const override;
+   virtual bool Initialize(Configuration &Cnf) override;
+   virtual bool ArchiveSupported(const char *Type) override;
+   virtual signed Score(Configuration const &Cnf) override;
+   virtual string DistroVer(Configuration const &Cnf) override;
+   virtual bool AddStatusFiles(vector<pkgIndexFile *> &List) override;
+   virtual void AddSourceFiles(vector<pkgIndexFile *> &List) override;
    virtual bool FindIndex(pkgCache::PkgFileIterator File,
-			  pkgIndexFile *&Found) const;
-   virtual bool ProcessCache(pkgDepCache &Cache,pkgProblemResolver &Fix);
-   virtual bool IgnoreDep(pkgVersioningSystem &VS,pkgCache::DepIterator &Dep);
-   virtual void CacheBuilt();
+			  pkgIndexFile *&Found) const override;
+   virtual bool ProcessCache(pkgDepCache &Cache,pkgProblemResolver &Fix) override;
+   virtual bool IgnoreDep(pkgVersioningSystem &VS,pkgCache::DepIterator &Dep) override;
+   virtual void CacheBuilt() override;
 
-   virtual unsigned long OptionsHash() const;
+   virtual unsigned long OptionsHash() const override;
 
    rpmSystem();
    virtual ~rpmSystem();

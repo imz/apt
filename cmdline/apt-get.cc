@@ -85,7 +85,7 @@ class AptGetLuaCache : public LuaCacheControl
 public:
    std::unique_ptr<CacheFile> Cache;
 
-   virtual pkgDepCache* Open(bool Write)
+   virtual pkgDepCache* Open(bool Write) override
    {
       if (!Cache)
       {
@@ -104,7 +104,7 @@ public:
       return *Cache;
    }
 
-   virtual void Close()
+   virtual void Close() override
    {
       Cache.reset();
    }
@@ -1111,7 +1111,7 @@ pkgSrcRecords::Parser *FindSrc(const char *Name,pkgRecords &Recs,
 class UpdateLogCleaner : public pkgArchiveCleaner
 {
    protected:
-   virtual void Erase(const char *File,string Pkg,string Ver,struct stat &St)
+   virtual void Erase(const char *File,string Pkg,string Ver,struct stat &St) override
    {
       c1out << "Del " << Pkg << " " << Ver << " [" << SizeToStr(St.st_size) << "B]" << endl;
       unlink(File);
@@ -1910,7 +1910,7 @@ bool DoClean(CommandLine &CmdL)
 class LogCleaner : public pkgArchiveCleaner
 {
    protected:
-   virtual void Erase(const char *File,string Pkg,string Ver,struct stat &St)
+   virtual void Erase(const char *File,string Pkg,string Ver,struct stat &St) override
    {
       c1out << "Del " << Pkg << " " << Ver << " [" << SizeToStr(St.st_size) << "B]" << endl;
 

@@ -136,8 +136,8 @@ class HttpMethod : public pkgAcqMethod
    bool ServerDie(ServerState *Srv);
    int DealWithHeaders(FetchResult &Res,ServerState *Srv);
 
-   virtual bool Fetch(FetchItem *);
-   virtual bool Configuration(string Message);
+   virtual bool Fetch(FetchItem *) override;
+   virtual bool Configuration(string Message) override;
 
    // In the event of a fatal signal this file will be closed and timestamped.
    static string FailFile;
