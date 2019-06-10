@@ -41,28 +41,28 @@ class rpmRecordParser : public pkgRecords::Parser
 
    protected:
 
-   virtual bool Jump(pkgCache::VerFileIterator const &Ver);
+   virtual bool Jump(pkgCache::VerFileIterator const &Ver) override;
 
    public:
 
    // These refer to the archive file for the Version
-   virtual string FileName();
-   virtual string MD5Hash();
-   virtual string SourcePkg();
+   virtual string FileName() override;
+   virtual string MD5Hash() override;
+   virtual string SourcePkg() override;
 
    // These are some general stats about the package
-   virtual string Maintainer();
-   virtual string ShortDesc();
-   virtual string LongDesc();
-   virtual string Name();
-   virtual string Changelog();
+   virtual string Maintainer() override;
+   virtual string ShortDesc() override;
+   virtual string LongDesc() override;
+   virtual string Name() override;
+   virtual string Changelog() override;
 
    inline Header GetRecord() { return HeaderP; };
 
    // The record in raw text, in standard Debian format
-   virtual void GetRec(const char *&Start,const char *&Stop);
+   virtual void GetRec(const char *&Start,const char *&Stop) override;
 
-   virtual bool HasFile(const char *File);
+   virtual bool HasFile(const char *File) override;
 
    rpmRecordParser(string File,pkgCache &Cache);
    ~rpmRecordParser();

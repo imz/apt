@@ -49,7 +49,7 @@ class pkgSimulate : public pkgPackageManager
       pkgDepCache *Cache;
       public:
 
-      virtual VerIterator GetCandidateVer(PkgIterator Pkg)
+      virtual VerIterator GetCandidateVer(PkgIterator Pkg) override
       {
 	 return (*Cache)[Pkg].CandidateVerIter(*Cache);
       }
@@ -63,9 +63,9 @@ class pkgSimulate : public pkgPackageManager
    pkgDepCache Sim;
 
    // The Actuall installation implementation
-   virtual bool Install(PkgIterator Pkg,string File);
-   virtual bool Configure(PkgIterator Pkg);
-   virtual bool Remove(PkgIterator Pkg,bool Purge);
+   virtual bool Install(PkgIterator Pkg,string File) override;
+   virtual bool Configure(PkgIterator Pkg) override;
+   virtual bool Remove(PkgIterator Pkg,bool Purge) override;
    void ShortBreaks();
    void Describe(PkgIterator iPkg,ostream &out,bool Now);
 

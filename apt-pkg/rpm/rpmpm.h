@@ -47,16 +47,16 @@ class pkgRPMPM : public pkgPackageManager
    bool RunScriptsWithPkgs(const char *Cnf);
 
    // The Actuall installation implementation
-   virtual bool Install(PkgIterator Pkg,string File);
-   virtual bool Configure(PkgIterator Pkg);
-   virtual bool Remove(PkgIterator Pkg,bool Purge = false);
+   virtual bool Install(PkgIterator Pkg,string File) override;
+   virtual bool Configure(PkgIterator Pkg) override;
+   virtual bool Remove(PkgIterator Pkg,bool Purge = false) override;
 
    virtual bool Process(const std::vector<apt_item> &install,
 		const std::vector<apt_item> &upgrade,
 		const std::vector<apt_item> &uninstall) {return false;};
 
-   virtual bool Go();
-   virtual void Reset();
+   virtual bool Go() override;
+   virtual void Reset() override;
 
    public:
 
@@ -70,7 +70,7 @@ class pkgRPMExtPM : public pkgRPMPM
    bool ExecRPM(Item::RPMOps op, const std::vector<apt_item> &files);
    virtual bool Process(const std::vector<apt_item> &install,
 		const std::vector<apt_item> &upgrade,
-		const std::vector<apt_item> &uninstall);
+		const std::vector<apt_item> &uninstall) override;
 
    public:
    pkgRPMExtPM(pkgDepCache *Cache);
@@ -91,7 +91,7 @@ class pkgRPMLibPM : public pkgRPMPM
    bool AddToTransaction(Item::RPMOps op, const std::vector<apt_item> &files);
    virtual bool Process(const std::vector<apt_item> &install,
 		const std::vector<apt_item> &upgrade,
-		const std::vector<apt_item> &uninstall);
+		const std::vector<apt_item> &uninstall) override;
 
    public:
 

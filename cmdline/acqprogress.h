@@ -20,16 +20,16 @@ class AcqTextStatus : public pkgAcquireStatus
 
    public:
 
-   virtual bool MediaChange(string Media,string Drive);
-   virtual bool Authenticate(string Desc,string &User,string &Pass);
-   virtual void IMSHit(pkgAcquire::ItemDesc &Itm);
-   virtual void Fetch(pkgAcquire::ItemDesc &Itm);
-   virtual void Done(pkgAcquire::ItemDesc &Itm);
-   virtual void Fail(pkgAcquire::ItemDesc &Itm);
-   virtual void Start();
-   virtual void Stop();
+   virtual bool MediaChange(string Media,string Drive) override;
+   virtual bool Authenticate(string Desc,string &User,string &Pass) override;
+   virtual void IMSHit(pkgAcquire::ItemDesc &Itm) override;
+   virtual void Fetch(pkgAcquire::ItemDesc &Itm) override;
+   virtual void Done(pkgAcquire::ItemDesc &Itm) override;
+   virtual void Fail(pkgAcquire::ItemDesc &Itm) override;
+   virtual void Start() override;
+   virtual void Stop() override;
 
-   bool Pulse(pkgAcquire *Owner);
+   bool Pulse(pkgAcquire *Owner) override;
 
    AcqTextStatus(unsigned int &ScreenWidth,unsigned int Quiet);
 };
