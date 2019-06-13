@@ -134,9 +134,7 @@ class pkgCache
 
    // Accessors
    PkgIterator FindPkg(const string &Name);
-#ifdef PKGCACHE_FINDPKG_ABI
-   PkgIterator FindPkg(string Name);
-#endif
+
    // CNC:2003-02-17 - A slightly changed FindPkg(), hacked for performance.
    Package *FindPackage(const char *Name);
    Header &Head() {return *HeaderP;}
