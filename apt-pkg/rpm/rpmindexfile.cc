@@ -403,7 +403,8 @@ bool rpmPkgListIndex::Merge(pkgCacheGenerator &Gen,OpProgress &Prog) const
       FileFd Rel(RelFile,FileFd::ReadOnly);
       if (_error->PendingError() == true)
 	 return false;
-      Parser.LoadReleaseInfo(File,Rel);
+      if (!Parser.LoadReleaseInfo(File,Rel))
+         return false;
    }
 
    return true;
