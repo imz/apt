@@ -54,6 +54,10 @@ bool StrToNum(const char *Str,unsigned long &Res,unsigned Len,unsigned Base = 0)
 bool Hex2Num(const string &Str,unsigned char *Num,unsigned int Length);
 bool TokSplitString(char Tok,char *Input,char **List,
 		    unsigned long ListMax);
+
+// split a given string by a char
+std::vector<std::string> VectorizeString(const std::string &haystack, char split);
+
 void ioprintf(ostream &out,const char *format,...) APT_FORMAT2;
 char *safe_snprintf(char *Buffer,char *End,const char *Format,...) APT_FORMAT3;
 bool CheckDomainList(const string &Host, const string &List);

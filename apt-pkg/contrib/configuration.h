@@ -27,8 +27,11 @@
 #ifndef PKGLIB_CONFIGURATION_H
 #define PKGLIB_CONFIGURATION_H
 
+#include <regex.h>
+
 #include <string>
 #include <iostream>
+#include <vector>
 
 using std::string;
 
@@ -70,6 +73,18 @@ class Configuration
    string Find(const string &Name,const char *Default = 0) const {return Find(Name.c_str(),Default);}
    string FindFile(const char *Name,const char *Default = 0) const;
    string FindDir(const char *Name,const char *Default = 0) const;
+
+   /** return a list of child options
+    *
+    * Options like Acquire::Languages are handled as lists which
+    * can be overridden and have a default. For the later two a comma
+    * separated list of values is supported.
+    *
+    * \param Name of the parent node
+    * \param Default list of values separated by commas */
+   std::vector<std::string> FindVector(const char *Name, const std::string &Default = "", bool Keys = false) const;
+   std::vector<std::string> FindVector(const std::string &Name, const std::string &Default = "", bool Keys = false) const { return FindVector(Name.c_str(), Default, Keys); }
+
    int FindI(const char *Name,int Default = 0) const;
    int FindI(const string &Name,int Default = 0) const {return FindI(Name.c_str(),Default);}
    bool FindB(const char *Name,bool Default = false) const;
@@ -99,6 +114,24 @@ class Configuration
    Configuration(const Item *Root);
    Configuration();
    ~Configuration();
+
+   /** \brief match a string against a configurable list of patterns */
+   class MatchAgainstConfig
+   {
+      std::vector<regex_t *> patterns;
+      void clearPatterns();
+
+   public:
+      explicit MatchAgainstConfig(char const *Config);
+      virtual ~MatchAgainstConfig();
+
+      /** \brief Returns \b true for a string matching one of the patterns */
+      bool Match(const char *str) const;
+      bool Match(const std::string &str) const { return Match(str.c_str()); }
+
+      /** \brief returns if the matcher setup was successful */
+      bool wasConstructedSuccessfully() const { return !patterns.empty(); }
+   };
 };
 
 extern Configuration *_config;

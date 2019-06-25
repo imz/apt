@@ -248,6 +248,30 @@ string Configuration::FindDir(const char *Name,const char *Default) const
    return Res;
 }
 									/*}}}*/
+// Configuration::FindVector - Find a vector of values			/*{{{*/
+// ---------------------------------------------------------------------
+/* Returns a vector of config values under the given item */
+vector<string> Configuration::FindVector(const char *Name, const std::string &Default, bool Keys) const
+{
+   vector<string> Vec;
+   const Item *Top = Lookup(Name);
+   if (Top == NULL)
+      return VectorizeString(Default, ',');
+
+   if (Top->Value.empty() == false)
+      return VectorizeString(Top->Value, ',');
+
+   Item *I = Top->Child;
+   while(I != NULL)
+   {
+      Vec.push_back(Keys ? I->Tag : I->Value);
+      I = I->Next;
+   }
+   if (Vec.empty() == true)
+      return VectorizeString(Default, ',');
+
+   return Vec;
+}
 // Configuration::FindI - Find an integer value				/*{{{*/
 // ---------------------------------------------------------------------
 /* */
@@ -790,5 +814,56 @@ bool ReadConfigDir(Configuration &Conf,const string &Dir,bool AsSectional,
    return true;
 }
 									/*}}}*/
+// MatchAgainstConfig Constructor					/*{{{*/
+Configuration::MatchAgainstConfig::MatchAgainstConfig(const char *Config)
+{
+   const std::vector<std::string> strings = _config->FindVector(Config);
+   for (auto s = strings.begin(); s != strings.end(); ++s)
+   {
+      regex_t *p = new regex_t;
+      if (regcomp(p, s->c_str(), REG_EXTENDED | REG_ICASE | REG_NOSUB) == 0)
+         patterns.push_back(p);
+      else
+      {
+         regfree(p);
+         delete p;
+         _error->Warning(_("Invalid regular expression '%s' in configuration "
+                         "option '%s' will be ignored."),
+                         s->c_str(), Config);
+         continue;
+      }
+   }
 
+   if (strings.empty())
+      patterns.push_back(NULL);
+}
+									/*}}}*/
+// MatchAgainstConfig Destructor					/*{{{*/
+Configuration::MatchAgainstConfig::~MatchAgainstConfig()
+{
+   clearPatterns();
+}
+
+void Configuration::MatchAgainstConfig::clearPatterns()
+{
+   for(auto p = patterns.begin(); p != patterns.end(); ++p)
+   {
+      if (*p == NULL) continue;
+      regfree(*p);
+      delete *p;
+   }
+
+   patterns.clear();
+}
+									/*}}}*/
+// MatchAgainstConfig::Match - returns true if a pattern matches	/*{{{*/
+bool Configuration::MatchAgainstConfig::Match(const char *str) const
+{
+   for(auto p = patterns.begin(); p != patterns.end(); ++p)
+      if (*p != NULL && regexec(*p, str, 0, 0, 0) == 0)
+         return true;
+
+   return false;
+}
+									/*}}}*/
 // vim:sts=3:sw=3

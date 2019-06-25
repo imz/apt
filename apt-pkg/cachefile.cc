@@ -20,6 +20,7 @@
 
 #include <apt-pkg/cachefile.h>
 #include <apt-pkg/error.h>
+#include <apt-pkg/fileutl.h>
 #include <apt-pkg/sourcelist.h>
 #include <apt-pkg/pkgcachegen.h>
 #include <apt-pkg/configuration.h>
@@ -36,7 +37,7 @@
 // CacheFile::CacheFile - Constructor					/*{{{*/
 // ---------------------------------------------------------------------
 /* */
-pkgCacheFile::pkgCacheFile() : Map(0), Cache(0), DCache(0), Policy(0)
+pkgCacheFile::pkgCacheFile() : Map(nullptr), Cache(nullptr), DCache(nullptr), SrcList(nullptr), Policy(nullptr)
 {
 }
 									/*}}}*/
@@ -45,11 +46,7 @@ pkgCacheFile::pkgCacheFile() : Map(0), Cache(0), DCache(0), Policy(0)
 /* */
 pkgCacheFile::~pkgCacheFile()
 {
-   delete DCache;
-   delete Policy;
-   delete Cache;
-   delete Map;
-   _system->UnLock(true);
+   Close();
 }
 									/*}}}*/
 // CacheFile::BuildCaches - Open and build the cache files		/*{{{*/
@@ -72,12 +69,11 @@ bool pkgCacheFile::BuildCaches(OpProgress &Progress,bool WithLock)
       return false;
 
    // Read the source list
-   pkgSourceList List;
-   if (List.ReadMainList() == false)
-      return _error->Error(_("The list of sources could not be read."));
+   if (!BuildSourceList(&Progress))
+      return false;
 
    // Read the caches
-   bool Res = pkgMakeStatusCache(List,Progress,&Map,!WithLock);
+   bool Res = pkgMakeStatusCache(*SrcList,Progress,&Map,!WithLock);
    Progress.Done();
    if (Res == false)
       return _error->Error(_("The package lists or status file could not be parsed or opened."));
@@ -92,6 +88,19 @@ bool pkgCacheFile::BuildCaches(OpProgress &Progress,bool WithLock)
    return true;
 }
 									/*}}}*/
+bool pkgCacheFile::BuildSourceList(OpProgress * /*Progress*/)
+{
+   std::unique_ptr<pkgSourceList> tmpSrcList;
+   if (SrcList != NULL)
+      return true;
+
+   tmpSrcList.reset(new pkgSourceList());
+   if (!tmpSrcList->ReadMainList())
+      return _error->Error(_("The list of sources could not be read."));
+   SrcList = tmpSrcList.release();
+
+   return true;
+}
 // CacheFile::Open - Open the cache files, creating if necessary	/*{{{*/
 // ---------------------------------------------------------------------
 /* */
@@ -130,14 +139,66 @@ void pkgCacheFile::Close()
    delete Policy;
    delete Cache;
    delete Map;
+   delete SrcList;
    _system->UnLock(true);
 
-   Map = 0;
-   DCache = 0;
-   Policy = 0;
-   Cache = 0;
+   Map = nullptr;
+   DCache = nullptr;
+   Policy = nullptr;
+   Cache = nullptr;
+   SrcList = nullptr;
 }
 									/*}}}*/
+// CacheFile::RemoveCaches - remove all cache files from disk		/*{{{*/
+// ---------------------------------------------------------------------
+/* */
+void pkgCacheFile::RemoveCaches()
+{
+   const std::string pkgcache = _config->FindFile("Dir::Cache::pkgcache");
+   const std::string srcpkgcache = _config->FindFile("Dir::Cache::srcpkgcache");
+
+   if ((!pkgcache.empty()) && RealFileExists(pkgcache))
+      RemoveFile("RemoveCaches", pkgcache);
+   if ((!srcpkgcache.empty()) && RealFileExists(srcpkgcache))
+      RemoveFile("RemoveCaches", srcpkgcache);
+   if (!pkgcache.empty())
+   {
+      std::string cachedir = flNotFile(pkgcache);
+      std::string cachefile = flNotDir(pkgcache);
+
+      if ((!cachedir.empty()) && (!cachefile.empty()) && DirectoryExists(cachedir))
+      {
+         cachefile.append(".");
+         auto caches = GetListOfFilesInDir(cachedir, false);
+         for (auto file = caches.begin(); file != caches.end(); ++file)
+         {
+            std::string nuke = flNotDir(*file);
+            if (strncmp(cachefile.c_str(), nuke.c_str(), cachefile.length()) != 0)
+               continue;
+            RemoveFile("RemoveCaches", *file);
+         }
+      }
+   }
+
+   if (srcpkgcache.empty())
+      return;
+
+   std::string cachedir = flNotFile(srcpkgcache);
+   std::string cachefile = flNotDir(srcpkgcache);
+   if (cachedir.empty() || cachefile.empty() || (!DirectoryExists(cachedir)))
+      return;
+
+   cachefile.append(".");
+   auto caches = GetListOfFilesInDir(cachedir, false);
+   for (auto file = caches.begin(); file != caches.end(); ++file)
+   {
+      std::string nuke = flNotDir(*file);
+      if (strncmp(cachefile.c_str(), nuke.c_str(), cachefile.length()) != 0)
+         continue;
+      RemoveFile("RemoveCaches", *file);
+   }
+}
+
 pkgCache *CacheFile::SortCache = 0;
 
 CacheFile::CacheFile(std::ostream &c1out)

@@ -39,6 +39,9 @@ Dir::Bin "";
 Dir::Bin::methods "[^"]*";
 Dir::Bin::scripts "[^"]*";
 Dir::Bin::rpm "/bin/rpm";
+Dir::Ignore-Files-Silently "";
+Dir::Ignore-Files-Silently:: "~\$";(
+Dir::Ignore-Files-Silently:: "\\\.[[:alnum:]]+(-\[a-z\]\+)?\$";)*
 Dir::Locale "/usr/share/locale";
 Acquire "";
 Acquire::ComprExtension "\.bz2";
