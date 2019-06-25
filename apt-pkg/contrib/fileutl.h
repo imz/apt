@@ -21,6 +21,7 @@
 #define PKGLIB_FILEUTL_H
 
 #include <string>
+#include <vector>
 
 using std::string;
 
@@ -79,8 +80,19 @@ class FileFd
 };
 
 bool CopyFile(FileFd &From,FileFd &To);
+bool RemoveFile(const char * const Function, const std::string &FileName);
+bool RemoveFileAt(const char * const Function, const int dirfd, const std::string &FileName);
 int GetLock(const string &File,bool Errors = true);
 bool FileExists(const string &File);
+bool RealFileExists(const std::string &File);
+bool DirectoryExists(const std::string &Path);
+
+std::vector<std::string> GetListOfFilesInDir(const std::string &Dir, const std::string &Ext,
+					bool SortList, bool AllowNoExt = false);
+std::vector<std::string> GetListOfFilesInDir(const std::string &Dir, const std::vector<std::string> &Ext,
+					bool SortList);
+std::vector<std::string> GetListOfFilesInDir(const std::string &Dir, bool SortList);
+
 string SafeGetCWD();
 void SetCloseExec(int Fd,bool Close);
 void SetNonBlock(int Fd,bool Block);
