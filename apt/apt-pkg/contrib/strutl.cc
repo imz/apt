@@ -883,6 +883,29 @@ bool TokSplitString(char Tok,char *Input,char **List,
    return true;
 }
 									/*}}}*/
+// VectorizeString - Split a string up into a vector of strings		/*{{{*/
+// ---------------------------------------------------------------------
+/* This can be used to split a given string up into a vector, so the
+   propose is the same as in the method above and this one is a bit slower
+   also, but the advantage is that we have an iteratable vector */
+vector<string> VectorizeString(const string &haystack, char split)
+{
+   vector<string> exploded;
+
+   if (haystack.empty())
+      return exploded;
+
+   auto start = haystack.begin();
+   auto end = start;
+   do {
+      for (; end != haystack.end() && *end != split; ++end);
+      exploded.push_back(string(start, end));
+      start = end + 1;
+   } while (end != haystack.end() && (++end) != haystack.end());
+
+   return exploded;
+}
+									/*}}}*/
 // RegexChoice - Simple regex list/list matcher				/*{{{*/
 // ---------------------------------------------------------------------
 /* */
