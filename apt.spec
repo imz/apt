@@ -367,6 +367,11 @@ popd
 - Fixed dynamic memory allocation leak (Closes: #37481).
 - Fixed apt-cdrom, now it properly copies release information (Closes: #37531).
 
+* Mon Jul 22 2019 Aleksei Nikiforov <darktemplar@altlinux.org> 0.5.15lorg2-alt71
+- Introduced new function ListUpdate for improved packagekit support.
+  (Note that the APT::Get::Archive-Cleanup configuration option has no longer
+  any effect after this change.)
+
 * Wed Jul 17 2019 Andrew Savchenko <bircoph@altlinux.org> 0.5.15lorg2-alt69
 - Add E2K arch support.
 
