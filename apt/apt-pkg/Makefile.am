@@ -103,6 +103,8 @@ libapt_pkg_la_SOURCES = \
 	srcrecords.h \
 	tagfile.cc \
 	tagfile.h \
+	update.cc \
+	update.h \
 	version.cc \
 	version.h \
 	versionmatch.cc \

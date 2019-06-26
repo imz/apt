@@ -42,6 +42,7 @@
 #include <apt-pkg/version.h>
 #include <apt-pkg/cachefile.h>
 #include <apt-pkg/sptr.h>
+#include <apt-pkg/update.h>
 #include <apt-pkg/versionmatch.h>
 
 #include <apti18n.h>
@@ -1026,18 +1027,6 @@ pkgSrcRecords::Parser *FindSrc(const char *Name,pkgRecords &Recs,
 // DoUpdate - Update the package lists					/*{{{*/
 // ---------------------------------------------------------------------
 /* */
-
-// CNC:2004-04-19
-class UpdateLogCleaner : public pkgArchiveCleaner
-{
-   protected:
-   virtual void Erase(const char *File,string Pkg,string Ver,struct stat &St) 
-   {
-      c1out << "Del " << Pkg << " " << Ver << " [" << SizeToStr(St.st_size) << "B]" << endl;
-      unlink(File);      
-   };
-};
-
 bool DoUpdate(CommandLine &CmdL)
 {
    if (CheckHelp(CmdL) == true)
@@ -1068,106 +1057,35 @@ bool DoUpdate(CommandLine &CmdL)
    else if (List.ReadMainList() == false)
       return false;
 
-   // Lock the list directory
-   FileFd Lock;
-   if (_config->FindB("Debug::NoLocking",false) == false)
-   {
-      Lock.Fd(GetLock(_config->FindDir("Dir::State::Lists") + "lock"));
-      if (_error->PendingError() == true)
-	 return _error->Error(_("Unable to lock the list directory"));
-   }
-
-// CNC:2003-03-19
-#ifdef WITH_LUA
-   _lua->SetDepCache(*GCache);
-   _lua->RunScripts("Scripts::AptGet::Update::Pre");
-   _lua->ResetCaches();
-#endif
-   
    // Create the download object
    AcqTextStatus Stat(ScreenWidth,_config->FindI("quiet",0));
-   pkgAcquire Fetcher(&Stat);
 
-   // CNC:2002-07-03
-   bool Failed = false;
-   // Populate it with release file URIs
-   if (List.GetReleases(&Fetcher) == false)
-      return false;
-   if (_config->FindB("APT::Get::Print-URIs") == false)
-   {
-      Fetcher.Run();
-      for (pkgAcquire::ItemIterator I = Fetcher.ItemsBegin(); I != Fetcher.ItemsEnd(); I++)
-      {
-	 if ((*I)->Status == pkgAcquire::Item::StatDone)
-	    continue;
-	 (*I)->Finished();
-	 Failed = true;
-      }
-      if (Failed == true)
-	 _error->Warning(_("Release files for some repositories could not be retrieved or authenticated. Such repositories are being ignored."));
-   }
-   
-   // Populate it with the source selection
-   if (List.GetIndexes(&Fetcher) == false)
-	 return false;
-   
    // Just print out the uris an exit if the --print-uris flag was used
-   if (_config->FindB("APT::Get::Print-URIs") == true)
+   if (_config->FindB("APT::Get::Print-URIs"))
    {
+      pkgAcquire Fetcher(&Stat);
+      // Populate it with release file URIs
+      if (List.GetReleases(&Fetcher) == false)
+         return false;
+      // Populate it with the source selection
+      if (List.GetIndexes(&Fetcher) == false)
+       return false;
+
       pkgAcquire::UriIterator I = Fetcher.UriBegin();
       for (; I != Fetcher.UriEnd(); I++)
-	 cout << '\'' << I->URI << "' " << flNotDir(I->Owner->DestFile) << ' ' << 
-	       I->Owner->FileSize << ' ' << I->Owner->MD5Sum() << endl;
+         cout << '\'' << I->URI << "' " << flNotDir(I->Owner->DestFile) << ' '
+              << I->Owner->FileSize << ' ' << I->Owner->MD5Sum() << endl;
+
       return true;
    }
-   
-   // Run it
-   if (Fetcher.Run() == pkgAcquire::Failed)
+
+   if (!ListUpdate(Stat, List, *GCache))
       return false;
-
-   for (pkgAcquire::ItemIterator I = Fetcher.ItemsBegin(); I != Fetcher.ItemsEnd(); I++)
-   {
-      if ((*I)->Status == pkgAcquire::Item::StatDone)
-	 continue;
-
-      (*I)->Finished();
-      
-      fprintf(stderr,_("Failed to fetch %s  %s\n"),(*I)->DescURI().c_str(),
-	      (*I)->ErrorText.c_str());
-      Failed = true;
-   }
-   
-   // Clean out any old list files
-   if (_config->FindB("APT::Get::List-Cleanup",true) == true)
-   {
-      if (Fetcher.Clean(_config->FindDir("Dir::State::lists")) == false ||
-	  Fetcher.Clean(_config->FindDir("Dir::State::lists") + "partial/") == false)
-	 return false;
-   }
 
    {
       AutoReOpenCache CacheGuard(GCache);
    }
 
-// CNC:2003-03-19
-#ifdef WITH_LUA
-   _lua->SetDepCache(*GCache);
-   _lua->RunScripts("Scripts::AptGet::Update::Post");
-   _lua->ResetCaches();
-#endif
-
-   // CNC:2004-04-19
-   if (Failed == false && _config->FindB("APT::Get::Archive-Cleanup",false) == true)
-   {
-      UpdateLogCleaner Cleaner;
-      Cleaner.Go(_config->FindDir("Dir::Cache::archives"), *GCache);
-      Cleaner.Go(_config->FindDir("Dir::Cache::archives") + "partial/",
-	         *GCache);
-   }
-   
-   if (Failed == true)
-      return _error->Error(_("Some index files failed to download, they have been ignored, or old ones used instead."));
-   
    return true;
 }
 									/*}}}*/
