@@ -32,7 +32,7 @@ class RSHConn
 
    // Raw connection IO
    bool WriteMsg(string &Text,bool Sync,const char *Fmt,...);
-   bool Connect(string Host, string User);
+   bool Connect(const string &Host, const string &User);
    bool Comp(URI Other) {return Other.Host == ServerName.Host && Other.Port == ServerName.Port;}
 
    // Connection control

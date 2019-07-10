@@ -42,7 +42,7 @@ using namespace std;
 
 namespace {
 
-uint32_t collect_autoinstalled_flag(pkgDepCache &Cache, const pkgCache::PkgIterator Pkg)
+uint32_t collect_autoinstalled_flag(pkgDepCache &Cache, const pkgCache::PkgIterator &Pkg)
 {
    return (Cache.getMarkAuto(Pkg) == pkgDepCache::AutoMarkFlag::Auto) ? 1 : 0;
 }
@@ -100,7 +100,7 @@ pkgRPMPM::~pkgRPMPM()
 // RPMPM::Install - Install a package					/*{{{*/
 // ---------------------------------------------------------------------
 /* Add an install operation to the sequence list */
-bool pkgRPMPM::Install(PkgIterator Pkg,const string File)
+bool pkgRPMPM::Install(PkgIterator Pkg, const string &File)
 {
    if (File.empty() == true || Pkg.end() == true)
       return _error->Error(_("Internal Error, No file name for %s"),Pkg.Name());

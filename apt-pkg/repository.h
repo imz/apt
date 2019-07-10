@@ -35,17 +35,17 @@ class pkgRepository
    bool Acquire;
 
    // LORG:2006-02-21 make these methods virtual
-   virtual bool ParseRelease(string File);
+   virtual bool ParseRelease(const string &File);
    virtual bool HasRelease() const { return GotRelease; }
 
    virtual bool IsAuthenticated() const { return !FingerPrintList.empty(); }
-   virtual bool FindChecksums(string URI,decltype(Checksum::Size) &Size, string &MD5) const;
+   virtual bool FindChecksums(const string &URI,decltype(Checksum::Size) &Size, string &MD5) const;
    // LORG:2006-02-23
    virtual string GetCheckMethod() const {return CheckMethod;}
-   virtual string GetComprMethod(const string URI) const {return "bz2";}
+   virtual string GetComprMethod(const string &URI) const {return "bz2";}
 
-   pkgRepository(const string URI,const string Dist, const pkgSourceList::Vendor * const Vendor,
-		 const string RootURI)
+   pkgRepository(const string &URI,const string &Dist, const pkgSourceList::Vendor * const Vendor,
+		 const string &RootURI)
       : GotRelease(0), URI(URI), Dist(Dist), RootURI(RootURI),
 	Acquire(1)
    {
