@@ -220,7 +220,7 @@ void pkgAcquire::Dequeue(Item *Itm)
 /* The string returned depends on the configuration settings and the
    method parameters. Given something like http://foo.org/bar it can
    return http://foo.org or http */
-string pkgAcquire::QueueName(string Uri,MethodConfig const *&Config)
+string pkgAcquire::QueueName(const string &Uri,MethodConfig const *&Config)
 {
    URI U(Uri);
 
@@ -241,7 +241,7 @@ string pkgAcquire::QueueName(string Uri,MethodConfig const *&Config)
 /* This locates the configuration structure for an access method. If
    a config structure cannot be found a Worker will be created to
    retrieve it */
-pkgAcquire::MethodConfig *pkgAcquire::GetConfig(string Access)
+pkgAcquire::MethodConfig *pkgAcquire::GetConfig(const string &Access)
 {
    // Search for an existing config
    MethodConfig *Conf;
@@ -403,7 +403,7 @@ pkgAcquire::Worker *pkgAcquire::WorkerStep(Worker *I)
 // ---------------------------------------------------------------------
 /* This is a bit simplistic, it looks at every file in the dir and sees
    if it is part of the download set. */
-bool pkgAcquire::Clean(string Dir)
+bool pkgAcquire::Clean(const string &Dir)
 {
    DIR *D = opendir(Dir.c_str());
    if (D == 0)
@@ -518,7 +518,7 @@ pkgAcquire::MethodConfig::MethodConfig()
 // Queue::Queue - Constructor						/*{{{*/
 // ---------------------------------------------------------------------
 /* */
-pkgAcquire::Queue::Queue(string Name,pkgAcquire *Owner) : Name(Name),
+pkgAcquire::Queue::Queue(const string &Name,pkgAcquire *Owner) : Name(Name),
             Owner(Owner)
 {
    Items = 0;
@@ -647,7 +647,7 @@ bool pkgAcquire::Queue::Shutdown(bool Final)
 // Queue::FindItem - Find a URI in the item list			/*{{{*/
 // ---------------------------------------------------------------------
 /* */
-pkgAcquire::Queue::QItem *pkgAcquire::Queue::FindItem(string URI,pkgAcquire::Worker *Owner)
+pkgAcquire::Queue::QItem *pkgAcquire::Queue::FindItem(const string &URI,pkgAcquire::Worker *Owner)
 {
    for (QItem *I = Items; I != 0; I = I->Next)
       if (I->URI == URI && I->Worker == Owner)
@@ -880,7 +880,7 @@ void pkgAcquireStatus::Fetched(unsigned long Size,unsigned long Resume)
 // AcquireStatus::Authenticate - Called to authenticate			/*{{{*/
 // ---------------------------------------------------------------------
 /* This is used to fetch a username and password from the user */
-bool pkgAcquireStatus::Authenticate(string Desc,string &User,string &Pass)
+bool pkgAcquireStatus::Authenticate(const string &Desc,string &User,string &Pass)
 {
    /* The default behavior for all clients is to refuse to authenticate
       interactively; this preserves backwards compatibility. */

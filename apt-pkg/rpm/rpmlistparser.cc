@@ -448,7 +448,7 @@ unsigned long rpmListParser::Flags()
 // This is a slightly complex operation. It must take a package, and
 // move every version to new packages, named accordingly to
 // Allow-Duplicated rules.
-void rpmListParser::VirtualizePackage(string Name)
+void rpmListParser::VirtualizePackage(const string &Name)
 {
    pkgCache::PkgIterator FromPkgI = Owner->GetCache().FindPkg(Name);
 

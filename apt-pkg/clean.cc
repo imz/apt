@@ -25,7 +25,7 @@
 // ---------------------------------------------------------------------
 /* Scan the directory for files to erase, we check the version information
    against our database to see if it is interesting */
-bool pkgArchiveCleaner::Go(string Dir,pkgCache &Cache)
+bool pkgArchiveCleaner::Go(const string &Dir,pkgCache &Cache)
 {
    bool CleanInstalled = _config->FindB("APT::Clean-Installed",true);
    string MyArch = _config->Find("APT::Architecture");

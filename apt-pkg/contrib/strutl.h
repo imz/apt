@@ -39,36 +39,36 @@ char *_strstrip(char *String);
 char *_strtabexpand(char *String,size_t Len);
 bool ParseQuoteWord(const char *&String,string &Res);
 bool ParseCWord(const char *&String,string &Res);
-string QuoteString(string Str,const char *Bad);
-string DeQuoteString(string Str);
+string QuoteString(const string &Str,const char *Bad);
+string DeQuoteString(const string &Str);
 string SizeToStr(double Bytes);
 string TimeToStr(unsigned long Sec);
-string Base64Encode(string Str);
+string Base64Encode(const string &Str);
 string URItoFileName(string URI);
 string TimeRFC1123(time_t Date);
-bool StrToTime(string Val,time_t &Result);
-string LookupTag(string Message,const char *Tag,const char *Default = 0);
-int StringToBool(string Text,int Default = -1);
+bool StrToTime(const string &Val,time_t &Result);
+string LookupTag(const string &Message,const char *Tag,const char *Default = 0);
+int StringToBool(const string &Text,int Default = -1);
 bool ReadMessages(int Fd, vector<string> &List);
 bool StrToNum(const char *Str,unsigned long &Res,unsigned Len,unsigned Base = 0);
-bool Hex2Num(string Str,unsigned char *Num,unsigned int Length);
+bool Hex2Num(const string &Str,unsigned char *Num,unsigned int Length);
 bool TokSplitString(char Tok,char *Input,char **List,
 		    unsigned long ListMax);
 void ioprintf(ostream &out,const char *format,...) APT_FORMAT2;
 char *safe_snprintf(char *Buffer,char *End,const char *Format,...) APT_FORMAT3;
-bool CheckDomainList(string Host,string List);
+bool CheckDomainList(const string &Host, const string &List);
 
 #define APT_MKSTRCMP(name,func) \
 inline int name(const char *A,const char *AEnd,const char *B) {return func(A,AEnd,B,B+strlen(B));} \
-inline int name(string A,const char *B) {return func(A.c_str(),A.c_str()+A.length(),B,B+strlen(B));} \
-inline int name(string A,string B) {return func(A.c_str(),A.c_str()+A.length(),B.c_str(),B.c_str()+B.length());} \
-inline int name(string A,const char *B,const char *BEnd) {return func(A.c_str(),A.c_str()+A.length(),B,BEnd);}
+inline int name(const string &A,const char *B) {return func(A.c_str(),A.c_str()+A.length(),B,B+strlen(B));} \
+inline int name(const string &A, const string &B) {return func(A.c_str(),A.c_str()+A.length(),B.c_str(),B.c_str()+B.length());} \
+inline int name(const string &A,const char *B,const char *BEnd) {return func(A.c_str(),A.c_str()+A.length(),B,BEnd);}
 
 #define APT_MKSTRCMP2(name,func) \
 inline int name(const char *A,const char *AEnd,const char *B) {return func(A,AEnd,B,B+strlen(B));} \
-inline int name(string A,const char *B) {return func(A.begin(),A.end(),B,B+strlen(B));} \
-inline int name(string A,string B) {return func(A.begin(),A.end(),B.begin(),B.end());} \
-inline int name(string A,const char *B,const char *BEnd) {return func(A.begin(),A.end(),B,BEnd);}
+inline int name(const string &A,const char *B) {return func(A.begin(),A.end(),B,B+strlen(B));} \
+inline int name(const string &A, const string &B) {return func(A.begin(),A.end(),B.begin(),B.end());} \
+inline int name(const string &A,const char *B,const char *BEnd) {return func(A.begin(),A.end(),B,BEnd);}
 
 int stringcmp(const char *A,const char *AEnd,const char *B,const char *BEnd);
 int stringcasecmp(const char *A,const char *AEnd,const char *B,const char *BEnd);
@@ -97,7 +97,7 @@ inline const char *DeNull(const char *s) {return (s == 0?"(null)":s);}
 
 class URI
 {
-   void CopyFrom(string From);
+   void CopyFrom(const string &From);
 
    public:
 
@@ -109,11 +109,11 @@ class URI
    unsigned int Port;
 
    operator string();
-   inline void operator =(string From) {CopyFrom(From);}
+   inline void operator =(const string &From) {CopyFrom(From);}
    inline bool empty() {return Access.empty();}
-   static string SiteOnly(string URI);
+   static string SiteOnly(const string &URI);
 
-   URI(string Path) {CopyFrom(Path);}
+   URI(const string &Path) {CopyFrom(Path);}
    URI() : Port(0) {}
 };
 
@@ -122,8 +122,8 @@ struct SubstVar
    const char *Subst;
    const string *Contents;
 };
-string SubstVar(string Str,const struct SubstVar *Vars);
-string SubstVar(string Str,string Subst,string Contents);
+string SubstVar(const string &Str,const struct SubstVar *Vars);
+string SubstVar(const string &Str, const string &Subst, const string &Contents);
 
 struct RxChoiceList
 {

@@ -55,7 +55,7 @@ class GPGMethod : public pkgAcqMethod
  * Ie: the original file cat'enated with the signatures generated
  * through gpg -s --armor --detach <yourfile>
  */
-bool extractSignedFile(string file, string targetPrefix, string targetFile,
+bool extractSignedFile(const string &file, const string &targetPrefix, const string &targetFile,
 		       bool &oldStyle, int &sigCount)
 {
    FILE *fin;
@@ -299,7 +299,7 @@ const char *getFileSigner(const char *file, const char *sigfile,
 }
 
 
-bool makeTmpDir(string dir, string &path)
+bool makeTmpDir(const string &dir, string &path)
 {
    path = dir + "/apt-gpg.XXXXXX";
    /*
@@ -313,7 +313,7 @@ bool makeTmpDir(string dir, string &path)
 }
 
 
-void removeTmpDir(string path, int sigCount)
+void removeTmpDir(const string &path, int sigCount)
 {
    while (sigCount > 0)
    {

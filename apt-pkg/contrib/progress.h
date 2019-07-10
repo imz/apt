@@ -54,9 +54,9 @@ class OpProgress
 
    void Progress(unsigned long Current);
    void SubProgress(unsigned long SubTotal);
-   void SubProgress(unsigned long SubTotal,string Op);
+   void SubProgress(unsigned long SubTotal,const string &Op);
    void OverallProgress(unsigned long Current,unsigned long Total,
-			unsigned long Size,string Op);
+			unsigned long Size,const string &Op);
    virtual void Done() {}
 
    OpProgress();
@@ -80,7 +80,7 @@ class OpTextProgress : public OpProgress
 
    OpTextProgress(bool NoUpdate = false) : NoUpdate(NoUpdate),
                 NoDisplay(false), LastLen(0) {}
-   OpTextProgress(Configuration &Config);
+   OpTextProgress(const Configuration &Config);
    virtual ~OpTextProgress() {Done();}
 };
 

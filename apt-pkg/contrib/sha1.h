@@ -33,11 +33,11 @@ class SHA1SumValue
    inline void Value(unsigned char S[20])
          {for (int I = 0; I != sizeof(Sum); I++) S[I] = Sum[I];}
    inline operator string() const {return Value();}
-   bool Set(string Str);
+   bool Set(const string &Str);
    inline void Set(unsigned char S[20])
          {for (int I = 0; I != sizeof(Sum); I++) Sum[I] = S[I];}
 
-   SHA1SumValue(string Str);
+   SHA1SumValue(const string &Str);
    SHA1SumValue();
 };
 

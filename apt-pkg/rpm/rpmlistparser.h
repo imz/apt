@@ -70,7 +70,7 @@ class rpmListParser : public pkgCacheGenerator::ListParser
 
    bool LoadReleaseInfo(pkgCache::PkgFileIterator FileI,FileFd &File);
 
-   void VirtualizePackage(string Name);
+   void VirtualizePackage(const string &Name);
 
    rpmListParser(RPMHandler *Handler);
    ~rpmListParser();

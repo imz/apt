@@ -218,7 +218,7 @@ bool DropBinaryArch(vector<string> &List)
 /* Paths are scored based on how close they come to what I consider
    normal. That is ones that have 'dist' 'stable' 'testing' will score
    higher than ones without. */
-int Score(string Path)
+int Score(const string &Path)
 {
    int Res = 0;
 #ifdef HAVE_RPM
@@ -312,7 +312,7 @@ bool DropRepeats(vector<string> &List,const char *Name)
 // ---------------------------------------------------------------------
 /* This takes the list of source list expressed entires and collects
    similar ones to form a single entry for each dist */
-void ReduceSourcelist(string CD,vector<string> &List)
+void ReduceSourcelist(const string &CD,vector<string> &List)
 {
    sort(List.begin(),List.end());
 
@@ -410,7 +410,7 @@ bool WriteDatabase(Configuration &Cnf)
    appends the new CDROM entires just after the first block of comments.
    This places them first in the file. It also removes any old entries
    that were the same. */
-bool WriteSourceList(string Name,vector<string> &List,bool Source)
+bool WriteSourceList(const string &Name,vector<string> &List,bool Source)
 {
    if (List.size() == 0)
       return true;

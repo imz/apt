@@ -181,7 +181,7 @@ static void SHA1Transform(uint32_t state[5],uint8_t const buffer[64])
 // SHA1SumValue::SHA1SumValue - Constructs the summation from a string  /*{{{*/
 // ---------------------------------------------------------------------
 /* The string form of a SHA1 is a 40 character hex number */
-SHA1SumValue::SHA1SumValue(string Str)
+SHA1SumValue::SHA1SumValue(const string &Str)
 {
    memset(Sum,0,sizeof(Sum));
    Set(Str);
@@ -200,7 +200,7 @@ SHA1SumValue::SHA1SumValue()
 // SHA1SumValue::Set - Set the sum from a string                        /*{{{*/
 // ---------------------------------------------------------------------
 /* Converts the hex string into a set of chars */
-bool SHA1SumValue::Set(string Str)
+bool SHA1SumValue::Set(const string &Str)
 {
    return Hex2Num(Str,Sum,sizeof(Sum));
 }

@@ -60,12 +60,12 @@ class pkgVersionMatch
 
    enum MatchType {None = 0,Version,Release,Origin} Type;
 
-   bool MatchVer(const char *A,string B,bool Prefix);
+   bool MatchVer(const char *A,const string &B,bool Prefix);
    bool FileMatch(pkgCache::PkgFileIterator File);
    pkgCache::VerIterator Find(pkgCache::PkgIterator Pkg);
 
    // CNC:2003-11-05
-   pkgVersionMatch(string Data,MatchType Type,int Op=pkgCache::Dep::Equals);
+   pkgVersionMatch(const string &Data,MatchType Type,int Op=pkgCache::Dep::Equals);
    std::list<pkgCache::VerIterator> FindAll(pkgCache::PkgIterator Pkg);
 };
 

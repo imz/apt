@@ -15,11 +15,11 @@ class pkgArchiveCleaner
 {
    protected:
 
-   virtual void Erase(const char * /*File*/,string /*Pkg*/,string /*Ver*/,struct stat & /*St*/) {}
+   virtual void Erase(const char * /*File*/, const string &/*Pkg*/, const string &/*Ver*/,struct stat & /*St*/) {}
 
    public:
 
-   bool Go(string Dir,pkgCache &Cache);
+   bool Go(const string &Dir,pkgCache &Cache);
 };
 
 #endif

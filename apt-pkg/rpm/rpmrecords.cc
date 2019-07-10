@@ -26,7 +26,7 @@
 // RecordParser::rpmRecordParser - Constructor				/*{{{*/
 // ---------------------------------------------------------------------
 /* */
-rpmRecordParser::rpmRecordParser(string File, pkgCache &Cache)
+rpmRecordParser::rpmRecordParser(const string &File, pkgCache &Cache)
    : Handler(0), Buffer(0), BufSize(0), BufUsed(0)
 {
    if (File == RPMDBHandler::DataPath(false)) {

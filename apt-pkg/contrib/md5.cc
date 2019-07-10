@@ -168,7 +168,7 @@ static void MD5Transform(uint32_t buf[4], uint32_t const in[16])
 // MD5SumValue::MD5SumValue - Constructs the summation from a string	/*{{{*/
 // ---------------------------------------------------------------------
 /* The string form of a MD5 is a 32 character hex number */
-MD5SumValue::MD5SumValue(string Str)
+MD5SumValue::MD5SumValue(const string &Str)
 {
    memset(Sum,0,sizeof(Sum));
    Set(Str);
@@ -185,7 +185,7 @@ MD5SumValue::MD5SumValue()
 // MD5SumValue::Set - Set the sum from a string				/*{{{*/
 // ---------------------------------------------------------------------
 /* Converts the hex string into a set of chars */
-bool MD5SumValue::Set(string Str)
+bool MD5SumValue::Set(const string &Str)
 {
    return Hex2Num(Str,Sum,sizeof(Sum));
 }

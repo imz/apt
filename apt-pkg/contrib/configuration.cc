@@ -49,14 +49,14 @@ Configuration::Configuration(const Item *Root) : Root((Item *)Root), ToFree(fals
 };
 
 // CNC:2003-02-23 - Copy constructor.
-Configuration::Configuration(Configuration &Conf) : ToFree(true)
+Configuration::Configuration(const Configuration &Conf) : ToFree(true)
 {
    Root = new Item;
    if (Conf.Root->Child)
       CopyChildren(Conf.Root, Root);
 }
 
-void Configuration::CopyChildren(Item *From, Item *To)
+void Configuration::CopyChildren(const Item *From, Item *To)
 {
    Item *Parent = To;
    To->Child = new Item;
@@ -322,7 +322,7 @@ string Configuration::FindAny(const char *Name,const char *Default) const
 // Configuration::CndSet - Conditinal Set a value			/*{{{*/
 // ---------------------------------------------------------------------
 /* This will not overwrite */
-void Configuration::CndSet(const char *Name,string Value)
+void Configuration::CndSet(const char *Name, const string &Value)
 {
    Item *Itm = Lookup(Name,true);
    if (Itm == 0)
@@ -349,7 +349,7 @@ void Configuration::CndSet(const char *Name,int Value)
 // Configuration::Set - Set a value					/*{{{*/
 // ---------------------------------------------------------------------
 /* */
-void Configuration::Set(const char *Name,string Value)
+void Configuration::Set(const char *Name, const string &Value)
 {
    Item *Itm = Lookup(Name,true);
    if (Itm == 0)
@@ -373,7 +373,7 @@ void Configuration::Set(const char *Name,int Value)
 // Configuration::Clear - Clear an entire tree				/*{{{*/
 // ---------------------------------------------------------------------
 /* */
-void Configuration::Clear(string Name)
+void Configuration::Clear(const string &Name)
 {
    Item *Top = Lookup(Name.c_str(),false);
    if (Top == 0)
@@ -489,7 +489,7 @@ string Configuration::Item::FullTag(const Item *Stop) const
    sections like 'zone "foo.org" { .. };' This causes each section to be
    added in with a tag like "zone::foo.org" instead of being split
    tag/value. AsSectional enables Sectional parsing.*/
-bool ReadConfigFile(Configuration &Conf,string FName,bool AsSectional,
+bool ReadConfigFile(Configuration &Conf, const string &FName,bool AsSectional,
 		    unsigned Depth)
 {
    // Open the stream for reading
@@ -742,7 +742,7 @@ bool ReadConfigFile(Configuration &Conf,string FName,bool AsSectional,
 // ReadConfigDir - Read a directory of config files			/*{{{*/
 // ---------------------------------------------------------------------
 /* */
-bool ReadConfigDir(Configuration &Conf,string Dir,bool AsSectional,
+bool ReadConfigDir(Configuration &Conf,const string &Dir,bool AsSectional,
 		    unsigned Depth)
 {
    DIR *D = opendir(Dir.c_str());

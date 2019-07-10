@@ -268,7 +268,7 @@ bool AcqTextStatus::Pulse(pkgAcquire *Owner)
 // AcqTextStatus::MediaChange - Media need to be swapped		/*{{{*/
 // ---------------------------------------------------------------------
 /* Prompt for a media swap */
-bool AcqTextStatus::MediaChange(string Media,string Drive)
+bool AcqTextStatus::MediaChange(const string &Media,const string &Drive)
 {
    if (Quiet <= 0)
       cout << '\r' << BlankLine << '\r';
@@ -289,7 +289,7 @@ bool AcqTextStatus::MediaChange(string Media,string Drive)
 // AcqTextStatus::Authenticate - Authenticate the user			/*{{{*/
 // ---------------------------------------------------------------------
 /* Prompt for a username and password */
-bool AcqTextStatus::Authenticate(string Desc,string &User,string &Pass)
+bool AcqTextStatus::Authenticate(const string &Desc,string &User,string &Pass)
 {
    if (Quiet > 0)
       return false;
