@@ -19,15 +19,15 @@ class RPMIndexCopy
 {
    protected:
 
-   string RipComponent(string Path);
-   string RipDirectory(string Path);
-   string RipDistro(string Path);
+   string RipComponent(const string &Path);
+   string RipDirectory(const string &Path);
+   string RipDistro(const string &Path);
 
-   void ConvertToSourceList(string CD, string &Path);
+   void ConvertToSourceList(const string &CD, string &Path);
 
    public:
 
-   bool CopyPackages(string CDROM,string Name,vector<string> &List);
+   bool CopyPackages(const string &CDROM,const string &Name,vector<string> &List);
 };
 
 

@@ -37,12 +37,12 @@ vector<pkgRepository *> RepList;
 // rpmListIndex::Release* - Return the URI to the release file		/*{{{*/
 // ---------------------------------------------------------------------
 /* */
-inline string rpmListIndex::ReleaseFile(const string Type) const
+inline string rpmListIndex::ReleaseFile(const string &Type) const
 {
    return URItoFileName(ReleaseURI(Type));
 }
 
-string rpmListIndex::ReleaseURI(const string Type) const
+string rpmListIndex::ReleaseURI(const string &Type) const
 {
    RPMPackageData *rpmdata = RPMPackageData::Singleton();
    string Res;
@@ -74,7 +74,7 @@ string rpmListIndex::ReleaseURI(const string Type) const
 // rpmListIndex::ReleaseInfo - One liner describing the index URI	/*{{{*/
 // ---------------------------------------------------------------------
 /* */
-string rpmListIndex::ReleaseInfo(const string Type) const
+string rpmListIndex::ReleaseInfo(const string &Type) const
 {
    string Info = ::URI::SiteOnly(URI) + ' ';
    if (Dist[Dist.size() - 1] == '/')
@@ -115,7 +115,7 @@ bool rpmListIndex::GetReleases(pkgAcquire *Owner) const
 // rpmListIndex::Info - One liner describing the index URI		/*{{{*/
 // ---------------------------------------------------------------------
 /* */
-string rpmListIndex::Info(const string Type) const
+string rpmListIndex::Info(const string &Type) const
 {
    string Info = ::URI::SiteOnly(URI) + ' ';
    if (Dist[Dist.size() - 1] == '/')
@@ -133,14 +133,14 @@ string rpmListIndex::Info(const string Type) const
 // rpmListIndex::Index* - Return the URI to the index files		/*{{{*/
 // ---------------------------------------------------------------------
 /* */
-inline string rpmListIndex::IndexFile(const string Type) const
+inline string rpmListIndex::IndexFile(const string &Type) const
 {
    return _config->FindDir("Dir::State::lists") +
 	  URItoFileName(IndexURI(Type));
 }
 
 
-string rpmListIndex::IndexURI(const string Type) const
+string rpmListIndex::IndexURI(const string &Type) const
 {
    RPMPackageData *rpmdata = RPMPackageData::Singleton();
    string Res;
@@ -229,7 +229,7 @@ string rpmSrcListIndex::SourceInfo(pkgSrcRecords::Parser const &Record,
 									/*}}}*/
 // SrcListIndex::ArchiveURI - URI for the archive		        /*{{{*/
 // ---------------------------------------------------------------------
-string rpmSrcListIndex::ArchiveURI(const string File) const
+string rpmSrcListIndex::ArchiveURI(const string &File) const
 {
    RPMPackageData *rpmdata = RPMPackageData::Singleton();
    string Res;
@@ -313,7 +313,7 @@ string rpmPkgListIndex::ArchiveInfo(pkgCache::VerIterator Ver) const
 									/*}}}*/
 // PkgListIndex::ArchiveURI - URI for the archive		        /*{{{*/
 // ---------------------------------------------------------------------
-string rpmPkgListIndex::ArchiveURI(const string File) const
+string rpmPkgListIndex::ArchiveURI(const string &File) const
 {
    RPMPackageData *rpmdata = RPMPackageData::Singleton();
    string Res;
@@ -522,7 +522,7 @@ unsigned long rpmSrcDirIndex::Size() const
 									/*}}}*/
 // SinglePkgIndex::ArchiveURI - URI for the archive		        /*{{{*/
 // ---------------------------------------------------------------------
-string rpmSinglePkgIndex::ArchiveURI(const string File) const
+string rpmSinglePkgIndex::ArchiveURI(const string &File) const
 {
    return "file://"+
       flCombine(SafeGetCWD(),
@@ -531,7 +531,7 @@ string rpmSinglePkgIndex::ArchiveURI(const string File) const
 									/*}}}*/
 // SinglePkgIndex::ArchiveURI - URI for the archive		        /*{{{*/
 // ---------------------------------------------------------------------
-string rpmSingleSrcIndex::ArchiveURI(const string File) const
+string rpmSingleSrcIndex::ArchiveURI(const string &File) const
 {
    return "file://"+
       flCombine(SafeGetCWD(),
@@ -641,7 +641,7 @@ class rpmSLTypeGen : public pkgSourceList::Type
       Label = "Standard RPM source tree";
    }
 
-   pkgRepository *FindRepository(const string URI,const string Dist,
+   pkgRepository *FindRepository(const string &URI, const string &Dist,
 				 const pkgSourceList::Vendor *Vendor) const
    {
       for (vector<pkgRepository *>::const_iterator iter = RepList.begin();
@@ -657,7 +657,7 @@ class rpmSLTypeGen : public pkgSourceList::Type
       return NULL;
    }
 
-   pkgRepository *GetRepository(const string URI,const string Dist,
+   pkgRepository *GetRepository(const string &URI, const string &Dist,
 				const pkgSourceList::Vendor *Vendor) const
    {
       pkgRepository *Rep = FindRepository(URI,Dist,Vendor);

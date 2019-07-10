@@ -108,7 +108,7 @@ class RPMPackageData
    static RPMPackageData *Singleton();
 
    void SetVersion(const string &ID, unsigned long Offset,
-		   pkgCache::VerIterator &Version)
+		   const pkgCache::VerIterator &Version)
    {
       VerMap[Offset][ID] = Version;
    }

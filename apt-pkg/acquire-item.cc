@@ -170,7 +170,7 @@ void pkgAcquire::Item::BaseItem_Done(const string &Message,const unsigned long S
 // ---------------------------------------------------------------------
 /* This helper function is used by alot of item methods as thier final
    step */
-void pkgAcquire::Item::Rename(const string From, const string To)
+void pkgAcquire::Item::Rename(const string &From, const string &To)
 {
    if (rename(From.c_str(),To.c_str()) != 0)
    {
@@ -189,7 +189,7 @@ void pkgAcquire::Item::Rename(const string From, const string To)
    instantiated to fetch the revision file */
 // CNC:2002-07-03
 pkgAcqIndex::pkgAcqIndex(pkgAcquire * const Owner,const pkgRepository * const Repository,
-			 const string URI,const string URIDesc,const string ShortDesc) :
+			 const string &URI,const string &URIDesc,const string &ShortDesc) :
                       Item(Owner), RealURI(URI), Repository(Repository)
 {
    Decompression = false;
@@ -400,7 +400,7 @@ void pkgAcqIndex::DoneByWorker(const string &Message,
 /* The Release file is added to the queue */
 // CNC:2002-07-03
 pkgAcqIndexRel::pkgAcqIndexRel(pkgAcquire * const Owner,pkgRepository * const Repository,
-			       const string URI,const string URIDesc,const string ShortDesc,
+			       const string &URI,const string &URIDesc,const string &ShortDesc,
 			       const bool Master) :
                       Item(Owner), RealURI(URI), Master(Master),
 		      Repository(Repository)
@@ -988,8 +988,8 @@ void pkgAcqArchive::Finished()
 // AcqFile::pkgAcqFile - Constructor					/*{{{*/
 // ---------------------------------------------------------------------
 /* The file is added to the queue */
-pkgAcqFile::pkgAcqFile(pkgAcquire * const Owner,const string URI,const string MD5,
-		       const unsigned long Size,const string Dsc,const string ShortDesc,
+pkgAcqFile::pkgAcqFile(pkgAcquire * const Owner,const string &URI,const string &MD5,
+		       const unsigned long Size,const string &Dsc,const string &ShortDesc,
 		       const string &DestDir, const string &DestFilename) :
                        Item(Owner), ExpectMd5Hash(MD5)
 {
