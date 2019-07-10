@@ -19,7 +19,7 @@
 
 using namespace std;
 
-string RPMIndexCopy::RipComponent(string Path)
+string RPMIndexCopy::RipComponent(const string &Path)
 {
    const char *begin;
    const char *end;
@@ -33,18 +33,18 @@ string RPMIndexCopy::RipComponent(string Path)
 }
 
 
-string RPMIndexCopy::RipDistro(string Path)
+string RPMIndexCopy::RipDistro(const string &Path)
 {
    return string(Path, 0, Path.find("base")-1);
 }
 
 
-string RPMIndexCopy::RipDirectory(string Path)
+string RPMIndexCopy::RipDirectory(const string &Path)
 {
    return string(Path, 0, Path.rfind('/'));
 }
 
-bool RPMIndexCopy::CopyPackages(string CDROM,string Name,vector<string> &List)
+bool RPMIndexCopy::CopyPackages(const string &CDROM,const string &Name,vector<string> &List)
 {
    OpTextProgress Progress;
 
@@ -219,7 +219,7 @@ bool RPMIndexCopy::CopyPackages(string CDROM,string Name,vector<string> &List)
 
 
 
-void RPMIndexCopy::ConvertToSourceList(string CD, string &Path)
+void RPMIndexCopy::ConvertToSourceList(const string &CD, string &Path)
 {
    Path = string(Path, CD.length());
 

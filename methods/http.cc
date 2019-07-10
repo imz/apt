@@ -132,7 +132,7 @@ bool CircleBuf::Read(const std::unique_ptr<MethodFd> &Fd)
 // CircleBuf::Read - Put the string into the buffer			/*{{{*/
 // ---------------------------------------------------------------------
 /* This will hold the string in and fill the buffer with it as it empties */
-bool CircleBuf::Read(string Data)
+bool CircleBuf::Read(const string &Data)
 {
    OutQueue += Data;
    FillOut();
@@ -502,7 +502,7 @@ bool ServerState::RunData()
 // ServerState::HeaderLine - Process a header line			/*{{{*/
 // ---------------------------------------------------------------------
 /* */
-bool ServerState::HeaderLine(string Line)
+bool ServerState::HeaderLine(const string &Line)
 {
    if (Line.empty() == true)
       return true;
@@ -1113,7 +1113,7 @@ bool HttpMethod::Fetch(FetchItem *)
 // HttpMethod::Configuration - Handle a configuration message		/*{{{*/
 // ---------------------------------------------------------------------
 /* We stash the desired pipeline depth */
-bool HttpMethod::Configuration(string Message)
+bool HttpMethod::Configuration(const string &Message)
 {
    if (pkgAcqMethod::Configuration(Message) == false)
       return false;

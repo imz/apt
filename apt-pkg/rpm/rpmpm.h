@@ -31,7 +31,7 @@ class pkgRPMPM : public pkgPackageManager
       enum RPMOps {RPMInstall, RPMUpgrade, RPMErase};
       string File;
       PkgIterator Pkg;
-      Item(Ops Op,PkgIterator Pkg,string File = "")
+      Item(Ops Op,PkgIterator Pkg,const string &File = "")
 	 : Op(Op), File(File), Pkg(Pkg) {}
       Item() {}
 
@@ -43,7 +43,7 @@ class pkgRPMPM : public pkgPackageManager
    bool RunScriptsWithPkgs(const char *Cnf);
 
    // The Actuall installation implementation
-   virtual bool Install(PkgIterator Pkg,string File) override;
+   virtual bool Install(PkgIterator Pkg,const string &File) override;
    virtual bool Configure(PkgIterator Pkg) override;
    virtual bool Remove(PkgIterator Pkg,bool Purge = false) override;
 

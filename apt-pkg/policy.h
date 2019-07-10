@@ -65,8 +65,8 @@ class pkgPolicy : public pkgDepCache::Policy
    public:
 
    // Things for manipulating pins
-   void CreatePin(pkgVersionMatch::MatchType Type,string Pkg,
-		  string Data,signed short Priority);
+   void CreatePin(pkgVersionMatch::MatchType Type,const string &Pkg,
+		  const string &Data,signed short Priority);
    inline signed short GetPriority(pkgCache::PkgFileIterator const &File)
        {return PFPriority[File->ID];}
    signed short GetPriority(pkgCache::PkgIterator const &Pkg);

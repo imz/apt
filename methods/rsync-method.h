@@ -102,7 +102,7 @@ class RsyncMethod : public pkgAcqMethod
 
   protected:
    virtual bool Fetch(FetchItem *Itm) override;
-   virtual bool Configuration(string Message) override;
+   virtual bool Configuration(const string &Message) override;
 
    void Start(FetchResult &FRes)
 	  { URIStart(FRes); }

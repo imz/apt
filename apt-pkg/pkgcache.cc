@@ -161,7 +161,7 @@ bool pkgCache::ReMap()
 /* This is used to generate the hash entries for the HashTable. With my
    package list from bo this function gets 94% table usage on a 512 item
    table (480 used items) */
-unsigned long pkgCache::sHash(string Str) const
+unsigned long pkgCache::sHash(const string &Str) const
 {
    unsigned long Hash = 0;
    for (string::const_iterator I = Str.begin(); I != Str.end(); I++)

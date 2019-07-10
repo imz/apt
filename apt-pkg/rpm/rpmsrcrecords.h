@@ -49,7 +49,7 @@ public:
    virtual bool Files(vector<pkgSrcRecords::File> &F) override;
    virtual bool BuildDepends(vector<BuildDepRec> &BuildDeps, bool ArchOnly) override;
 
-   rpmSrcRecordParser(string File,pkgIndexFile const *Index);
+   rpmSrcRecordParser(const string &File,pkgIndexFile const *Index);
    ~rpmSrcRecordParser();
 };
 

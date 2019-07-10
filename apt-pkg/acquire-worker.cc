@@ -378,7 +378,7 @@ bool pkgAcquire::Worker::RunMessages()
 // ---------------------------------------------------------------------
 /* This parses the capabilities message and dumps it into the configuration
    structure. */
-bool pkgAcquire::Worker::Capabilities(string Message)
+bool pkgAcquire::Worker::Capabilities(const string &Message)
 {
    if (Config == 0)
       return true;
@@ -414,7 +414,7 @@ bool pkgAcquire::Worker::Capabilities(string Message)
 // Worker::MediaChange - Request a media change				/*{{{*/
 // ---------------------------------------------------------------------
 /* */
-bool pkgAcquire::Worker::MediaChange(string Message)
+bool pkgAcquire::Worker::MediaChange(const string &Message)
 {
    if (Log == 0 || Log->MediaChange(LookupTag(Message,"Media"),
 				    LookupTag(Message,"Drive")) == false)
@@ -440,7 +440,7 @@ bool pkgAcquire::Worker::MediaChange(string Message)
 // Worker::Authenticate - Request authentication       			/*{{{*/
 // ---------------------------------------------------------------------
 /* */
-bool pkgAcquire::Worker::Authenticate(string Message)
+bool pkgAcquire::Worker::Authenticate(const string &Message)
 {
    string User, Pass;
    if (Log == 0 || Log->Authenticate(LookupTag(Message,"Description"),

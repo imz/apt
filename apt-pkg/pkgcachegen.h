@@ -49,18 +49,18 @@ class pkgCacheGenerator
    bool FoundFileDeps;
 
    bool NewFileVer(pkgCache::VerIterator &Ver,ListParser &List);
-   unsigned long NewVersion(pkgCache::VerIterator &Ver,string VerStr,unsigned long Next);
+   unsigned long NewVersion(pkgCache::VerIterator &Ver,const string &VerStr,unsigned long Next);
 
    public:
 
    // CNC:2003-02-27 - We need this in rpmListParser.
-   bool NewPackage(pkgCache::PkgIterator &PkgI,string Pkg);
+   bool NewPackage(pkgCache::PkgIterator &PkgI,const string &Pkg);
 
    unsigned long WriteUniqString(const char *S,unsigned int Size);
-   inline unsigned long WriteUniqString(string S) {return WriteUniqString(S.c_str(),S.length());}
+   inline unsigned long WriteUniqString(const string &S) {return WriteUniqString(S.c_str(),S.length());}
 
    void DropProgress() {Progress = 0;}
-   bool SelectFile(string File,string Site,pkgIndexFile const &Index,
+   bool SelectFile(const string &File,const string &Site,pkgIndexFile const &Index,
 		   unsigned long Flags = 0);
    bool MergeList(ListParser &List,pkgCache::VerIterator *Ver = 0);
    inline pkgCache &GetCache() {return Cache;}
@@ -93,14 +93,14 @@ class pkgCacheGenerator::ListParser
    pkgCacheGenerator *Owner;
    friend class pkgCacheGenerator;
 
-   inline unsigned long WriteUniqString(string S) {return Owner->WriteUniqString(S);}
+   inline unsigned long WriteUniqString(const string &S) {return Owner->WriteUniqString(S);}
    inline unsigned long WriteUniqString(const char *S,unsigned int Size) {return Owner->WriteUniqString(S,Size);}
-   inline unsigned long WriteString(string S) {return Owner->Map.WriteString(S);}
+   inline unsigned long WriteString(const string &S) {return Owner->Map.WriteString(S);}
    inline unsigned long WriteString(const char *S,unsigned int Size) {return Owner->Map.WriteString(S,Size);}
-   bool NewDepends(pkgCache::VerIterator Ver,string Package,
-		   string Version,unsigned int Op,
+   bool NewDepends(pkgCache::VerIterator Ver, const string &Package,
+		   const string &Version,unsigned int Op,
 		   unsigned int Type);
-   bool NewProvides(pkgCache::VerIterator Ver,string Package,string Version);
+   bool NewProvides(pkgCache::VerIterator Ver,const string &Package, const string &Version);
 
    public:
 

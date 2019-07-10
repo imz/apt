@@ -79,7 +79,7 @@ void pkgSimulate::Describe(PkgIterator Pkg,ostream &out,bool Now)
 // Simulate::Install - Simulate unpacking of a package			/*{{{*/
 // ---------------------------------------------------------------------
 /* */
-bool pkgSimulate::Install(PkgIterator iPkg,string /*File*/)
+bool pkgSimulate::Install(PkgIterator iPkg,const string &/*File*/)
 {
    // Adapt the iterator
    PkgIterator Pkg = Sim.FindPkg(iPkg.Name());

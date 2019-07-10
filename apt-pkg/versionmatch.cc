@@ -27,7 +27,7 @@
 // ---------------------------------------------------------------------
 /* Break up the data string according to the selected type */
 // CNC:2003-11-05
-pkgVersionMatch::pkgVersionMatch(string Data,MatchType Type,int Op) : VerOp(Op), Type(Type)
+pkgVersionMatch::pkgVersionMatch(const string &Data,MatchType Type,int Op) : VerOp(Op), Type(Type)
 {
    MatchAll = false;
    VerPrefixMatch = false;
@@ -122,7 +122,7 @@ pkgVersionMatch::pkgVersionMatch(string Data,MatchType Type,int Op) : VerOp(Op),
 // VersionMatch::MatchVer - Match a version string with prefixing	/*{{{*/
 // ---------------------------------------------------------------------
 /* */
-bool pkgVersionMatch::MatchVer(const char *A,string B,bool Prefix)
+bool pkgVersionMatch::MatchVer(const char *A,const string &B,bool Prefix)
 {
    // CNC:2003-11-05 - Patch by ALT-Linux, which ignores the release
    //                  if it was not provided, and the epoch.

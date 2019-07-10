@@ -63,7 +63,7 @@ class pkgSimulate : public pkgPackageManager
    pkgDepCache Sim;
 
    // The Actuall installation implementation
-   virtual bool Install(PkgIterator Pkg,string File) override;
+   virtual bool Install(PkgIterator Pkg,const string &File) override;
    virtual bool Configure(PkgIterator Pkg) override;
    virtual bool Remove(PkgIterator Pkg,bool Purge) override;
    void ShortBreaks();
@@ -105,9 +105,9 @@ class pkgProblemResolver
 
    public:
 
-   inline void Protect(pkgCache::PkgIterator Pkg) {Flags[Pkg->ID] |= Protected;}
-   inline void Remove(pkgCache::PkgIterator Pkg) {Flags[Pkg->ID] |= ToRemove;}
-   inline void Clear(pkgCache::PkgIterator Pkg) {Flags[Pkg->ID] &= ~(Protected | ToRemove);}
+   inline void Protect(const pkgCache::PkgIterator &Pkg) {Flags[Pkg->ID] |= Protected;}
+   inline void Remove(const pkgCache::PkgIterator &Pkg) {Flags[Pkg->ID] |= ToRemove;}
+   inline void Clear(const pkgCache::PkgIterator &Pkg) {Flags[Pkg->ID] &= ~(Protected | ToRemove);}
 
    // Try to intelligently resolve problems by installing and removing packages
    bool Resolve(bool BrokenFix = false);

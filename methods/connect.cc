@@ -91,7 +91,7 @@ void RotateDNS()
 // DoConnect - Attempt a connect operation				/*{{{*/
 // ---------------------------------------------------------------------
 /* This helper function attempts a connection to a single address. */
-static bool DoConnect(struct addrinfo *Addr,string Host,
+static bool DoConnect(struct addrinfo *Addr,const string &Host,
 		      unsigned long TimeOut,std::unique_ptr<MethodFd> &Fd,pkgAcqMethod *Owner)
 {
    // Show a status indicator
@@ -153,7 +153,7 @@ static bool DoConnect(struct addrinfo *Addr,string Host,
 // Connect - Connect to a server					/*{{{*/
 // ---------------------------------------------------------------------
 /* Performs a connection to the server */
-bool Connect(string Host,int Port,const char *Service,int DefPort,std::unique_ptr<MethodFd> &Fd,
+bool Connect(const string &Host,int Port,const char *Service,int DefPort,std::unique_ptr<MethodFd> &Fd,
 	     unsigned long TimeOut,pkgAcqMethod *Owner)
 {
    if (_error->PendingError() == true)

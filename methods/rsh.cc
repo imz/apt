@@ -86,7 +86,7 @@ bool RSHConn::Open()
 // RSHConn::Connect - Fire up rsh and connect				/*{{{*/
 // ---------------------------------------------------------------------
 /* */
-bool RSHConn::Connect(string Host, string User)
+bool RSHConn::Connect(const string &Host, const string &User)
 {
    // Create the pipes
    int Pipes[4] = {-1,-1,-1,-1};
@@ -369,7 +369,7 @@ RSHMethod::RSHMethod() : pkgAcqMethod("1.0",SendConfig)
 									/*}}}*/
 // RSHMethod::Configuration - Handle a configuration message		/*{{{*/
 // ---------------------------------------------------------------------
-bool RSHMethod::Configuration(string Message)
+bool RSHMethod::Configuration(const string &Message)
 {
    char ProgStr[100];
 
