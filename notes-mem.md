@@ -1,8 +1,11 @@
-b36a3a2 Fix every use of va_list: add proper cleanup
+Вот некоторые замечания, но не успел ещё все изменения посмотреть.
+(Спасибо arei@ за обсуждение прочитанных.)
+
+# b36a3a2 Fix every use of va_list: add proper cleanup
 
 Замечаний нет.
 
-d854f27 strutil.cc: rework string iterating
+# d854f27 strutil.cc: rework string iterating
 
 Зачем менять
 
@@ -11,19 +14,23 @@ d854f27 strutil.cc: rework string iterating
 
 ? Может быть, это как в Debian?
 
-17aa799 gpg.cc: fix potential memory leak
+# 17aa799 gpg.cc: fix potential memory leak
 
 ok
+
+Просто комментарий (не замечание):
 
 В этом консервативном изменении делать необязательно, но можно ещё в
-таких случаях использовать strdupa() (что, конечно, не очень удобно с
-т.зр. обработки ошибок).
+таких случаях использовать strdupa() (что, конечно, нехорошо с
+т.зр. обработки ошибок). Да и не только в консерватизме дело, а том,
+что strdupa() ускоряет работу, но для функций, на которые небольшая
+нагрузка, это несущественно.
 
-64bef88 RPM ArchiveURI: check file length before using it
+# 64bef88 RPM ArchiveURI: check file length before using it
 
 ok
 
-4ef776b Use 'override' keyword
+# 4ef776b Use 'override' keyword
 
 ok (более строгий код; если что, компилятор сообщит об ошибке)
 
@@ -31,19 +38,19 @@ ok (более строгий код; если что, компилятор со
 
 find -type f '-(' -name '*.cc' -o -name '*.h' '-)' -print0 | xargs -0 sed -i -re 's: override( |;|$):\1:'
 
-0e8318e Use const reference to string instead of copies
+# 0e8318e Use const reference to string instead of copies
 
-Есть опасность, что в функциях возбмут указатель на строку (ссылку) и
-через него поменяют значение снаружи, но скорее всего так никто не
-делает в этом коде.
+Теоретически есть опасность, что в функциях возьмут указатель на
+строку (ссылку) и через него поменяют значение снаружи или что-нибудь
+в этом роде, но скорее всего так никто не делает в этом коде.
 
 Проверяем что нет других нетривиальных изменений с помощью:
 
-find -type f '-(' -name '*.cc' -o -name '*.h' '-)' -print0 | xargs -0 sed -i -re 's:const string &:string :g'
-git commit ...
-git diff @~2.. -w
+    find -type f '-(' -name '*.cc' -o -name '*.h' '-)' -print0 | xargs -0 sed -i -re 's:const string &:string :g'
+    git commit ...
+    git diff @~2.. -w
 
-Видим нетривиальное изменение:
+Видим нетривиальные изменения:
 
 1. (может в отдельный коммит с объяснением?)
 
@@ -66,15 +73,6 @@ index d72a984..b72a90c 100644
     {
        if (*I == '\r') 
          *I = ' ';
-@@ -551,7 +553,7 @@ void pkgAcqMethod::Warning(const char *Format,...)
- // ---------------------------------------------------------------------
- /* This method sends the redirect message and also manipulates the queue
-    to keep the pipeline synchronized. */
--void pkgAcqMethod::Redirect(const string &NewURI)
-+void pkgAcqMethod::Redirect(string NewURI)
- {
-    string CurrentURI = "<UNKNOWN>";
-    if (Queue != 0)
 diff --git a/apt/apt-pkg/acquire-method.h b/apt/apt-pkg/acquire-method.h
 index 42bd9d3..ac66e30 100644
 --- a/apt/apt-pkg/acquire-method.h
@@ -92,7 +90,6 @@ index 42bd9d3..ac66e30 100644
     bool MediaFail(string Required,string Drive);
 
 2. Похожее изменение, но не подходит под commit message
-(было бы проще проверять, если оно будет в отдельном коммите):
 
 diff --git a/apt/apt-pkg/algorithms.h b/apt/apt-pkg/algorithms.h
 index 7b90623..d4ad7c6 100644
@@ -112,8 +109,11 @@ index 7b90623..d4ad7c6 100644
     // Try to intelligently resolve problems by installing and removing packages   
     bool Resolve(bool BrokenFix = false);
 
-и ещё много похожих случаев. Но я думаю, можно проверить другим sed и
-расширить commit message для других типов (помимо string).
+и ещё много похожих случаев. Но я думаю, можно расширить commit
+message для других типов (помимо string). А проверить я смог их другим
+sed:
+
+    find -type f '-(' -name '*.cc' -o -name '*.h' '-)' -print0 | xargs -0 sed -i -re 's:const ([^ ]+) &:\1 :g'
 
 
 3. тоже не подходит под commit message:
@@ -131,6 +131,8 @@ index 3fcec06..6e69d51 100644
                 {
                         switch (Dep->Type) {
                                 case pkgCache::Dep::Conflicts:
+
+Отдельный коммит сделать?
 
 4. Не подходит под commit message:
 
@@ -247,9 +249,9 @@ index c664833..732345c 100644
     return U;
  }
 
-В остально вроде ok.
+В остальном вроде ok.
 
-4ed2c0e wrap the mmap actions in the CacheGenerator in their own methods to be able to react on condition changes later then we can move mmap
+# 4ed2c0e wrap the mmap actions in the CacheGenerator in their own methods to be able to react on condition changes later then we can move mmap
 
 Для аргумента типа string выбранная реализация, кажется, хуже
 (неоптимальна):
@@ -264,45 +266,48 @@ index c664833..732345c 100644
 без необязательного параметра-длины будет лишний вызов strlen(), хотя
 можно узнать значение из String.length().
 
-33509fe Use references instead of copies in the Cache generation methods
+# 33509fe Use references instead of copies in the Cache generation methods
 
 В то, что ничего не портится, в этом изменении гораздо труднее
 поверить или проверить, потому что не добавляется к ссылкам const.
 
 Можно ли как-то попробовать с const это всё сделать?
 
-a523050 Support large files
+# a523050 Support large files
 
 В StrToNum() char S[30] не хватит для двоичной записи 32-битного или
 64-битного числа.
 
-В остальном ok. (Конечно, в http.c может прочитать большое unsigned
-long long в StartPos, который объявлен и в других местах используется
-как signed long long. Что произойдёт?..)
+В остальном ok. (Конечно, в http.c sscanf() может прочитать большое
+unsigned long long в StartPos, который объявлен и в других местах
+используется как signed long long. Т.е. будет как бы отрицательное
+число. Что произойдёт?..)
 
 Проверили с помощью:
 
-find -type f '-(' -name '*.cc' -o -name '*.h' '-)' -print0 | xargs -0 sed -i -re 's:(unsigned long) long:\1:g; s:%ll:%l:g'
+    find -type f '-(' -name '*.cc' -o -name '*.h' '-)' -print0 | xargs -0 sed -i -re 's:(unsigned long) long:\1:g; s:%ll:%l:g'
 
 
-55b9b4f apt-pkg/pkgcachegen.{cc,h} changes
+# 55b9b4f apt-pkg/pkgcachegen.{cc,h} changes
 
 Может быть, здесь во всех ReMap(), чтобы не ошибиться в типах, использовать
 обозначение для типов Pkg, Ver, Prv и т.п., определяющее тип по
-переменной. (Где-то я видел decltype() или что-то в этом роде.) Ну или
-шаблон, может быть.
+переменной. (Где-то я видел decltype(...) или что-то в этом роде.) Ну или
+шаблон, может быть. Точнее даже не чтобы не ошибиться сейчас, а чтобы в
+будущем, в случае изменений оно не разъезжалось, а не тихо
+пропускалось компилятором.
 
-78c93fe Add and document APT::Cache-{Start,Grow,Limit} options for mmap control
-bdf8763 DynamicMMap::Grow: add optional debug output
-be0c967 Use special type to return allocation failure since 0 is a valid offset value
+# 78c93fe Add and document APT::Cache-{Start,Grow,Limit} options for mmap control
+# bdf8763 DynamicMMap::Grow: add optional debug output
+# be0c967 Use special type to return allocation failure since 0 is a valid offset value
 
 Почему бы не выкинуть свою реализацию, а использовать std::optional
 
-112d2ea Remove ABI compat stuff
-f56c14e Improve allocation failure error message
-111ef88 Add workaround for packages with missing tags
-cfe4ad9 Bump soname
-45b01f6 (tag: 0.5.15lorg2-alt69) 0.5.15lorg2-alt69
-7c4fc38 Port pkgCacheFile::GetSourceList and it's dependencies from Debian
-89457f4 Port ListUpdate function from Debian
-99c05dc (HEAD -> sisyphus, tag: 0.5.15lorg2-alt70, darktemplar@ALT/sisyphus, darktemplar@ALT/HEAD) 0.5.15lorg2-alt70
+# 112d2ea Remove ABI compat stuff
+# f56c14e Improve allocation failure error message
+# 111ef88 Add workaround for packages with missing tags
+# cfe4ad9 Bump soname
+# 45b01f6 (tag: 0.5.15lorg2-alt69) 0.5.15lorg2-alt69
+# 7c4fc38 Port pkgCacheFile::GetSourceList and it's dependencies from Debian
+# 89457f4 Port ListUpdate function from Debian
+# 99c05dc (HEAD -> sisyphus, tag: 0.5.15lorg2-alt70, darktemplar@ALT/sisyphus, darktemplar@ALT/HEAD) 0.5.15lorg2-alt70
