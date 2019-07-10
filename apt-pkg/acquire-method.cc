@@ -90,8 +90,10 @@ void pkgAcqMethod::Fail(bool Transient)
 // AcqMethod::Fail - A fetch has failed					/*{{{*/
 // ---------------------------------------------------------------------
 /* */
-void pkgAcqMethod::Fail(string Err,bool Transient)
+void pkgAcqMethod::Fail(const char *Why, bool Transient)
 {
+   std::string Err = Why;
+
    // Strip out junk from the error messages
    for (string::iterator I = Err.begin(); I != Err.end(); I++)
    {
@@ -230,7 +232,7 @@ void pkgAcqMethod::URIDone(FetchResult &Res, FetchResult *Alt)
 // ---------------------------------------------------------------------
 /* This sends a 403 Media Failure message to the APT and waits for it
    to be ackd */
-bool pkgAcqMethod::MediaFail(const string Required, const string Drive)
+bool pkgAcqMethod::MediaFail(const string &Required, const string &Drive)
 {
    char S[1024];
    snprintf(S,sizeof(S),"403 Media Failure\nMedia: %s\nDrive: %s\n\n",
@@ -283,7 +285,7 @@ bool pkgAcqMethod::MediaFail(const string Required, const string Drive)
 // ---------------------------------------------------------------------
 /* This sends a 404 Authenticate message to the APT and waits for it
    to be ackd */
-bool pkgAcqMethod::NeedAuth(const string Description,string &User,string &Pass)
+bool pkgAcqMethod::NeedAuth(const string &Description,string &User,string &Pass)
 {
    char S[1024];
    snprintf(S,sizeof(S),"404 Authenticate\nDescription: %s\n\n",
