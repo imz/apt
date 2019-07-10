@@ -501,7 +501,7 @@ void RsyncMethod::SigTerm(int)
 // RsyncMethod::Configuration - Handle a configuration message		/*{{{*/
 // ---------------------------------------------------------------------
 /* We stash the desired pipeline depth */
-bool RsyncMethod::Configuration(string Message)
+bool RsyncMethod::Configuration(const string &Message)
 {
    if (pkgAcqMethod::Configuration(Message) == false)
 	  return false;

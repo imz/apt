@@ -35,7 +35,7 @@ class pkgAcquire::Item
    inline void Dequeue() {Owner->Dequeue(this);}
 
    // Safe rename function with timestamp preservation
-   void Rename(string From,string To);
+   void Rename(const string &From,const string &To);
 
    public:
 
@@ -64,10 +64,10 @@ class pkgAcquire::Item
    string TmpFile;
 
    // Action members invoked by the worker
-   virtual void Failed(string Message,pkgAcquire::MethodConfig *Cnf);
-   virtual void Done(string Message,unsigned long Size,string Md5Hash,
+   virtual void Failed(const string &Message,pkgAcquire::MethodConfig *Cnf);
+   virtual void Done(const string &Message,unsigned long Size,const string &Md5Hash,
 		     pkgAcquire::MethodConfig *Cnf);
-   virtual void Start(string Message,unsigned long Size);
+   virtual void Start(const string &Message,unsigned long Size);
    virtual string Custom600Headers() {return string();}
    virtual string DescURI() = 0;
    virtual void Finished() {}
@@ -99,14 +99,14 @@ class pkgAcqIndex : public pkgAcquire::Item
    public:
 
    // Specialized action members
-   virtual void Done(string Message,unsigned long Size,string Md5Hash,
+   virtual void Done(const string &Message,unsigned long Size,const string &Md5Hash,
 		     pkgAcquire::MethodConfig *Cnf) override;
    virtual string Custom600Headers() override;
    virtual string DescURI() override {return RealURI;} // CNC:2003-02-14
 
    // CNC:2002-07-03
-   pkgAcqIndex(pkgAcquire *Owner,pkgRepository *Repository,string URI,
-	       string URIDesc,string ShortDesct);
+   pkgAcqIndex(pkgAcquire *Owner,pkgRepository *Repository,const string &URI,
+	       const string &URIDesc,const string &ShortDesct);
 };
 
 // Item class for index files
@@ -126,15 +126,15 @@ class pkgAcqIndexRel : public pkgAcquire::Item
    public:
 
    // Specialized action members
-   virtual void Failed(string Message,pkgAcquire::MethodConfig *Cnf) override;
-   virtual void Done(string Message,unsigned long Size,string Md5Hash,
+   virtual void Failed(const string &Message,pkgAcquire::MethodConfig *Cnf) override;
+   virtual void Done(const string &Message,unsigned long Size,const string &Md5Hash,
 		     pkgAcquire::MethodConfig *Cnf) override;
    virtual string Custom600Headers() override;
    virtual string DescURI() override {return RealURI;}
 
    // CNC:2002-07-03
-   pkgAcqIndexRel(pkgAcquire *Owner,pkgRepository *Repository,string URI,
-		  string URIDesc,string ShortDesc,bool Master=false);
+   pkgAcqIndexRel(pkgAcquire *Owner,pkgRepository *Repository,const string &URI,
+		  const string &URIDesc, const string &ShortDesc,bool Master=false);
 };
 
 // Item class for archive files
@@ -158,8 +158,8 @@ class pkgAcqArchive : public pkgAcquire::Item
    public:
 
    // Specialized action members
-   virtual void Failed(string Message,pkgAcquire::MethodConfig *Cnf) override;
-   virtual void Done(string Message,unsigned long Size,string Md5Hash,
+   virtual void Failed(const string &Message,pkgAcquire::MethodConfig *Cnf) override;
+   virtual void Done(const string &Message,unsigned long Size,const string &Md5Hash,
 		     pkgAcquire::MethodConfig *Cnf) override;
    virtual string MD5Sum() override {return MD5;}
    virtual string DescURI() override {return Desc.URI;}
@@ -180,14 +180,14 @@ class pkgAcqFile : public pkgAcquire::Item
    public:
 
    // Specialized action members
-   virtual void Failed(string Message,pkgAcquire::MethodConfig *Cnf) override;
-   virtual void Done(string Message,unsigned long Size,string Md5Hash,
+   virtual void Failed(const string &Message,pkgAcquire::MethodConfig *Cnf) override;
+   virtual void Done(const string &Message,unsigned long Size,const string &Md5Hash,
 		     pkgAcquire::MethodConfig *Cnf) override;
    virtual string MD5Sum() override {return Md5Hash;}
    virtual string DescURI() override {return Desc.URI;}
 
-   pkgAcqFile(pkgAcquire *Owner,string URI,string MD5,unsigned long Size,
-		  string Desc,string ShortDesc);
+   pkgAcqFile(pkgAcquire *Owner,const string &URI, const string &MD5,unsigned long Size,
+		  const string &Desc, const string &ShortDesc);
 };
 
 #endif

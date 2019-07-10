@@ -34,14 +34,14 @@ class pkgRepository
 
    bool Acquire;
 
-   bool ParseRelease(string File);
+   bool ParseRelease(const string &File);
    bool HasRelease() const { return GotRelease; }
 
    bool IsAuthenticated() const { return !FingerPrint.empty(); }
-   bool FindChecksums(string URI,unsigned long &Size, string &MD5);
+   bool FindChecksums(const string &URI,unsigned long &Size, string &MD5);
 
-   pkgRepository(string URI,string Dist, const pkgSourceList::Vendor *Vendor,
-		 string RootURI)
+   pkgRepository(const string &URI, const string &Dist, const pkgSourceList::Vendor *Vendor,
+		 const string &RootURI)
       : GotRelease(0), URI(URI), Dist(Dist), RootURI(RootURI),
 	Acquire(1)
    {

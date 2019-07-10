@@ -178,7 +178,7 @@ bool MountCdrom(string Path)
 // ---------------------------------------------------------------------
 /* We convert everything we hash into a string, this prevents byte size/order
    from effecting the outcome. */
-bool IdentCdrom(string CD,string &Res,unsigned int Version)
+bool IdentCdrom(const string &CD,string &Res,unsigned int Version)
 {
    MD5Summation Hash;
 

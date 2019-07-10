@@ -15,6 +15,6 @@ using std::string;
 
 bool MountCdrom(string Path);
 bool UnmountCdrom(string Path);
-bool IdentCdrom(string CD,string &Res,unsigned int Version = 2);
+bool IdentCdrom(const string &CD, string &Res,unsigned int Version = 2);
 
 #endif

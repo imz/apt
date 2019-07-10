@@ -179,8 +179,8 @@ pkgCache::VerIterator pkgPolicy::GetCandidateVer(pkgCache::PkgIterator Pkg)
    table (hashed to the cache). A blank package name indicates the pin
    belongs to the default table. Order of insertion matters here, the
    earlier defaults override later ones. */
-void pkgPolicy::CreatePin(pkgVersionMatch::MatchType Type,string Name,
-			  string Data,signed short Priority)
+void pkgPolicy::CreatePin(pkgVersionMatch::MatchType Type, const string &Name,
+			  const string &Data,signed short Priority)
 {
    Pin *P = 0;
 

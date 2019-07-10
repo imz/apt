@@ -58,7 +58,7 @@ class pkgIndexFile
    virtual string Describe(bool Short = false) const = 0;
 
    // Interface for acquire
-   virtual string ArchiveURI(string /*File*/) const {return string();}
+   virtual string ArchiveURI(const string &/*File*/) const {return string();}
    virtual bool GetIndexes(pkgAcquire *Owner) const;
 
    // CNC:2002-07-04

@@ -36,7 +36,7 @@ struct MethodFd
    virtual bool HasPending();
 };
 
-bool Connect(string To,int Port,const char *Service,int DefPort,
+bool Connect(const string &To,int Port,const char *Service,int DefPort,
 	     std::unique_ptr<MethodFd> &Fd,unsigned long TimeOut,pkgAcqMethod *Owner);
 void RotateDNS();
 

@@ -54,10 +54,10 @@ class pkgAcquire::Worker
    bool OutFdReady();
 
    // The message handlers
-   bool Capabilities(string Message);
+   bool Capabilities(const string &Message);
    bool SendConfiguration();
-   bool MediaChange(string Message);
-   bool Authenticate(string Message);
+   bool MediaChange(const string &Message);
+   bool Authenticate(const string &Message);
 
    bool MethodFailure();
    void ItemDone();

@@ -80,7 +80,7 @@ class pkgAcquire
 
    void Enqueue(ItemDesc &Item);
    void Dequeue(Item *Item);
-   string QueueName(string URI,MethodConfig const *&Config);
+   string QueueName(const string &URI,MethodConfig const *&Config);
 
    // FDSET managers for derived classes
    virtual void SetFds(int &Fd,fd_set *RSet,fd_set *WSet);
@@ -91,7 +91,7 @@ class pkgAcquire
 
    public:
 
-   MethodConfig *GetConfig(string Access);
+   MethodConfig *GetConfig(const string &Access);
 
    enum RunResult {Continue,Failed,Cancelled};
 
@@ -110,7 +110,7 @@ class pkgAcquire
    UriIterator UriEnd();
 
    // Cleans out the download dir
-   bool Clean(string Dir);
+   bool Clean(const string &Dir);
 
    // Returns the size of the total download set
    double TotalNeeded();
@@ -174,7 +174,7 @@ class pkgAcquire::Queue
    bool Dequeue(Item *Owner);
 
    // Find a Queued item
-   QItem *FindItem(string URI,pkgAcquire::Worker *Owner);
+   QItem *FindItem(const string &URI,pkgAcquire::Worker *Owner);
    bool ItemStart(QItem *Itm,unsigned long Size);
    bool ItemDone(QItem *Itm);
 
@@ -183,7 +183,7 @@ class pkgAcquire::Queue
    bool Cycle();
    void Bump();
 
-   Queue(string Name,pkgAcquire *Owner);
+   Queue(const string &Name,pkgAcquire *Owner);
    ~Queue();
 };
 
@@ -267,10 +267,10 @@ class pkgAcquireStatus
    virtual void Fetched(unsigned long Size,unsigned long ResumePoint);
 
    // Called to change media
-   virtual bool MediaChange(string Media,string Drive) = 0;
+   virtual bool MediaChange(const string &Media, const string &Drive) = 0;
 
    // Called to authenticate
-   virtual bool Authenticate(string Desc,string &User,string &Pass);
+   virtual bool Authenticate(const string &Desc,string &User,string &Pass);
 
    // Each of these is called by the workers when an event occures
    virtual void IMSHit(pkgAcquire::ItemDesc &/*Itm*/) {}

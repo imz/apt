@@ -62,31 +62,31 @@ class Configuration
    }
 
    // CNC:2003-02-23 - Helper for copy constructor.
-   void CopyChildren(Item *From, Item *To);
+   void CopyChildren(const Item *From, Item *To);
 
    public:
 
    string Find(const char *Name,const char *Default = 0) const;
-   string Find(string Name,const char *Default = 0) const {return Find(Name.c_str(),Default);}
+   string Find(const string &Name,const char *Default = 0) const {return Find(Name.c_str(),Default);}
    string FindFile(const char *Name,const char *Default = 0) const;
    string FindDir(const char *Name,const char *Default = 0) const;
    int FindI(const char *Name,int Default = 0) const;
-   int FindI(string Name,int Default = 0) const {return FindI(Name.c_str(),Default);}
+   int FindI(const string &Name,int Default = 0) const {return FindI(Name.c_str(),Default);}
    bool FindB(const char *Name,bool Default = false) const;
-   bool FindB(string Name,bool Default = false) const {return FindB(Name.c_str(),Default);}
+   bool FindB(const string &Name,bool Default = false) const {return FindB(Name.c_str(),Default);}
    string FindAny(const char *Name,const char *Default = 0) const;
 
-   inline void Set(string Name,string Value) {Set(Name.c_str(),Value);}
-   void CndSet(const char *Name,string Value);
+   inline void Set(const string &Name,const string &Value) {Set(Name.c_str(),Value);}
+   void CndSet(const char *Name,const string &Value);
    void CndSet(const char *Name,int Value);
-   void Set(const char *Name,string Value);
+   void Set(const char *Name,const string &Value);
    void Set(const char *Name,int Value);
 
-   inline bool Exists(string Name) const {return Exists(Name.c_str());}
+   inline bool Exists(const string &Name) const {return Exists(Name.c_str());}
    bool Exists(const char *Name) const;
    bool ExistsAny(const char *Name) const;
 
-   void Clear(string Name);
+   void Clear(const string &Name);
 
    inline const Item *Tree(const char *Name) const {return Lookup(Name);}
 
@@ -94,7 +94,7 @@ class Configuration
    void Dump(std::ostream& str);
 
    // CNC:2003-02-23 - Copy constructor.
-   Configuration(Configuration &Conf);
+   Configuration(const Configuration &Conf);
 
    Configuration(const Item *Root);
    Configuration();
@@ -103,10 +103,10 @@ class Configuration
 
 extern Configuration *_config;
 
-bool ReadConfigFile(Configuration &Conf,string FName,bool AsSectional = false,
+bool ReadConfigFile(Configuration &Conf,const string &FName,bool AsSectional = false,
 		    unsigned Depth = 0);
 
-bool ReadConfigDir(Configuration &Conf,string Dir,bool AsSectional = false,
+bool ReadConfigDir(Configuration &Conf,const string &Dir,bool AsSectional = false,
 		    unsigned Depth = 0);
 
 #ifdef SWIG

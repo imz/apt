@@ -965,7 +965,7 @@ void FtpMethod::SigTerm(int)
 // FtpMethod::Configuration - Handle a configuration message		/*{{{*/
 // ---------------------------------------------------------------------
 /* We stash the desired pipeline depth */
-bool FtpMethod::Configuration(string Message)
+bool FtpMethod::Configuration(const string &Message)
 {
    if (pkgAcqMethod::Configuration(Message) == false)
       return false;

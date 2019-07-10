@@ -153,7 +153,7 @@ class RPMFileHandler : public RPMHdrHandler
    virtual string MD5Sum() const override {return GetSTag(CRPMTAG_MD5);}
 
    RPMFileHandler(FileFd *File);
-   RPMFileHandler(string File);
+   RPMFileHandler(const string &File);
    virtual ~RPMFileHandler();
 };
 
@@ -175,7 +175,7 @@ class RPMSingleFileHandler : public RPMFileHandler
    virtual string MD5Sum() const override;
    virtual bool ProvideFileName() const override {return true;}
 
-   RPMSingleFileHandler(string File) : RPMFileHandler(File), sFilePath(File) {}
+   RPMSingleFileHandler(const string &File) : RPMFileHandler(File), sFilePath(File) {}
    virtual ~RPMSingleFileHandler() {}
 };
 
@@ -234,7 +234,7 @@ class RPMDirHandler : public RPMHdrHandler
    virtual off_t FileSize() const override;
    virtual string MD5Sum() const override;
 
-   RPMDirHandler(string DirName);
+   RPMDirHandler(const string &DirName);
    virtual ~RPMDirHandler();
 };
 

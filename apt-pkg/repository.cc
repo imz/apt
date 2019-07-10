@@ -29,7 +29,7 @@ using namespace std;
 // Repository::ParseRelease - Parse Release file for checksums		/*{{{*/
 // ---------------------------------------------------------------------
 /* */
-bool pkgRepository::ParseRelease(string File)
+bool pkgRepository::ParseRelease(const string &File)
 {
    // Open the stream for reading
    FileFd F(File, FileFd::ReadOnly);
@@ -80,7 +80,7 @@ bool pkgRepository::ParseRelease(string File)
 // Repository::FindChecksums - Get checksum info for file		/*{{{*/
 // ---------------------------------------------------------------------
 /* */
-bool pkgRepository::FindChecksums(string URI,unsigned long &Size, string &MD5)
+bool pkgRepository::FindChecksums(const string &URI,unsigned long &Size, string &MD5)
 {
    string Path = string(URI,RootURI.size());
    if (IndexChecksums.find(Path) == IndexChecksums.end())
