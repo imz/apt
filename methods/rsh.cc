@@ -86,7 +86,7 @@ bool RSHConn::Open()
 // RSHConn::Connect - Fire up rsh and connect				/*{{{*/
 // ---------------------------------------------------------------------
 /* */
-bool RSHConn::Connect(const string Host, const string User)
+bool RSHConn::Connect(const string &Host, const string &User)
 {
    // Create the pipes
    int Pipes[4] = {-1,-1,-1,-1};

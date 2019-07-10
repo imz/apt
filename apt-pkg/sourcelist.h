@@ -87,13 +87,13 @@ class pkgSourceList
    public:
 
    bool ReadMainList();
-   bool Read(string File);
+   bool Read(const string &File);
    bool ReadVendors();
 
    // CNC:2003-03-03
    void Reset();
-   bool ReadAppend(string File);
-   bool ReadSourceDir(string Dir);
+   bool ReadAppend(const string &File);
+   bool ReadSourceDir(const string &Dir);
 
    // List accessors
    inline const_iterator begin() const {return SrcList.begin();}
@@ -110,7 +110,7 @@ class pkgSourceList
    bool GetReleases(pkgAcquire *Owner) const;
 
    pkgSourceList();
-   pkgSourceList(string File);
+   pkgSourceList(const string &File);
    ~pkgSourceList();
 };
 
