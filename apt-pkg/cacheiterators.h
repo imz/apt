@@ -181,7 +181,7 @@ class pkgCache::DepIterator
    inline unsigned long Index() const {return Dep - Owner->DepP;}
    // CNC:2003-02-17 - This is a very used function, so it's now
    //		       inlined here.
-   inline bool IsCritical()
+   inline bool IsCritical() const
 		{
 			switch (Dep->Type) {
 				case pkgCache::Dep::Conflicts:
