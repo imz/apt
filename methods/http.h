@@ -54,7 +54,7 @@ class CircleBuf
 
    // Read data in
    bool Read(const std::unique_ptr<MethodFd> &Fd);
-   bool Read(string Data);
+   bool Read(const string &Data);
 
    // Write data out
    bool Write(const std::unique_ptr<MethodFd> &Fd);
@@ -106,7 +106,7 @@ struct ServerState
    std::unique_ptr<MethodFd> ServerFd;
    URI ServerName;
 
-   bool HeaderLine(string Line);
+   bool HeaderLine(const string &Line);
    bool Comp(URI Other) {return Other.Host == ServerName.Host && Other.Port == ServerName.Port;}
    void Reset() {Major = 0; Minor = 0; Result = 0; Size = 0; StartPos = 0;
                  Encoding = Closes; time(&Date); ServerFd.reset();
