@@ -29,3 +29,4 @@ s390	s390
 s390x	s390x
 x86_64	x86_64
 aarch64	aarch64
+e2k     e2k
