@@ -79,6 +79,7 @@ bool Argv::resize()
    char **new_args = new char *[max_size+increment];
    memcpy(new_args,args,size*sizeof(char*));
    memset(new_args+size,0, (max_size+increment-size) * sizeof(char*));
+   delete [] args;
    args = new_args;
    max_size += increment;
    return true;

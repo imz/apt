@@ -14,6 +14,8 @@
 
 #include <rpm/rpmlib.h>
 
+#include <memory>
+
 RPMPackageData::RPMPackageData()
    : MinArchScore(-1)
 #ifdef WITH_HASH_MAP
@@ -334,10 +336,10 @@ bool RPMPackageData::IsDupPackage(const string &Name)
 
 RPMPackageData *RPMPackageData::Singleton()
 {
-   static RPMPackageData *data = NULL;
+   static std::unique_ptr<RPMPackageData> data;
    if (!data)
-      data = new RPMPackageData();
-   return data;
+      data.reset(new RPMPackageData());
+   return data.get();
 }
 
 #endif /* HAVE_RPM */

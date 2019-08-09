@@ -1910,7 +1910,7 @@ bool DoSource(CommandLine &CmdL)
    AcqTextStatus Stat(ScreenWidth,_config->FindI("quiet",0));   
    pkgAcquire Fetcher(&Stat);
 
-   DscFile *Dsc = new DscFile[CmdL.FileSize()];
+   std::unique_ptr<DscFile[]> Dsc(new DscFile[CmdL.FileSize()]);
    
    // Load the requestd sources into the fetcher
    unsigned J = 0;

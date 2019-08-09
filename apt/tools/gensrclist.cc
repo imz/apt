@@ -21,6 +21,7 @@
 #include <map>
 #include <list>
 #include <iostream>
+#include <memory>
 
 #include <apt-pkg/error.h>
 #include <apt-pkg/tagfile.h>
@@ -154,7 +155,7 @@ int main(int argc, char ** argv)
    Header h;
    int32_t size[1];
    int entry_no, entry_cur;
-   CachedMD5 *md5cache;
+   std::unique_ptr<CachedMD5> md5cache;
    map<string, list<char*>* > rpmTable; // table that maps srpm -> generated rpm
    bool mapi = false;
    bool progressBar = false;
@@ -206,7 +207,7 @@ int main(int argc, char ** argv)
    if (!readRPMTable(arg_srpmindex, rpmTable))
        exit(1);
    
-   md5cache = new CachedMD5(string(arg_dir)+string(arg_suffix), "gensrclist");
+   md5cache.reset(new CachedMD5(string(arg_dir)+string(arg_suffix), "gensrclist"));
 
    getcwd(cwd, 200);
    if (*arg_dir != '/') {
@@ -358,11 +359,11 @@ int main(int argc, char ** argv)
 	    foundInIndex = false;
 	    {
 	       int count = 0;
-	       char **l = NULL;
+	       std::unique_ptr<char* []> l;
 	       list<char*> *rpmlist = rpmTable[string(dirEntries[entry_cur]->d_name)];
 	       
 	       if (rpmlist) {
-		  l = new char *[rpmlist->size()];
+		  l.reset(new char *[rpmlist->size()]);
 		  
 		  foundInIndex = true;
 		  
@@ -375,7 +376,7 @@ int main(int argc, char ** argv)
 	       
 	       if (count) {
 		  headerAddEntry(newHeader, CRPMTAG_BINARY,
-				 RPM_STRING_ARRAY_TYPE, l, count);
+				 RPM_STRING_ARRAY_TYPE, l.get(), count);
 	       }
 	    }
 	    if (foundInIndex || !mapi)
@@ -398,8 +399,6 @@ int main(int argc, char ** argv)
 #if RPM_VERSION >= 0x040100
    ts = rpmtsFree(ts);
 #endif   
-   
-   delete md5cache;
    
    return 0;
 }

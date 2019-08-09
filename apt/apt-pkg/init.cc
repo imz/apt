@@ -42,7 +42,7 @@ bool pkgInitConfig(Configuration &Cnf)
    const char *cpu = NULL;
    struct utsname name;
    if (uname(&name) == 0)
-      cpu = strdup(name.machine);
+      cpu = name.machine;
    if (cpu == NULL)
       cpu = COMMON_CPU;
 

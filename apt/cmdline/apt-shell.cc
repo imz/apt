@@ -2780,6 +2780,7 @@ bool Search(CommandLine &CmdL)
       {
 	 for (; I != 0; I--)
 	    regfree(&Patterns[I]);
+	 delete [] Patterns;
 	 return _error->Error("Regex compilation error");
       }      
    }
@@ -2790,6 +2791,7 @@ bool Search(CommandLine &CmdL)
    {
       for (unsigned I = 0; I != NumPatterns; I++)
 	 regfree(&Patterns[I]);
+      delete [] Patterns;
       return false;
    }
    
@@ -2877,6 +2879,7 @@ bool Search(CommandLine &CmdL)
    delete [] VFList;
    for (unsigned I = 0; I != NumPatterns; I++)
       regfree(&Patterns[I]);
+   delete [] Patterns;
    if (ferror(stdout))
        return _error->Error("Write to stdout failed");
    return true;

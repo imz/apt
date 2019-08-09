@@ -1065,7 +1065,7 @@ void pkgProblemResolver::MakeScores()
 
    /* Protected things are pushed really high up. This number should put them
       ahead of everything */
-   RPMPackageData *rpmdata = new RPMPackageData();
+   RPMPackageData *rpmdata = RPMPackageData::Singleton();
    for (pkgCache::PkgIterator I = Cache.PkgBegin(); I.end() == false; I++)
    {
       if ((Flags[I->ID] & Protected) != 0)

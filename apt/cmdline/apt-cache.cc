@@ -35,6 +35,7 @@
 // 		    as reported by Radu Greab.
 //#include <locale.h>
 #include <iostream>
+#include <memory>
 #include <unistd.h>
 #include <errno.h>
 #include <regex.h>
@@ -965,9 +966,9 @@ bool XVcg(CommandLine &CmdL)
       0 = None */
    enum States {None=0, ToShow, ToShowNR, DoneNR, Done};
    enum TheFlags {ForceNR=(1<<0)};
-   unsigned char *Show = new unsigned char[Cache.Head().PackageCount];
-   unsigned char *Flags = new unsigned char[Cache.Head().PackageCount];
-   unsigned char *ShapeMap = new unsigned char[Cache.Head().PackageCount];
+   std::unique_ptr<unsigned char[]> Show(new unsigned char[Cache.Head().PackageCount]);
+   std::unique_ptr<unsigned char[]> Flags(new unsigned char[Cache.Head().PackageCount]);
+   std::unique_ptr<unsigned char[]> ShapeMap(new unsigned char[Cache.Head().PackageCount]);
    
    // Show everything if no arguments given
    if (CmdL.FileList[1] == 0)
@@ -976,7 +977,7 @@ bool XVcg(CommandLine &CmdL)
    else
       for (unsigned long I = 0; I != Cache.Head().PackageCount; I++)
 	 Show[I] = None;
-   memset(Flags,0,sizeof(*Flags)*Cache.Head().PackageCount);
+   memset(Flags.get(),0,sizeof(unsigned char*)*Cache.Head().PackageCount);
    
    // Map the shapes
    for (pkgCache::PkgIterator Pkg = Cache.PkgBegin(); Pkg.end() == false; Pkg++)
@@ -1183,9 +1184,9 @@ bool Dotty(CommandLine &CmdL)
       0 = None */
    enum States {None=0, ToShow, ToShowNR, DoneNR, Done};
    enum TheFlags {ForceNR=(1<<0)};
-   unsigned char *Show = new unsigned char[Cache.Head().PackageCount];
-   unsigned char *Flags = new unsigned char[Cache.Head().PackageCount];
-   unsigned char *ShapeMap = new unsigned char[Cache.Head().PackageCount];
+   std::unique_ptr<unsigned char[]> Show(new unsigned char[Cache.Head().PackageCount]);
+   std::unique_ptr<unsigned char[]> Flags(new unsigned char[Cache.Head().PackageCount]);
+   std::unique_ptr<unsigned char[]> ShapeMap(new unsigned char[Cache.Head().PackageCount]);
    
    // Show everything if no arguments given
    if (CmdL.FileList[1] == 0)
@@ -1194,7 +1195,7 @@ bool Dotty(CommandLine &CmdL)
    else
       for (unsigned long I = 0; I != Cache.Head().PackageCount; I++)
 	 Show[I] = None;
-   memset(Flags,0,sizeof(*Flags)*Cache.Head().PackageCount);
+   memset(Flags.get(),0,sizeof(unsigned char*)*Cache.Head().PackageCount);
    
    // Map the shapes
    for (pkgCache::PkgIterator Pkg = Cache.PkgBegin(); Pkg.end() == false; Pkg++)
@@ -1504,6 +1505,7 @@ bool Search(CommandLine &CmdL)
       {
 	 for (; I != 0; I--)
 	    regfree(&Patterns[I]);
+	 delete [] Patterns;
 	 return _error->Error("Regex compilation error");
       }      
    }
@@ -1514,6 +1516,7 @@ bool Search(CommandLine &CmdL)
    {
       for (unsigned I = 0; I != NumPatterns; I++)
 	 regfree(&Patterns[I]);
+      delete [] Patterns;
       return false;
    }
    
@@ -1601,6 +1604,7 @@ bool Search(CommandLine &CmdL)
    delete [] VFList;
    for (unsigned I = 0; I != NumPatterns; I++)
       regfree(&Patterns[I]);
+   delete [] Patterns;
    if (ferror(stdout))
        return _error->Error("Write to stdout failed");
    return true;

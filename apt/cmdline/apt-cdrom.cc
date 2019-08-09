@@ -30,6 +30,7 @@
 // CNC:2003-02-14 - apti18n.h includes libintl.h which includes locale.h,
 // 		    as reported by Radu Greab.
 //#include <locale.h>
+#include <memory>
 #include <iostream>
 #include <fstream>
 #include <vector>
@@ -256,7 +257,7 @@ int Score(const string &Path)
 bool DropRepeats(vector<string> &List,const char *Name)
 {
    // Get a list of all the inodes
-   ino_t *Inodes = new ino_t[List.size()];
+   std::unique_ptr<ino_t[]> Inodes(new ino_t[List.size()]);
    for (unsigned int I = 0; I != List.size(); I++)
    {
       struct stat Buf;
