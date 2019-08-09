@@ -26,6 +26,7 @@ RSYNC Aquire Method - This is the RSYNC aquire method for APT.
 #include <stdarg.h>
 #include <sys/wait.h>
 #include <iostream>
+#include <utility>
 
 // Internet stuff
 #include <netinet/in.h>
@@ -277,13 +278,10 @@ void RsyncMethod::RsyncConnExec::ParseOutput(pkgAcqMethod *Owner, FetchResult &F
 	  while (*ptr2!=0 && !isspace(*ptr2))
 		 ++ptr2;
 	  if (ptr!=ptr2) {
-		 char *tmpfn = new char[ptr2-ptr+1];
-		 bzero(tmpfn, ptr2-ptr+1);
-		 strncpy(tmpfn, ptr, ptr2-ptr);
+		 std::string tmpfn(ptr, ptr2-ptr);
 		 if (RsyncMethod::Debug)
 			cerr << endl << "RSYNC: " << TMPFN << tmpfn << endl;
-		 FRes.TmpFilename = string(tmpfn);
-		 delete tmpfn;
+		 FRes.TmpFilename = std::move(tmpfn);
 	  }
    }
   
@@ -314,13 +312,10 @@ void RsyncMethod::RsyncConnExec::ParseOutput(pkgAcqMethod *Owner, FetchResult &F
 	  while (*ptr2!=0 && *ptr2!='\n')
 		 ++ptr2;
 	  if (ptr!=ptr2) {
-		 char *tmp = new char[ptr2-ptr+1];
-		 bzero(tmp, ptr2-ptr+1);
-		 strncpy(tmp, ptr, ptr2-ptr);
-		 _error->Error("%s",tmp);
+		 std::string tmp(ptr, ptr2-ptr);
+		 _error->Error("%s",tmp.c_str());
 		 if (RsyncMethod::Debug)
 			cerr << endl << FAILED << tmp << endl;
-		 delete tmp;
 	  } else {
 		 _error->Error("Child process failed (no description)");
 	  }
@@ -431,13 +426,10 @@ void RsyncMethod::RsyncConnExecExt::ParseOutput(pkgAcqMethod *Owner, FetchResult
 	  while (*ptr2!=0 && !isspace(*ptr2))
 		 ++ptr2;
 	  if (ptr!=ptr2) {
-		 char *tmpfn = new char[ptr2-ptr+1];
-		 bzero(tmpfn, ptr2-ptr+1);
-		 strncpy(tmpfn, ptr, ptr2-ptr);
+		 std::string tmpfn(ptr, ptr2-ptr);
 		 if (RsyncMethod::Debug)
 			cerr << endl << "RSYNC: " << TMPFN << tmpfn << endl;
-		 FRes.TmpFilename = string(tmpfn);
-		 delete tmpfn;
+		 FRes.TmpFilename = std::move(tmpfn);
 	  }
    }
   
@@ -468,13 +460,10 @@ void RsyncMethod::RsyncConnExecExt::ParseOutput(pkgAcqMethod *Owner, FetchResult
 	  while (*ptr2!=0 && *ptr2!='\n')
 		 ++ptr2;
 	  if (ptr!=ptr2) {
-		 char *tmp = new char[ptr2-ptr+1];
-		 bzero(tmp, ptr2-ptr+1);
-		 strncpy(tmp, ptr, ptr2-ptr);
-		 _error->Error("%s",tmp);
+		 std::string tmp(ptr, ptr2-ptr);
+		 _error->Error("%s",tmp.c_str());
 		 if (RsyncMethod::Debug)
 			cerr << endl << FAILED << tmp << endl;
-		 delete tmp;
 	  } else {
 		 _error->Error("Child process failed (no description)");
 	  }
