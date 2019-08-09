@@ -72,6 +72,9 @@ bool Debug = false;
 #define default_port 80
 #endif /* USE_TLS */
 
+#define STR_HELPER(x) #x
+#define STR(x) STR_HELPER(x)
+
 // CircleBuf::CircleBuf - Circular input buffer				/*{{{*/
 // ---------------------------------------------------------------------
 /* */
@@ -534,7 +537,7 @@ bool ServerState::HeaderLine(const string &Line)
       // Evil servers return no version
       if (Line[4] == '/')
       {
-	 if (sscanf(Line.c_str(),"HTTP/%u.%u %u %[^\n]",&Major,&Minor,
+	 if (sscanf(Line.c_str(),"HTTP/%u.%u %u %" STR(MAXLEN) "[^\n]",&Major,&Minor,
 		    &Result,Code) != 4)
 	    return _error->Error(_("The http server sent an invalid reply header"));
       }
@@ -542,7 +545,7 @@ bool ServerState::HeaderLine(const string &Line)
       {
 	 Major = 0;
 	 Minor = 9;
-	 if (sscanf(Line.c_str(),"HTTP %u %[^\n]",&Result,Code) != 2)
+	 if (sscanf(Line.c_str(),"HTTP %u %" STR(MAXLEN) "[^\n]",&Result,Code) != 2)
 	    return _error->Error(_("The http server sent an invalid reply header"));
       }
 

@@ -86,7 +86,7 @@ struct ServerState
    unsigned int Major;
    unsigned int Minor;
    unsigned int Result;
-   char Code[MAXLEN];
+   char Code[MAXLEN + 1];
    
    // These are some statistics from the last parsed header lines
    unsigned long long Size;
