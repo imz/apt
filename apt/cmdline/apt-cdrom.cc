@@ -146,7 +146,6 @@ bool FindPackages(string CD,vector<string> &List,vector<string> &SList,
 #endif
 
       // See if the name is a sub directory
-      struct stat Buf;
       if (stat(Dir->d_name,&Buf) != 0)
 	 continue;      
       
