@@ -125,8 +125,8 @@ bool RsyncMethod::RsyncConn::initProxy()
 
 RsyncMethod::RsyncConnExec::RsyncConnExec(URI u, const string &_proxy, const string &prog)
    : RsyncConn(u,_proxy), ChildPid(-1), ChildFd(-1)
+   , program(prog.empty() ? RSYNC_PROGRAM : prog)
 {
-   program = prog.empty() ? RSYNC_PROGRAM : prog;
 }
 
 RsyncMethod::RsyncConnExec::~RsyncConnExec()
