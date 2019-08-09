@@ -4088,7 +4088,7 @@ int main(int argc,const char *argv[])
       // *q = buffer checker, copying valid stuff to *p
       while (*q != 0)
       {
-	 if (largc > sizeof(largv)/sizeof(*largv))
+	 if (largc >= sizeof(largv)/sizeof(*largv))
 	 {
 	    _error->Error(_("Exceeded maximum number of command arguments"));
 	    break;
