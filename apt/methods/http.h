@@ -73,8 +73,11 @@ class CircleBuf
    void Reset();
    void Stats();
 
-   CircleBuf(unsigned long Size);
+   explicit CircleBuf(unsigned long Size);
    ~CircleBuf() {delete [] Buf; delete Hash;};
+
+   CircleBuf(const CircleBuf &other) = delete;
+   CircleBuf& operator=(const CircleBuf &other) = delete;
 };
 
 struct ServerState

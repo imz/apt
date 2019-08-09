@@ -20,8 +20,11 @@ class Argv
    char **args;
 
   public:
-   Argv(int msize);
+   explicit Argv(int msize);
    ~Argv();
+
+   Argv(const Argv &other) = delete;
+   Argv& operator=(const Argv &other) = delete;
 
    bool add(const char *arg);
    bool add(const string &arg) { return add( arg.c_str()); }

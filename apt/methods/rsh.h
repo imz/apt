@@ -45,7 +45,7 @@ class RSHConn
    bool Get(const char *Path,FileFd &To,unsigned long long Resume,
             Hashes &Hash,bool &Missing, unsigned long long Size);
 
-   RSHConn(URI Srv);
+   explicit RSHConn(URI Srv);
    ~RSHConn();
 };
 

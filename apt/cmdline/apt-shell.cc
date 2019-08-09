@@ -94,7 +94,7 @@ class AutoRestore
    inline pkgDepCache::State *operator ->() {return &State;};
    inline pkgDepCache::State *operator &() {return &State;};
    inline void UnGuard() { Guarded = false; };
-   AutoRestore(pkgDepCache &Cache)
+   explicit AutoRestore(pkgDepCache &Cache)
       : State(&Cache), Guarded(true) {};
    ~AutoRestore() { if (Guarded) State.Restore(); };
 };
@@ -105,7 +105,7 @@ class AutoReOpenCache
    bool Guarded;
    public:
    inline void UnGuard() { Guarded = false; };
-   AutoReOpenCache(CacheFile *&Cache)
+   explicit AutoReOpenCache(CacheFile *&Cache)
       : Cache(&Cache), Guarded(true) {};
    ~AutoReOpenCache()
    {

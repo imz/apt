@@ -59,7 +59,7 @@ class FTPConn
    bool Get(const char *Path,FileFd &To,unsigned long long Resume,
 	    Hashes &MD5,bool &Missing);
    
-   FTPConn(URI Srv);
+   explicit FTPConn(URI Srv);
    ~FTPConn();
 };
 
