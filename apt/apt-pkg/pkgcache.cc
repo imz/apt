@@ -275,6 +275,9 @@ void pkgCache::PrvIterator::_dummy() {}
 /* This will advance to the next logical package in the hash table. */
 void pkgCache::PkgIterator::operator ++(int) 
 {
+   if ((Owner == NULL) || (Pkg == NULL))
+      return;
+
    // Follow the current links
    if (Pkg != Owner->PkgP)
       Pkg = Owner->PkgP + Pkg->NextPackage;

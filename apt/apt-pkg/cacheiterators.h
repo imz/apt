@@ -60,7 +60,7 @@ class pkgCache::PkgIterator
    // Iteration
    void operator ++(int);
    inline void operator ++() {operator ++(0);};
-   inline bool end() const {return Owner == 0 || Pkg == Owner->PkgP?true:false;};
+   inline bool end() const {return (Owner == 0 || Pkg == 0 || Pkg == Owner->PkgP);};
 
    // Comparison
    inline bool operator ==(const PkgIterator &B) const {return Pkg == B.Pkg;};
@@ -113,9 +113,9 @@ class pkgCache::VerIterator
    public:
 
    // Iteration
-   void operator ++(int) {if (Ver != Owner->VerP) Ver = Owner->VerP + Ver->NextVer;};
+   void operator ++(int) {if ((Owner != NULL) && (Ver != NULL) && (Ver != Owner->VerP)) Ver = Owner->VerP + Ver->NextVer;};
    inline void operator ++() {operator ++(0);};
-   inline bool end() const {return Ver == Owner->VerP?true:false;};
+   inline bool end() const {return (Owner == NULL || Ver == NULL || Ver == Owner->VerP);};
    inline void operator =(const VerIterator &B) {Ver = B.Ver; Owner = B.Owner;};
    
    // Comparison
@@ -175,10 +175,10 @@ class pkgCache::DepIterator
    public:
 
    // Iteration
-   void operator ++(int) {if (Dep != Owner->DepP) Dep = Owner->DepP +
+   void operator ++(int) {if ((Owner != NULL) && (Dep != NULL) && (Dep != Owner->DepP)) Dep = Owner->DepP +
 	(Type == DepVer?Dep->NextDepends:Dep->NextRevDepends);};
    inline void operator ++() {operator ++(0);};
-   inline bool end() const {return Owner == 0 || Dep == Owner->DepP?true:false;};
+   inline bool end() const {return (Owner == 0 || Dep == 0 || Dep == Owner->DepP);};
    
    // Comparison
    inline bool operator ==(const DepIterator &B) const {return Dep == B.Dep;};
@@ -254,10 +254,10 @@ class pkgCache::PrvIterator
    public:
 
    // Iteration
-   void operator ++(int) {if (Prv != Owner->ProvideP) Prv = Owner->ProvideP +
+   void operator ++(int) {if ((Owner != NULL) && (Prv != NULL) && (Prv != Owner->ProvideP)) Prv = Owner->ProvideP +
 	(Type == PrvVer?Prv->NextPkgProv:Prv->NextProvides);};
    inline void operator ++() {operator ++(0);};
-   inline bool end() const {return Prv == Owner->ProvideP?true:false;};
+   inline bool end() const {return (Owner == NULL || Prv == NULL || Prv == Owner->ProvideP);};
    
    // Comparison
    inline bool operator ==(const PrvIterator &B) const {return Prv == B.Prv;};
@@ -311,9 +311,9 @@ class pkgCache::PkgFileIterator
    public:
 
    // Iteration
-   void operator ++(int) {if (File!= Owner->PkgFileP) File = Owner->PkgFileP + File->NextFile;};
+   void operator ++(int) {if ((Owner != NULL) && (File != NULL) && (File!= Owner->PkgFileP)) File = Owner->PkgFileP + File->NextFile;};
    inline void operator ++() {operator ++(0);};
-   inline bool end() const {return File == Owner->PkgFileP?true:false;};
+   inline bool end() const {return (Owner == NULL || File == NULL || File == Owner->PkgFileP);};
 
    // Comparison
    inline bool operator ==(const PkgFileIterator &B) const {return File == B.File;};
@@ -364,9 +364,9 @@ class pkgCache::VerFileIterator
    public:
 
    // Iteration
-   void operator ++(int) {if (FileP != Owner->VerFileP) FileP = Owner->VerFileP + FileP->NextFile;};
+   void operator ++(int) {if ((Owner != NULL) && (FileP != NULL) && (FileP != Owner->VerFileP)) FileP = Owner->VerFileP + FileP->NextFile;};
    inline void operator ++() {operator ++(0);};
-   inline bool end() const {return FileP == Owner->VerFileP?true:false;};
+   inline bool end() const {return (Owner == NULL || FileP == NULL || FileP == Owner->VerFileP);};
 
    // Comparison
    inline bool operator ==(const VerFileIterator &B) const {return FileP == B.FileP;};
