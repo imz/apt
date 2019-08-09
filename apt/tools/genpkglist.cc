@@ -488,8 +488,6 @@ int scandir(const char * dir, struct dirent *** namelist,
       }
     }
 
-  v[i] = NULL;
-
   if (errno != 0)
     {
       save = errno;
@@ -504,9 +502,13 @@ int scandir(const char * dir, struct dirent *** namelist,
   (void) closedir (dp);
   errno = save;
 
-  /* Sort the list if we have a comparison function to sort with.  */
-  if (cmp != NULL)
-    qsort (v, i, sizeof (struct dirent *), cmp);
+  if (v != NULL)
+  {
+    v[i] = NULL;
+    /* Sort the list if we have a comparison function to sort with.  */
+    if (cmp != NULL)
+      qsort (v, i, sizeof (struct dirent *), cmp);
+  }
 
   *namelist = v;
   return i;

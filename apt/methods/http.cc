@@ -844,19 +844,22 @@ bool HttpMethod::ServerDie(ServerState *Srv)
 {
    unsigned int LErrno = errno;
    
-   // Dump the buffer to the file
-   if (Srv->State == ServerState::Data)
+   if (File != 0)
    {
-      SetNonBlock(File->Fd(),false);
-      while (Srv->In.WriteSpace() == true)
+      // Dump the buffer to the file
+      if (Srv->State == ServerState::Data)
       {
-	 auto FileFD = MethodFd::FromFd(File->Fd());
-	 if (Srv->In.Write(FileFD) == false)
-	    return _error->Errno("write",_("Error writing to the file"));
+         SetNonBlock(File->Fd(),false);
+         while (Srv->In.WriteSpace() == true)
+         {
+	    auto FileFD = MethodFd::FromFd(File->Fd());
+	    if (Srv->In.Write(FileFD) == false)
+	       return _error->Errno("write",_("Error writing to the file"));
 
-	 // Done
-	 if (Srv->In.IsLimit() == true)
-	    return true;
+	    // Done
+	    if (Srv->In.IsLimit() == true)
+	       return true;
+         }
       }
    }
    
