@@ -625,7 +625,7 @@ bool pkgRPMExtPM::ExecRPM(Item::RPMOps op, const std::vector<apt_item> &files)
       if (_config->FindB("RPM::FlushSTDIN",true) == true)
       {
 	 int Flags,dummy;
-	 if ((Flags = fcntl(STDIN_FILENO,F_GETFL,dummy)) < 0)
+	 if ((Flags = fcntl(STDIN_FILENO,F_GETFL)) < 0)
 	     _exit(100);
 	 
 	 // Discard everything in stdin before forking dpkg
