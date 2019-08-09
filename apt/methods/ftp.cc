@@ -560,13 +560,16 @@ bool FTPConn::ExtGoPasv()
    string::const_iterator List[4];
    unsigned Count = 0;
    Pos++;
-   for (string::const_iterator I = Msg.begin() + Pos; I < Msg.end(); ++I)
+   if (Pos < Msg.size())
    {
-      if (*I != Msg[Pos])
-	 continue;
-      if (Count >= 4)
-	 return true;
-      List[Count++] = I;
+      for (string::const_iterator I = Msg.begin() + Pos; I != Msg.end(); ++I)
+      {
+         if (*I != Msg[Pos])
+	    continue;
+         if (Count >= 4)
+	    return true;
+         List[Count++] = I;
+      }
    }
    if (Count != 4)
       return true;
