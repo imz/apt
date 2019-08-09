@@ -388,8 +388,10 @@ bool pkgCache::DepIterator::SmartTargetPkg(PkgIterator &Result)
    must be delete [] 'd */
 pkgCache::Version **pkgCache::DepIterator::AllTargets()
 {
-   Version *Res[1024];
-   unsigned int Size = 0;
+   Version **Res = nullptr;
+   size_t Size = 0;
+
+   while (true)
    {
       PkgIterator DPkg = TargetPkg();
 
@@ -405,9 +407,9 @@ pkgCache::Version **pkgCache::DepIterator::AllTargets()
 	    continue;
 
 	 Version *v = I;
-	 if (Res != 0 && Size > 0) {
+	 if (Res != nullptr && Size > 0) {
 	    bool seen = false;
-	    for (unsigned int j = 0; j < Size; ++j) {
+	    for (size_t j = 0; j < Size; ++j) {
 	       Version *vj = Res[j];
 	       if (v == vj) {
 		  seen = true;
@@ -418,8 +420,10 @@ pkgCache::Version **pkgCache::DepIterator::AllTargets()
 	       continue;
 	 }
 
-	 assert(Size < sizeof(Res)/sizeof(*Res));
-	 Res[Size++] = v;
+	 if (Res != nullptr) {
+	    Res[Size] = v;
+	 }
+	 Size++;
       }
       
       // Follow all provides
@@ -434,9 +438,9 @@ pkgCache::Version **pkgCache::DepIterator::AllTargets()
 	    continue;
 
 	 Version *v = I.OwnerVer();
-	 if (Res != 0 && Size > 0) {
+	 if (Res != nullptr && Size > 0) {
 	    bool seen = false;
-	    for (unsigned int j = 0; j < Size; ++j) {
+	    for (size_t j = 0; j < Size; ++j) {
 	       Version *vj = Res[j];
 	       if (v == vj) {
 		  seen = true;
@@ -447,16 +451,25 @@ pkgCache::Version **pkgCache::DepIterator::AllTargets()
 	       continue;
 	 }
 
-	 assert(Size < sizeof(Res)/sizeof(*Res));
-	 Res[Size++] = v;
+	 if (Res != nullptr) {
+	    Res[Size] = v;
+	 }
+	 Size++;
+      }
+
+      if (Res == 0)
+      {
+	 Res = new Version *[Size+1];
+	 Size = 0;
+      }
+      else
+      {
+	 Res[Size] = nullptr;
+	 break;
       }
    }
-   
-   Version **Ret = new Version *[Size+1];
-   if (Size)
-      memcpy(Ret, Res, Size*sizeof(*Res));
-   Ret[Size] = 0;
-   return Ret;
+
+   return Res;
 }
 									/*}}}*/
 // DepIterator::GlobOr - Compute an OR group				/*{{{*/
