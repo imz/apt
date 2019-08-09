@@ -369,9 +369,10 @@ bool RsyncMethod::RsyncConnExec::Get(pkgAcqMethod *Owner, FetchResult &FRes, con
 	  return false;
    }
    if ( RsyncMethod::Debug )
+   {
 	  cerr << "RSYNC: Created pipe [" << p[0] << ',' << p[1] << ']' << endl;
-   if ( RsyncMethod::Debug )
 	  cerr << "RSYNC: Starting: " << string(argv) << endl;
+   }
 
    switch ( ChildPid = fork() ) {
 	  case -1:

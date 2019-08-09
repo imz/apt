@@ -3044,8 +3044,9 @@ bool DoList(CommandLine &CmdL)
 	    PkgSection = Pkg.Section();
 	    StrLen = strlen(Str);
     	    string status = "available";
-	    if (Pkg->CurrentVer != 0) status = "installed";
-            if (Pkg->CurrentVer != 0)
+	    if (Pkg->CurrentVer != 0)
+	    {
+	        status = "installed";
               for (pkgCache::DepIterator D = Pkg.RevDependsList(); not D.end(); ++D)
                {
 	          pkgCache::PkgIterator P = D.ParentPkg();
@@ -3053,7 +3054,9 @@ bool DoList(CommandLine &CmdL)
 	          (P->Flags & pkgCache::Flag::Important) != pkgCache::Flag::Important)
 	             continue;
 	          status = "locked";
+	          break;
                }
+	    }
 	    if (Pkg->CurrentVer != 0 && Cache[Pkg].Upgradable() == true) status = "upgradable";
 	    if (Cache[Pkg].NewInstall()) status = "be-installed";
 	    if (Cache[Pkg].Delete()) status = "be-removed";
