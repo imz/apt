@@ -111,8 +111,10 @@ bool RPMIndexCopy::CopyPackages(const string &CDROM,const string &Name,vector<st
 	    SetCloseExec(STDIN_FILENO,false);
 	    SetCloseExec(STDOUT_FILENO,false);
 	    
+	    std::string arg_0 = _config->Find("Dir::Bin::bzip2","bzip2");
+
 	    const char *Args[3];
-	    Args[0] = _config->Find("Dir::Bin::bzip2","bzip2").c_str();
+	    Args[0] = arg_0.c_str();
 	    Args[1] = "-d";
 	    Args[2] = 0;
 	    execvp(Args[0],(char **)Args);
