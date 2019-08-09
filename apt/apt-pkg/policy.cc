@@ -86,7 +86,7 @@ bool pkgPolicy::InitDefaults()
    signed Cur = 989;
    StatusOverride = false;
    for (vector<Pin>::const_iterator I = Defaults.begin(); I != Defaults.end();
-	I++, Cur--)
+	++I, --Cur)
    {
       pkgVersionMatch Match(I->Data,I->Type);
       for (pkgCache::PkgFileIterator F = Cache->FileBegin(); F != Cache->FileEnd(); F++)
@@ -197,7 +197,7 @@ void pkgPolicy::CreatePin(pkgVersionMatch::MatchType Type, const string &Name,
       {
 	 // Check the unmatched table
 	 for (vector<PkgPin>::iterator I = Unmatched.begin(); 
-	      I != Unmatched.end() && P == 0; I++)
+	      I != Unmatched.end() && P == 0; ++I)
 	    if (I->Pkg == Name)
 	       P = &*I;
 	 
@@ -343,7 +343,7 @@ bool ReadPinDir(pkgPolicy &Plcy,string Dir)
    sort(List.begin(),List.end());
 
    // Read the files
-   for (vector<string>::const_iterator I = List.begin(); I != List.end(); I++)
+   for (vector<string>::const_iterator I = List.begin(); I != List.end(); ++I)
       if (ReadPinFile(Plcy, *I) == false)
 	 return false;
    return true;

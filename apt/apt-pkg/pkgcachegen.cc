@@ -802,7 +802,7 @@ static bool CheckValidity(const string &CacheFile, FileIterator Start,
       verify the IMS data and check that it is on the disk too.. */
    SPtrArray<bool> Visited = new bool[Cache.HeaderP->PackageFileCount];
    memset(Visited,0,sizeof(*Visited)*Cache.HeaderP->PackageFileCount);
-   for (; Start != End; Start++)
+   for (; Start != End; ++Start)
    {      
       if ((*Start)->HasPackages() == false)
 	 continue;
@@ -845,7 +845,7 @@ static bool CheckValidity(const string &CacheFile, FileIterator Start,
 static unsigned long long ComputeSize(FileIterator Start,FileIterator End)
 {
    unsigned long long TotalSize = 0;
-   for (; Start != End; Start++)
+   for (; Start != End; ++Start)
    {
       if ((*Start)->HasPackages() == false)
 	 continue;      
@@ -863,7 +863,7 @@ static bool BuildCache(pkgCacheGenerator &Gen,
 		       FileIterator Start, FileIterator End)
 {
    FileIterator I;
-   for (I = Start; I != End; I++)
+   for (I = Start; I != End; ++I)
    {
       if ((*I)->HasPackages() == false)
 	 continue;
@@ -913,7 +913,7 @@ static bool CollectFileProvides(pkgCacheGenerator &Gen,
 				unsigned long long &CurrentSize,unsigned long long TotalSize,
 			        FileIterator Start, FileIterator End)
 {
-   for (FileIterator I = Start; I != End; I++)
+   for (FileIterator I = Start; I != End; ++I)
    {
       if ((*I)->HasPackages() == false || (*I)->Exists() == false)
 	 continue;

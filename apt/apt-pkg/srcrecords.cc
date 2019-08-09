@@ -34,7 +34,7 @@ pkgSrcRecords::pkgSrcRecords(pkgSourceList &List) : Files(0), Current(0)
    
    unsigned int Count = 0;
    pkgSourceList::const_iterator I = List.begin();
-   for (; I != List.end(); I++)
+   for (; I != List.end(); ++I)
    {
       Files[Count] = (*I)->CreateSrcParser();
       if (_error->PendingError() == true)
@@ -119,7 +119,7 @@ pkgSrcRecords::Parser *pkgSrcRecords::Find(const char *Package,bool SrcOnly)
       vector<pkgSrcRecords::File> Files;
       if ((*Current)->Files(Files) == true) {
          vector<pkgSrcRecords::File>::const_iterator I = Files.begin();
-	 for (; I != Files.end(); I++) {
+	 for (; I != Files.end(); ++I) {
             if (flNotDir(I->Path) == flNotDir(Package))
 	       return *Current;
 	 }

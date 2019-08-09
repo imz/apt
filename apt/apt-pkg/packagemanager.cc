@@ -65,7 +65,7 @@ bool pkgPackageManager::GetArchives(pkgAcquire *Owner,pkgSourceList *Sources,
    if (List->OrderUnpack() == false)
       return _error->Error("Internal ordering error");
 
-   for (pkgOrderList::iterator I = List->begin(); I != List->end(); I++)
+   for (pkgOrderList::iterator I = List->begin(); I != List->end(); ++I)
    {
       PkgIterator Pkg(Cache,*I);
       FileNames[Pkg->ID] = string();
@@ -236,7 +236,7 @@ bool pkgPackageManager::ConfigureAll()
    pkgOrderList OList(&Cache);
    
    // Populate the order list
-   for (pkgOrderList::iterator I = List->begin(); I != List->end(); I++)
+   for (pkgOrderList::iterator I = List->begin(); I != List->end(); ++I)
       if (List->IsFlag(pkgCache::PkgIterator(Cache,*I),
 		       pkgOrderList::UnPacked) == true)
 	 OList.push_back(*I);
@@ -245,7 +245,7 @@ bool pkgPackageManager::ConfigureAll()
       return false;
    
    // Perform the configuring
-   for (pkgOrderList::iterator I = OList.begin(); I != OList.end(); I++)
+   for (pkgOrderList::iterator I = OList.begin(); I != OList.end(); ++I)
    {
       PkgIterator Pkg(Cache,*I);
       
@@ -273,7 +273,7 @@ bool pkgPackageManager::SmartConfigure(PkgIterator Pkg)
       return false;
    
    // Perform the configuring
-   for (pkgOrderList::iterator I = OList.begin(); I != OList.end(); I++)
+   for (pkgOrderList::iterator I = OList.begin(); I != OList.end(); ++I)
    {
       PkgIterator Pkg(Cache,*I);
       
@@ -593,7 +593,7 @@ pkgPackageManager::OrderResult pkgPackageManager::OrderInstall()
       clog << "Done ordering" << endl;
 
    bool DoneSomething = false;
-   for (pkgOrderList::iterator I = List->begin(); I != List->end(); I++)
+   for (pkgOrderList::iterator I = List->begin(); I != List->end(); ++I)
    {
       PkgIterator Pkg(Cache,*I);
 
@@ -648,7 +648,7 @@ pkgPackageManager::OrderResult pkgPackageManager::OrderInstall()
       return Failed;
 
    // Sanity check
-   for (pkgOrderList::iterator I = List->begin(); I != List->end(); I++)
+   for (pkgOrderList::iterator I = List->begin(); I != List->end(); ++I)
    {
       if (List->IsFlag(*I,pkgOrderList::Configured) == false)
       {

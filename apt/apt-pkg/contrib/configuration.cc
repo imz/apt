@@ -809,7 +809,7 @@ bool ReadConfigDir(Configuration &Conf,const string &Dir,bool AsSectional,
    sort(List.begin(),List.end());
 
    // Read the files
-   for (vector<string>::const_iterator I = List.begin(); I != List.end(); I++)
+   for (vector<string>::const_iterator I = List.begin(); I != List.end(); ++I)
       if (ReadConfigFile(Conf,*I,AsSectional,Depth) == false)
 	 return false;
    return true;

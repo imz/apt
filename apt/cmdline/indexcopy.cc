@@ -43,7 +43,7 @@ bool IndexCopy::CopyPackages(const string &CDROM,const string &Name,vector<strin
    
    // Prepare the progress indicator
    unsigned long long TotalSize = 0;
-   for (vector<string>::iterator I = List.begin(); I != List.end(); I++)
+   for (vector<string>::iterator I = List.begin(); I != List.end(); ++I)
    {
       struct stat Buf;
       if (stat(string(*I + GetFileName()).c_str(),&Buf) != 0 &&
@@ -57,7 +57,7 @@ bool IndexCopy::CopyPackages(const string &CDROM,const string &Name,vector<strin
    unsigned int NotFound = 0;
    unsigned int WrongSize = 0;
    unsigned int Packages = 0;
-   for (vector<string>::iterator I = List.begin(); I != List.end(); I++)
+   for (vector<string>::iterator I = List.begin(); I != List.end(); ++I)
    {      
       string OrigPath = string(*I,CDROM.length());
       unsigned long FileSize = 0;

@@ -149,10 +149,10 @@ pkgSourceList::pkgSourceList(const string &File)
 /* */
 pkgSourceList::~pkgSourceList()
 {
-   for (const_iterator I = SrcList.begin(); I != SrcList.end(); I++)
+   for (const_iterator I = SrcList.begin(); I != SrcList.end(); ++I)
       delete *I;
    for (vector<Vendor *>::iterator I = VendorList.begin(); 
-	I != VendorList.end(); I++)
+	I != VendorList.end(); ++I)
       delete *I;
 }
 									/*}}}*/
@@ -176,7 +176,7 @@ bool pkgSourceList::ReadVendors()
 	 return false;
 
    for (vector<Vendor *>::iterator I = VendorList.begin(); 
-	I != VendorList.end(); I++)
+	I != VendorList.end(); ++I)
       delete *I;
    VendorList.erase(VendorList.begin(),VendorList.end());
 
@@ -190,7 +190,7 @@ bool pkgSourceList::ReadVendors()
       bool New = true;
       
       for (vector<pkgSourceList::Vendor *>::iterator I = VendorList.begin(); 
-	   I != VendorList.end(); I++)
+	   I != VendorList.end(); ++I)
       {
         if ((*I)->VendorID == Group)
 	{
@@ -213,7 +213,7 @@ bool pkgSourceList::ReadVendors()
       char *buffer = new char[FingerPrint.length()+1];
       char *p = buffer;;
       for (string::const_iterator I = FingerPrint.begin();
-	   I != FingerPrint.end(); I++)
+	   I != FingerPrint.end(); ++I)
       {
 	 if (*I != ' ' && *I != '\t')
 	    *p++ = *I;
@@ -292,7 +292,7 @@ bool pkgSourceList::ReadMainList()
 /* */
 void pkgSourceList::Reset()
 {
-   for (const_iterator I = SrcList.begin(); I != SrcList.end(); I++)
+   for (const_iterator I = SrcList.begin(); I != SrcList.end(); ++I)
       delete *I;
    SrcList.erase(SrcList.begin(),SrcList.end());
    // CNC:2003-11-21
@@ -374,7 +374,7 @@ bool pkgSourceList::ReadAppend(const string &File)
 	 VendorID = string(VendorID,1,VendorID.size()-2);
 	 
 	 for (vector<Vendor *>::iterator iter = VendorList.begin();
-	      iter != VendorList.end(); iter++) 
+	      iter != VendorList.end(); ++iter)
 	 {
 	    if ((*iter)->VendorID == VendorID)
 	    {
@@ -400,7 +400,7 @@ bool pkgSourceList::ReadAppend(const string &File)
 bool pkgSourceList::FindIndex(pkgCache::PkgFileIterator File,
 			      pkgIndexFile *&Found) const
 {
-   for (const_iterator I = SrcList.begin(); I != SrcList.end(); I++)
+   for (const_iterator I = SrcList.begin(); I != SrcList.end(); ++I)
    {
       if ((*I)->FindInCache(*File.Cache()) == File)
       {
@@ -417,7 +417,7 @@ bool pkgSourceList::FindIndex(pkgCache::PkgFileIterator File,
 /* */
 bool pkgSourceList::GetIndexes(pkgAcquire *Owner) const
 {
-   for (const_iterator I = SrcList.begin(); I != SrcList.end(); I++)
+   for (const_iterator I = SrcList.begin(); I != SrcList.end(); ++I)
       if ((*I)->GetIndexes(Owner) == false)
 	 return false;
    return true;
@@ -429,7 +429,7 @@ bool pkgSourceList::GetIndexes(pkgAcquire *Owner) const
 /* */
 bool pkgSourceList::GetReleases(pkgAcquire *Owner) const
 {
-   for (const_iterator I = SrcList.begin(); I != SrcList.end(); I++)
+   for (const_iterator I = SrcList.begin(); I != SrcList.end(); ++I)
       if ((*I)->GetReleases(Owner) == false)
 	 return false;
    return true;
@@ -479,7 +479,7 @@ bool pkgSourceList::ReadSourceDir(const string &Dir)
    sort(List.begin(),List.end());
 
    // Read the files
-   for (vector<string>::const_iterator I = List.begin(); I != List.end(); I++)
+   for (vector<string>::const_iterator I = List.begin(); I != List.end(); ++I)
       if (ReadAppend(*I) == false)
 	 return false;
    return true;

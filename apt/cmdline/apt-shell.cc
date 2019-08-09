@@ -1318,7 +1318,7 @@ bool DoInstall(CommandLine &CmdL)
 	    // Run over the matches
 	    bool Hit = false;
 	    for (vector<string>::const_iterator I = VS.begin();
-	         I != VS.end(); I++) {
+	         I != VS.end(); ++I) {
 
 	       Pkg = Cache->FindPkg(*I);
 	       if (Pkg.end() == true)
@@ -1776,7 +1776,7 @@ bool DoBuildDep(CommandLine &CmdL)
       vector <pkgSrcRecords::Parser::BuildDepRec>::iterator D;
       pkgProblemResolver Fix(Cache);
       bool skipAlternatives = false; // skip remaining alternatives in an or group
-      for (D = BuildDeps.begin(); D != BuildDeps.end(); D++)
+      for (D = BuildDeps.begin(); D != BuildDeps.end(); ++D)
       {
          bool hasAlternatives = (((*D).Op & pkgCache::Dep::Or) == pkgCache::Dep::Or);
 
@@ -3034,7 +3034,7 @@ bool DoList(CommandLine &CmdL)
     	    string status = "available";
 	    if (Pkg->CurrentVer != 0) status = "installed";
             if (Pkg->CurrentVer != 0)
-              for (pkgCache::DepIterator D = Pkg.RevDependsList(); D.end() == false; D++)
+              for (pkgCache::DepIterator D = Pkg.RevDependsList(); not D.end(); ++D)
                {
 	          pkgCache::PkgIterator P = D.ParentPkg();
                   if ((P->Flags & pkgCache::Flag::Essential) != pkgCache::Flag::Essential &&

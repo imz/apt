@@ -317,7 +317,7 @@ void ReduceSourcelist(const string &CD,vector<string> &List)
    sort(List.begin(),List.end());
    
    // Collect similar entries
-   for (vector<string>::iterator I = List.begin(); I != List.end(); I++)
+   for (vector<string>::iterator I = List.begin(); I != List.end(); ++I)
    {
       // Find a space..
       string::size_type Space = (*I).find(' ');
@@ -329,7 +329,7 @@ void ReduceSourcelist(const string &CD,vector<string> &List)
 
       string Word1 = string(*I,Space,SSpace-Space);
       string Prefix = string(*I,0,Space);
-      for (vector<string>::iterator J = List.begin(); J != I; J++)
+      for (vector<string>::iterator J = List.begin(); J != I; ++J)
       {
 	 // Find a space..
 	 string::size_type Space2 = (*J).find(' ');
@@ -467,7 +467,7 @@ bool WriteSourceList(const string &Name,vector<string> &List,bool Source)
 
       if (First == true)
       {
-	 for (vector<string>::iterator I = List.begin(); I != List.end(); I++)
+	 for (vector<string>::iterator I = List.begin(); I != List.end(); ++I)
 	 {
 	    string::size_type Space = (*I).find(' ');
 	    if (Space == string::npos)
@@ -501,7 +501,7 @@ bool WriteSourceList(const string &Name,vector<string> &List,bool Source)
    // Just in case the file was empty
    if (First == true)
    {
-      for (vector<string>::iterator I = List.begin(); I != List.end(); I++)
+      for (vector<string>::iterator I = List.begin(); I != List.end(); ++I)
       {
 	 string::size_type Space = (*I).find(' ');
 	 if (Space == string::npos)
@@ -641,10 +641,10 @@ bool DoAdd(CommandLine &)
    if (_config->FindB("Debug::aptcdrom",false) == true)
    {
       cout << _("I found (binary):") << endl;
-      for (vector<string>::iterator I = List.begin(); I != List.end(); I++)
+      for (vector<string>::iterator I = List.begin(); I != List.end(); ++I)
 	 cout << *I << endl;
       cout << _("I found (source):") << endl;
-      for (vector<string>::iterator I = sList.begin(); I != sList.end(); I++)
+      for (vector<string>::iterator I = sList.begin(); I != sList.end(); ++I)
 	 cout << *I << endl;
    }   
    
@@ -686,7 +686,7 @@ bool DoAdd(CommandLine &)
 	 {
 	    // Escape special characters
 	    string::iterator J = Name.begin();
-	    for (; J != Name.end(); J++)
+	    for (; J != Name.end(); ++J)
 	       if (*J == '"' || *J == ']' || *J == '[')
 		  *J = '_';
 	    
@@ -717,7 +717,7 @@ bool DoAdd(CommandLine &)
 
    // Escape special characters
    string::iterator J = Name.begin();
-   for (; J != Name.end(); J++)
+   for (; J != Name.end(); ++J)
       if (*J == '"' || *J == ']' || *J == '[')
 	 *J = '_';
    
@@ -756,7 +756,7 @@ bool DoAdd(CommandLine &)
 
    // Print the sourcelist entries
    cout << _("Source List entries for this Media are:") << endl;
-   for (vector<string>::iterator I = List.begin(); I != List.end(); I++)
+   for (vector<string>::iterator I = List.begin(); I != List.end(); ++I)
    {
       string::size_type Space = (*I).find(' ');
       if (Space == string::npos)
@@ -772,7 +772,7 @@ bool DoAdd(CommandLine &)
 #endif
    }
 
-   for (vector<string>::iterator I = sList.begin(); I != sList.end(); I++)
+   for (vector<string>::iterator I = sList.begin(); I != sList.end(); ++I)
    {
       string::size_type Space = (*I).find(' ');
       if (Space == string::npos)

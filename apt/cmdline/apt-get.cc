@@ -541,8 +541,7 @@ bool DownloadPackages(vector<string> &URLLst)
    pkgAcquire Fetcher(&Stat);
 
    // Load the requestd sources into the fetcher
-   vector<string>::const_iterator I = URLLst.begin();
-   for (; I != URLLst.end(); I++)
+   for (auto I = URLLst.begin(); I != URLLst.end(); ++I)
       new pkgAcqFile(&Fetcher,*I,"",0,*I,flNotDir(*I));
    
    // Run it
@@ -551,7 +550,7 @@ bool DownloadPackages(vector<string> &URLLst)
 
    // Print error messages
    bool Failed = false;
-   for (pkgAcquire::ItemIterator I = Fetcher.ItemsBegin(); I != Fetcher.ItemsEnd(); I++)
+   for (auto I = Fetcher.ItemsBegin(); I != Fetcher.ItemsEnd(); ++I)
    {
       if ((*I)->Status == pkgAcquire::Item::StatDone &&
 	  (*I)->Complete == true)
@@ -1407,7 +1406,7 @@ bool DoInstall(CommandLine &CmdL)
 	    // Run over the matches
 	    bool Hit = false;
 	    for (vector<string>::const_iterator I = VS.begin();
-	         I != VS.end(); I++) {
+	         I != VS.end(); ++I) {
 
 	       Pkg = Cache->FindPkg(*I);
 	       if (Pkg.end() == true)
@@ -1721,8 +1720,7 @@ bool DoDSelectUpgrade(CommandLine &CmdL)
       return false;
    
    // Install everything with the install flag set
-   pkgCache::PkgIterator I = Cache->PkgBegin();
-   for (;I.end() != true; I++)
+   for (auto I = Cache->PkgBegin(); not I.end(); ++I)
    {
       /* Install the package only if it is a new install, the autoupgrader
          will deal with the rest */
@@ -1732,7 +1730,7 @@ bool DoDSelectUpgrade(CommandLine &CmdL)
 
    /* Now install their deps too, if we do this above then order of
       the status file is significant for | groups */
-   for (I = Cache->PkgBegin();I.end() != true; I++)
+   for (auto I = Cache->PkgBegin(); not I.end(); ++I)
    {
       /* Install the package only if it is a new install, the autoupgrader
          will deal with the rest */
@@ -1741,7 +1739,7 @@ bool DoDSelectUpgrade(CommandLine &CmdL)
    }
    
    // Apply erasures now, they override everything else.
-   for (I = Cache->PkgBegin();I.end() != true; I++)
+   for (auto I = Cache->PkgBegin(); not I.end(); ++I)
    {
       // Remove packages 
       if (I->SelectedState == pkgCache::State::DeInstall ||
@@ -1758,7 +1756,7 @@ bool DoDSelectUpgrade(CommandLine &CmdL)
       // Hold back held packages.
       if (_config->FindB("APT::Ignore-Hold",false) == false)
       {
-	 for (pkgCache::PkgIterator I = Cache->PkgBegin(); I.end() == false; I++)
+	 for (auto I = Cache->PkgBegin(); not I.end(); ++I)
 	 {
 	    if (I->SelectedState == pkgCache::State::Hold)
 	    {
@@ -1949,7 +1947,7 @@ bool DoSource(CommandLine &CmdL)
 
       // Load them into the fetcher
       for (vector<pkgSrcRecords::File>::const_iterator I = Lst.begin();
-	   I != Lst.end(); I++)
+	   I != Lst.end(); ++I)
       {
 	 // Try to guess what sort of file it is we are getting.
 	 // CNC:2002-07-06
@@ -2225,7 +2223,7 @@ bool DoBuildDep(CommandLine &CmdL)
       vector <pkgSrcRecords::Parser::BuildDepRec>::iterator D;
       pkgProblemResolver Fix(Cache);
       bool skipAlternatives = false; // skip remaining alternatives in an or group
-      for (D = BuildDeps.begin(); D != BuildDeps.end(); D++)
+      for (D = BuildDeps.begin(); D != BuildDeps.end(); ++D)
       {
          bool hasAlternatives = (((*D).Op & pkgCache::Dep::Or) == pkgCache::Dep::Or);
 

@@ -53,7 +53,7 @@ bool RPMIndexCopy::CopyPackages(const string &CDROM,const string &Name,vector<st
    
    // Prepare the progress indicator
    unsigned long long TotalSize = 0;
-   for (vector<string>::iterator I = List.begin(); I != List.end(); I++)
+   for (vector<string>::iterator I = List.begin(); I != List.end(); ++I)
    {
       struct stat Buf;
       if (stat((*I).c_str(),&Buf) != 0)
@@ -67,7 +67,7 @@ bool RPMIndexCopy::CopyPackages(const string &CDROM,const string &Name,vector<st
    // Keep track of global release processing
    map<string,bool> GlobalReleases;
 
-   for (vector<string>::iterator I = List.begin(); I != List.end(); I++)
+   for (vector<string>::iterator I = List.begin(); I != List.end(); ++I)
    {      
       string OrigPath = string(*I,CDROM.length());
       unsigned long long FileSize = 0;

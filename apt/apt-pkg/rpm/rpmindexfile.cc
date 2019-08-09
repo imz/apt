@@ -648,7 +648,7 @@ class rpmSLTypeGen : public pkgSourceList::Type
 				 const pkgSourceList::Vendor *Vendor) const
    {
       for (vector<pkgRepository *>::const_iterator iter = RepList.begin();
-	   iter != RepList.end(); iter++) 
+	   iter != RepList.end(); ++iter)
       {
 	 if ((*iter)->URI == URI && (*iter)->Dist == Dist) 
 	 {	 

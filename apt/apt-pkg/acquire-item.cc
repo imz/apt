@@ -486,7 +486,7 @@ void pkgAcqIndexRel::Done(const string &Message,unsigned long long Size,const st
 
  	 bool found = false;
  	 for (vector<string>::const_iterator I = Repository->FingerPrint.begin();
- 	      I != Repository->FingerPrint.end(); I++)
+ 	      I != Repository->FingerPrint.end(); ++I)
  	 {
  	    // Match fingerprint of Release file
  	    if ((*I) == FingerPrint)
@@ -501,7 +501,7 @@ void pkgAcqIndexRel::Done(const string &Message,unsigned long long Size,const st
  	    Status = StatError;
  	    ErrorText = _("Signature fingerprint of Release file does not match (expected ");
  	    for (vector<string>::const_iterator I = Repository->FingerPrint.begin();
- 		 I != Repository->FingerPrint.end(); I++)
+ 		 I != Repository->FingerPrint.end(); ++I)
  	      ErrorText += "\n"+(*I);
  	    ErrorText += _(", got ")+FingerPrint+")";
   	    return;

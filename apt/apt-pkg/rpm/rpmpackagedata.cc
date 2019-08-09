@@ -222,7 +222,7 @@ RPMPackageData::RPMPackageData()
 bool RPMPackageData::HoldPackage(const char *name)
 {
    for (vector<regex_t*>::iterator I = HoldPackages.begin();
-	I != HoldPackages.end(); I++)
+	I != HoldPackages.end(); ++I)
       if (regexec(*I,name,0,0,0) == 0)
 	 return true;
    return false;
@@ -237,7 +237,7 @@ bool RPMPackageData::IgnoreDep(pkgVersioningSystem &VS,
       if (VerList == NULL)
 	 return true;
       for (vector<string>::iterator I = VerList->begin();
-	   I != VerList->end(); I++)
+	   I != VerList->end(); ++I)
       {
 	 if (VS.CheckDep(I->c_str(),Dep->CompareOp,Dep.TargetVer()) == true)
 	    return true;
@@ -276,7 +276,7 @@ void RPMPackageData::GenericTranslate(vector<Translate*> &TList,
 				      map<string,string> &Dict)
 {
    const char *fulluri = FullURI.c_str();
-   for (vector<Translate*>::iterator I = TList.begin(); I != TList.end(); I++)
+   for (vector<Translate*>::iterator I = TList.begin(); I != TList.end(); ++I)
    {
       if (regexec(&(*I)->Pattern,fulluri,0,0,0) == 0)
       {
@@ -323,7 +323,7 @@ bool RPMPackageData::IsDupPackage(const string &Name)
       return true;
    const char *name = Name.c_str();
    for (vector<regex_t*>::iterator I = DuplicatedPatterns.begin();
-	I != DuplicatedPatterns.end(); I++) {
+	I != DuplicatedPatterns.end(); ++I) {
       if (regexec(*I,name,0,0,0) == 0) {
 	 SetDupPackage(Name);
 	 return true;

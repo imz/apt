@@ -63,7 +63,7 @@ pkgVersionMatch::pkgVersionMatch(const string &Data,MatchType Type,int Op) : Ver
       
       // Are we a simple specification?
       string::const_iterator I = Data.begin();
-      for (; I != Data.end() && *I != '='; I++);
+      for (; I != Data.end() && *I != '='; ++I);
       if (I == Data.end())
       {
 	 // Temporary

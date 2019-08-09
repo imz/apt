@@ -241,7 +241,7 @@ bool pkgRPMPM::RunScriptsWithPkgs(const char *Cnf)
       FileFd Fd(Pipes[1]);
 
       // Feed it the filenames.
-      for (vector<Item>::iterator I = List.begin(); I != List.end(); I++)
+      for (vector<Item>::iterator I = List.begin(); I != List.end(); ++I)
       {
 	 // Only deal with packages to be installed from .rpm
 	 if (I->Op != Item::Install)
@@ -298,7 +298,7 @@ bool pkgRPMPM::Go()
 
    vector<char*> unalloc;
    
-   for (vector<Item>::iterator I = List.begin(); I != List.end(); I++)
+   for (vector<Item>::iterator I = List.begin(); I != List.end(); ++I)
    {
       string Name = I->Pkg.Name();
       string::size_type loc;
@@ -391,7 +391,7 @@ bool pkgRPMPM::Go()
       Ret = RunScripts("RPM::Post-Invoke");
 
 exit:
-   for (vector<char *>::iterator I = unalloc.begin(); I != unalloc.end(); I++)
+   for (vector<char *>::iterator I = unalloc.begin(); I != unalloc.end(); ++I)
       free(*I);
 
    return Ret;

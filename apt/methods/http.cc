@@ -383,10 +383,10 @@ int ServerState::RunHeaders()
       if (Debug == true)
 	 clog << Data;
       
-      for (string::const_iterator I = Data.begin(); I < Data.end(); I++)
+      for (string::const_iterator I = Data.begin(); I != Data.end(); ++I)
       {
 	 string::const_iterator J = I;
-	 for (; J != Data.end() && *J != '\n' && *J != '\r';J++);
+	 for (; J != Data.end() && *J != '\n' && *J != '\r';++J);
 	 if (HeaderLine(string(I,J)) == false)
 	    return 2;
 	 I = J;
@@ -937,7 +937,7 @@ int HttpMethod::DealWithHeaders(FetchResult &Res,ServerState *Srv)
       if (ParsedURI.User.empty())
       {
 	 for (CurrentAuth = AuthList.begin(); CurrentAuth != AuthList.end();
-	      CurrentAuth++)
+	      ++CurrentAuth)
 	    if (CurrentAuth->Host == Srv->ServerName.Host)
 	    {
 	       AuthUser = CurrentAuth->User;
@@ -968,7 +968,7 @@ int HttpMethod::DealWithHeaders(FetchResult &Res,ServerState *Srv)
 	    NewAuthInfo.Password = AuthPass;
 
 	    for (CurrentAuth = AuthList.begin(); CurrentAuth != AuthList.end();
-		 CurrentAuth++)
+		 ++CurrentAuth)
 	       if (CurrentAuth->Host == Srv->ServerName.Host)
 	       {
 		  *CurrentAuth = NewAuthInfo;
@@ -1345,7 +1345,7 @@ int HttpMethod::Loop()
 	       StopRedirects = true;
 	    else
 	    {
-	       for (StringVectorIterator I = R.begin();	I != R.end(); I++)
+	       for (StringVectorIterator I = R.begin();	I != R.end(); ++I)
 		  if (Queue->Uri == *I)
 		  {
 		     R[0] = "STOP";
