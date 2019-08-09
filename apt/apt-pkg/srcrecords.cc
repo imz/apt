@@ -145,7 +145,7 @@ const char *pkgSrcRecords::Parser::BuildDepType(unsigned char Type)
                            "Build-Depends-Indep",
 			   "Build-Conflicts",
 			   "Build-Conflicts-Indep"};
-   if (Type < 4) 
+   if (Type < sizeof(fields)/sizeof(*fields))
       return fields[Type]; 
    else 
       return "";
