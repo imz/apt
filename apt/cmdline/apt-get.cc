@@ -190,6 +190,8 @@ bool CheckOnly(CacheFile &Cache)
 // CNC:2002-07-06
 bool DoClean(CommandLine &CmdL);
 bool DoAutoClean(CommandLine &CmdL);
+static bool DoCleanImpl();
+static bool DoAutoCleanImpl();
 
 // InstallPackages - Actually download and install the packages		/*{{{*/
 // ---------------------------------------------------------------------
@@ -508,11 +510,10 @@ bool InstallPackages(CacheFile &Cache,bool ShwKept,bool Ask = true,
 	 // CNC:2002-07-06
 	 if (Res == pkgPackageManager::Completed)
 	 {
-	    CommandLine *CmdL = NULL; // Watch out! If used will blow up!
 	    if (_config->FindB("APT::Post-Install::Clean",false) == true) 
-	       Ret &= DoClean(*CmdL);
+	       Ret &= DoCleanImpl();
 	    else if (_config->FindB("APT::Post-Install::AutoClean",false) == true) 
-	       Ret &= DoAutoClean(*CmdL);
+	       Ret &= DoAutoCleanImpl();
 	    return Ret;
 	 }
 	 
@@ -1790,7 +1791,7 @@ bool DoDSelectUpgrade(CommandLine &CmdL)
 // DoClean - Remove download archives					/*{{{*/
 // ---------------------------------------------------------------------
 /* */
-bool DoClean(CommandLine &CmdL)
+static bool DoCleanImpl()
 {
    if (_config->FindB("APT::Get::Simulate") == true)
    {
@@ -1813,6 +1814,12 @@ bool DoClean(CommandLine &CmdL)
    Fetcher.Clean(_config->FindDir("Dir::Cache::archives") + "partial/");
    return true;
 }
+
+bool DoClean(CommandLine &CmdL)
+{
+   return DoCleanImpl();
+}
+
 									/*}}}*/
 // DoAutoClean - Smartly remove downloaded archives			/*{{{*/
 // ---------------------------------------------------------------------
@@ -1830,7 +1837,7 @@ class LogCleaner : public pkgArchiveCleaner
    };
 };
 
-bool DoAutoClean(CommandLine &CmdL)
+static bool DoAutoCleanImpl()
 {
    // Lock the archive directory
    FileFd Lock;
@@ -1849,6 +1856,11 @@ bool DoAutoClean(CommandLine &CmdL)
    
    return Cleaner.Go(_config->FindDir("Dir::Cache::archives"),*Cache) &&
       Cleaner.Go(_config->FindDir("Dir::Cache::archives") + "partial/",*Cache);
+}
+
+bool DoAutoClean(CommandLine &CmdL)
+{
+   return DoAutoCleanImpl();
 }
 									/*}}}*/
 // DoCheck - Perform the check operation				/*{{{*/
