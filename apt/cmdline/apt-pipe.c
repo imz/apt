@@ -155,7 +155,7 @@ static int send_reply(int sock, char *buf, ssize_t bufsize, int fd)
 }
 
 static int mainloop(int servsock) {
-	int cl;
+	int cl = -1;
 	int done = 0;
 	char buf[65536];
 
@@ -173,7 +173,10 @@ static int mainloop(int servsock) {
 		if ((received = recv_query(cl, buf, sizeof(buf), &fd)) > 0 && fd != -1)
 			done = send_reply(cl, buf, received, fd);
 		if (!done)
+		{
 			close(cl);
+			cl = -1;
+		}
 	}
 
 	close(servsock);
@@ -254,7 +257,7 @@ static int daemonize()
 	/* cleanup */
 	aptpipe_fini();
 	unlink(APT_PIPE_PATH);
-	if (fd)
+	if (fd >= 0)
 		write(fd, &i, sizeof(int));
 	exit(EXIT_SUCCESS);
 }
