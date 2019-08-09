@@ -1017,7 +1017,7 @@ void ioprintf(ostream &out,const char *format,...)
    consecutive snprintfs. */
 char *safe_snprintf(char *Buffer,char *End,const char *Format,...)
 {
-   unsigned long Did;
+   int Did;
 
    if (End <= Buffer)
       return End;
