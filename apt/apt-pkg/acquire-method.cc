@@ -555,9 +555,7 @@ void pkgAcqMethod::Warning(const char *Format,...)
    to keep the pipeline synchronized. */
 void pkgAcqMethod::Redirect(const string &NewURI)
 {
-   string CurrentURI = "<UNKNOWN>";
-   if (Queue != 0)
-      CurrentURI = Queue->Uri;
+   string CurrentURI = Queue->Uri;
 
    ostringstream s;
    s << "103 Redirect\nURI: " << CurrentURI << "\nNew-URI: " << NewURI 
