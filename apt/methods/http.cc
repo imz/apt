@@ -588,7 +588,7 @@ bool ServerState::HeaderLine(const string &Line)
       
       if (sscanf(Val.c_str(),"bytes %llu-%*u/%llu",&StartPos,&Size) != 2)
 	 return _error->Error(_("The http server sent an invalid Content-Range header"));
-      if ((unsigned long long)StartPos > Size)
+      if (StartPos > Size)
 	 return _error->Error(_("This http server has broken range support"));
       return true;
    }
@@ -1016,11 +1016,8 @@ int HttpMethod::DealWithHeaders(FetchResult &Res,ServerState *Srv)
    FailTime = Srv->Date;
       
    // Set the expected size
-   if (Srv->StartPos >= 0)
-   {
-      Res.ResumePoint = Srv->StartPos;
-      ftruncate(File->Fd(),Srv->StartPos);
-   }
+   Res.ResumePoint = Srv->StartPos;
+   ftruncate(File->Fd(),Srv->StartPos);
       
    // Set the start point
    lseek(File->Fd(),0,SEEK_END);

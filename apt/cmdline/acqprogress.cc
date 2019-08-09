@@ -215,10 +215,10 @@ bool AcqTextStatus::Pulse(pkgAcquire *Owner)
       {
 	 if (Mode == Short)
 	    snprintf(S,End-S," %lu%%",
-		     long(double(I->CurrentSize*100.0)/double(I->TotalSize)));
+		     (unsigned long) (double(I->CurrentSize*100.0)/double(I->TotalSize)));
 	 else
 	    snprintf(S,End-S,"/%sB %lu%%",SizeToStr(I->TotalSize).c_str(),
-		     long(double(I->CurrentSize*100.0)/double(I->TotalSize)));
+		     (unsigned long) (double(I->CurrentSize*100.0)/double(I->TotalSize)));
       }      
       S += strlen(S);
       snprintf(S,End-S,"]");

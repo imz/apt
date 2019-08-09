@@ -162,7 +162,7 @@ bool Connect(const string &Host,int Port,const char *Service,int DefPort,std::un
    // Convert the port name/number
    char ServStr[300];
    if (Port != 0)
-      snprintf(ServStr,sizeof(ServStr),"%u",Port);
+      snprintf(ServStr,sizeof(ServStr),"%u",(unsigned) Port);
    else
       snprintf(ServStr,sizeof(ServStr),"%s",Service);
    
@@ -198,7 +198,7 @@ bool Connect(const string &Host,int Port,const char *Service,int DefPort,std::un
 	    {
 	       if (DefPort != 0)
 	       {
-		  snprintf(ServStr,sizeof(ServStr),"%u",DefPort);
+		  snprintf(ServStr,sizeof(ServStr),"%u",(unsigned) DefPort);
 		  DefPort = 0;
 		  continue;
 	       }
