@@ -960,6 +960,9 @@ pkgProblemResolver::~pkgProblemResolver()
 {
    delete [] Scores;
    delete [] Flags;
+
+   if (This == this)
+      This = nullptr;
 }
 									/*}}}*/
 // ProblemResolver::ScoreSort - Sort the list by score			/*{{{*/
