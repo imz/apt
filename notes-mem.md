@@ -275,6 +275,9 @@ index c664833..732345c 100644
 
 # a523050 Support large files
 
+Ещё: в apt-pkg/contrib/fileutl.h:48 Jnk лучше чтобы соответствовал
+типу параметра вызываемой функции, т.е. теперь unsigned long long.
+
 В StrToNum() char S[30] не хватит для двоичной записи 32-битного или
 64-битного числа.
 
@@ -304,6 +307,9 @@ unsigned long long в StartPos, который объявлен и в други
 Почему бы не выкинуть свою реализацию, а использовать std::optional
 
 # 112d2ea Remove ABI compat stuff
+
+ok
+
 # f56c14e Improve allocation failure error message
 # 111ef88 Add workaround for packages with missing tags
 # cfe4ad9 Bump soname
