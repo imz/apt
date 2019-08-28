@@ -106,14 +106,23 @@ ok
 
 ok
 
-# 33509fe Use references instead of copies in the Cache generation methods
+# bcd8c5325 Use references instead of copies in the Cache generation methods
+
+ok (доверимся Debian)
+
+comment:
 
 В то, что ничего не портится, в этом изменении гораздо труднее
 поверить или проверить, потому что не добавляется к ссылкам const.
 
 Можно ли как-то попробовать с const это всё сделать?
 
-# a523050 Support large files
+ответ: Как и написано в commit message, это порт изменений из Debian.
+Commit 32b9a14cb4c6bdcddfe84c4451c225ced1a34bb7 из репозитория Apt Debian.
+Они нужны именно в таком виде для последующих изменений, насколько я понял эти
+изменения в Debian.
+
+# 297a12d92 Support large files
 
 Ещё: в apt-pkg/contrib/fileutl.h:48 Jnk лучше чтобы соответствовал
 типу параметра вызываемой функции, т.е. теперь unsigned long long.
