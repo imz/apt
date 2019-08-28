@@ -44,13 +44,14 @@ find -type f '-(' -name '*.cc' -o -name '*.h' '-)' -print0 | xargs -0 sed -i -re
 
 Проверяем что нет других нетривиальных изменений с помощью:
 
-    find -type f '-(' -name '*.cc' -o -name '*.h' '-)' -print0 | xargs -0 sed -i -re 's:const string &:string :g'
+    find -type f '-(' -name '*.cc' -o -name '*.h' '-)' -print0 | xargs -0 sed -i -re 's:const ([^ ]+) &:\1 :g'
     git commit ...
     git diff @~2.. -w
 
 Видим нетривиальные изменения:
 
-1. (может в отдельный коммит с объяснением?)
+1. https://bugzilla.altlinux.org/show_bug.cgi?id=30482#c9:
+от копирования совсем избавиться не удалось
 
 diff --git a/apt/apt-pkg/acquire-method.cc b/apt/apt-pkg/acquire-method.cc
 index d72a984..b72a90c 100644
@@ -86,33 +87,6 @@ index 42bd9d3..ac66e30 100644
     void URIStart(FetchResult &Res);
     void URIDone(FetchResult &Res,FetchResult *Alt = 0);
     bool MediaFail(string Required,string Drive);
-
-2. Похожее изменение, но не подходит под commit message
-
-diff --git a/apt/apt-pkg/algorithms.h b/apt/apt-pkg/algorithms.h
-index 7b90623..d4ad7c6 100644
---- a/apt/apt-pkg/algorithms.h
-+++ b/apt/apt-pkg/algorithms.h
-@@ -109,9 +109,9 @@ class pkgProblemResolver
-    
-    public:
-    
--   inline void Protect(pkgCache::PkgIterator Pkg) {Flags[Pkg->ID] |= Protected;};
--   inline void Remove(pkgCache::PkgIterator Pkg) {Flags[Pkg->ID] |= ToRemove;};
--   inline void Clear(pkgCache::PkgIterator Pkg) {Flags[Pkg->ID] &= ~(Protected | ToRemove);};
-+   inline void Protect(const pkgCache::PkgIterator &Pkg) {Flags[Pkg->ID] |= Protected;};
-+   inline void Remove(const pkgCache::PkgIterator &Pkg) {Flags[Pkg->ID] |= ToRemove;};
-+   inline void Clear(const pkgCache::PkgIterator &Pkg) {Flags[Pkg->ID] &= ~(Protected | ToRemove);};
-    
-    // Try to intelligently resolve problems by installing and removing packages   
-    bool Resolve(bool BrokenFix = false);
-
-и ещё много похожих случаев. Но я думаю, можно расширить commit
-message для других типов (помимо string). А проверить я смог их другим
-sed:
-
-    find -type f '-(' -name '*.cc' -o -name '*.h' '-)' -print0 | xargs -0 sed -i -re 's:const ([^ ]+) &:\1 :g'
-
 
 3. тоже не подходит под commit message:
 
