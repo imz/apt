@@ -1,8 +1,8 @@
-# b36a3a2 Fix every use of va_list: add proper cleanup
+# 5a4fdbf0b Fix every use of va_list: add proper cleanup
 
 ok
 
-# d854f27 strutil.cc: rework string iterating
+# 6f5bb983d strutil.cc: rework string iterating
 
 ok
 
@@ -14,7 +14,7 @@ comment: Такое изменение
 делает код более корректным, избавляет от undefined behavior.
  -- https://bugzilla.altlinux.org/show_bug.cgi?id=30482#c9
 
-# 17aa799 gpg.cc: fix potential memory leak
+# 10bf66858 gpg.cc: fix potential memory leak
 
 ok
 
@@ -24,11 +24,11 @@ comment: В этом консервативном изменении делат�
 что strdupa() ускоряет работу, но для функций, на которые небольшая
 нагрузка, это несущественно.
 
-# 64bef88 RPM ArchiveURI: check file length before using it
+# c138c4850 RPM ArchiveURI: check file length before using it
 
 ok
 
-# 4ef776b Use 'override' keyword
+# ec437de01 Use 'override' keyword
 
 ok (более строгий код; если что, компилятор сообщит об ошибке)
 
@@ -36,7 +36,7 @@ ok (более строгий код; если что, компилятор со
 
 find -type f '-(' -name '*.cc' -o -name '*.h' '-)' -print0 | xargs -0 sed -i -re 's: override( |;|$):\1:'
 
-# 0e8318e Use const reference to string instead of copies
+# c742cecda Avoid copying objects
 
 Теоретически есть опасность, что в функциях возьмут указатель на
 строку (ссылку) и через него поменяют значение снаружи или что-нибудь
