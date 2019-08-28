@@ -38,7 +38,10 @@ find -type f '-(' -name '*.cc' -o -name '*.h' '-)' -print0 | xargs -0 sed -i -re
 
 # c742cecda Avoid copying objects
 
-Теоретически есть опасность, что в функциях возьмут указатель на
+ok (либо просто объявление const метода или аргумента, либо ещё и
+превращение в reference)
+
+comment: Теоретически есть опасность, что в функциях возьмут указатель на
 строку (ссылку) и через него поменяют значение снаружи или что-нибудь
 в этом роде, но скорее всего так никто не делает в этом коде.
 
@@ -94,8 +97,6 @@ index 42bd9d3..ac66e30 100644
     void URIStart(FetchResult &Res);
     void URIDone(FetchResult &Res,FetchResult *Alt = 0);
     bool MediaFail(string Required,string Drive);
-
-В остальном вроде ok.
 
 # 4ed2c0e wrap the mmap actions in the CacheGenerator in their own methods to be able to react on condition changes later then we can move mmap
 
