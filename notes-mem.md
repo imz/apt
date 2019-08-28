@@ -48,6 +48,13 @@ find -type f '-(' -name '*.cc' -o -name '*.h' '-)' -print0 | xargs -0 sed -i -re
     git commit ...
     git diff @~2.. -w
 
+Будем считать, что первый шаг -- объявление большего количества вещей
+const (методы, параметры); второй -- напрашивающаяся замена на reference.
+
+Так что вполне разумно, что иногда делается только первый шаг и это
+попадает в тот же коммит. (Хоть и commit message не совсем точен
+тогда.) Не будем упоминать такие места.
+
 Видим нетривиальные изменения:
 
 1. https://bugzilla.altlinux.org/show_bug.cgi?id=30482#c9:
@@ -87,69 +94,6 @@ index 42bd9d3..ac66e30 100644
     void URIStart(FetchResult &Res);
     void URIDone(FetchResult &Res,FetchResult *Alt = 0);
     bool MediaFail(string Required,string Drive);
-
-3. тоже не подходит под commit message:
-
-diff --git a/apt/apt-pkg/cacheiterators.h b/apt/apt-pkg/cacheiterators.h
-index 3fcec06..6e69d51 100644
---- a/apt/apt-pkg/cacheiterators.h
-+++ b/apt/apt-pkg/cacheiterators.h
-@@ -186,7 +186,7 @@ class pkgCache::DepIterator
-    inline unsigned long Index() const {return Dep - Owner->DepP;};
-    // CNC:2003-02-17 - This is a very used function, so it's now
-    //                 inlined here.
--   inline bool IsCritical()
-+   inline bool IsCritical() const
-                {
-                        switch (Dep->Type) {
-                                case pkgCache::Dep::Conflicts:
-
-Отдельный коммит сделать?
-
-4. Не подходит под commit message:
-
-apt/apt-pkg/contrib/configuration.cc ---------------------
-index a8a0e68..67d0c8a 100644
-@@ -52,14 +52,14 @@ Configuration::Configuration(const Item *Root) : Root((Item *)Root), ToFree(fals
- };
- 
- // CNC:2003-02-23 - Copy constructor.
--Configuration::Configuration(Configuration &Conf) : ToFree(true)
-+Configuration::Configuration(const Configuration &Conf) : ToFree(true)
- {
-    Root = new Item;
-    if (Conf.Root->Child)
-       CopyChildren(Conf.Root, Root);
- }
- 
--void Configuration::CopyChildren(Item *From, Item *To)
-+void Configuration::CopyChildren(const Item *From, Item *To)
- {
-    Item *Parent = To;
-    To->Child = new Item;
-@@ -325,7 +325,7 @@ string Configuration::FindAny(const char *Name,const char *Default) const
- // Configuration::CndSet - Conditinal Set a value			/*{{{*/
- // ---------------------------------------------------------------------
- /* This will not overwrite */
-
-
-и соответествующие изменения в configuration.h. (Лучше в отдельно
-коммите?)
-
-Конечно, добавление const хуже не сделает. Есть ещё такое:
-
-diff --git a/apt/apt-pkg/contrib/progress.h b/apt/apt-pkg/contrib/progress.h
-index a563d76..e9bb2ab 100644
---- a/apt/apt-pkg/contrib/progress.h
-+++ b/apt/apt-pkg/contrib/progress.h
-@@ -84,7 +84,7 @@ class OpTextProgress : public OpProgress
-    
-    OpTextProgress(bool NoUpdate = false) : NoUpdate(NoUpdate), 
-                 NoDisplay(false), LastLen(0) {};
--   OpTextProgress(Configuration &Config);
-+   OpTextProgress(const Configuration &Config);
-    virtual ~OpTextProgress() {Done();};
- };
  
 5. Использование stringstream вместо string (отдельным коммитом?)
 
