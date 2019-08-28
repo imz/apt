@@ -124,13 +124,9 @@ Commit 32b9a14cb4c6bdcddfe84c4451c225ced1a34bb7 из репозитория Apt 
 
 # 297a12d92 Support large files
 
-Ещё: в apt-pkg/contrib/fileutl.h:48 Jnk лучше чтобы соответствовал
-типу параметра вызываемой функции, т.е. теперь unsigned long long.
+ok (с моей поправкой типа Jnk в apt-pkg/contrib/fileutl.h:48)
 
-В StrToNum() char S[30] не хватит для двоичной записи 32-битного или
-64-битного числа.
-
-В остальном ok. (Конечно, в http.c sscanf() может прочитать большое
+comment: (Конечно, в http.c sscanf() может прочитать большое
 unsigned long long в StartPos, который объявлен и в других местах
 используется как signed long long. Т.е. будет как бы отрицательное
 число. Что произойдёт?..)
@@ -140,7 +136,7 @@ unsigned long long в StartPos, который объявлен и в други
     find -type f '-(' -name '*.cc' -o -name '*.h' '-)' -print0 | xargs -0 sed -i -re 's:(unsigned long) long:\1:g; s:%ll:%l:g'
 
 
-# 55b9b4f apt-pkg/pkgcachegen.{cc,h} changes
+# 6d5e6a689 apt-pkg/pkgcachegen.{cc,h} changes
 
 ok (но я бы сделал более future- & error-proof)
 
