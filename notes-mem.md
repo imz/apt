@@ -98,7 +98,11 @@ index 42bd9d3..ac66e30 100644
     void URIDone(FetchResult &Res,FetchResult *Alt = 0);
     bool MediaFail(string Required,string Drive);
 
-# 4ed2c0e wrap the mmap actions in the CacheGenerator in their own methods to be able to react on condition changes later then we can move mmap
+# 6d74faeb2 Minor additional code dressing
+
+ok
+
+# e524c6e01 wrap the mmap actions in the CacheGenerator in their own methods to be able to react on condition changes later then we can move mmap
 
 Для аргумента типа string выбранная реализация, кажется, хуже
 (неоптимальна):
