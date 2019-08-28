@@ -1,26 +1,24 @@
-Вот некоторые замечания, но не успел ещё все изменения посмотреть.
-(Спасибо arei@ за обсуждение прочитанных.)
-
 # b36a3a2 Fix every use of va_list: add proper cleanup
 
-Замечаний нет.
+ok
 
 # d854f27 strutil.cc: rework string iterating
 
-Зачем менять
+ok
 
--   for (string::const_iterator I = Str.begin(); I != Str.end(); I++)
-+   for (size_t i = 0; i < Str.size(); ++i)
+comment: Такое изменение
 
-? Может быть, это как в Debian?
+    -   for (string::const_iterator I = Str.begin(); I != Str.end(); I++)
+    +   for (size_t i = 0; i < Str.size(); ++i)
+
+делает код более корректным, избавляет от undefined behavior.
+ -- https://bugzilla.altlinux.org/show_bug.cgi?id=30482#c9
 
 # 17aa799 gpg.cc: fix potential memory leak
 
 ok
 
-Просто комментарий (не замечание):
-
-В этом консервативном изменении делать необязательно, но можно ещё в
+comment: В этом консервативном изменении делать необязательно, но можно ещё в
 таких случаях использовать strdupa() (что, конечно, нехорошо с
 т.зр. обработки ошибок). Да и не только в консерватизме дело, а том,
 что strdupa() ускоряет работу, но для функций, на которые небольшая
