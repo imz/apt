@@ -104,18 +104,7 @@ ok
 
 # e524c6e01 wrap the mmap actions in the CacheGenerator in their own methods to be able to react on condition changes later then we can move mmap
 
-Для аргумента типа string выбранная реализация, кажется, хуже
-(неоптимальна):
-
-+   unsigned long WriteStringInMap(const std::string &String) { return WriteStringInMap(String.c_str()); };
-
-
-чем в аналогичном коде в mmap.h:
-
-   inline unsigned long WriteString(string S) {return WriteString(S.c_str(),S.length());};
-
-без необязательного параметра-длины будет лишний вызов strlen(), хотя
-можно узнать значение из String.length().
+ok
 
 # 33509fe Use references instead of copies in the Cache generation methods
 
