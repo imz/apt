@@ -95,35 +95,6 @@ index 42bd9d3..ac66e30 100644
     void URIDone(FetchResult &Res,FetchResult *Alt = 0);
     bool MediaFail(string Required,string Drive);
  
-5. Использование stringstream вместо string (отдельным коммитом?)
-
-diff --git a/apt/apt-pkg/contrib/strutl.cc b/apt/apt-pkg/contrib/strutl.cc
-index c664833..732345c 100644
---- a/apt/apt-pkg/contrib/strutl.cc
-+++ b/apt/apt-pkg/contrib/strutl.cc
-@@ -322,26 +322,28 @@ string SubstVar(string Str,string Subst,string Contents)
- {
-    string::size_type Pos = 0;
-    string::size_type OldPos = 0;
--   string Temp;
-+   std::stringstream Temp;
-    
-    while (OldPos < Str.length() && 
-          (Pos = Str.find(Subst,OldPos)) != string::npos)
-    {
--      Temp += string(Str,OldPos,Pos) + Contents;
-+      Temp << string(Str,OldPos,Pos) << Contents;
-       OldPos = Pos + Subst.length();      
-    }
-    
-    if (OldPos == 0)
-       return Str;
-    
--   return Temp + string(Str,OldPos);
-+   Temp << string(Str,OldPos);
-+   return Temp.str();
- }
- 
 6. Тоже другое (в том же файле):
 
 diff --git a/apt/apt-pkg/contrib/strutl.cc b/apt/apt-pkg/contrib/strutl.cc
