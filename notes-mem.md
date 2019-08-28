@@ -94,47 +94,6 @@ index 42bd9d3..ac66e30 100644
     void URIStart(FetchResult &Res);
     void URIDone(FetchResult &Res,FetchResult *Alt = 0);
     bool MediaFail(string Required,string Drive);
- 
-6. Тоже другое (в том же файле):
-
-diff --git a/apt/apt-pkg/contrib/strutl.cc b/apt/apt-pkg/contrib/strutl.cc
-index c664833..732345c 100644
---- a/apt/apt-pkg/contrib/strutl.cc
-+++ b/apt/apt-pkg/contrib/strutl.cc
-@@ -353,14 +355,14 @@ string URItoFileName(string URI)
- {
-    // Nuke 'sensitive' items
-    ::URI U(URI);
--   U.User = string();
--   U.Password = string();
--   U.Access = "";
-+   U.User.clear();
-+   U.Password.clear();
-+   U.Access.clear();
-    
-    // "\x00-\x20{}|\\\\^\\[\\]<>\"\x7F-\xFF";
-    URI = QuoteString(U,"\\|{}[]<>\"^~_=!@#$%^&*");
--   string::iterator J = URI.begin();
--   for (; J != URI.end(); J++)
-+   auto J = URI.begin();
-+   for (; J != URI.end(); ++J)
-       if (*J == '/') 
-         *J = '_';
-    return URI;
-
-@@ -1178,9 +1180,9 @@ URI::operator string()
- string URI::SiteOnly(string URI)
- {
-    ::URI U(URI);
--   U.User = string();
--   U.Password = string();
--   U.Path = string();
-+   U.User.clear();
-+   U.Password.clear();
-+   U.Path.clear();
-    U.Port = 0;
-    return U;
- }
 
 В остальном вроде ok.
 
