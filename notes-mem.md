@@ -138,7 +138,7 @@ unsigned long long в StartPos, который объявлен и в други
 
 # 6d5e6a689 apt-pkg/pkgcachegen.{cc,h} changes
 
-ok (но я бы сделал более future- & error-proof)
+?? (но я бы сделал более future- & error-proof)
 
 Может быть, здесь во всех ReMap(), чтобы не ошибиться в типах, использовать
 обозначение для типов Pkg, Ver, Prv и т.п., определяющее тип по
@@ -147,20 +147,53 @@ ok (но я бы сделал более future- & error-proof)
 будущем, в случае изменений оно не разъезжалось, а не тихо
 пропускалось компилятором.
 
-# 78c93fe Add and document APT::Cache-{Start,Grow,Limit} options for mmap control
-# bdf8763 DynamicMMap::Grow: add optional debug output
-# be0c967 Use special type to return allocation failure since 0 is a valid offset value
+# c0efb7b7f Add and document APT::Cache-{Start,Grow,Limit} options for mmap control
 
-Почему бы не выкинуть свою реализацию, а использовать std::optional
+ok? (users, beware of of your limits)
 
-# 112d2ea Remove ABI compat stuff
+What about optimizing the growing "policy"? (Not by 1M, but rather by
+bigger chunks depending on the current/initial size?)
+
+# 3e2f3d641 DynamicMMap::Grow: add optional debug output
 
 ok
 
-# f56c14e Improve allocation failure error message
-# 111ef88 Add workaround for packages with missing tags
-# cfe4ad9 Bump soname
-# 45b01f6 (tag: 0.5.15lorg2-alt69) 0.5.15lorg2-alt69
-# 7c4fc38 Port pkgCacheFile::GetSourceList and it's dependencies from Debian
-# 89457f4 Port ListUpdate function from Debian
-# 99c05dc (HEAD -> sisyphus, tag: 0.5.15lorg2-alt70, darktemplar@ALT/sisyphus, darktemplar@ALT/HEAD) 0.5.15lorg2-alt70
+# 667677a7d Use special type to return allocation failure since 0 is a valid offset value
+
+??
+
+# 3b436154d Remove ABI compat stuff
+
+ok
+
+# 298514fa3 Improve allocation failure error message
+
+ok
+
+# f91e5f298 Add workaround for packages with missing tags
+
+ok
+
+# b1b54a837 Use same type for all offsets to dynamically allocated map
+
+??
+
+# bcfd6e08e Bump soname
+
+ok
+
+# 34875601e 0.5.15lorg2-alt70
+
+ok
+
+# ad1942446 Port pkgCacheFile::GetSourceList and it's dependencies from Debian
+
+??
+
+# 6f3ab7196 Port ListUpdate function from Debian
+
+??
+
+# 8c01319b4 (@e801-1/sisyphus, @e801-1/darktemplar-mem4) 0.5.15lorg2-alt71
+
+ok
