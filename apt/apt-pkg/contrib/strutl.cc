@@ -130,7 +130,8 @@ bool ParseQuoteWord(const char *&String,string &Res)
    char *I;
    for (I = Buffer; I < Buffer + sizeof(Buffer) && Start != C; I++)
    {
-      if (*Start == '%' && Start + 2 < C)
+      if ((*Start == '%') && (Start + 2 < C) &&
+         isxdigit(Start[1]) && isxdigit(Start[2]))
       {
 	 Tmp[0] = Start[1];
 	 Tmp[1] = Start[2];
