@@ -305,8 +305,13 @@ bool ServerState::Open()
 	 Proxy = DefProxy;
    }
    else
-      Proxy = getenv("http_proxy");
-   
+   {
+      string Unquoted;
+      const char *Quoted = getenv("http_proxy");
+      ParseQuoteWord(Quoted,Unquoted);
+      Proxy = Unquoted;
+   }
+
    // Parse no_proxy, a , separated list of domains
    if (getenv("no_proxy") != 0)
    {
