@@ -293,7 +293,7 @@ bool ServerState::Open()
    if (getenv("http_proxy") == 0)
    {
       string DefProxy = _config->Find("Acquire::http::Proxy");
-      string SpecificProxy = _config->Find("Acquire::http::Proxy::" + ServerName.Host);
+      string SpecificProxy = _config->Find("Acquire::http::Proxy::" + ServerName.Address.to_hostname());
       if (SpecificProxy.empty() == false)
       {
 	 if (SpecificProxy == "DIRECT")
@@ -315,37 +315,23 @@ bool ServerState::Open()
    // Parse no_proxy, a , separated list of domains
    if (getenv("no_proxy") != 0)
    {
-      if (CheckDomainList(ServerName.Host,getenv("no_proxy")) == true)
+      if (CheckDomainList(ServerName.Address.to_hostname(),getenv("no_proxy")) == true)
 	 Proxy = "";
-   }
-#endif /* !USE_TLS */
-   
-   // Determine what host and port to use based on the proxy settings
-   int Port = 0;
-   string Host;   
-#ifndef USE_TLS
-   if (Proxy.empty() == true || Proxy.Host.empty() == true)
-   {
-#endif /* !USE_TLS */
-      if (ServerName.Port != 0)
-	 Port = ServerName.Port;
-      Host = ServerName.Host;
-#ifndef USE_TLS
-   }
-   else
-   {
-      if (Proxy.Port != 0)
-	 Port = Proxy.Port;
-      Host = Proxy.Host;
    }
 #endif /* !USE_TLS */
 
    // Connect to the remote server
-   if (Connect(Host,Port,service_name,default_port,ServerFd,TimeOut,Owner) == false)
+   if (Connect(
+#ifndef USE_TLS
+          Proxy.empty() ? ServerName.Address : Proxy.Address,
+#else /* USE_TLS */
+          ServerName.Address,
+#endif /* USE_TLS */
+          service_name,default_port,ServerFd,TimeOut,Owner) == false)
       return false;
 
 #ifdef USE_TLS
-   if (!UnwrapTLS(ServerName.Host, ServerFd, TimeOut, Owner))
+   if (!UnwrapTLS(ServerName.Address.to_hostname(), ServerFd, TimeOut, Owner))
       return false;
 #endif /* USE_TLS */
 
@@ -644,12 +630,7 @@ void HttpMethod::SendReq(FetchItem *Itm,CircleBuf &Out)
 
    // The HTTP server expects a hostname with a trailing :port
    char Buf[1000];
-   string ProperHost = Uri.Host;
-   if (Uri.Port != 0)
-   {
-      sprintf(Buf,":%u",Uri.Port);
-      ProperHost += Buf;
-   }   
+   string ProperHost = Uri.Address.to_string();
       
    // Just in case.
    if (Itm->Uri.length() >= sizeof(Buf))
@@ -949,7 +930,7 @@ int HttpMethod::DealWithHeaders(FetchResult &Res,ServerState *Srv)
       {
 	 for (CurrentAuth = AuthList.begin(); CurrentAuth != AuthList.end();
 	      ++CurrentAuth)
-	    if (CurrentAuth->Host == Srv->ServerName.Host)
+	    if (CurrentAuth->Host == Srv->ServerName.Address.to_hostname())
 	    {
 	       AuthUser = CurrentAuth->User;
 	       AuthPass = CurrentAuth->Password;
@@ -962,7 +943,7 @@ int HttpMethod::DealWithHeaders(FetchResult &Res,ServerState *Srv)
       // Nope - get username and password
       if (CurrentAuth == AuthList.end())
       {
-	 Description = ParsedURI.Host;
+	 Description = ParsedURI.Address.to_hostname();
 
 #ifdef USE_TLS
 	 if (ParsedURI.Access == "https")
@@ -974,13 +955,13 @@ int HttpMethod::DealWithHeaders(FetchResult &Res,ServerState *Srv)
 	    // Got new credentials; save them
 	    AuthRec NewAuthInfo;
 
-	    NewAuthInfo.Host = Srv->ServerName.Host;
+	    NewAuthInfo.Host = Srv->ServerName.Address.to_hostname();
 	    NewAuthInfo.User = AuthUser;
 	    NewAuthInfo.Password = AuthPass;
 
 	    for (CurrentAuth = AuthList.begin(); CurrentAuth != AuthList.end();
 		 ++CurrentAuth)
-	       if (CurrentAuth->Host == Srv->ServerName.Host)
+	       if (CurrentAuth->Host == Srv->ServerName.Address.to_hostname())
 	       {
 		  *CurrentAuth = NewAuthInfo;
 		  break;

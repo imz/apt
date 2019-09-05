@@ -42,7 +42,7 @@ bool FileMethod::Fetch(FetchItem *Itm)
    URI Get = Itm->Uri;
    string File = Get.Path;
    FetchResult Res;
-   if (Get.Host.empty() == false)
+   if (Get.Address.to_hostname().empty() == false)
       return _error->Error(_("Invalid URI, local URIS must not start with //"));
 
    // See if the file exists

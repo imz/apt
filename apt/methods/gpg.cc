@@ -337,7 +337,7 @@ void removeTmpDir(const string &path, int sigCount)
 bool GPGMethod::Fetch(FetchItem *Itm)
 {
    URI Get = Itm->Uri;
-   string Path = Get.Host + Get.Path; // To account for relative paths
+   string Path = Get.Address.to_hostname() + Get.Path; // To account for relative paths
    string KeyList;
 
    FetchResult Res;

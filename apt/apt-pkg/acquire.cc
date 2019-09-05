@@ -236,7 +236,7 @@ string pkgAcquire::QueueName(const string &Uri,MethodConfig const *&Config)
    if (Config->SingleInstance == true || QueueMode == QueueAccess)
        return U.Access;
 
-   return U.Access + ':' + U.Host;
+   return U.Access + ':' + U.Address.to_hostname();
 }
 									/*}}}*/
 // Acquire::GetConfig - Fetch the configuration information		/*{{{*/

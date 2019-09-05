@@ -353,11 +353,7 @@ bool RsyncMethod::RsyncConnExec::Get(pkgAcqMethod *Owner, FetchResult &FRes, con
 	  }
    }
 
-   char port[12];
-   if (srv.Port!=0)
-	  snprintf(port, sizeof(port), ":%u", srv.Port);
-   else port[0] = 0;
-   argv.add( "rsync://" + srv.Host + port + From);
+   argv.add( "rsync://" + srv.Address.to_string() + From);
    argv.add(To);
 
    if ( pipe(p) ) {
@@ -519,12 +515,12 @@ bool RsyncMethod::Fetch(FetchItem *Itm)
 	  Res.ResumePoint = st.st_size;
    }
 
-   string proxy = _config->Find(string("Acquire::rsync::proxy::")+Get.Host);
+   string proxy = _config->Find(string("Acquire::rsync::proxy::")+Get.Address.to_hostname());
    if ( proxy.empty() )
 	  proxy = _config->Find("Acquire::rsync::proxy");
 
    if (Debug)
-	  cerr << endl << "RSYNC: Proxy(" << Get.Host << "): " << proxy << endl;
+	  cerr << endl << "RSYNC: Proxy(" << Get.Address.to_hostname() << "): " << proxy << endl;
 
    // Don't compare now for the same server uri
    delete server;

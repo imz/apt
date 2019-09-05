@@ -45,7 +45,7 @@ class GzipMethod : public pkgAcqMethod
 bool GzipMethod::Fetch(FetchItem *Itm)
 {
    URI Get = Itm->Uri;
-   string Path = Get.Host + Get.Path; // To account for relative paths
+   string Path = Get.Address.to_hostname() + Get.Path; // To account for relative paths
    
    string GzPathOption = "Dir::bin::"+string(Prog);
 

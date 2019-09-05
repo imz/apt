@@ -198,7 +198,7 @@ bool CDROMMethod::Fetch(FetchItem *Itm)
    }
        
    // All non IMS queries for package files fail.
-   if (Itm->IndexFile == true || GetID(Get.Host).empty() == true)
+   if (Itm->IndexFile == true || GetID(Get.Address.to_hostname()).empty() == true)
    {
       Fail(_("Please use apt-cdrom to make this media recognized by APT."
 	   " apt-get update cannot be used to add new Media"));
@@ -206,7 +206,7 @@ bool CDROMMethod::Fetch(FetchItem *Itm)
    }
 
    // We already have a CD inserted, but it is the wrong one
-   if (CurrentID.empty() == false && Database.Find("CD::" + CurrentID) != Get.Host)
+   if (CurrentID.empty() == false && Database.Find("CD::" + CurrentID) != Get.Address.to_hostname())
    {
       Fail(_("Wrong CD"),true);
       return true;
@@ -229,7 +229,7 @@ bool CDROMMethod::Fetch(FetchItem *Itm)
 	    clog << "ID " << Version << " " << NewID << endl;
       
 	 // A hit
-	 if (Database.Find("CD::" + NewID) == Get.Host)
+	 if (Database.Find("CD::" + NewID) == Get.Address.to_hostname())
 	 {
 	    Hit = true;
 	    break;
@@ -243,7 +243,7 @@ bool CDROMMethod::Fetch(FetchItem *Itm)
       if (UnmountCdrom(CDROM) == false)
 	 return _error->Error(_("Unable to unmount media in %s, it may still be in use."),
 			      CDROM.c_str());
-      if (MediaFail(Get.Host,CDROM) == false)
+      if (MediaFail(Get.Address.to_hostname(),CDROM) == false)
       {
 	 CurrentID = "FAIL";
 	 Fail(_("Wrong media"),true);

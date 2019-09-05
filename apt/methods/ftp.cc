@@ -119,7 +119,7 @@ bool FTPConn::Open(pkgAcqMethod *Owner)
    if (getenv("ftp_proxy") == 0)
    {
       string DefProxy = _config->Find("Acquire::ftp::Proxy");
-      string SpecificProxy = _config->Find("Acquire::ftp::Proxy::" + ServerName.Host);
+      string SpecificProxy = _config->Find("Acquire::ftp::Proxy::" + ServerName.Address.to_hostname());
       if (SpecificProxy.empty() == false)
       {
 	 if (SpecificProxy == "DIRECT")
@@ -136,30 +136,14 @@ bool FTPConn::Open(pkgAcqMethod *Owner)
    // Parse no_proxy, a , separated list of domains
    if (getenv("no_proxy") != 0)
    {
-      if (CheckDomainList(ServerName.Host,getenv("no_proxy")) == true)
+      if (CheckDomainList(ServerName.Address.to_hostname(),getenv("no_proxy")) == true)
 	 Proxy = "";
-   }
-   
-   // Determine what host and port to use based on the proxy settings
-   int Port = 0;
-   string Host;   
-   if (Proxy.empty() == true)
-   {
-      if (ServerName.Port != 0)
-	 Port = ServerName.Port;
-      Host = ServerName.Host;
-   }
-   else
-   {
-      if (Proxy.Port != 0)
-	 Port = Proxy.Port;
-      Host = Proxy.Host;
    }
 
    /* Connect to the remote server. Since FTP is connection oriented we
       want to make sure we get a new server every time we reconnect */
    RotateDNS();
-   if (Connect(Host,Port,"ftp",21,ServerFd,TimeOut,Owner) == false)
+   if (Connect(Proxy.empty() ? ServerName.Address : Proxy.Address,"ftp",21,ServerFd,TimeOut,Owner) == false)
       return false;
 
    // Login must be before getpeername otherwise dante won't work.
@@ -223,8 +207,8 @@ bool FTPConn::Login()
       }
       
       // Enter passive mode
-      if (_config->Exists("Acquire::FTP::Passive::" + ServerName.Host) == true)
-	 TryPassive = _config->FindB("Acquire::FTP::Passive::" + ServerName.Host,true);
+      if (_config->Exists("Acquire::FTP::Passive::" + ServerName.Address.to_hostname()) == true)
+	 TryPassive = _config->FindB("Acquire::FTP::Passive::" + ServerName.Address.to_hostname(),true);
       else
 	 TryPassive = _config->FindB("Acquire::FTP::Passive",true);      
    }
@@ -251,8 +235,8 @@ bool FTPConn::Login()
 	 
 	 // Substitute the variables into the command
 	 char SitePort[20];
-	 if (ServerName.Port != 0)
-	    sprintf(SitePort,"%u",ServerName.Port);
+	 if (ServerName.Address.port)
+	    sprintf(SitePort,"%u",*(ServerName.Address.port));
 	 else
 	    strcpy(SitePort,"21");
 	 string Tmp = Opts->Value;
@@ -261,7 +245,7 @@ bool FTPConn::Login()
 	 Tmp = SubstVar(Tmp,"$(SITE_USER)",User);
 	 Tmp = SubstVar(Tmp,"$(SITE_PASS)",Pass);
 	 Tmp = SubstVar(Tmp,"$(SITE_PORT)",SitePort);
-	 Tmp = SubstVar(Tmp,"$(SITE)",ServerName.Host);
+	 Tmp = SubstVar(Tmp,"$(SITE)",ServerName.Address.to_hostname());
 
 	 // Send the command
 	 if (WriteMsg(Tag,Msg,"%s",Tmp.c_str()) == false)
@@ -272,8 +256,8 @@ bool FTPConn::Login()
       
       // Enter passive mode
       TryPassive = false;
-      if (_config->Exists("Acquire::FTP::Passive::" + ServerName.Host) == true)
-	 TryPassive = _config->FindB("Acquire::FTP::Passive::" + ServerName.Host,true);
+      if (_config->Exists("Acquire::FTP::Passive::" + ServerName.Address.to_hostname()) == true)
+	 TryPassive = _config->FindB("Acquire::FTP::Passive::" + ServerName.Address.to_hostname(),true);
       else
       {
 	 if (_config->Exists("Acquire::FTP::Proxy::Passive") == true)
@@ -284,8 +268,8 @@ bool FTPConn::Login()
    }
 
    // Force the use of extended commands
-   if (_config->Exists("Acquire::FTP::ForceExtended::" + ServerName.Host) == true)
-      ForceExtended = _config->FindB("Acquire::FTP::ForceExtended::" + ServerName.Host,true);
+   if (_config->Exists("Acquire::FTP::ForceExtended::" + ServerName.Address.to_hostname()) == true)
+      ForceExtended = _config->FindB("Acquire::FTP::ForceExtended::" + ServerName.Address.to_hostname(),true);
    else
       ForceExtended = _config->FindB("Acquire::FTP::ForceExtended",false);
    

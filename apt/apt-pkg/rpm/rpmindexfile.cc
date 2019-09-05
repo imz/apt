@@ -367,7 +367,7 @@ bool rpmPkgListIndex::Merge(pkgCacheGenerator &Gen,OpProgress &Prog) const
 
    Prog.SubProgress(0,Info(MainType()));
    ::URI Tmp(URI);
-   if (Gen.SelectFile(PackageFile,Tmp.Host,*this) == false)
+   if (Gen.SelectFile(PackageFile,Tmp.Address.to_hostname(),*this) == false)
    {
       delete Handler;
       return _error->Error(_("Problem with SelectFile %s"),PackageFile.c_str());

@@ -26,6 +26,8 @@
 #include <time.h>
 #include <cstring>
 
+#include <experimental/optional>
+
 using std::string;
 using std::vector;
 using std::ostream;
@@ -104,6 +106,34 @@ APT_MKSTRCMP2(stringcasecmp,stringcasecmp);
 
 inline const char *DeNull(const char *s) {return (s == 0?"(null)":s);};
 
+class URIAddress
+{
+public:
+   URIAddress();
+   URIAddress(const URIAddress &other);
+   URIAddress(URIAddress &&other);
+
+   explicit URIAddress(const std::string &host_uri);
+
+   URIAddress& operator=(const std::string &host_uri);
+   URIAddress& operator=(const URIAddress &other);
+   URIAddress& operator=(URIAddress &&other);
+
+   bool operator==(const std::string &host_uri) const;
+   bool operator==(const URIAddress &other) const;
+
+   std::string to_string() const;
+   void from_string(const std::string &host_uri);
+
+   std::string to_hostname() const;
+   std::string hostname_and_interface() const;
+
+   std::string hostname;
+   std::string interface;
+   std::experimental::optional<uint16_t> port;
+   bool is_ipv6addr;
+};
+
 class URI
 {
    void CopyFrom(const string &From);
@@ -113,9 +143,8 @@ class URI
    string Access;
    string User;
    string Password;
-   string Host;
+   URIAddress Address;
    string Path;
-   unsigned int Port;
    
    operator string();
    inline void operator =(const string &From) {CopyFrom(From);};
@@ -123,7 +152,7 @@ class URI
    static string SiteOnly(const string &URI);
    
    URI(const string &Path) {CopyFrom(Path);};
-   URI() : Port(0) {};
+   URI() {};
 };
 
 struct SubstVar

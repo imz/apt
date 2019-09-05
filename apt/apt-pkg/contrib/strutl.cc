@@ -35,6 +35,9 @@
 #include <errno.h>
 #include <stdarg.h>
 
+#include <algorithm>
+#include <utility>
+
 using namespace std;
 									/*}}}*/
 
@@ -1058,27 +1061,211 @@ bool CheckDomainList(const string &Host, const string &List)
 }
 									/*}}}*/
 
+URIAddress::URIAddress()
+   : is_ipv6addr(false)
+{
+}
+
+URIAddress::URIAddress(const std::string &host_uri)
+   : is_ipv6addr(false)
+{
+   from_string(host_uri);
+}
+
+URIAddress::URIAddress(const URIAddress &other)
+   : hostname(other.hostname)
+   , interface(other.interface)
+   , port(other.port)
+   , is_ipv6addr(other.is_ipv6addr)
+{
+}
+
+URIAddress::URIAddress(URIAddress &&other)
+   : hostname(std::move(other.hostname))
+   , interface(std::move(other.interface))
+   , port(std::move(other.port))
+   , is_ipv6addr(std::move(other.is_ipv6addr))
+{
+}
+
+URIAddress& URIAddress::operator=(const std::string &host_uri)
+{
+   from_string(host_uri);
+
+   return *this;
+}
+
+URIAddress& URIAddress::operator=(const URIAddress &other)
+{
+   if (&other != this)
+   {
+      this->hostname    = other.hostname;
+      this->interface   = other.interface;
+      this->port        = other.port;
+      this->is_ipv6addr = other.is_ipv6addr;
+   }
+
+   return *this;
+}
+
+URIAddress& URIAddress::operator=(URIAddress &&other)
+{
+   if (&other != this)
+   {
+      this->hostname    = std::move(other.hostname);
+      this->interface   = std::move(other.interface);
+      this->port        = std::move(other.port);
+      this->is_ipv6addr = std::move(other.is_ipv6addr);
+   }
+
+   return *this;
+}
+
+bool URIAddress::operator==(const std::string &host_uri) const
+{
+   URIAddress other(host_uri);
+
+   return (*this == other);
+}
+
+bool URIAddress::operator==(const URIAddress &other) const
+{
+   return (this->hostname == other.hostname)
+         && (this->interface == other.interface)
+         && (this->port == other.port)
+         && (this->is_ipv6addr == other.is_ipv6addr);
+}
+
+std::string URIAddress::to_string() const
+{
+   std::string result = to_hostname();
+
+   if (result.empty())
+   {
+      return result;
+   }
+
+   if (port)
+   {
+      result += ':';
+      result += std::to_string(*port);
+   }
+
+   return result;
+}
+
+std::string URIAddress::to_hostname() const
+{
+   std::string result = hostname_and_interface();
+
+   if (result.empty())
+   {
+      return std::string();
+   }
+
+   if (!is_ipv6addr)
+   {
+      return result;
+   }
+
+   return std::string("[") + result + std::string("]");
+}
+
+std::string URIAddress::hostname_and_interface() const
+{
+   if (hostname.empty())
+   {
+      return std::string();
+   }
+
+   if (interface.empty())
+   {
+      return hostname;
+   }
+
+   return hostname + '%' + interface;
+}
+
+void URIAddress::from_string(const std::string &host_uri)
+{
+   std::string remainder = host_uri;
+
+   // first look for port delimiter, outside of brackets
+   size_t index = remainder.size();
+   for ( ; (index > 0) && (remainder[index - 1] != ']') && (remainder[index - 1] != ':'); --index)
+   {
+   }
+
+   if ((index > 0) && (remainder[index - 1] == ':'))
+   {
+      if (index < remainder.size())
+      {
+         port = atoi(remainder.substr(index).c_str());
+      }
+      else
+      {
+         port = std::experimental::optional<uint16_t>();
+      }
+
+      remainder = remainder.substr(0, index > 0 ? index - 1 : 0);
+   }
+   else
+   {
+      port = std::experimental::optional<uint16_t>();
+   }
+
+   if ((remainder.front() == '[') && (remainder.back() == ']'))
+   {
+      is_ipv6addr = true;
+      remainder = remainder.substr(1, remainder.size() - 2);
+   }
+   else
+   {
+      is_ipv6addr = false;
+   }
+
+   size_t percent_pos = remainder.find_last_of('%');
+   if (percent_pos != std::string::npos)
+   {
+      hostname = remainder.substr(0, percent_pos);
+
+      if (percent_pos < remainder.size() - 1)
+      {
+         interface = remainder.substr(percent_pos + 1);
+      }
+      else
+      {
+         interface = std::string();
+      }
+   }
+   else
+   {
+      hostname = remainder;
+      interface = std::string();
+   }
+}
+
 // URI::CopyFrom - Copy from an object					/*{{{*/
 // ---------------------------------------------------------------------
 /* This parses the URI into all of its components */
 void URI::CopyFrom(const string &U)
 {
-   auto I = U.begin();
+   string::const_iterator I = U.begin();
 
    // Locate the first colon, this separates the scheme
-   for (; I < U.end() && *I != ':' ; I++);
-   auto FirstColon = I;
+   for (; I < U.end() && *I != ':' ; ++I);
+   string::const_iterator FirstColon = I;
 
    /* Determine if this is a host type URI with a leading double //
       and then search for the first single / */
-   auto SingleSlash = I;
+   string::const_iterator SingleSlash = I;
    if (I + 3 < U.end() && I[1] == '/' && I[2] == '/')
       SingleSlash += 3;
    
    /* Find the / indicating the end of the hostname, ignoring /'s in the
       square brackets */
    bool InBracket = false;
-   for (; SingleSlash < U.end() && (*SingleSlash != '/' || InBracket == true); SingleSlash++)
+   for (; SingleSlash < U.end() && (*SingleSlash != '/' || InBracket == true); ++SingleSlash)
    {
       if (*SingleSlash == '[')
 	 InBracket = true;
@@ -1090,9 +1277,9 @@ void URI::CopyFrom(const string &U)
       SingleSlash = U.end();
 
    // We can now write the access and path specifiers
-   Access = string(U,0,FirstColon - U.begin());
+   Access.assign(U.begin(),FirstColon);
    if (SingleSlash != U.end())
-      Path = string(U,SingleSlash - U.begin());
+      Path.assign(SingleSlash,U.end());
    if (Path.empty() == true)
       Path = "/";
 
@@ -1111,64 +1298,33 @@ void URI::CopyFrom(const string &U)
    I = FirstColon + 1;
    if (I > SingleSlash)
       I = SingleSlash;
-   for (; I < SingleSlash && *I != ':'; I++);
-   auto SecondColon = I;
-   
-   // Search for the @ after the colon
-   for (; I < SingleSlash && *I != '@'; I++);
-   auto At = I;
+
+   // Search for the @ separating user:pass from host
+   auto const RevAt = std::find(
+	 std::string::const_reverse_iterator(SingleSlash),
+	 std::string::const_reverse_iterator(I), '@');
+   string::const_iterator const At = RevAt.base() == I ? SingleSlash : std::prev(RevAt.base());
+   // and then look for the colon between user and pass
+   string::const_iterator const SecondColon = std::find(I, At, ':');
+
+   std::string Host;
    
    // Now write the host and user/pass
    if (At == SingleSlash)
    {
       if (FirstColon < SingleSlash)
-	 Host = string(U,FirstColon - U.begin(),SingleSlash - FirstColon);
+	 Host.assign(FirstColon,SingleSlash);
    }
    else
    {
-      Host = string(U,At - U.begin() + 1,SingleSlash - At - 1);
-      User = string(U,FirstColon - U.begin(),SecondColon - FirstColon);
+      Host.assign(At+1,SingleSlash);
+      // username and password must be encoded (RFC 3986)
+      User.assign(DeQuoteString(std::string(FirstColon,SecondColon)));
       if (SecondColon < At)
-	 Password = string(U,SecondColon - U.begin() + 1,At - SecondColon - 1);
+	 Password.assign(DeQuoteString(std::string(SecondColon+1,At)));
    }   
    
-   // Now we parse the RFC 2732 [] hostnames.
-   unsigned long PortEnd = 0;
-   InBracket = false;
-   for (unsigned I = 0; I != Host.length();)
-   {
-      if (Host[I] == '[')
-      {
-	 InBracket = true;
-	 Host.erase(I,1);
-	 continue;
-      }
-      
-      if (InBracket == true && Host[I] == ']')
-      {
-	 InBracket = false;
-	 Host.erase(I,1);
-	 PortEnd = I;
-	 continue;
-      }
-      I++;
-   }
-   
-   // Tsk, weird.
-   if (InBracket == true)
-   {
-      Host = string();
-      return;
-   }
-   
-   // Now we parse off a port number from the hostname
-   Port = 0;
-   string::size_type Pos = Host.rfind(':');
-   if (Pos == string::npos || Pos < PortEnd)
-      return;
-   
-   Port = atoi(string(Host,Pos+1).c_str());
-   Host = string(Host,0,Pos);
+   Address = URIAddress(Host);
 }
 									/*}}}*/
 // URI::operator string - Convert the URI to a string			/*{{{*/
@@ -1181,7 +1337,7 @@ URI::operator string()
    if (Access.empty() == false)
       Res = Access + ':';
    
-   if (Host.empty() == false)
+   if (Address.hostname.empty() == false)
    {	 
       if (Access.empty() == false)
 	 Res += "//";
@@ -1194,19 +1350,7 @@ URI::operator string()
 	 Res += "@";
       }
       
-      // Add RFC 2732 escaping characters
-      if (Access.empty() == false &&
-	  (Host.find('/') != string::npos || Host.find(':') != string::npos))
-	 Res += '[' + Host + ']';
-      else
-	 Res += Host;
-      
-      if (Port != 0)
-      {
-	 char S[30];
-	 sprintf(S,":%u",Port);
-	 Res += S;
-      }	 
+      Res += Address.to_string();
    }
    
    if (Path.empty() == false)
@@ -1229,7 +1373,7 @@ string URI::SiteOnly(const string &URI)
    U.User.clear();
    U.Password.clear();
    U.Path.clear();
-   U.Port = 0;
+   U.Address.port = std::experimental::optional<uint16_t>();
    return U;
 }
 									/*}}}*/

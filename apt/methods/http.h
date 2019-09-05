@@ -110,7 +110,7 @@ struct ServerState
    URI ServerName;
   
    bool HeaderLine(const string &Line);
-   bool Comp(URI Other) {return Other.Host == ServerName.Host && Other.Port == ServerName.Port;};
+   bool Comp(URI Other) {return Other.Address == ServerName.Address;};
    void Reset() {Major = 0; Minor = 0; Result = 0; Size = 0; StartPos = 0;
                  Encoding = Closes; time(&Date); ServerFd.reset();
                  Pipeline = true; };

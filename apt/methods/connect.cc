@@ -42,7 +42,7 @@
 									/*}}}*/
 
 static string LastHost;
-static int LastPort = 0;
+static std::string LastPort;
 static struct addrinfo *LastHostAddr = 0;
 static struct addrinfo *LastUsed = 0;
 
@@ -153,25 +153,25 @@ static bool DoConnect(struct addrinfo *Addr,const string &Host,
 // Connect - Connect to a server					/*{{{*/
 // ---------------------------------------------------------------------
 /* Performs a connection to the server */
-bool Connect(const string &Host,int Port,const char *Service,int DefPort,std::unique_ptr<MethodFd> &Fd,
+bool Connect(const URIAddress &address,const char *Service,int DefPort,std::unique_ptr<MethodFd> &Fd,
 	     unsigned long TimeOut,pkgAcqMethod *Owner)
 {
    if (_error->PendingError() == true)
       return false;
 
    // Convert the port name/number
-   char ServStr[300];
-   if (Port != 0)
-      snprintf(ServStr,sizeof(ServStr),"%u",(unsigned) Port);
+   std::string ServStr;
+   if (address.port)
+      ServStr = std::to_string(*(address.port));
    else
-      snprintf(ServStr,sizeof(ServStr),"%s",Service);
+      ServStr = Service;
    
    /* We used a cached address record.. Yes this is against the spec but
       the way we have setup our rotating dns suggests that this is more
       sensible */
-   if (LastHost != Host || LastPort != Port)
+   if (LastHost != address.to_hostname() || LastPort != ServStr)
    {
-      Owner->Status(_("Connecting to %s"),Host.c_str());
+      Owner->Status(_("Connecting to %s"),address.to_hostname().c_str());
 
       // Free the old address structure
       if (LastHostAddr != 0)
@@ -191,31 +191,31 @@ bool Connect(const string &Host,int Port,const char *Service,int DefPort,std::un
       while (1)
       {
 	 int Res;
-	 if ((Res = getaddrinfo(Host.c_str(),ServStr,&Hints,&LastHostAddr)) != 0 ||
+	 if ((Res = getaddrinfo(address.hostname_and_interface().c_str(),ServStr.c_str(),&Hints,&LastHostAddr)) != 0 ||
 	     LastHostAddr == 0)
 	 {
 	    if (Res == EAI_NONAME || Res == EAI_SERVICE)
 	    {
 	       if (DefPort != 0)
 	       {
-		  snprintf(ServStr,sizeof(ServStr),"%u",(unsigned) DefPort);
+		  ServStr = std::to_string((unsigned) DefPort);
 		  DefPort = 0;
 		  continue;
 	       }
-	       return _error->Error(_("Could not resolve '%s'"),Host.c_str());
+	       return _error->Error(_("Could not resolve '%s'"),address.to_hostname().c_str());
 	    }
 	    
 	    if (Res == EAI_AGAIN)
 	       return _error->Error(_("Temporary failure resolving '%s'"),
-				    Host.c_str());
+				    address.to_hostname().c_str());
 	    return _error->Error(_("Something wicked happened resolving '%s:%s' (%i)"),
-				 Host.c_str(),ServStr,Res);
+				 address.to_hostname().c_str(),ServStr.c_str(),Res);
 	 }
 	 break;
       }
       
-      LastHost = Host;
-      LastPort = Port;
+      LastHost = address.to_hostname();
+      LastPort = ServStr;
    }
 
    // When we have an IP rotation stay with the last IP.
@@ -225,7 +225,7 @@ bool Connect(const string &Host,int Port,const char *Service,int DefPort,std::un
    
    while (CurHost != 0)
    {
-      if (DoConnect(CurHost,Host,TimeOut,Fd,Owner) == true)
+      if (DoConnect(CurHost,address.to_hostname(),TimeOut,Fd,Owner) == true)
       {
 	 LastUsed = CurHost;
 	 return true;
@@ -256,7 +256,7 @@ bool Connect(const string &Host,int Port,const char *Service,int DefPort,std::un
 
    if (_error->PendingError() == true)
       return false;   
-   return _error->Error(_("Unable to connect to %s %s:"),Host.c_str(),ServStr);
+   return _error->Error(_("Unable to connect to %s %s:"),address.to_hostname().c_str(),ServStr.c_str());
 }
 									/*}}}*/
 

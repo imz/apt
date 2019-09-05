@@ -77,7 +77,7 @@ bool RSHConn::Open()
    if (Process != -1)
       return true;
 
-   if (Connect(ServerName.Host,ServerName.User) == false)
+   if (Connect(ServerName.Address.to_hostname(),ServerName.User) == false)
       return false;
 
    return true;
@@ -428,7 +428,7 @@ bool RSHMethod::Fetch(FetchItem *Itm)
 
    // We say this mainly because the pause here is for the
    // ssh connection that is still going
-   Status(_("Connecting to %s"), Get.Host.c_str());
+   Status(_("Connecting to %s"), Get.Address.to_hostname().c_str());
 
    // Get the files information
    unsigned long long Size;
