@@ -18,6 +18,7 @@
 #endif 
 #include <config.h>
 
+#include <apt-pkg/configuration.h>
 #include <apt-pkg/fileutl.h>
 #include <apt-pkg/error.h>
 #include <apt-pkg/sptr.h>
@@ -31,8 +32,10 @@
 #include <sys/wait.h>
 #include <signal.h>
 #include <errno.h>
+#include <dirent.h>
 #include <cstdlib>
 #include <cstring>
+#include <algorithm>
 
 // CNC:2003-02-14 - Ralf Corsepius told RH8 with GCC 3.2.1 fails
 //                  compiling without moving this header to here.
@@ -67,6 +70,42 @@ bool CopyFile(FileFd &From,FileFd &To)
    }
 
    return true;   
+}
+									/*}}}*/
+bool RemoveFileAt(const char * const Function, const int dirfd, const std::string &FileName)/*{{{*/
+{
+   if (FileName == "/dev/null")
+      return true;
+
+   errno = 0;
+
+   if (unlinkat(dirfd, FileName.c_str(), 0) != 0)
+   {
+      if (errno == ENOENT)
+         return true;
+
+      return _error->WarningE(Function, _("Problem unlinking the file %s"), FileName.c_str());
+   }
+
+   return true;
+}
+									/*}}}*/
+bool RemoveFile(const char * const Function, const std::string &FileName)/*{{{*/
+{
+   if (FileName == "/dev/null")
+      return true;
+
+   errno = 0;
+
+   if (unlink(FileName.c_str()) != 0)
+   {
+      if (errno == ENOENT)
+         return true;
+
+      return _error->WarningE(Function, _("Problem unlinking the file %s"), FileName.c_str());
+   }
+
+   return true;
 }
 									/*}}}*/
 // GetLock - Gets a lock file						/*{{{*/
@@ -132,6 +171,255 @@ bool FileExists(const string &File)
    return true;
 }
 									/*}}}*/
+// RealFileExists - Check if a file exists and if it is really a file	/*{{{*/
+// ---------------------------------------------------------------------
+/* */
+bool RealFileExists(const string &File)
+{
+   struct stat Buf;
+   if (stat(File.c_str(),&Buf) != 0)
+      return false;
+   return ((Buf.st_mode & S_IFREG) != 0);
+}
+									/*}}}*/
+// DirectoryExists - Check if a directory exists and is really one	/*{{{*/
+// ---------------------------------------------------------------------
+/* */
+bool DirectoryExists(const string &Path)
+{
+   struct stat Buf;
+   if (stat(Path.c_str(),&Buf) != 0)
+      return false;
+   return ((Buf.st_mode & S_IFDIR) != 0);
+}
+									/*}}}*/
+// GetListOfFilesInDir - returns a vector of files in the given dir	/*{{{*/
+// ---------------------------------------------------------------------
+/* If an extension is given only files with this extension are included
+   in the returned vector, otherwise every "normal" file is included. */
+std::vector<string> GetListOfFilesInDir(const string &Dir, const string &Ext,
+					bool SortList, bool AllowNoExt)
+{
+   std::vector<string> ext;
+   ext.reserve(2);
+
+   if (!Ext.empty())
+      ext.push_back(Ext);
+
+   if (AllowNoExt && (!ext.empty()))
+      ext.push_back("");
+
+   return GetListOfFilesInDir(Dir, ext, SortList);
+}
+
+std::vector<string> GetListOfFilesInDir(const string &Dir, const std::vector<string> &Ext,
+					bool SortList)
+{
+   // Attention debuggers: need to be set with the environment config file!
+   const bool Debug = _config->FindB("Debug::GetListOfFilesInDir", false);
+   if (Debug)
+   {
+      std::clog << "Accept in " << Dir << " only files with the following " << Ext.size() << " extensions:" << std::endl;
+      if (Ext.empty())
+         std::clog << "\tNO extension" << std::endl;
+      else
+         for (auto e = Ext.begin(); e != Ext.end(); ++e)
+            std::clog << '\t' << (e->empty() ? "NO" : *e) << " extension" << std::endl;
+   }
+
+   std::vector<string> List;
+
+   if (!DirectoryExists(Dir))
+   {
+      _error->Error(_("List of files can't be created as '%s' is not a directory"), Dir.c_str());
+      return List;
+   }
+
+   Configuration::MatchAgainstConfig SilentIgnore("Dir::Ignore-Files-Silently");
+   DIR *D = opendir(Dir.c_str());
+   if (D == 0)
+   {
+      if (errno == EACCES)
+         _error->WarningE("opendir", _("Unable to read %s"), Dir.c_str());
+      else
+         _error->Errno("opendir", _("Unable to read %s"), Dir.c_str());
+      return List;
+   }
+
+   for (struct dirent *Ent = readdir(D); Ent != 0; Ent = readdir(D))
+   {
+      // skip "hidden" files
+      if (Ent->d_name[0] == '.')
+         continue;
+
+      // Make sure it is a file and not something else
+      const string File = flCombine(Dir,Ent->d_name);
+#ifdef _DIRENT_HAVE_D_TYPE
+      if (Ent->d_type != DT_REG)
+#endif
+      {
+         if (!RealFileExists(File))
+         {
+            // do not show ignoration warnings for directories
+            if (
+#ifdef _DIRENT_HAVE_D_TYPE
+                Ent->d_type == DT_DIR ||
+#endif
+                DirectoryExists(File))
+               continue;
+            if (!SilentIgnore.Match(Ent->d_name))
+               _error->Notice(_("Ignoring '%s' in directory '%s' as it is not a regular file"), Ent->d_name, Dir.c_str());
+            continue;
+         }
+      }
+
+      // check for accepted extension:
+      // no extension given -> periods are bad as hell!
+      // extensions given -> "" extension allows no extension
+      if (!Ext.empty())
+      {
+         string d_ext = flExtension(Ent->d_name);
+         if (d_ext == Ent->d_name) // no extension
+         {
+            if (std::find(Ext.begin(), Ext.end(), "") == Ext.end())
+            {
+               if (Debug)
+                  std::clog << "Bad file: " << Ent->d_name << " → no extension" << std::endl;
+               if (!SilentIgnore.Match(Ent->d_name))
+                  _error->Notice(_("Ignoring file '%s' in directory '%s' as it has no filename extension"), Ent->d_name, Dir.c_str());
+               continue;
+            }
+         }
+         else if (std::find(Ext.begin(), Ext.end(), d_ext) == Ext.end())
+         {
+            if (Debug)
+               std::clog << "Bad file: " << Ent->d_name << " → bad extension »" << flExtension(Ent->d_name) << "«" << std::endl;
+            if (SilentIgnore.Match(Ent->d_name) == false)
+               _error->Notice(_("Ignoring file '%s' in directory '%s' as it has an invalid filename extension"), Ent->d_name, Dir.c_str());
+            continue;
+         }
+      }
+
+      // Skip bad filenames ala run-parts
+      const char *C = Ent->d_name;
+      for (; *C != 0; ++C)
+         if ((!isalpha(*C)) && (!isdigit(*C))
+             && (*C != '_') && (*C != '-') && (*C != ':')) {
+            // no required extension -> dot is a bad character
+            if ((*C == '.') && (!Ext.empty()))
+               continue;
+            break;
+         }
+
+      // we don't reach the end of the name -> bad character included
+      if (*C != 0)
+      {
+         if (Debug)
+            std::clog << "Bad file: " << Ent->d_name << " → bad character »"
+                      << *C << "« in filename (period allowed: " << (Ext.empty() ? "no" : "yes") << ")" << std::endl;
+         continue;
+      }
+
+      // skip filenames which end with a period. These are never valid
+      if (*(C - 1) == '.')
+      {
+         if (Debug)
+            std::clog << "Bad file: " << Ent->d_name << " → Period as last character" << std::endl;
+         continue;
+      }
+
+      if (Debug)
+         std::clog << "Accept file: " << Ent->d_name << " in " << Dir << std::endl;
+
+      List.push_back(File);
+   }
+
+   closedir(D);
+
+   if (SortList)
+      std::sort(List.begin(),List.end());
+
+   return List;
+}
+
+std::vector<string> GetListOfFilesInDir(const string &Dir, bool SortList)
+{
+   const bool Debug = _config->FindB("Debug::GetListOfFilesInDir", false);
+   if (Debug)
+      std::clog << "Accept in " << Dir << " all regular files" << std::endl;
+
+   std::vector<string> List;
+
+   if (!DirectoryExists(Dir))
+   {
+      _error->Error(_("List of files can't be created as '%s' is not a directory"), Dir.c_str());
+      return List;
+   }
+
+   DIR *D = opendir(Dir.c_str());
+   if (D == 0)
+   {
+      _error->Errno("opendir",_("Unable to read %s"),Dir.c_str());
+      return List;
+   }
+
+   for (struct dirent *Ent = readdir(D); Ent != 0; Ent = readdir(D))
+   {
+      // skip "hidden" files
+      if (Ent->d_name[0] == '.')
+         continue;
+
+      // Make sure it is a file and not something else
+      const string File = flCombine(Dir, Ent->d_name);
+#ifdef _DIRENT_HAVE_D_TYPE
+      if (Ent->d_type != DT_REG)
+#endif
+      {
+         if (!RealFileExists(File))
+         {
+            if (Debug)
+               std::clog << "Bad file: " << Ent->d_name << " → it is not a real file" << std::endl;
+            continue;
+         }
+      }
+
+      // Skip bad filenames ala run-parts
+      const char *C = Ent->d_name;
+      for (; *C != 0; ++C)
+         if ((!isalpha(*C)) && (!isdigit(*C))
+             && (*C != '_') && (*C != '-') && (*C != '.'))
+            break;
+
+      // we don't reach the end of the name -> bad character included
+      if (*C != 0)
+      {
+         if (Debug)
+            std::clog << "Bad file: " << Ent->d_name << " → bad character »" << *C << "« in filename" << std::endl;
+         continue;
+      }
+
+      // skip filenames which end with a period. These are never valid
+      if (*(C - 1) == '.')
+      {
+         if (Debug)
+            std::clog << "Bad file: " << Ent->d_name << " → Period as last character" << std::endl;
+         continue;
+      }
+
+      if (Debug)
+         std::clog << "Accept file: " << Ent->d_name << " in " << Dir << std::endl;
+
+      List.push_back(File);
+   }
+
+   closedir(D);
+
+   if (SortList == true)
+      std::sort(List.begin(),List.end());
+
+   return List;
+}
+/*}}}*/
 // SafeGetCWD - This is a safer getcwd that returns a dynamic string	/*{{{*/
 // ---------------------------------------------------------------------
 /* We return / on failure. */

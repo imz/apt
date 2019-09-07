@@ -91,20 +91,24 @@ class GlobalError
    // Call to generate an error from a library call.
    bool Errno(const char *Function,const char *Description,...) APT_MFORMAT2;
    bool WarningE(const char *Function,const char *Description,...) APT_MFORMAT2;
+   bool NoticeE(const char *Function,const char *Description,...) APT_MFORMAT2;
 
    /* A warning should be considered less severe than an error, and may be
       ignored by the client. */
    bool Error(const char *Description,...) APT_MFORMAT1;
    bool Warning(const char *Description,...) APT_MFORMAT1;
+   bool Notice(const char *Description,...) APT_MFORMAT1;
 #else
    // Call to generate an error from a library call.
    bool Errno(const char *Function,const char *Description) APT_MFORMAT2;
    bool WarningE(const char *Function,const char *Description) APT_MFORMAT2;
+   bool NoticeE(const char *Function,const char *Description) APT_MFORMAT2;
 
    /* A warning should be considered less severe than an error, and may be
       ignored by the client. */
    bool Error(const char *Description) APT_MFORMAT1;
    bool Warning(const char *Description) APT_MFORMAT1;
+   bool Notice(const char *Description) APT_MFORMAT1;
 #endif
 
    // Simple accessors

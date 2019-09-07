@@ -20,6 +20,18 @@ RPMPackageData::RPMPackageData()
    , ArchScores(31), VerMap(517)
 #endif
 {
+   m_VerMapRealloc.reset(new pkgCacheGenerator::DynamicFunction(
+      [this] (void const *oldMap, void const *newMap)
+   {
+      for (auto iter1 = VerMap.begin(); iter1 != VerMap.end(); ++iter1)
+      {
+         for (auto iter2 = iter1->second.begin(); iter2 != iter1->second.end(); ++iter2)
+         {
+            iter2->second.ReMap(oldMap, newMap);
+         }
+      }
+   }));
+
    BaseArch = _config->Find("APT::Architecture");
    if (BaseArch == "x86_64" || BaseArch == "ia64" ||
        BaseArch == "ppc64" || BaseArch == "sparc64")

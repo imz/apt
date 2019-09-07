@@ -3,9 +3,11 @@
 
 #include <apt-pkg/tagfile.h>
 #include <apt-pkg/pkgcache.h>
+#include <apt-pkg/pkgcachegen.h>
 #include <apt-pkg/rpmmisc.h>
 
 #include <map>
+#include <memory>
 #include <vector>
 #include <regex.h>
 #include <cstring>
@@ -58,6 +60,7 @@ class RPMPackageData
    vector<Translate*> IndexTranslations;
 
    VerMapType VerMap;
+   std::unique_ptr<pkgCacheGenerator::DynamicFunction> m_VerMapRealloc;
 
    void GenericTranslate(vector<Translate*> &TList, string &FullURI,
 		   	 map<string,string> &Dict);
