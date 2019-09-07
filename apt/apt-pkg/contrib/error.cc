@@ -130,6 +130,29 @@ bool GlobalError::WarningE(const char *Function,const char *Description,...)
    return false;   
 }
 									/*}}}*/
+bool GlobalError::NoticeE(const char *Function,const char *Description,...)
+{
+   // TODO: rework this function if GlobalError is improved to work with additional levels of information
+   // Currently, it's a copy of WarningE function
+
+   // sprintf the description
+   char S[400];
+
+   va_list args;
+   va_start(args,Description);
+   vsnprintf(S,sizeof(S),Description,args);
+   va_end(args);
+
+   snprintf(S + strlen(S),sizeof(S) - strlen(S)," - %s (%i %s)",Function,errno,strerror(errno));
+
+   // Put it on the list
+   Item *Itm = new Item;
+   Itm->Text = S;
+   Itm->Error = false;
+   Insert(Itm);
+
+   return false;
+}
 // GlobalError::Error - Add an error to the list			/*{{{*/
 // ---------------------------------------------------------------------
 /* Just vsprintfs and pushes */
@@ -176,6 +199,27 @@ bool GlobalError::Warning(const char *Description,...)
    return false;
 }
 									/*}}}*/
+bool GlobalError::Notice(const char *Description,...)
+{
+   // TODO: rework this function if GlobalError is improved to work with additional levels of information
+   // Currently, it's a copy of Warning function
+
+   // sprintf the description
+   char S[400];
+
+   va_list args;
+   va_start(args,Description);
+   vsnprintf(S,sizeof(S),Description,args);
+   va_end(args);
+
+   // Put it on the list
+   Item *Itm = new Item;
+   Itm->Text = S;
+   Itm->Error = false;
+   Insert(Itm);
+
+   return false;
+}
 // GlobalError::PopMessage - Pulls a single message out			/*{{{*/
 // ---------------------------------------------------------------------
 /* This should be used in a loop checking empty() each cycle. It returns

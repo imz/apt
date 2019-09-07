@@ -2,7 +2,7 @@
 lib_LTLIBRARIES = libapt-pkg.la
 
 libapt_pkg_la_LIBADD = @RPMLIBS@
-libapt_pkg_la_LDFLAGS = -version-info 8:0:1 -release @GLIBC_VER@-@LIBSTDCPP_VER@@NO_CXX11ABI_SUFFIX@@FILE_OFFSET_BITS_SUFFIX@
+libapt_pkg_la_LDFLAGS = -version-info 9:0:1 -release @GLIBC_VER@-@LIBSTDCPP_VER@@NO_CXX11ABI_SUFFIX@@FILE_OFFSET_BITS_SUFFIX@
 
 AM_CPPFLAGS = -DLIBDIR=\"$(libdir)\" -D_RPM_4_4_COMPAT
 
@@ -103,6 +103,8 @@ libapt_pkg_la_SOURCES = \
 	srcrecords.h \
 	tagfile.cc \
 	tagfile.h \
+	update.cc \
+	update.h \
 	version.cc \
 	version.h \
 	versionmatch.cc \

@@ -26,7 +26,6 @@
 
 #include <config.h>
 
-#define PKGCACHE_FINDPKG_ABI
 #include <apt-pkg/pkgcache.h>
 #include <apt-pkg/version.h>
 #include <apt-pkg/error.h>
@@ -120,7 +119,7 @@ pkgCache::pkgCache(MMap *Map, bool DoMap) : Map(*Map)
 // Cache::ReMap - Reopen the cache file					/*{{{*/
 // ---------------------------------------------------------------------
 /* If the file is already closed then this will open it open it. */
-bool pkgCache::ReMap()
+bool pkgCache::ReMap(bool Errorchecks)
 {
    // Apply the typecasts.
    HeaderP = (Header *)Map.Data();
@@ -132,6 +131,9 @@ bool pkgCache::ReMap()
    DepP = (Dependency *)Map.Data();
    StringItemP = (StringItem *)Map.Data();
    StrP = (char *)Map.Data();
+
+   if (!Errorchecks)
+      return true;
 
    if (Map.Size() == 0 || HeaderP == 0)
       return _error->Error(_("Empty package cache"));
@@ -191,12 +193,6 @@ pkgCache::PkgIterator pkgCache::FindPkg(const string &Name)
 {
    return PkgIterator(*this,FindPackage(Name.c_str()));
 }
-#ifdef PKGCACHE_FINDPKG_ABI
-pkgCache::PkgIterator pkgCache::FindPkg(string Name)
-{
-   return PkgIterator(*this,FindPackage(Name.c_str()));
-}
-#endif
 									/*}}}*/
 
 // CNC:2003-02-17 - A slightly changed FindPkg(), hacked for performance.

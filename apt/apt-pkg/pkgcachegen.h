@@ -24,6 +24,11 @@
 
 #include <apt-pkg/pkgcache.h>
 
+#include <set>
+#include <functional>
+#include <utility>
+#include <experimental/optional>
+
 class pkgSourceList;
 class OpProgress;
 class MMap;
@@ -34,16 +39,70 @@ class pkgCacheGenerator
    private:
 
    pkgCache::StringItem *UniqHash[26];
-   unsigned long WriteStringInMap(const std::string &String) { return WriteStringInMap(String.c_str(), String.length()); };
-   unsigned long WriteStringInMap(const char *String);
-   unsigned long WriteStringInMap(const char *String, unsigned long Len);
-   unsigned long AllocateInMap(unsigned long size);
+   std::experimental::optional<map_ptrloc> WriteStringInMap(const std::string &String) { return WriteStringInMap(String.c_str(), String.length()); };
+   std::experimental::optional<map_ptrloc> WriteStringInMap(const char *String);
+   std::experimental::optional<map_ptrloc> WriteStringInMap(const char *String, unsigned long Len);
+   std::experimental::optional<map_ptrloc> AllocateInMap(unsigned long size);
 
    public:
    
    class ListParser;
    friend class ListParser;
-   
+
+   template<typename Iter>
+   class Dynamic
+   {
+      Iter *I;
+
+   public:
+      static std::set<Iter*> toReMap;
+
+      Dynamic(Iter &It)
+         : I(&It)
+      {
+         toReMap.insert(I);
+      }
+
+      ~Dynamic()
+      {
+         toReMap.erase(I);
+      }
+   };
+
+   class DynamicFunction
+   {
+   public:
+      typedef std::function<void(const void *, const void *)> function;
+
+      static std::set<DynamicFunction*> toReMap;
+
+      explicit DynamicFunction(const function &l_function)
+         : m_function(l_function)
+      {
+         toReMap.insert(this);
+      }
+
+      explicit DynamicFunction(function &&l_function)
+         : m_function(std::move(l_function))
+      {
+         toReMap.insert(this);
+      }
+
+      ~DynamicFunction()
+      {
+         toReMap.erase(this);
+      }
+
+      void call(const void *oldMap, const void *newMap)
+      {
+         if (m_function)
+            m_function(oldMap, newMap);
+      }
+
+   private:
+      function m_function;
+   };
+
    protected:
    
    DynamicMMap &Map;
@@ -57,15 +116,15 @@ class pkgCacheGenerator
    bool FoundFileDeps;
    
    bool NewFileVer(pkgCache::VerIterator &Ver,ListParser &List);
-   unsigned long NewVersion(pkgCache::VerIterator &Ver,const string &VerStr,unsigned long Next);
+   std::experimental::optional<map_ptrloc> NewVersion(pkgCache::VerIterator &Ver,const string &VerStr, map_ptrloc Next);
 
    public:
 
    // CNC:2003-02-27 - We need this in rpmListParser.
    bool NewPackage(pkgCache::PkgIterator &PkgI,const string &Pkg);
 
-   unsigned long WriteUniqString(const char *S,unsigned int Size);
-   inline unsigned long WriteUniqString(const string &S) {return WriteUniqString(S.c_str(),S.length());};
+   std::experimental::optional<map_ptrloc> WriteUniqString(const char *S,unsigned int Size);
+   inline std::experimental::optional<map_ptrloc> WriteUniqString(const string &S) {return WriteUniqString(S.c_str(),S.length());};
 
    void DropProgress() {Progress = 0;};
    bool SelectFile(const string &File,const string &Site,pkgIndexFile const &Index,
@@ -80,7 +139,9 @@ class pkgCacheGenerator
 
    // CNC:2003-03-18
    inline void ResetFileDeps() {FoundFileDeps = false;};
-      
+
+   void ReMap(void const * const oldMap, void const * const newMap);
+
    pkgCacheGenerator(DynamicMMap *Map,OpProgress *Progress);
    ~pkgCacheGenerator();
 };
@@ -101,10 +162,10 @@ class pkgCacheGenerator::ListParser
    pkgCacheGenerator *Owner;
    friend class pkgCacheGenerator;
 
-   inline unsigned long WriteUniqString(const string &S) {return Owner->WriteUniqString(S);};
-   inline unsigned long WriteUniqString(const char *S,unsigned int Size) {return Owner->WriteUniqString(S,Size);};
-   inline unsigned long WriteString(const string &S) {return Owner->WriteStringInMap(S);};
-   inline unsigned long WriteString(const char *S,unsigned int Size) {return Owner->WriteStringInMap(S,Size);};
+   inline std::experimental::optional<map_ptrloc> WriteUniqString(const string &S) {return Owner->WriteUniqString(S);};
+   inline std::experimental::optional<map_ptrloc> WriteUniqString(const char *S,unsigned int Size) {return Owner->WriteUniqString(S,Size);};
+   inline std::experimental::optional<map_ptrloc> WriteString(const string &S) {return Owner->WriteStringInMap(S);};
+   inline std::experimental::optional<map_ptrloc> WriteString(const char *S,unsigned int Size) {return Owner->WriteStringInMap(S,Size);};
    bool NewDepends(pkgCache::VerIterator &Ver, const string &Package,
 		   const string &Version,unsigned int Op,
 		   unsigned int Type);

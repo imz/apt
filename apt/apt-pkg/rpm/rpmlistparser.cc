@@ -48,29 +48,33 @@ rpmListParser::rpmListParser(RPMHandler *Handler)
    header = NULL;
    if (Handler->IsDatabase() == true)
    {
-#ifdef WITH_HASH_MAP
-      SeenPackages = new SeenPackagesType(517);
-#else
-      SeenPackages = new SeenPackagesType;
-#endif
+      SeenPackages.reset(new SeenPackagesType);
+      m_SeenPackagesRealloc.reset(new pkgCacheGenerator::DynamicFunction(
+         [this] (void const *oldMap, void const *newMap)
+      {
+         SeenPackagesType tmp;
+
+         for (auto iter: *SeenPackages)
+         {
+            tmp.insert(iter + (static_cast<const char *>(newMap) - static_cast<const char *>(oldMap)));
+         }
+
+         SeenPackages->swap(tmp);
+      }));
    }
-   else
-   {
-      SeenPackages = NULL;
-   }
+
    RpmData = RPMPackageData::Singleton();
 }
                                                                         /*}}}*/
 
 rpmListParser::~rpmListParser()
 {
-   delete SeenPackages;
 }
 
 // ListParser::UniqFindTagWrite - Find the tag and write a unq string	/*{{{*/
 // ---------------------------------------------------------------------
 /* */
-unsigned long rpmListParser::UniqFindTagWrite(int Tag)
+std::experimental::optional<map_ptrloc> rpmListParser::UniqFindTagWrite(int Tag)
 {
    char *Start;
    char *Stop;
@@ -79,7 +83,14 @@ unsigned long rpmListParser::UniqFindTagWrite(int Tag)
    void *data;
    
    if (headerGetEntry(header, Tag, &type, &data, &count) != 1)
-      return 0;
+   {
+      /*
+       * Some 3rd-party rpm packages may not contain these tags.
+       * But since cacheiterators treat zero as special value,
+       * just pass it instead of failing
+       */
+      return std::experimental::optional<map_ptrloc>(0);
+   }
    
    if (type == RPM_STRING_TYPE) 
    {
@@ -137,7 +148,7 @@ string rpmListParser::Package()
    // dependencies.
    if (RpmData->IsDupPackage(Name) == true)
       IsDup = true;
-   else if (SeenPackages != NULL) {
+   else if (SeenPackages) {
       if (SeenPackages->find(Name.c_str()) != SeenPackages->end())
       {
 	 if (_config->FindB("RPM::Allow-Duplicated-Warning", true) == true)
@@ -255,8 +266,13 @@ bool rpmListParser::NewVersion(pkgCache::VerIterator &Ver)
 #endif
    
    // Parse the section
-   Ver->Section = UniqFindTagWrite(RPMTAG_GROUP);
-   Ver->Arch = UniqFindTagWrite(RPMTAG_ARCH);
+   const auto idxSection = UniqFindTagWrite(RPMTAG_GROUP);
+   const auto idxArch = UniqFindTagWrite(RPMTAG_ARCH);
+   if ((!idxSection) || (!idxArch))
+      return false;
+
+   Ver->Section = *idxSection;
+   Ver->Arch = *idxArch;
    
    // Archive Size
    Ver->Size = Handler->FileSize();
@@ -293,10 +309,17 @@ bool rpmListParser::NewVersion(pkgCache::VerIterator &Ver)
 bool rpmListParser::UsePackage(pkgCache::PkgIterator &Pkg,
 			       pkgCache::VerIterator &Ver)
 {
-   if (SeenPackages != NULL)
-      (*SeenPackages)[Pkg.Name()] = true;
+   if (SeenPackages)
+      SeenPackages->insert(Pkg.Name());
    if (Pkg->Section == 0)
-      Pkg->Section = UniqFindTagWrite(RPMTAG_GROUP);
+   {
+      const auto idxSection = UniqFindTagWrite(RPMTAG_GROUP);
+      if (!idxSection)
+         return false;
+
+      Pkg->Section = *idxSection;
+   }
+
    if (_error->PendingError()) 
        return false;
    string PkgName = Pkg.Name();
@@ -740,19 +763,61 @@ bool rpmListParser::LoadReleaseInfo(pkgCache::PkgFileIterator &FileI,
    
    const char *Start;
    const char *Stop;
+
    if (Section.Find("Archive",Start,Stop))
-       FileI->Archive = WriteUniqString(Start,Stop - Start);
+   {
+      const auto idx = WriteUniqString(Start, Stop - Start);
+      if (!idx)
+         return false;
+
+       FileI->Archive = *idx;
+   }
+
    if (Section.Find("Component",Start,Stop))
-       FileI->Component = WriteUniqString(Start,Stop - Start);
+   {
+      const auto idx = WriteUniqString(Start, Stop - Start);
+      if (!idx)
+         return false;
+
+      FileI->Component = *idx;
+   }
+
    if (Section.Find("Version",Start,Stop))
-       FileI->Version = WriteUniqString(Start,Stop - Start);
+   {
+      const auto idx = WriteUniqString(Start, Stop - Start);
+      if (!idx)
+         return false;
+
+      FileI->Version = *idx;
+   }
+
    if (Section.Find("Origin",Start,Stop))
-       FileI->Origin = WriteUniqString(Start,Stop - Start);
+   {
+      const auto idx = WriteUniqString(Start, Stop - Start);
+      if (!idx)
+         return false;
+
+      FileI->Origin = *idx;
+   }
+
    if (Section.Find("Label",Start,Stop))
-       FileI->Label = WriteUniqString(Start,Stop - Start);
+   {
+      const auto idx = WriteUniqString(Start, Stop - Start);
+      if (!idx)
+         return false;
+
+      FileI->Label = *idx;
+   }
+
    if (Section.Find("Architecture",Start,Stop))
-       FileI->Architecture = WriteUniqString(Start,Stop - Start);
-   
+   {
+      const auto idx = WriteUniqString(Start, Stop - Start);
+      if (!idx)
+         return false;
+
+      FileI->Architecture = *idx;
+   }
+
    if (Section.FindFlag("NotAutomatic",FileI->Flags,
 			pkgCache::Flag::NotAutomatic) == false)
        _error->Warning(_("Bad NotAutomatic flag"));

@@ -124,7 +124,7 @@ class pkgCache
    StringItem *StringItemP;
    char *StrP;
 
-   virtual bool ReMap();
+   virtual bool ReMap(bool Errorchecks = true);
    inline bool Sync() {return Map.Sync();};
    inline MMap &GetMap() {return Map;};
    inline void *DataEnd() {return ((unsigned char *)Map.Data()) + Map.Size();};
@@ -138,9 +138,7 @@ class pkgCache
    
    // Accessors
    PkgIterator FindPkg(const string &Name);
-#ifdef PKGCACHE_FINDPKG_ABI
-   PkgIterator FindPkg(string Name);
-#endif
+
    // CNC:2003-02-17 - A slightly changed FindPkg(), hacked for performance.
    Package *FindPackage(const char *Name);
    Header &Head() {return *HeaderP;};

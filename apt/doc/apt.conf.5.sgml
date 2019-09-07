@@ -127,10 +127,19 @@ DPkg::Pre-Install-Pkgs {"/usr/sbin/dpkg-preconfigure --apt";};
      </Para></ListItem>
      </VarListEntry>
 
-     <VarListEntry><Term>Cache-Limit</Term>
-     <ListItem><Para>
-     APT uses a fixed size memory mapped cache file to store the 'available'
-     information. This sets the size of that cache.
+     <VarListEntry><Term>Cache-Start, Cache-Grow and Cache-Limit</Term>
+     <ListItem><Para>APT uses since version 0.7.26 a resizable memory mapped cache file to store the 'available'
+     information. <literal/Cache-Start/ acts as a hint to which size the Cache will grow
+     and is therefore the amount of memory APT will request at startup. The default value is
+     20971520 bytes (~20 MB). Note that these amount of space need to be available for APT
+     otherwise it will likely fail ungracefully, so for memory restricted devices these value should
+     be lowered while on systems with a lot of configured sources this might be increased.
+     <literal/Cache-Grow/ defines in byte with the default of 1048576 (~1 MB) how much
+     the Cache size will be increased in the event the space defined by <literal/Cache-Start/
+     is not enough. These value will be applied again and again until either the cache is big
+     enough to store all information or the size of the cache reaches the <literal/Cache-Limit/
+     The default of <literal/Cache-Limit/ is 0 which stands for no limit.
+     If <literal/Cache-Grow/ is set to 0 the automatic grow of the cache is disabled.
      </Para></ListItem>
      </VarListEntry>
 
@@ -515,6 +524,9 @@ DPkg::Pre-Install-Pkgs {"/usr/sbin/dpkg-preconfigure --apt";};
    operations as non-root and <literal/Debug::pkgDPkgPM/ will print out the 
    command line for each dpkg invokation. <literal/Debug::IdentCdrom/ will 
    disable the inclusion of statfs data in CDROM IDs.
+   </para><para>
+   To debug issues related to dynamic memory allocation, an option
+   <literal/Debug::DynamicMMap::Grow/ may be used.
    </para>
  </RefSect1>
  
