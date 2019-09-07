@@ -43,7 +43,7 @@ class FileFd
    
    inline bool Read(void *To,unsigned long long Size,bool AllowEof)
    {
-      unsigned long Jnk;
+      unsigned long long Jnk;
       if (AllowEof)
 	 return Read(To,Size,&Jnk);
       return Read(To,Size);
