@@ -1,6 +1,6 @@
 Name: apt
 Version: 0.5.15lorg2
-Release: alt71
+Release: alt71.1
 
 Summary: Debian's Advanced Packaging Tool with RPM support
 Summary(ru_RU.UTF-8): Debian APT - Усовершенствованное средство управления пакетами с поддержкой RPM
@@ -320,6 +320,14 @@ unset RPM_PYTHON
 %_libdir/%name/methods/https
 
 %changelog
+* Sat Sep 07 2019 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt71.1
+- fileutl.h: dropped an inline Read() method, which had an error in the size
+  of a "write-only" local variable (since 0.5.15lorg2-alt70).
+  This method is not used anywhere (including other packages in Sisyphus,
+  proved by recompiling). soname change would be a guard for other clients
+  that dynamically linked to it, but--as far as other versions of *packages*
+  are concerned--set-versions must be enough.
+
 * Mon Jul 22 2019 Aleksei Nikiforov <darktemplar@altlinux.org> 0.5.15lorg2-alt71
 - Introduced new function ListUpdate for improved packagekit support.
 
