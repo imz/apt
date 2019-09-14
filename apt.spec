@@ -1,6 +1,6 @@
 Name: apt
 Version: 0.5.15lorg2
-Release: alt71.1
+Release: alt71.2
 
 Summary: Debian's Advanced Packaging Tool with RPM support
 Summary(ru_RU.UTF-8): Debian APT - Усовершенствованное средство управления пакетами с поддержкой RPM
@@ -320,6 +320,9 @@ unset RPM_PYTHON
 %_libdir/%name/methods/https
 
 %changelog
+* Sat Sep 14 2019 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt71.2
+- debug e2k odd behavior
+
 * Sat Sep 07 2019 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt71.1
 - fileutl.h: dropped an inline Read() method, which had an error in the size
   of a "write-only" local variable (since 0.5.15lorg2-alt70).
