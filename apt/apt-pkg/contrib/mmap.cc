@@ -268,7 +268,7 @@ std::experimental::optional<map_ptrloc> DynamicMMap::Allocate(unsigned long Item
       // Woops, we ran out, the calling code should allocate more.
       if (Empty == 0)
       {
-	 _error->Error("Ran out of allocation pools");
+	 _error->Error("Ran out of allocation pools (%u)", PoolCount);
 	 return std::experimental::optional<map_ptrloc>();
       }
       
