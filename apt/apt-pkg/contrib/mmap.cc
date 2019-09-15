@@ -376,6 +376,9 @@ bool DynamicMMap::Grow(unsigned long long size)
       Fd->Write(&C,sizeof(C));
    }
 
+   if (debug_grow)
+      DebugPrintPools("DynamicMMap::Grow: before remapping: ");
+
    unsigned long const poolOffset = Pools - ((Pool*) Base);
 
    if (Fd != 0)
@@ -415,6 +418,9 @@ bool DynamicMMap::Grow(unsigned long long size)
 
    Pools = (Pool*) Base + poolOffset;
    WorkSpace = newSize;
+
+   if (debug_grow)
+      DebugPrintPools("DynamicMMap::Grow: after remapping: ");
 
    return true;
 }
