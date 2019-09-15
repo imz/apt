@@ -379,7 +379,7 @@ bool DynamicMMap::Grow(unsigned long long size)
    if (debug_grow)
       DebugPrintPools("DynamicMMap::Grow: before remapping: ");
 
-   unsigned long const poolOffset = Pools - ((Pool*) Base);
+   std::ptrdiff_t const poolOffset = reinterpret_cast<char *>(Pools) - static_cast<char *>(Base);
 
    if (Fd != 0)
    {
@@ -416,7 +416,7 @@ bool DynamicMMap::Grow(unsigned long long size)
       memset((char*)Base + WorkSpace, 0, newSize - WorkSpace);
    }
 
-   Pools = (Pool*) Base + poolOffset;
+   Pools = reinterpret_cast<decltype(Pools)>(static_cast<char *>(Base) + poolOffset);
    WorkSpace = newSize;
 
    if (debug_grow)
