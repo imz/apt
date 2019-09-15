@@ -200,7 +200,7 @@ struct pkgCache::Header
 
    /* Allocation pools, there should be one of these for each structure
       excluding the header */
-   DynamicMMap::Pool Pools[7];
+   DynamicMMap::Pool Pools[12];
    
    // Rapid package name lookup
    map_ptrloc HashTable[64*1024];
