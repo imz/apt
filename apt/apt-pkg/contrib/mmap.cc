@@ -267,7 +267,11 @@ std::experimental::optional<map_ptrloc> DynamicMMap::Allocate(unsigned long Item
       // Woops, we ran out, the calling code should allocate more.
       if (Empty == 0)
       {
-	 _error->Error("Ran out of allocation pools (%u)", PoolCount);
+         for (auto I = Pools; I != Pools + PoolCount; ++I)
+            {
+               _error->Warning(_("DynamicMMap::Allocate: current Pools[*]: %lu"), I->ItemSize);
+            }
+	 _error->Error("Ran out of allocation pools (%u); needing one for size %ul", PoolCount, ItemSize);
 	 return std::experimental::optional<map_ptrloc>();
       }
       
@@ -356,6 +360,12 @@ bool DynamicMMap::Grow(unsigned long long size)
    }
 
    std::ptrdiff_t const poolOffset = reinterpret_cast<char *>(Pools) - static_cast<char *>(Base);
+   if (debug_grow) {
+      for (auto I = Pools; I != Pools + PoolCount; ++I)
+         {
+            _error->Warning(_("DynamicMMap::Grow: old Pools[*]: %lu"), I->ItemSize);
+         }
+   }
 
    if (Fd != 0)
    {
@@ -394,6 +404,12 @@ bool DynamicMMap::Grow(unsigned long long size)
 
    Pools = reinterpret_cast<decltype(Pools)>(static_cast<char *>(Base) + poolOffset);
    WorkSpace = newSize;
+   if (debug_grow) {
+      for (auto I = Pools; I != Pools + PoolCount; ++I)
+         {
+            _error->Warning(_("DynamicMMap::Grow: new Pools[*]: %lu"), I->ItemSize);
+         }
+   }
 
    return true;
 }
