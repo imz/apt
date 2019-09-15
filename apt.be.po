@@ -2329,18 +2329,13 @@ msgstr "Пры апрацоўцы %s (NewFileVer1) узьнікла памылк
 
 #: apt-pkg/pkgcachegen.cc:209
 #, c-format
-msgid "Error occured while processing %s (NewVersion1)"
-msgstr "Пры апрацоўцы %s (NewVersion1) узьнікла памылка"
+msgid "Error occured while processing %s (NewVersion%d)"
+msgstr "Пры апрацоўцы %s (NewVersion%d) узьнікла памылка"
 
 #: apt-pkg/pkgcachegen.cc:213
 #, c-format
 msgid "Error occured while processing %s (UsePackage3)"
 msgstr "Пры апрацоўцы %s (UsePackage2) узьнікла памылка"
-
-#: apt-pkg/pkgcachegen.cc:217
-#, c-format
-msgid "Error occured while processing %s (NewVersion2)"
-msgstr "Пры апрацоўцы %s (NewVersion2) узьнікла памылка"
 
 #: apt-pkg/pkgcachegen.cc:232
 msgid "Wow, you exceeded the number of package names this APT is capable of."

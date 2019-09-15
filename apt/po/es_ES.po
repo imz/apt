@@ -2034,18 +2034,13 @@ msgstr "Error ocurrido al procesar %s (NewFileVer1)"
 
 #: apt-pkg/pkgcachegen.cc:209
 #, c-format
-msgid "Error occured while processing %s (NewVersion1)"
-msgstr "Error ocurrido al procesar %s (NewVersion1)"
+msgid "Error occured while processing %s (NewVersion%d)"
+msgstr "Error ocurrido al procesar %s (NewVersion%d)"
 
 #: apt-pkg/pkgcachegen.cc:213
 #, c-format
 msgid "Error occured while processing %s (UsePackage3)"
 msgstr "Error ocurrido al procesar %s (UsePackage3)"
-
-#: apt-pkg/pkgcachegen.cc:217
-#, c-format
-msgid "Error occured while processing %s (NewVersion2)"
-msgstr "Error ocurrido al procesar %s (NewVersion2)"
 
 #: apt-pkg/pkgcachegen.cc:232
 msgid "Wow, you exceeded the number of package names this APT is capable of."
