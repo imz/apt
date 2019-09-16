@@ -526,7 +526,7 @@ DPkg::Pre-Install-Pkgs {"/usr/sbin/dpkg-preconfigure --apt";};
    disable the inclusion of statfs data in CDROM IDs.
    </para><para>
    To debug issues related to dynamic memory allocation, an option
-   <literal/Debug::DynamicMMap::Grow/ may be used.
+   <literal/Debug::DynamicMMap::Grow/ and <literal/Debug::DynamicMMap::Allocate/ may be used.
    </para>
  </RefSect1>
  
