@@ -38,6 +38,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <cstring>
+#include <stddef.h>
    									/*}}}*/
 
 // MMap::MMap - Constructor						/*{{{*/
@@ -371,7 +372,7 @@ bool DynamicMMap::Grow(unsigned long long size)
       Fd->Write(&C,sizeof(C));
    }
 
-   unsigned long const poolOffset = Pools - ((Pool*) Base);
+   ptrdiff_t const poolOffset = Pools - ((Pool*) Base);
 
    if (Fd != 0)
    {

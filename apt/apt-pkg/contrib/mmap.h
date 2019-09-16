@@ -80,7 +80,7 @@ class DynamicMMap : public MMap
    public:
    
    // This is the allocation pool structure
-   struct Pool
+   struct alignas(alignof(unsigned long) * 4) Pool
    {
       unsigned long ItemSize;
       unsigned long Start;
