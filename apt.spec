@@ -1,6 +1,6 @@
 Name: apt
 Version: 0.5.15lorg2
-Release: alt73
+Release: alt74
 
 Summary: Debian's Advanced Packaging Tool with RPM support
 Summary(ru_RU.UTF-8): Debian APT - Усовершенствованное средство управления пакетами с поддержкой RPM
@@ -320,6 +320,10 @@ unset RPM_PYTHON
 %_libdir/%name/methods/https
 
 %changelog
+* Mon Sep 16 2019 Aleksei Nikiforov <darktemplar@altlinux.org> 0.5.15lorg2-alt74
+- Added debugging output for allocation functions.
+- Fixed dynamic memory allocation pointer arithmetics issue.
+
 * Thu Sep 05 2019 Aleksei Nikiforov <darktemplar@altlinux.org> 0.5.15lorg2-alt73
 - Improved handling of ipv6 addresses (Closes: #34000).
 - Enabled url-decoding http_proxy env variable (thx to snejok@) (Closes: #37186).
