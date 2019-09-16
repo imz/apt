@@ -1,6 +1,6 @@
 Name: apt
 Version: 0.5.15lorg2
-Release: alt71.2
+Release: alt71.1.1
 
 Summary: Debian's Advanced Packaging Tool with RPM support
 Summary(ru_RU.UTF-8): Debian APT - Усовершенствованное средство управления пакетами с поддержкой RPM
@@ -320,8 +320,12 @@ unset RPM_PYTHON
 %_libdir/%name/methods/https
 
 %changelog
-* Sat Sep 14 2019 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt71.2
-- debug e2k odd behavior
+* Mon Sep 16 2019 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt71.1.1
+- Added debugging output for allocation and grow functions. (Thx darktemplar@)
+- Fixed dynamic memory allocation pointer arithmetics issue:
+  + fixed some of the pointer recalculations which used to involve
+    "non-integer" offset calculation;
+  + improved alignment for the allocated structures. (Thx darktemplar@)
 
 * Sat Sep 07 2019 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt71.1
 - fileutl.h: dropped an inline Read() method, which had an error in the size
