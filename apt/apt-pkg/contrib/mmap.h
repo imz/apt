@@ -35,6 +35,7 @@
 #include <sys/mman.h>
 
 #include <apt-pkg/fileutl.h>
+#include <apt-pkg/utils.h>
 
 using std::string;
 
@@ -80,7 +81,7 @@ class DynamicMMap : public MMap
    public:
    
    // This is the allocation pool structure
-   struct Pool
+   struct alignas(get_minimal_power_of_2(sizeof(unsigned long) * 3)) Pool
    {
       unsigned long ItemSize;
       unsigned long Start;

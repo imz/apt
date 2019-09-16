@@ -25,6 +25,7 @@
 #include <string>
 #include <time.h>
 #include <apt-pkg/mmap.h>
+#include <apt-pkg/utils.h>
 
 using std::string;
     
@@ -209,7 +210,7 @@ struct pkgCache::Header
    Header();
 };
 
-struct pkgCache::Package
+struct alignas(get_minimal_power_of_2(sizeof(map_ptrloc) * 7 + sizeof(unsigned char) * 3 + sizeof(unsigned int) + sizeof(unsigned long))) pkgCache::Package
 {
    // Pointers
    map_ptrloc Name;              // Stringtable
@@ -231,7 +232,7 @@ struct pkgCache::Package
    unsigned long Flags;
 };
 
-struct pkgCache::PackageFile
+struct alignas(get_minimal_power_of_2(sizeof(map_ptrloc) * 10 + sizeof(unsigned long long) + sizeof(unsigned long) + sizeof(unsigned short) + sizeof(time_t))) pkgCache::PackageFile
 {
    // Names
    map_ptrloc FileName;        // Stringtable
@@ -252,7 +253,7 @@ struct pkgCache::PackageFile
    time_t mtime;                  // Modification time for the file
 };
 
-struct pkgCache::VerFile
+struct alignas(get_minimal_power_of_2(sizeof(map_ptrloc) * 3 + sizeof(unsigned short))) pkgCache::VerFile
 {
    map_ptrloc File;           // PackageFile
    map_ptrloc NextFile;       // PkgVerFile
@@ -260,7 +261,7 @@ struct pkgCache::VerFile
    unsigned short Size;
 };
 
-struct pkgCache::Version
+struct alignas(get_minimal_power_of_2(sizeof(map_ptrloc) * 8 + sizeof(unsigned long long) * 2 + sizeof(unsigned int) * 2 + sizeof(unsigned char))) pkgCache::Version
 {
    map_ptrloc VerStr;            // Stringtable
    map_ptrloc Section;           // StringTable (StringItem)
@@ -284,7 +285,7 @@ struct pkgCache::Version
    unsigned char Priority;
 };
 
-struct pkgCache::Dependency
+struct alignas(get_minimal_power_of_2(sizeof(map_ptrloc) * 6 + sizeof(unsigned char) * 2)) pkgCache::Dependency
 {
    map_ptrloc Version;         // Stringtable
    map_ptrloc Package;         // Package
@@ -298,7 +299,7 @@ struct pkgCache::Dependency
    unsigned char CompareOp;
 };
 
-struct pkgCache::Provides
+struct alignas(get_minimal_power_of_2(sizeof(map_ptrloc) * 6)) pkgCache::Provides
 {
    map_ptrloc ParentPkg;        // Pacakge
    map_ptrloc Version;          // Version
@@ -307,7 +308,7 @@ struct pkgCache::Provides
    map_ptrloc NextPkgProv;      // Provides
 };
 
-struct pkgCache::StringItem
+struct alignas(get_minimal_power_of_2(sizeof(map_ptrloc) * 2)) pkgCache::StringItem
 {
    map_ptrloc String;        // Stringtable
    map_ptrloc NextItem;      // StringItem

@@ -105,6 +105,7 @@ libapt_pkg_la_SOURCES = \
 	tagfile.h \
 	update.cc \
 	update.h \
+	utils.h \
 	version.cc \
 	version.h \
 	versionmatch.cc \

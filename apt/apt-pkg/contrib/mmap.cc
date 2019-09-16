@@ -38,6 +38,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <cstring>
+#include <stddef.h>
    									/*}}}*/
 
 // MMap::MMap - Constructor						/*{{{*/
