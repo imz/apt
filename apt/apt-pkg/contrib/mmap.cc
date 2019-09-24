@@ -211,6 +211,17 @@ DynamicMMap::~DynamicMMap()
    ftruncate(Fd->Fd(),EndOfFile);
 }  
 									/*}}}*/
+void DynamicMMap::DebugPrintPools(const char * const MsgPrefix)
+{
+   for (size_t i = 0; i < PoolCount; ++i)
+   {
+      _error->Warning(_("%sPool %zu, item size: %lu, start: %lu, count: %lu"),
+                      MsgPrefix,
+                      i,
+                      Pools[i].ItemSize, Pools[i].Start, Pools[i].Count);
+    }
+}
+
 // DynamicMMap::RawAllocate - Allocate a raw chunk of unaligned space	/*{{{*/
 // ---------------------------------------------------------------------
 /* This allocates a block of memory aligned to the given size */
@@ -269,15 +280,9 @@ std::experimental::optional<map_ptrloc> DynamicMMap::Allocate(unsigned long Item
 
       if (debug_grow)
       {
-         Pool *pool_iter = Pools;
-         size_t pool_idx = 0;
-
          _error->Warning(_("DynamicMMap::Allocate: allocating item of size %lu"), ItemSize);
 
-         for (; pool_idx < PoolCount; ++pool_iter, ++pool_idx)
-         {
-            _error->Warning(_("DynamicMMap::Allocate: Pool %zu, item size: %lu, start: %lu, count: %lu"), pool_idx, pool_iter->ItemSize, pool_iter->Start, pool_iter->Count);
-         }
+         DebugPrintPools("DynamicMMap::Allocate: ");
       }
 
       // Woops, we ran out, the calling code should allocate more.

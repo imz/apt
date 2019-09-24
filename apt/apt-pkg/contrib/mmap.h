@@ -106,7 +106,8 @@ class DynamicMMap : public MMap
    std::experimental::optional<map_ptrloc> WriteString(const char *String,unsigned long Len = std::numeric_limits<unsigned long>::max());
    inline std::experimental::optional<map_ptrloc> WriteString(const string &S) {return WriteString(S.c_str(),S.length());};
    void UsePools(Pool &P,unsigned int Count) {Pools = &P; PoolCount = Count;};
-   
+   void DebugPrintPools(const char *MsgPrefix);
+
    DynamicMMap(FileFd &F,unsigned long Flags,unsigned long long WorkSpace = 2*1024*1024,
                unsigned long long Grow = 1024*1024, unsigned long long Limit = 0);
    DynamicMMap(unsigned long Flags,unsigned long long WorkSpace = 2*1024*1024,
