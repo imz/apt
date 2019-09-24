@@ -276,9 +276,9 @@ std::experimental::optional<map_ptrloc> DynamicMMap::Allocate(unsigned long Item
    // No pool is allocated, use an unallocated one
    if (I == Pools + PoolCount)
    {
-      static const bool debug_grow = _config->FindB("Debug::DynamicMMap::Allocate", false);
+      static const bool debug_allocate = _config->FindB("Debug::DynamicMMap::Allocate", false);
 
-      if (debug_grow)
+      if (debug_allocate)
       {
          _error->Warning(_("DynamicMMap::Allocate: allocating item of size %lu"), ItemSize);
 
