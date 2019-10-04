@@ -474,6 +474,14 @@ bool pkgRPMExtPM::ExecRPM(Item::RPMOps op, const std::vector<apt_item> &files)
        Args[n++] = rootdir.c_str();
    }
 
+   string DBDir = _config->Find("RPM::DBPath");
+   string DBDirArg;
+   if (!DBDir.empty())
+   {
+      DBDirArg = string("--dbpath=") + DBDir;
+      Args[n++] = DBDirArg.c_str();
+   }
+
    Configuration::Item const *Opts;
    if (op == Item::RPMErase)
    {
@@ -831,6 +839,7 @@ bool pkgRPMLibPM::Process(const std::vector<apt_item> &install,
    bool Success = false;
    bool Interactive = _config->FindB("RPM::Interactive",true);
    string Dir = _config->Find("RPM::RootDir");
+   string DBDir = _config->Find("RPM::DBPath");
    int quiet = _config->FindI("quiet",0);
    rpmReadConfigFiles(NULL, NULL);
 
@@ -851,6 +860,17 @@ bool pkgRPMLibPM::Process(const std::vector<apt_item> &install,
    // 4.1 needs this always set even if NULL,
    // otherwise all scriptlets fail
    rpmtsSetRootDir(TS, Dir.c_str());
+
+   if (!DBDir.empty())
+   {
+      std::string dbpath_macro = std::string("_dbpath ") + DBDir;
+      if (rpmDefineMacro(NULL, dbpath_macro.c_str(), 0) != 0)
+      {
+         _error->Error(_("Failed to set rpm dbpath"));
+         goto exit;
+      }
+   }
+
    if (rpmtsOpenDB(TS, O_RDWR) != 0)
    {
       _error->Error(_("Could not open RPM database"));
@@ -1125,6 +1145,7 @@ bool pkgRPMLibPM::UpdateMarks()
    }
 
    std::string Dir = _config->Find("RPM::RootDir");
+   std::string DBDir = _config->Find("RPM::DBPath");
 
    if (rpmReadConfigFiles(NULL, NULL) != 0)
    {
@@ -1140,6 +1161,17 @@ bool pkgRPMLibPM::UpdateMarks()
    // 4.1 needs this always set even if NULL,
    // otherwise all scriptlets fail
    rpmtsSetRootDir(TS, Dir.c_str());
+
+   if (!DBDir.empty())
+   {
+      std::string dbpath_macro = std::string("_dbpath ") + DBDir;
+      if (rpmDefineMacro(NULL, dbpath_macro.c_str(), 0) != 0)
+      {
+         _error->Error(_("Failed to set rpm dbpath"));
+         return false;
+      }
+   }
+
    if (rpmtsOpenDB(TS, O_RDWR) != 0)
    {
       _error->Error(_("Could not open RPM database"));
