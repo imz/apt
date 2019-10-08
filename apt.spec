@@ -1,3 +1,5 @@
+%def_enable check
+
 Name: apt
 Version: 0.5.15lorg2
 Release: alt69
@@ -41,6 +43,11 @@ BuildPreReq: liblua5.3-devel
 BuildRequires: docbook-utils gcc-c++ libreadline-devel librpm-devel setproctitle-devel
 BuildRequires: libgnutls-devel
 
+# dependencies of tests
+%if_enabled check
+BuildRequires: /usr/bin/genbasedir
+%endif
+
 %package -n libapt
 Summary: APT's core libraries
 Group: System/Libraries
@@ -69,6 +76,13 @@ Requires: %name = %EVR, rsync >= 2.5.5-alt3
 Summary: https method support for APT
 Summary(ru_RU.UTF-8): Поддержка метода https для APT
 Group: Other
+Requires: %name = %EVR
+
+%package tests
+Summary: Test suite for APT
+Summary(ru_RU.UTF-8): Набор тестов для APT
+Group: Other
+BuildArch: noarch
 Requires: %name = %EVR
 
 # {{{ descriptions
@@ -123,6 +137,9 @@ This package contains method 'https' for APT.
 
 %risk_usage_en
 
+%description tests
+This package contains test suite for APT.
+
 %description -n libapt -l ru_RU.UTF-8
 В этом пакете находится библиотеки управления пакетами
 из комплекта APT. В отличие от оригинальной версии для Debian, этот
@@ -155,6 +172,9 @@ This package contains method 'https' for APT.
 В этом пакете находится метод 'https' для APT
 
 %risk_usage
+
+%description tests -l ru_RU.UTF-8
+В этом пакете находится набор тестов для APT.
 
 # }}}
 
@@ -190,6 +210,7 @@ mkdir -p %buildroot%_sysconfdir/%name/{%name.conf,sources.list,vendors.list,pref
 mkdir -p %buildroot%_libdir/%name/scripts
 mkdir -p %buildroot%_localstatedir/%name/{lists/partial,prefetch}
 mkdir -p %buildroot%_cachedir/%name/{archives/partial,gen{pkg,src}list}
+mkdir -p %buildroot%_libdir/%name/tests
 
 %makeinstall includedir=%buildroot%_includedir/apt-pkg
 
@@ -215,12 +236,26 @@ find %buildroot%_includedir -type f -name '*.h' |while read f; do
 EOF
 done
 
+mkdir -p %buildroot%_datadir/%name
+cp -r test/integration %buildroot%_datadir/%name/tests/
+
 %find_lang %name
 
 unset RPM_PYTHON
 
 %set_verify_elf_method strict
 %define _unpackaged_files_terminate_build 1
+
+%check
+# Run tests several times to make sure no tests are randomly succeeding.
+pushd test/integration
+	for i in $(seq 1 2); do
+		LD_LIBRARY_PATH=%buildroot%_libdir \
+		PATH=$PATH:%buildroot%_bindir \
+		METHODSDIR=%buildroot%_libdir/apt/methods \
+			./run-tests
+	done
+popd
 
 %files -f %name.lang
 %_bindir/apt-*
@@ -262,6 +297,9 @@ unset RPM_PYTHON
 %dir %_libdir/%name
 %dir %_libdir/%name/methods
 %_libdir/%name/methods/https
+
+%files tests
+%_datadir/%name/tests/
 
 %changelog
 * Wed Jul 17 2019 Andrew Savchenko <bircoph@altlinux.org> 0.5.15lorg2-alt69
