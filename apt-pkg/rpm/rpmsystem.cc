@@ -447,7 +447,8 @@ static void HashOptionFile(unsigned long &Hash, const char *Name)
    string FileName = _config->FindFile(Name);
    struct stat st;
    stat(FileName.c_str(), &st);
-   Hash += st.st_mtime;
+   Hash += st.st_mtim.tv_sec;
+   Hash += st.st_mtim.tv_nsec;
 }
 unsigned long rpmSystem::OptionsHash() const
 {
