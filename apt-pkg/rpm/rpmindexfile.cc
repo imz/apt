@@ -383,6 +383,7 @@ bool rpmPkgListIndex::Merge(pkgCacheGenerator &Gen,OpProgress &Prog) const
    }
    File->Size = St.st_size;
    File->mtime = St.st_mtime;
+   File->mnanotime = St.st_mtim.tv_nsec;
 
    rpmListParser Parser(Handler);
    if (_error->PendingError() == true)
@@ -451,7 +452,8 @@ pkgCache::PkgFileIterator rpmPkgListIndex::FindInCache(pkgCache &Cache) const
       if (stat(File.FileName(),&St) != 0)
 	 return pkgCache::PkgFileIterator(Cache);
 
-      if ((unsigned)St.st_size != File->Size || St.st_mtime != File->mtime)
+      if ((unsigned)St.st_size != File->Size || St.st_mtim.tv_sec != File->mtime ||
+	  (unsigned long) St.st_mtim.tv_nsec != File->mnanotime)
 	 return pkgCache::PkgFileIterator(Cache);
       return File;
    }
@@ -577,6 +579,7 @@ bool rpmDatabaseIndex::Merge(pkgCacheGenerator &Gen,OpProgress &Prog) const
       return _error->Errno("fstat",_("Failed to stat %s"), Handler->DataPath(false).c_str());
    CFile->Size = St.st_size;
    CFile->mtime = Handler->Mtime();
+   CFile->mnanotime = Handler->Mnanotime();
 
    if (Gen.MergeList(Parser) == false)
       return _error->Error(_("Problem with MergeList %s"),
@@ -615,7 +618,8 @@ pkgCache::PkgFileIterator rpmDatabaseIndex::FindInCache(pkgCache &Cache) const
       struct stat St;
       if (stat(File.FileName(),&St) != 0)
 	 return pkgCache::PkgFileIterator(Cache);
-      if ((unsigned)St.st_size != File->Size || St.st_mtime != File->mtime)
+      if ((unsigned)St.st_size != File->Size || St.st_mtime != File->mtime ||
+	  (unsigned long) St.st_mtim.tv_nsec != File->mnanotime)
 	 return pkgCache::PkgFileIterator(Cache);
       return File;
    }

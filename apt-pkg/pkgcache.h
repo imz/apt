@@ -252,6 +252,7 @@ struct pkgCache::PackageFile
    map_ptrloc NextFile;        // PackageFile
    unsigned short ID;
    time_t mtime;                  // Modification time for the file
+   unsigned long mnanotime;    // Subsecond modification time for the file
 };
 
 struct pkgCache::VerFile

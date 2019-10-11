@@ -113,6 +113,7 @@ class RPMDBHandler : public RPMHandler
    bool WriteLock;
 
    time_t DbFileMtime;
+   unsigned long DbFileMnanotime;
 
    public:
 
@@ -123,6 +124,7 @@ class RPMDBHandler : public RPMHandler
    virtual inline bool IsDatabase() {return true;}
    virtual bool HasWriteLock() {return WriteLock;}
    virtual time_t Mtime() {return DbFileMtime;}
+   virtual unsigned long Mnanotime() {return DbFileMnanotime;}
    virtual bool OrderedOffset() {return false;}
 
    RPMDBHandler(bool WriteLock=false);
