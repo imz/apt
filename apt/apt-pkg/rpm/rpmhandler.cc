@@ -396,7 +396,8 @@ RPMDBHandler::RPMDBHandler(bool WriteLock)
    // restore the mtime and save our cache.
    struct stat St;
    stat(DataPath(false).c_str(), &St);
-   DbFileMtime = St.st_mtime;
+   DbFileMtime = St.st_mtim.tv_sec;
+   DbFileMnanotime = St.st_mtim.tv_nsec;
 
 #if RPM_VERSION >= 0x040100
    Handler = rpmtsCreate();
