@@ -194,6 +194,15 @@ END
 	echo "RPM::DBPath \"$TMPWORKINGDIRECTORY/var/lib/rpm\";" \
 		 > rootdir/etc/apt/apt.conf.d/99rpmdbpath.conf
 
+	# setup lua stuff
+	mkdir -p $TMPWORKINGDIRECTORY/lua/scripts
+	mkdir -p $TMPWORKINGDIRECTORY/lua/results
+	echo "Dir::Bin::scripts \"$TMPWORKINGDIRECTORY/lua/scripts\";" > rootdir/etc/apt/apt.conf.d/90lua.conf
+
+	# setup bash scripts
+	mkdir -p $TMPWORKINGDIRECTORY/bash/scripts
+	mkdir -p $TMPWORKINGDIRECTORY/bash/results
+
 	msgdone 'info'
 }
 
@@ -338,6 +347,24 @@ testequal() {
 		msgtest "$MSG" "$*"
 	fi
 	"$@" 2>&1 | checkdiff $COMPAREFILE - && msgpass || msgfail
+}
+
+testscriptoutput() {
+	local MSG="$1"
+	shift
+
+	msgtest 'Test of output of' "$MSG"
+
+	testequal --nomsg "$@"
+}
+
+testscriptnooutput() {
+	local MSG="$1"
+	shift
+
+	msgtest 'Test for no output of' "$MSG"
+
+	[ ! -e "$1" ] && msgpass || msgfail
 }
 
 testregexmatch() {
@@ -552,4 +579,29 @@ generaterepository() {
 				  "${REPO_DIR}/${dir}/base/"*
 		fi
 	done
+}
+
+createluascript() {
+	local APTNAME="$1"
+	local SCRIPTFILENAME="$2"
+
+	echo "$APTNAME:: \"${SCRIPTFILENAME}.lua\";" > rootdir/etc/apt/apt.conf.d/91lua-${SCRIPTFILENAME}.conf
+	cat > $TMPWORKINGDIRECTORY/lua/scripts/${SCRIPTFILENAME}.lua << ENDSCRIPT
+f = io.open("$TMPWORKINGDIRECTORY/lua/results/${SCRIPTFILENAME}.result", "a")
+f:write("$APTNAME called\n")
+f:close()
+ENDSCRIPT
+}
+
+createbashscript() {
+	local APTNAME="$1"
+	local SCRIPTFILENAME="$2"
+
+	echo "$APTNAME:: \"$TMPWORKINGDIRECTORY/bash/scripts/${SCRIPTFILENAME}.sh\";" > rootdir/etc/apt/apt.conf.d/92bash-${SCRIPTFILENAME}.conf
+	cat > $TMPWORKINGDIRECTORY/bash/scripts/${SCRIPTFILENAME}.sh << ENDSCRIPT
+#!/bin/bash
+echo "$APTNAME called" >> "$TMPWORKINGDIRECTORY/bash/results/${SCRIPTFILENAME}.result"
+ENDSCRIPT
+
+	chmod +x $TMPWORKINGDIRECTORY/bash/scripts/${SCRIPTFILENAME}.sh
 }
