@@ -1,0 +1,78 @@
+#!/bin/bash
+set -e
+
+TESTDIR=$(readlink -f $(dirname $0))
+. $TESTDIR/framework
+
+setupenvironment
+
+createluascript "Scripts::Init" "init"
+createluascript "Scripts::Cache::Init" "cache-init"
+createluascript "Scripts::Acquire::Archive::Done" "acquire-archive-done"
+createluascript "Scripts::PM::Pre" "pm-pre"
+createluascript "Scripts::PM::Post" "pm-post"
+createluascript "Scripts::AptGet::Update::Pre" "aptget-update-pre"
+createluascript "Scripts::AptGet::Update::Post" "aptget-update-post"
+createluascript "Scripts::AptCache::Script" "aptcache-script"
+createluascript "Scripts::AptCache::Help::Command" "aptcache-help-command"
+createluascript "Scripts::AptCache::Command" "aptcache-command"
+createluascript "Scripts::AptGet::Install::SelectPackage" "aptget-install-selectpackage"
+createluascript "Scripts::AptGet::Upgrade" "aptget-upgrade"
+createluascript "Scripts::AptGet::Install::TranslateArg" "aptget-install-translatearg"
+createluascript "Scripts::AptGet::Install::PreResolve" "aptget-install-preresolve"
+createluascript "Scripts::AptGet::Install::PostResolve" "aptget-install-postresolve"
+createluascript "Scripts::AptGet::DistUpgrade" "aptget-distupgrade"
+createluascript "Scripts::AptGet::Script" "aptget-script"
+createluascript "Scripts::AptGet::Help::Command" "aptget-help-command"
+createluascript "Scripts::AptGet::Command" "aptget-command"
+
+buildpackage "simple-package"
+
+testpkgnotinstalled "simple-package"
+
+rm -f $TMPWORKINGDIRECTORY/lua/results/* ||:
+aptgetinstallpackage "simple-package" "1" "alt1" "$(getarchitecture)"
+
+testscriptoutput "Scripts::Init" "Scripts::Init called
+Scripts::Init called" cat $TMPWORKINGDIRECTORY/lua/results/init.result
+testscriptoutput "Scripts::Cache::Init" "Scripts::Cache::Init called" cat $TMPWORKINGDIRECTORY/lua/results/cache-init.result
+testscriptoutput "Scripts::AptGet::Command" "Scripts::AptGet::Command called" cat $TMPWORKINGDIRECTORY/lua/results/aptget-command.result
+testscriptoutput "Scripts::AptGet::Install::PreResolve" "Scripts::AptGet::Install::PreResolve called" cat $TMPWORKINGDIRECTORY/lua/results/aptget-install-preresolve.result
+testscriptoutput "Scripts::AptGet::Install::PostResolve" "Scripts::AptGet::Install::PostResolve called" cat $TMPWORKINGDIRECTORY/lua/results/aptget-install-postresolve.result
+testscriptoutput "Scripts::Acquire::Archive::Done" "Scripts::Acquire::Archive::Done called" cat $TMPWORKINGDIRECTORY/lua/results/acquire-archive-done.result
+testscriptoutput "Scripts::PM::Pre" "Scripts::PM::Pre called" cat $TMPWORKINGDIRECTORY/lua/results/pm-pre.result
+testscriptoutput "Scripts::PM::Post" "Scripts::PM::Post called" cat $TMPWORKINGDIRECTORY/lua/results/pm-post.result
+
+testpkginstalled "simple-package"
+
+buildpackage "simple-package-update"
+
+rm -f $TMPWORKINGDIRECTORY/lua/results/* ||:
+testfailure aptget update
+
+testscriptoutput "Scripts::Init" "Scripts::Init called" cat $TMPWORKINGDIRECTORY/lua/results/init.result
+testscriptoutput "Scripts::AptGet::Command" "Scripts::AptGet::Command called" cat $TMPWORKINGDIRECTORY/lua/results/aptget-command.result
+testscriptoutput "Scripts::AptGet::Update::Pre" "Scripts::AptGet::Update::Pre called" cat $TMPWORKINGDIRECTORY/lua/results/aptget-update-pre.result
+testscriptoutput "Scripts::AptGet::Update::Post" "Scripts::AptGet::Update::Post called" cat $TMPWORKINGDIRECTORY/lua/results/aptget-update-post.result
+
+generaterepository "$TMPWORKINGDIRECTORY/usr/src/RPM/RPMS" "$TMPWORKINGDIRECTORY/usr/src/RPM/REPO"
+
+rm -f $TMPWORKINGDIRECTORY/lua/results/* ||:
+testsuccess aptget update
+
+testscriptoutput "Scripts::Init" "Scripts::Init called" cat $TMPWORKINGDIRECTORY/lua/results/init.result
+testscriptoutput "Scripts::Cache::Init" "Scripts::Cache::Init called" cat $TMPWORKINGDIRECTORY/lua/results/cache-init.result
+testscriptoutput "Scripts::AptGet::Command" "Scripts::AptGet::Command called" cat $TMPWORKINGDIRECTORY/lua/results/aptget-command.result
+testscriptoutput "Scripts::AptGet::Update::Pre" "Scripts::AptGet::Update::Pre called" cat $TMPWORKINGDIRECTORY/lua/results/aptget-update-pre.result
+testscriptoutput "Scripts::AptGet::Update::Post" "Scripts::AptGet::Update::Post called" cat $TMPWORKINGDIRECTORY/lua/results/aptget-update-post.result
+
+rm -f $TMPWORKINGDIRECTORY/lua/results/* ||:
+testsuccess aptget dist-upgrade -y
+
+testscriptoutput "Scripts::Init" "Scripts::Init called" cat $TMPWORKINGDIRECTORY/lua/results/init.result
+testscriptoutput "Scripts::Cache::Init" "Scripts::Cache::Init called" cat $TMPWORKINGDIRECTORY/lua/results/cache-init.result
+testscriptoutput "Scripts::AptGet::Command" "Scripts::AptGet::Command called" cat $TMPWORKINGDIRECTORY/lua/results/aptget-command.result
+testscriptoutput "Scripts::AptGet::DistUpgrade" "Scripts::AptGet::DistUpgrade called" cat $TMPWORKINGDIRECTORY/lua/results/aptget-distupgrade.result
+testscriptoutput "Scripts::Acquire::Archive::Done" "Scripts::Acquire::Archive::Done called" cat $TMPWORKINGDIRECTORY/lua/results/acquire-archive-done.result
+testscriptoutput "Scripts::PM::Pre" "Scripts::PM::Pre called" cat $TMPWORKINGDIRECTORY/lua/results/pm-pre.result
+testscriptoutput "Scripts::PM::Post" "Scripts::PM::Post called" cat $TMPWORKINGDIRECTORY/lua/results/pm-post.result

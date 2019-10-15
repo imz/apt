@@ -1,0 +1,21 @@
+#!/bin/bash
+set -e
+
+TESTDIR=$(readlink -f $(dirname $0))
+. $TESTDIR/framework
+
+setupenvironment
+
+createbashscript "RPM::Pre-Invoke" "rpm-pre-invoke"
+createbashscript "RPM::Pre-Install-Pkgs" "rpm-pre-install-pkgs"
+createbashscript "RPM::Post-Invoke" "rpm-post-invoke"
+
+buildpackage "simple-package"
+
+testpkgnotinstalled "simple-package"
+aptgetinstallpackage "simple-package" "1" "alt1" "$(getarchitecture)"
+testpkginstalled "simple-package"
+
+testscriptoutput "RPM::Pre-Invoke" "RPM::Pre-Invoke called" cat $TMPWORKINGDIRECTORY/bash/results/rpm-pre-invoke.result
+testscriptoutput "RPM::Pre-Install-Pkgs" "RPM::Pre-Install-Pkgs called" cat $TMPWORKINGDIRECTORY/bash/results/rpm-pre-install-pkgs.result
+testscriptoutput "RPM::Post-Invoke" "RPM::Post-Invoke called" cat $TMPWORKINGDIRECTORY/bash/results/rpm-post-invoke.result
