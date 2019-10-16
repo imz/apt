@@ -47,6 +47,8 @@ BuildRequires: libgnutls-devel
 %if_enabled check
 BuildRequires: /usr/bin/genbasedir
 BuildRequires: gpg-keygen
+BuildRequires: /usr/sbin/nginx
+BuildRequires: /usr/bin/openssl
 %endif
 
 %package -n libapt
