@@ -215,7 +215,7 @@ getarchitecture() {
 }
 
 getarchitectures() {
-	echo "$(aptconfig dump | grep APT::Architecture | cut -d'"' -f 2 | sed '/^$/ d' | sort | uniq | tr '\n' ' ')"
+	echo "$(aptconfig dump | grep APT::Architecture | cut -d\" -f 2 | sed '/^$/ d' | sort | uniq | tr '\n' ' ')"
 }
 
 getarchitecturesfromcommalist() {
@@ -519,7 +519,7 @@ generaterepository() {
 			--suite="${GB_REPO_SUITE:-$label}" \
 			--version="${GB_REPO_VERSION:-$date_s}" \
 			--topdir="$REPO_DIR" \
-			--flat --no-oldhashfile --no-bz2 --no-xz --mapi \
+			--flat --no-oldhashfile --bz2 --xz --mapi \
 			$dir $comps
 
 		if [ -n "$REPO_DATE" ] ; then
@@ -551,4 +551,106 @@ echo "$APTNAME called" >> "$TMPWORKINGDIRECTORY/bash/results/${SCRIPTFILENAME}.r
 ENDSCRIPT
 
 	chmod +x $TMPWORKINGDIRECTORY/bash/scripts/${SCRIPTFILENAME}.sh
+}
+
+nginxsetuphttp() {
+	mkdir -p $TMPWORKINGDIRECTORY/nginx ||:
+	mkdir -p $TMPWORKINGDIRECTORY/nginx/tmp ||:
+
+cat >> $TMPWORKINGDIRECTORY/nginx/nginx.conf << ENDCONFIG
+worker_processes 1;
+error_log $TMPWORKINGDIRECTORY/nginx/error.log;
+daemon off;
+pid $TMPWORKINGDIRECTORY/nginx/nginx.pid;
+
+events {
+	worker_connections  1024;
+}
+
+http {
+	client_body_temp_path $TMPWORKINGDIRECTORY/nginx/tmp/client_body;
+	fastcgi_temp_path $TMPWORKINGDIRECTORY/nginx/tmp/fastcgi_temp;
+	proxy_temp_path $TMPWORKINGDIRECTORY/nginx/tmp/proxy_temp;
+	scgi_temp_path $TMPWORKINGDIRECTORY/nginx/tmp/scgi_temp;
+	uwsgi_temp_path $TMPWORKINGDIRECTORY/nginx/tmp/uwsgi_temp;
+
+	include             /etc/nginx/mime.types;
+	default_type        application/octet-stream;
+
+	sendfile on;
+
+	keepalive_timeout   65;
+
+	ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
+	ssl_prefer_server_ciphers on;
+	access_log $TMPWORKINGDIRECTORY/nginx/http.access.log;
+	error_log $TMPWORKINGDIRECTORY/nginx/http.error.log;
+
+	server {
+		listen 8080;
+		server_name localhost localhost.localdomain;
+
+		location / {
+			root $TMPWORKINGDIRECTORY/nginx/repo;
+			autoindex on;
+		}
+	}
+}
+ENDCONFIG
+}
+
+nginxsetuphttps() {
+	mkdir -p $TMPWORKINGDIRECTORY/nginx ||:
+	mkdir -p $TMPWORKINGDIRECTORY/nginx/tmp ||:
+
+	cat >> $TMPWORKINGDIRECTORY/nginx/nginx.conf << ENDCONFIG
+worker_processes 1;
+error_log $TMPWORKINGDIRECTORY/nginx/error.log;
+daemon off;
+pid $TMPWORKINGDIRECTORY/nginx/nginx.pid;
+
+events {
+	worker_connections  1024;
+}
+
+http {
+	client_body_temp_path $TMPWORKINGDIRECTORY/nginx/tmp/client_body;
+	fastcgi_temp_path $TMPWORKINGDIRECTORY/nginx/tmp/fastcgi_temp;
+	proxy_temp_path $TMPWORKINGDIRECTORY/nginx/tmp/proxy_temp;
+	scgi_temp_path $TMPWORKINGDIRECTORY/nginx/tmp/scgi_temp;
+	uwsgi_temp_path $TMPWORKINGDIRECTORY/nginx/tmp/uwsgi_temp;
+
+	include             /etc/nginx/mime.types;
+	default_type        application/octet-stream;
+
+	sendfile on;
+
+	keepalive_timeout   65;
+
+	ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
+	ssl_prefer_server_ciphers on;
+	access_log $TMPWORKINGDIRECTORY/nginx/http.access.log;
+	error_log $TMPWORKINGDIRECTORY/nginx/http.error.log;
+
+	server {
+		listen 8080;
+		server_name localhost localhost.localdomain;
+
+		ssl_certificate	$TMPWORKINGDIRECTORY/nginx/cert.crt;
+		ssl_certificate_key	$TMPWORKINGDIRECTORY/nginx/cert.key;
+
+		ssl on;
+
+		ssl_session_cache	builtin:1000	shared:SSL:10m;
+		ssl_protocols TLSv1.2;
+		ssl_ciphers HIGH:!aNULL:!eNULL:!EXPORT:!CAMELLIA:!DES:!MD5:!PSK:!RC4;
+		ssl_prefer_server_ciphers on;
+
+		location / {
+			root $TMPWORKINGDIRECTORY/nginx/repo;
+			autoindex on;
+		}
+	}
+}
+ENDCONFIG
 }

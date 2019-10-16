@@ -46,6 +46,8 @@ BuildRequires: libgnutls-devel
 # dependencies of tests
 %if_enabled check
 BuildRequires: /usr/bin/genbasedir
+BuildRequires: /usr/sbin/nginx
+BuildRequires: /usr/bin/openssl
 %endif
 
 %package -n libapt
