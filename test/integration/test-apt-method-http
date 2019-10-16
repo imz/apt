@@ -1,0 +1,27 @@
+#!/bin/bash
+set -eu
+
+# a single test overriding the method
+APT_TEST_METHOD=http
+
+TESTDIR=$(readlink -f $(dirname $0))
+. $TESTDIR/framework
+
+setupenvironment
+
+nginxsetuphttp
+
+buildpackage 'simple-package'
+
+generaterepository_and_switch_sources "$TMPWORKINGDIRECTORY/usr/src/RPM/RPMS"
+
+/usr/sbin/nginx -c $TMPWORKINGDIRECTORY/nginx/nginx.conf -p $TMPWORKINGDIRECTORY &>> $TMPWORKINGDIRECTORY/nginx/process-stderr.log &
+NGINXPID=$!
+
+addtrap 'prefix' "kill -SIGTERM $NGINXPID; [ \"$EXIT_CODE\" = '0' ] || cat $TMPWORKINGDIRECTORY/nginx/process-stderr.log;"
+
+testsuccess aptget update
+
+testpkgnotinstalled 'simple-package'
+testsuccess aptget install simple-package
+testpkginstalled 'simple-package'

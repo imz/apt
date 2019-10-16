@@ -707,6 +707,9 @@ generaterepository() {
 		# (FIXME: fix APT so that the used compression doesn't matter!)
 		case "$APT_TEST_METHOD" in
 
+			http*) compression_opts='--no-bz2 --xz'
+			   ;;
+
 			cdrom*) compression_opts='--bz2 --no-xz'
 			   ;;
 
@@ -769,6 +772,18 @@ generaterepository_and_switch_sources() {
 			END
 			;;
 
+		http|https|https_invalid_cert_hostname)
+			REPO_DIR="$TMPWORKINGDIRECTORY/nginx/repo"
+
+			generaterepository "$ORIG_DIR" "$REPO_DIR" "$REPO_DATE"
+
+			# overwrite old sources.list
+			cat >| rootdir/etc/apt/sources.list <<- END
+				rpm ${APT_TEST_METHOD%%_*}://localhost:8080/ $APT_TEST_USED_ARCH apt-tests
+				rpm ${APT_TEST_METHOD%%_*}://localhost:8080/ noarch apt-tests
+			END
+			;;
+
 		cdrom|cdrom_missing_release)
 
 			generaterepository "$ORIG_DIR" "$CDROM_URI" "$REPO_DATE"
@@ -820,4 +835,106 @@ echo "$APTNAME called" >> "$TMPWORKINGDIRECTORY/bash/results/${SCRIPTFILENAME}.r
 ENDSCRIPT
 
 	chmod +x $TMPWORKINGDIRECTORY/bash/scripts/${SCRIPTFILENAME}.sh
+}
+
+nginxsetuphttp() {
+	mkdir -p $TMPWORKINGDIRECTORY/nginx ||:
+	mkdir -p $TMPWORKINGDIRECTORY/nginx/tmp ||:
+
+cat >> $TMPWORKINGDIRECTORY/nginx/nginx.conf << ENDCONFIG
+worker_processes 1;
+error_log $TMPWORKINGDIRECTORY/nginx/error.log;
+daemon off;
+pid $TMPWORKINGDIRECTORY/nginx/nginx.pid;
+
+events {
+	worker_connections  1024;
+}
+
+http {
+	client_body_temp_path $TMPWORKINGDIRECTORY/nginx/tmp/client_body;
+	fastcgi_temp_path $TMPWORKINGDIRECTORY/nginx/tmp/fastcgi_temp;
+	proxy_temp_path $TMPWORKINGDIRECTORY/nginx/tmp/proxy_temp;
+	scgi_temp_path $TMPWORKINGDIRECTORY/nginx/tmp/scgi_temp;
+	uwsgi_temp_path $TMPWORKINGDIRECTORY/nginx/tmp/uwsgi_temp;
+
+	include             /etc/nginx/mime.types;
+	default_type        application/octet-stream;
+
+	sendfile on;
+
+	keepalive_timeout   65;
+
+	ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
+	ssl_prefer_server_ciphers on;
+	access_log $TMPWORKINGDIRECTORY/nginx/http.access.log;
+	error_log $TMPWORKINGDIRECTORY/nginx/http.error.log;
+
+	server {
+		listen 8080;
+		server_name localhost localhost.localdomain;
+
+		location / {
+			root $TMPWORKINGDIRECTORY/nginx/repo;
+			autoindex on;
+		}
+	}
+}
+ENDCONFIG
+}
+
+nginxsetuphttps() {
+	mkdir -p $TMPWORKINGDIRECTORY/nginx ||:
+	mkdir -p $TMPWORKINGDIRECTORY/nginx/tmp ||:
+
+	cat >> $TMPWORKINGDIRECTORY/nginx/nginx.conf << ENDCONFIG
+worker_processes 1;
+error_log $TMPWORKINGDIRECTORY/nginx/error.log;
+daemon off;
+pid $TMPWORKINGDIRECTORY/nginx/nginx.pid;
+
+events {
+	worker_connections  1024;
+}
+
+http {
+	client_body_temp_path $TMPWORKINGDIRECTORY/nginx/tmp/client_body;
+	fastcgi_temp_path $TMPWORKINGDIRECTORY/nginx/tmp/fastcgi_temp;
+	proxy_temp_path $TMPWORKINGDIRECTORY/nginx/tmp/proxy_temp;
+	scgi_temp_path $TMPWORKINGDIRECTORY/nginx/tmp/scgi_temp;
+	uwsgi_temp_path $TMPWORKINGDIRECTORY/nginx/tmp/uwsgi_temp;
+
+	include             /etc/nginx/mime.types;
+	default_type        application/octet-stream;
+
+	sendfile on;
+
+	keepalive_timeout   65;
+
+	ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
+	ssl_prefer_server_ciphers on;
+	access_log $TMPWORKINGDIRECTORY/nginx/http.access.log;
+	error_log $TMPWORKINGDIRECTORY/nginx/http.error.log;
+
+	server {
+		listen 8080;
+		server_name localhost localhost.localdomain;
+
+		ssl_certificate	$TMPWORKINGDIRECTORY/nginx/cert.crt;
+		ssl_certificate_key	$TMPWORKINGDIRECTORY/nginx/cert.key;
+
+		ssl on;
+
+		ssl_session_cache	builtin:1000	shared:SSL:10m;
+		ssl_protocols TLSv1.2;
+		ssl_ciphers HIGH:!aNULL:!eNULL:!EXPORT:!CAMELLIA:!DES:!MD5:!PSK:!RC4;
+		ssl_prefer_server_ciphers on;
+
+		location / {
+			root $TMPWORKINGDIRECTORY/nginx/repo;
+			autoindex on;
+		}
+	}
+}
+ENDCONFIG
 }
