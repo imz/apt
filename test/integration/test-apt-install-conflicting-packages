@@ -1,0 +1,27 @@
+#!/bin/bash
+set -e
+
+TESTDIR=$(readlink -f $(dirname $0))
+. $TESTDIR/framework
+
+setupenvironment
+
+buildpackage "conflicting-package-one"
+buildpackage "conflicting-package-two"
+
+testpkgnotinstalled "conflicting-package-one" "conflicting-package-two"
+
+testregexmatch "Reading Package Lists\.\.\.
+Building Dependency Tree\.\.\.
+Selecting conflicting-package-one for '[^']+'
+Selecting conflicting-package-two for '[^']+'
+Some packages could not be installed\. This may mean that you have
+requested an impossible situation or if you are using the unstable
+distribution that some required packages have not yet been created
+or been moved out of Incoming\.
+The following information may help to resolve the situation:
+
+The following packages have unmet dependencies:
+  conflicting-package-one: Conflicts: conflicting-package-two
+  conflicting-package-two: Conflicts: conflicting-package-one
+E: Broken packages" aptget install "$TMPWORKINGDIRECTORY/usr/src/RPM/RPMS/$(getarchitecture)/conflicting-package-one-1-alt1.$(getarchitecture).rpm" "$TMPWORKINGDIRECTORY/usr/src/RPM/RPMS/$(getarchitecture)/conflicting-package-two-1-alt1.$(getarchitecture).rpm"

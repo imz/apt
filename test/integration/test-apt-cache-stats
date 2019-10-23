@@ -1,0 +1,36 @@
+#!/bin/bash
+set -e
+
+TESTDIR=$(readlink -f $(dirname $0))
+. $TESTDIR/framework
+
+setupenvironment
+
+buildpackage "conflicting-package-distupgrade"
+buildpackage "conflicting-package-one"
+buildpackage "conflicting-package-two"
+buildpackage "missing-dependency"
+buildpackage "simple-package-new"
+buildpackage "simple-package-noarch"
+buildpackage "simple-package"
+buildpackage "simple-package-update-conflict"
+buildpackage "simple-package-update"
+
+generaterepository "$TMPWORKINGDIRECTORY/usr/src/RPM/RPMS" "$TMPWORKINGDIRECTORY/usr/src/RPM/REPO"
+
+testsuccess aptget update
+
+testregexmatch "Total Package Names : 7 \([^\)]*\)
+  Normal Packages: 0
+  Pure Virtual Packages: 0
+  Single Virtual Packages: 0
+  Mixed Virtual Packages: 6
+  Missing: 1
+Total Distinct Versions: 8 \([^\)]*\)
+Total Dependencies: 7 \([^\)]*\)
+Total Ver/File relations: 8 \([^\)]*\)
+Total Provides Mappings: 9 \([^\)]*\)
+Total Globbed Strings: 10 \([^\)]*\)
+Total Dependency Version space: 14
+Total Slack space: .*
+Total Space Accounted for: .*" aptcache stats
