@@ -1,0 +1,44 @@
+#!/bin/bash
+set -e
+
+TESTDIR=$(readlink -f $(dirname $0))
+. $TESTDIR/framework
+
+setupenvironment
+
+buildpackage "simple-package"
+
+testpkgnotinstalled "simple-package"
+testequal 'W: Unable to locate package simple-package' aptcache showpkg "simple-package"
+
+generaterepository "$TMPWORKINGDIRECTORY/usr/src/RPM/RPMS" "$TMPWORKINGDIRECTORY/usr/src/RPM/REPO"
+
+testsuccess aptget update
+
+testpkgnotinstalled "simple-package"
+testregexmatch "Package: simple-package[ ]*
+Versions:[ ]*
+1-alt1@[0-9]+\(.*\)[ ]*
+[ ]*
+Reverse Depends:[ ]*
+Dependencies:[ ]*
+1-alt1@[0-9]+ -[ ]*
+Provides:[ ]*
+1-alt1@[0-9]+ - simple-package[ ]*
+Reverse Provides:[ ]*
+simple-package 1-alt1@[0-9]+[ ]*" aptcache showpkg "simple-package"
+
+aptgetinstallpackage "simple-package" "1" "alt1" "$(getarchitecture)"
+
+testpkginstalled "simple-package"
+testregexmatch "Package: simple-package[ ]*
+Versions:[ ]*
+1-alt1@[0-9]+\(.*\)[ ]*
+[ ]*
+Reverse Depends:[ ]*
+Dependencies:[ ]*
+1-alt1@[0-9]+ -[ ]*
+Provides:[ ]*
+1-alt1@[0-9]+ - simple-package[ ]*
+Reverse Provides:[ ]*
+simple-package 1-alt1@[0-9]+[ ]*" aptcache showpkg "simple-package"

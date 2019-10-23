@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 set -e
 
 FAIL=0
@@ -36,14 +36,14 @@ else
 	CRESET=''
 fi
 
-TOTAL="$(run-parts --list $DIR | grep '/test-' | wc -l)"
-for testcase in $(run-parts --list $DIR | grep '/test-'); do
+TOTAL="$(ls $DIR | egrep '^test-' | wc -l)"
+for testcase in $(ls $DIR | egrep '^test-'); do
 	if [ "$MSGLEVEL" -le 2 ]; then
 		printf "($(($ALL+1))/${TOTAL}) ${CTEST}Testcase ${CHIGH}$(basename ${testcase})${CRESET}: "
 	else
 		printf "${CTEST}Run Testcase ($(($ALL+1))/${TOTAL}) ${CHIGH}$(basename ${testcase})${CRESET}\n"
 	fi
-	if ! ${testcase}; then
+	if ! ./${testcase}; then
 		FAIL=$((FAIL+1))
 		FAILED_TESTS="$FAILED_TESTS $(basename $testcase)"
 		echo >&2 "$(basename $testcase) ... FAIL"
