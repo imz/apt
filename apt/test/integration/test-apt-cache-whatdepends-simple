@@ -1,0 +1,43 @@
+#!/bin/bash
+set -e
+
+TESTDIR=$(readlink -f $(dirname $0))
+. $TESTDIR/framework
+
+setupenvironment
+
+buildpackage "conflicting-package-distupgrade"
+buildpackage "conflicting-package-one"
+buildpackage "conflicting-package-two"
+buildpackage "missing-dependency"
+buildpackage "simple-package-new"
+buildpackage "simple-package-noarch"
+buildpackage "simple-package"
+buildpackage "simple-package-update-conflict"
+buildpackage "simple-package-update"
+
+generaterepository "$TMPWORKINGDIRECTORY/usr/src/RPM/RPMS" "$TMPWORKINGDIRECTORY/usr/src/RPM/REPO"
+
+testsuccess aptget update
+
+testregexmatch "simple-package-2-alt1@[0-9]+
+  simple-package-new-3-alt1@[0-9]+
+    Conflicts: simple-package < 3-alt1
+    Obsoletes: simple-package < 3-alt1
+  conflicting-package-one-2-alt1@[0-9]+
+    Conflicts: simple-package
+      simple-package-new-3-alt1@[0-9]+" aptcache whatdepends "simple-package"
+
+testregexmatch "missing-dependency-1-alt1@[0-9]+" aptcache whatdepends "missing-dependency"
+
+testregexmatch "conflicting-package-one-2-alt1@[0-9]+
+  conflicting-package-two-1-alt1@[0-9]+
+    Conflicts: conflicting-package-one" aptcache whatdepends "conflicting-package-one"
+
+testregexmatch "missing-dependency-1-alt1@[0-9]+" aptcache whatdepends "missing-dependency"
+
+testregexmatch "<no-such-package>
+  missing-dependency-1-alt1@[0-9]+
+    Depends: <no-such-package>" aptcache whatdepends "no-such-package"
+
+testregexmatch "W: Unable to locate package definitely-no-such-package"  aptcache whatdepends "definitely-no-such-package"

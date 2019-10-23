@@ -1,0 +1,26 @@
+#!/bin/bash
+set -e
+
+TESTDIR=$(readlink -f $(dirname $0))
+. $TESTDIR/framework
+
+setupenvironment
+
+buildpackage "simple-package"
+buildpackage "simple-package-update"
+
+testpkgnotinstalled "simple-package"
+aptgetinstallpackage "simple-package" "1" "alt1" "$(getarchitecture)"
+testpkginstalled "simple-package"
+
+testequal '1-alt1' getpackageversion "simple-package"
+
+generaterepository "$TMPWORKINGDIRECTORY/usr/src/RPM/RPMS" "$TMPWORKINGDIRECTORY/usr/src/RPM/REPO"
+
+testsuccess aptget update
+
+testfailure aptget upgrade -y
+testequal '1-alt1' getpackageversion "simple-package"
+
+testsuccess aptget upgrade -y -o APT::Get::EnableUpgrade=true
+testequal '2-alt1' getpackageversion "simple-package"

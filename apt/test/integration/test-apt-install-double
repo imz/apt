@@ -1,0 +1,17 @@
+#!/bin/bash
+set -e
+
+TESTDIR=$(readlink -f $(dirname $0))
+. $TESTDIR/framework
+
+setupenvironment
+
+buildpackage "simple-package"
+buildpackage "conflicting-package-one"
+
+testpkgnotinstalled "simple-package" "conflicting-package-one"
+aptgetinstallpackage "simple-package" "1" "alt1" "$(getarchitecture)"
+testpkginstalled "simple-package"
+testpkgnotinstalled "conflicting-package-one"
+aptgetinstallpackage "conflicting-package-one" "1" "alt1" "$(getarchitecture)"
+testpkginstalled "simple-package" "conflicting-package-one"
