@@ -178,10 +178,10 @@ bool RPMIndexCopy::CopyPackages(string CDROM,string Name,vector<string> &List)
 		     release.c_str());
 	    string TargetF = _config->FindDir("Dir::State::lists") + "partial/";
 	    TargetF += URItoFileName(S);
-	    if (FileExists(RipDirectory(*I) + release) == true)
+	    if (FileExists(RipDirectory(*I) + "/" + release) == true)
 	    {
 	       FileFd Target(TargetF,FileFd::WriteEmpty);
-	       FileFd Rel(RipDirectory(*I) + release,FileFd::ReadOnly);
+	       FileFd Rel(RipDirectory(*I) + "/" + release,FileFd::ReadOnly);
 	       if (_error->PendingError() == true)
 		  return false;
 
