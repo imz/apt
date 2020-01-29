@@ -890,7 +890,7 @@ std::unique_ptr<MMap> pkgMakeStatusCache(pkgSourceList &List,OpProgress &Progres
    {
       // Preload the map with the source cache
       FileFd SCacheF(SrcCacheFile,FileFd::ReadOnly);
-      if (SCacheF.Read((unsigned char *)Map->Data() + Map->RawAllocate(SCacheF.Size()),
+      if (SCacheF.Read(static_cast<char *>(Map->Data()) + Map->RawAllocate(SCacheF.Size()),
 		       SCacheF.Size()) == false)
 	 return nullptr;
 
