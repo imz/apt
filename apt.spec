@@ -230,7 +230,7 @@ printf '%_target_cpu\t%_target_cpu' >> buildlib/archtable
 %autoreconf
 %add_optflags -DAPTRPM_ID=\\\"%name-%{?epoch:%epoch:}%version-%release%{?disttag::%disttag}.%_target_cpu\\\"
 %ifarch %e2k
-%add_optflags -std=gnu++11
+%add_optflags -std=c++14
 %endif
 %configure --includedir=%_includedir/apt-pkg %{subst_enable static}
 

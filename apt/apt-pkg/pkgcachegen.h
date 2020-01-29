@@ -24,6 +24,8 @@
 
 #include <apt-pkg/pkgcache.h>
 
+#include <experimental/optional>
+
 class pkgSourceList;
 class OpProgress;
 class MMap;
@@ -34,10 +36,10 @@ class pkgCacheGenerator
    private:
 
    pkgCache::StringItem *UniqHash[26];
-   unsigned long WriteStringInMap(const std::string &String) { return WriteStringInMap(String.c_str(), String.length()); };
-   unsigned long WriteStringInMap(const char *String);
-   unsigned long WriteStringInMap(const char *String, unsigned long Len);
-   unsigned long AllocateInMap(unsigned long size);
+   std::experimental::optional<unsigned long> WriteStringInMap(const std::string &String) { return WriteStringInMap(String.c_str(), String.length()); };
+   std::experimental::optional<unsigned long> WriteStringInMap(const char *String);
+   std::experimental::optional<unsigned long> WriteStringInMap(const char *String, unsigned long Len);
+   std::experimental::optional<unsigned long> AllocateInMap(unsigned long size);
 
    public:
    
@@ -57,15 +59,15 @@ class pkgCacheGenerator
    bool FoundFileDeps;
    
    bool NewFileVer(pkgCache::VerIterator &Ver,ListParser &List);
-   unsigned long NewVersion(pkgCache::VerIterator &Ver,const string &VerStr,unsigned long Next);
+   std::experimental::optional<unsigned long> NewVersion(pkgCache::VerIterator &Ver,const string &VerStr,unsigned long Next);
 
    public:
 
    // CNC:2003-02-27 - We need this in rpmListParser.
    bool NewPackage(pkgCache::PkgIterator &PkgI,const string &Pkg);
 
-   unsigned long WriteUniqString(const char *S,unsigned int Size);
-   inline unsigned long WriteUniqString(const string &S) {return WriteUniqString(S.c_str(),S.length());};
+   std::experimental::optional<unsigned long> WriteUniqString(const char *S,unsigned int Size);
+   inline std::experimental::optional<unsigned long> WriteUniqString(const string &S) {return WriteUniqString(S.c_str(),S.length());};
 
    void DropProgress() {Progress = 0;};
    bool SelectFile(const string &File,const string &Site,pkgIndexFile const &Index,
@@ -101,10 +103,10 @@ class pkgCacheGenerator::ListParser
    pkgCacheGenerator *Owner;
    friend class pkgCacheGenerator;
 
-   inline unsigned long WriteUniqString(const string &S) {return Owner->WriteUniqString(S);};
-   inline unsigned long WriteUniqString(const char *S,unsigned int Size) {return Owner->WriteUniqString(S,Size);};
-   inline unsigned long WriteString(const string &S) {return Owner->WriteStringInMap(S);};
-   inline unsigned long WriteString(const char *S,unsigned int Size) {return Owner->WriteStringInMap(S,Size);};
+   inline std::experimental::optional<unsigned long> WriteUniqString(const string &S) {return Owner->WriteUniqString(S);};
+   inline std::experimental::optional<unsigned long> WriteUniqString(const char *S,unsigned int Size) {return Owner->WriteUniqString(S,Size);};
+   inline std::experimental::optional<unsigned long> WriteString(const string &S) {return Owner->WriteStringInMap(S);};
+   inline std::experimental::optional<unsigned long> WriteString(const char *S,unsigned int Size) {return Owner->WriteStringInMap(S,Size);};
    bool NewDepends(pkgCache::VerIterator &Ver, const string &Package,
 		   const string &Version,unsigned int Op,
 		   unsigned int Type);

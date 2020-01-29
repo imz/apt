@@ -55,16 +55,20 @@ pkgCacheGenerator::pkgCacheGenerator(DynamicMMap *pMap,OpProgress *Prog) :
    if (Map.Size() == 0)
    {
       const auto idxBeginning = Map.RawAllocate(sizeof(pkgCache::Header));
+      const auto idxVerSysName = WriteStringInMap(_system->VS->Label);
+      const auto idxArch = WriteStringInMap(_config->Find("APT::Architecture"));
+      if ((!idxBeginning) || (!idxVerSysName) || (!idxArch))
+         return;
 
       // Setup the map interface..
-      Cache.HeaderP = reinterpret_cast<pkgCache::Header *>(static_cast<char *>(Map.Data()) + idxBeginning);
+      Cache.HeaderP = reinterpret_cast<pkgCache::Header *>(static_cast<char *>(Map.Data()) + *idxBeginning);
       Map.UsePools(*Cache.HeaderP->Pools,sizeof(Cache.HeaderP->Pools)/sizeof(Cache.HeaderP->Pools[0]));
       
       // Starting header
       *Cache.HeaderP = pkgCache::Header();
-      Cache.HeaderP->VerSysName = WriteStringInMap(_system->VS->Label);
-      Cache.HeaderP->Architecture = WriteStringInMap(_config->Find("APT::Architecture"));
-      Cache.ReMap(); 
+      Cache.HeaderP->VerSysName = *idxVerSysName;
+      Cache.HeaderP->Architecture = *idxArch;
+      Cache.ReMap();
    }
    else
    {
@@ -98,17 +102,17 @@ pkgCacheGenerator::~pkgCacheGenerator()
 }
 									/*}}}*/
 // CacheGenerator::WriteStringInMap					/*{{{*/
-unsigned long pkgCacheGenerator::WriteStringInMap(const char *String,
+std::experimental::optional<unsigned long> pkgCacheGenerator::WriteStringInMap(const char *String,
 					unsigned long Len) {
    return Map.WriteString(String, Len);
 }
 									/*}}}*/
 // CacheGenerator::WriteStringInMap					/*{{{*/
-unsigned long pkgCacheGenerator::WriteStringInMap(const char *String) {
+std::experimental::optional<unsigned long> pkgCacheGenerator::WriteStringInMap(const char *String) {
    return Map.WriteString(String);
 }
 									/*}}}*/
-unsigned long pkgCacheGenerator::AllocateInMap(unsigned long size) {/*{{{*/
+std::experimental::optional<unsigned long> pkgCacheGenerator::AllocateInMap(unsigned long size) {/*{{{*/
    return Map.Allocate(size);
 }
 									/*}}}*/
@@ -222,7 +226,12 @@ bool pkgCacheGenerator::MergeList(ListParser &List,
       }
 
       // Add a new version
-      *Last = NewVersion(Ver,Version,*Last);
+      const auto verindex = NewVersion(Ver,Version,*Last);
+      if (!verindex)
+         return _error->Error(_("Error occurred while processing %s (NewVersion0)"),
+                              PackageName.c_str());
+      *Last = *verindex;
+
       Ver->ParentPkg = Pkg.Index();
       Ver->Hash = Hash;
       if (List.NewVersion(Ver) == false)
@@ -366,21 +375,20 @@ bool pkgCacheGenerator::NewPackage(pkgCache::PkgIterator &Pkg, const string &Nam
 #endif
        
    // Get a structure
-   unsigned long Package = AllocateInMap(sizeof(pkgCache::Package));
-   if (Package == 0)
+   const auto Package = AllocateInMap(sizeof(pkgCache::Package));
+   const auto idxName = WriteStringInMap(Name);
+   if ((!Package) || (!idxName))
       return false;
-   
-   Pkg = pkgCache::PkgIterator(Cache,Cache.PkgP + Package);
-   
+
+   Pkg = pkgCache::PkgIterator(Cache,Cache.PkgP + *Package);
+
    // Insert it into the hash table
    unsigned long Hash = Cache.Hash(Name);
    Pkg->NextPackage = Cache.HeaderP->HashTable[Hash];
-   Cache.HeaderP->HashTable[Hash] = Package;
-   
+   Cache.HeaderP->HashTable[Hash] = *Package;
+
    // Set the name and the ID
-   Pkg->Name = WriteStringInMap(Name);
-   if (Pkg->Name == 0)
-      return false;
+   Pkg->Name = *idxName;
    Pkg->ID = Cache.HeaderP->PackageCount++;
    
    return true;
@@ -408,7 +416,11 @@ bool pkgCacheGenerator::NewFileVer(pkgCache::VerIterator &Ver,
       if ( (':' - '@' < 0 ? rc < 0 : rc > 0) ||
            (rc != 0 && List.IsDatabase()) )
          {
-            Ver->VerStr = WriteStringInMap(Version);
+            const auto verStrIdx = WriteStringInMap(Version);
+            if (!verStrIdx)
+               return false;
+
+            Ver->VerStr = *verStrIdx;
          }
    }
 
@@ -416,11 +428,11 @@ bool pkgCacheGenerator::NewFileVer(pkgCache::VerIterator &Ver,
       return true;
    
    // Get a structure
-   unsigned long VerFile = AllocateInMap(sizeof(pkgCache::VerFile));
-   if (VerFile == 0)
-      return 0;
+   const auto VerFile = AllocateInMap(sizeof(pkgCache::VerFile));
+   if (!VerFile)
+      return false;
    
-   pkgCache::VerFileIterator VF(Cache,Cache.VerFileP + VerFile);
+   pkgCache::VerFileIterator VF(Cache,Cache.VerFileP + *VerFile);
    VF->File = CurrentFile - Cache.PkgFileP;
    
    // Link it to the end of the list
@@ -442,23 +454,22 @@ bool pkgCacheGenerator::NewFileVer(pkgCache::VerIterator &Ver,
 // CacheGenerator::NewVersion - Create a new Version 			/*{{{*/
 // ---------------------------------------------------------------------
 /* This puts a version structure in the linked list */
-unsigned long pkgCacheGenerator::NewVersion(pkgCache::VerIterator &Ver,
+std::experimental::optional<unsigned long> pkgCacheGenerator::NewVersion(pkgCache::VerIterator &Ver,
 					    const string &VerStr,
 					    unsigned long Next)
 {
    // Get a structure
-   unsigned long Version = AllocateInMap(sizeof(pkgCache::Version));
-   if (Version == 0)
-      return 0;
-   
+   const auto Version = AllocateInMap(sizeof(pkgCache::Version));
+   const auto idxVerStr = WriteStringInMap(VerStr);
+   if ((!Version) || (!idxVerStr))
+      return std::experimental::nullopt;
+
    // Fill it in
-   Ver = pkgCache::VerIterator(Cache,Cache.VerP + Version);
+   Ver = pkgCache::VerIterator(Cache,Cache.VerP + *Version);
    Ver->NextVer = Next;
    Ver->ID = Cache.HeaderP->VersionCount++;
-   Ver->VerStr = WriteStringInMap(VerStr);
-   if (Ver->VerStr == 0)
-      return 0;
-   
+   Ver->VerStr = *idxVerStr;
+
    return Version;
 }
 									/*}}}*/
@@ -475,12 +486,12 @@ bool pkgCacheGenerator::ListParser::NewDepends(pkgCache::VerIterator &Ver,
    pkgCache &Cache = Owner->Cache;
    
    // Get a structure
-   unsigned long Dependency = Owner->AllocateInMap(sizeof(pkgCache::Dependency));
-   if (Dependency == 0)
+   const auto Dependency = Owner->AllocateInMap(sizeof(pkgCache::Dependency));
+   if (!Dependency)
       return false;
    
    // Fill it in
-   pkgCache::DepIterator Dep(Cache,Cache.DepP + Dependency);
+   pkgCache::DepIterator Dep(Cache,Cache.DepP + *Dependency);
    Dep->ParentVer = Ver.Index();
    Dep->Type = Type;
    Dep->CompareOp = Op;
@@ -498,8 +509,13 @@ bool pkgCacheGenerator::ListParser::NewDepends(pkgCache::VerIterator &Ver,
 	 if (I->Version != 0 && I.TargetVer() == Version)
 	    Dep->Version = I->Version;*/
       if (Dep->Version == 0)
-	 if ((Dep->Version = WriteString(Version)) == 0)
-	    return false;
+      {
+         const auto index = WriteString(Version);
+         if (!index)
+            return false;
+
+         Dep->Version = *index;
+      }
    }
       
    // Link it to the package
@@ -545,18 +561,29 @@ bool pkgCacheGenerator::ListParser::NewProvides(pkgCache::VerIterator &Ver,
 #endif
    
    // Get a structure
-   unsigned long Provides = Owner->AllocateInMap(sizeof(pkgCache::Provides));
-   if (Provides == 0)
+   const auto Provides = Owner->AllocateInMap(sizeof(pkgCache::Provides));
+   if (!Provides)
       return false;
    Cache.HeaderP->ProvidesCount++;
    
    // Fill it in
-   pkgCache::PrvIterator Prv(Cache,Cache.ProvideP + Provides,Cache.PkgP);
+   pkgCache::PrvIterator Prv(Cache,Cache.ProvideP + *Provides,Cache.PkgP);
    Prv->Version = Ver.Index();
    Prv->NextPkgProv = Ver->ProvidesList;
    Ver->ProvidesList = Prv.Index();
-   if (Version.empty() == false && (Prv->ProvideVersion = WriteString(Version)) == 0)
-      return false;
+
+   if (Version.empty() == false)
+   {
+      const auto idxVersion = WriteString(Version);
+      // FIXME: If this allocation fails, did it make sense to fill in Prv above?
+      if (!idxVersion)
+      {
+         // FIXME: Does it really make sense to fill it in on failure?
+         Prv->ProvideVersion = 0;
+         return false;
+      }
+      Prv->ProvideVersion = *idxVersion;
+   }
    
    // Locate the target package
    pkgCache::PkgIterator Pkg;
@@ -580,23 +607,24 @@ bool pkgCacheGenerator::SelectFile(const string &File, const string &Site,
 				   unsigned long Flags)
 {
    // Get some space for the structure
-   CurrentFile = Cache.PkgFileP + AllocateInMap(sizeof(*CurrentFile));
-   if (CurrentFile == Cache.PkgFileP)
+   const auto idxFile = AllocateInMap(sizeof(*CurrentFile));
+   const auto idxFileName = WriteStringInMap(File);
+   const auto idxSite = WriteUniqString(Site);
+   const auto idxIndexType = WriteUniqString(Index.GetType()->Label);
+   if ((!idxFile) || (!idxFileName) || (!idxSite) || (!idxIndexType))
       return false;
+   CurrentFile = Cache.PkgFileP + *idxFile;
    
    // Fill it in
-   CurrentFile->FileName = WriteStringInMap(File);
-   CurrentFile->Site = WriteUniqString(Site);
+   CurrentFile->FileName = *idxFileName;
+   CurrentFile->Site = *idxSite;
    CurrentFile->NextFile = Cache.HeaderP->FileList;
    CurrentFile->Flags = Flags;
    CurrentFile->ID = Cache.HeaderP->PackageFileCount;
-   CurrentFile->IndexType = WriteUniqString(Index.GetType()->Label);
+   CurrentFile->IndexType = *idxIndexType;
    PkgFileName = File;
    Cache.HeaderP->FileList = CurrentFile - Cache.PkgFileP;
    Cache.HeaderP->PackageFileCount++;
-
-   if (CurrentFile->FileName == 0)
-      return false;
    
    if (Progress != 0)
       Progress->SubProgress(Index.Size());
@@ -607,7 +635,7 @@ bool pkgCacheGenerator::SelectFile(const string &File, const string &Site,
 // ---------------------------------------------------------------------
 /* This is used to create handles to strings. Given the same text it
    always returns the same number */
-unsigned long pkgCacheGenerator::WriteUniqString(const char *S,
+std::experimental::optional<unsigned long> pkgCacheGenerator::WriteUniqString(const char *S,
 						 unsigned int Size)
 {
    /* We use a very small transient hash table here, this speeds up generation
@@ -637,18 +665,17 @@ unsigned long pkgCacheGenerator::WriteUniqString(const char *S,
    }
    
    // Get a structure
-   unsigned long Item = AllocateInMap(sizeof(pkgCache::StringItem));
-   if (Item == 0)
-      return 0;
+   const auto Item = AllocateInMap(sizeof(pkgCache::StringItem));
+   const auto idxString = WriteStringInMap(S, Size);
+   if ((!Item) || (!idxString))
+      return std::experimental::nullopt;
 
    // Fill in the structure
-   pkgCache::StringItem *ItemP = Cache.StringItemP + Item;
+   pkgCache::StringItem *ItemP = Cache.StringItemP + *Item;
    ItemP->NextItem = I - Cache.StringItemP;
-   *Last = Item;
-   ItemP->String = WriteStringInMap(S,Size);
-   if (ItemP->String == 0)
-      return 0;
-   
+   *Last = *Item;
+   ItemP->String = *idxString;
+
    Bucket = ItemP;
    return ItemP->String;
 }
@@ -883,7 +910,10 @@ bool pkgMakeStatusCache(pkgSourceList &List,OpProgress &Progress,
    {
       // Preload the map with the source cache
       FileFd SCacheF(SrcCacheFile,FileFd::ReadOnly);
-      if (SCacheF.Read(static_cast<char *>(Map->Data()) + Map->RawAllocate(SCacheF.Size()),
+      const auto idxAllocate = Map->RawAllocate(SCacheF.Size());
+      if (!idxAllocate)
+         return false;
+      if (SCacheF.Read(static_cast<char *>(Map->Data()) + *idxAllocate,
 		       SCacheF.Size()) == false)
 	 return false;
 
