@@ -404,7 +404,6 @@ bool rpmPkgListIndex::Merge(pkgCacheGenerator &Gen,OpProgress &Prog) const
       if (_error->PendingError() == true)
 	 return false;
       Parser.LoadReleaseInfo(File,Rel);
-      Rel.Seek(0);
    }
 
    return true;
