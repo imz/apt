@@ -50,9 +50,10 @@ pkgCacheGenerator::pkgCacheGenerator(DynamicMMap &aMap,OpProgress *Prog) :
 
    if (Map.Size() == 0)
    {
+      const auto idxBeginning = Map.RawAllocate(sizeof(pkgCache::Header));
+
       // Setup the map interface..
-      Cache.HeaderP = (pkgCache::Header *)Map.Data();
-      Map.RawAllocate(sizeof(pkgCache::Header));
+      Cache.HeaderP = reinterpret_cast<pkgCache::Header *>(static_cast<char *>(Map.Data()) + idxBeginning);
       Map.UsePools(*Cache.HeaderP->Pools,sizeof(Cache.HeaderP->Pools)/sizeof(Cache.HeaderP->Pools[0]));
 
       // Starting header
