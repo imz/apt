@@ -226,6 +226,12 @@ std::experimental::optional<unsigned long> DynamicMMap::RawAllocate(unsigned lon
    size in the file. */
 std::experimental::optional<unsigned long> DynamicMMap::Allocate(unsigned long ItemSize)
 {
+   if (ItemSize == 0)
+   {
+      _error->Error("Can't allocate an item of size zero");
+      return std::experimental::nullopt;
+   }
+
    // Look for a matching pool entry
    Pool *I;
    Pool *Empty = 0;
