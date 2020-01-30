@@ -559,11 +559,27 @@ bool pkgCacheGenerator::ListParser::NewProvides(pkgCache::VerIterator &Ver,
    if (Ver.ParentPkg().Name() == PackageName)
       return true;
 #endif
-   
+
+   // used only if !Version.empty()
+   std::experimental::optional<unsigned long> idxVersion = std::experimental::nullopt;
+   // Try to allocate the prerequisite string
+   if (Version.empty() == false) {
+      idxVersion = WriteString(Version);
+      if (!idxVersion)
+      {
+         /* Don't even start to fill in the structure below,
+            if we can't get the prerequisite. */
+         return false;
+      }
+   }
    // Get a structure
    const auto Provides = Owner->AllocateInMap(sizeof(pkgCache::Provides));
    if (!Provides)
       return false;
+   /* Note:
+      this accounting is done only if all the prerequistes have been allocated
+      and hence the structure will actually be used (filled in).
+   */
    Cache.HeaderP->ProvidesCount++;
    
    // Fill it in
@@ -572,16 +588,10 @@ bool pkgCacheGenerator::ListParser::NewProvides(pkgCache::VerIterator &Ver,
    Prv->NextPkgProv = Ver->ProvidesList;
    Ver->ProvidesList = Prv.Index();
 
-   if (Version.empty() == false)
+   if (idxVersion)
    {
-      const auto idxVersion = WriteString(Version);
-      // FIXME: If this allocation fails, did it make sense to fill in Prv above?
-      if (!idxVersion)
-      {
-         // FIXME: Does it really make sense to fill it in on failure?
-         Prv->ProvideVersion = 0;
-         return false;
-      }
+      /* FIXME: If Version.empty(), this field has never been touched.
+         Is this correct? */
       Prv->ProvideVersion = *idxVersion;
    }
    
