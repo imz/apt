@@ -1,8 +1,6 @@
 #!/bin/bash
 set -eu
 
-APT_TEST_XFAIL=YES
-
 TESTDIR=$(readlink -f $(dirname $0))
 . $TESTDIR/framework
 
