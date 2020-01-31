@@ -67,7 +67,14 @@ std::string rpm_name_conversion(const pkgCache::PkgIterator &Pkg)
 
    // This is needed for removal to work on multilib packages, but old
    // rpm versions don't support name.arch in RPMDBI_LABEL, oh well...
-   Name = Name + "." + Pkg.CurrentVer().Arch();
+   {
+      const char * const Arch = Pkg.CurrentVer().Arch();
+
+      // Note: some 3rd-party packages may still miss arch, so only use it
+      // when it's present
+      if (Arch && *Arch)
+         Name = Name + "." + Arch;
+   }
 
    return Name;
 }
