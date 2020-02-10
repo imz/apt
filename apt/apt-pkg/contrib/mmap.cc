@@ -283,6 +283,9 @@ std::experimental::optional<unsigned long> DynamicMMap::Allocate(unsigned long I
 std::experimental::optional<unsigned long> DynamicMMap::WriteString(const char *String,
 				       unsigned long Len)
 {
+   if (Len == (unsigned long)-1)
+      Len = strlen(String);
+
    unsigned long Result = iSize;
    // Just in case error check
    if (Result + Len > WorkSpace)
@@ -291,8 +294,6 @@ std::experimental::optional<unsigned long> DynamicMMap::WriteString(const char *
       return std::experimental::nullopt;
    }   
    
-   if (Len == (unsigned long)-1)
-      Len = strlen(String);
    iSize += Len + 1;
    memcpy((char *)Base + Result,String,Len);
    ((char *)Base)[Result + Len] = 0;
