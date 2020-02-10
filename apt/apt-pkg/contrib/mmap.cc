@@ -207,15 +207,15 @@ std::experimental::optional<unsigned long> DynamicMMap::RawAllocate(unsigned lon
    unsigned long long Result = iSize;
    if (Aln != 0)
       Result += Aln - (iSize%Aln);
-   
-   iSize = Result + Size;
-   
+
    // Just in case error check
    if (Result + Size > WorkSpace)
    {
       _error->Error("Dynamic MMap ran out of room");
       return std::experimental::nullopt;
    }
+
+   iSize = Result + Size;
 
    return Result;
 }
