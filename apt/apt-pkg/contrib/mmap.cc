@@ -292,17 +292,15 @@ std::experimental::optional<PtrDiff<char>> DynamicMMap::WriteString(const char *
    if (Len == (unsigned long)-1)
       Len = strlen(String);
 
-   unsigned long Result = iSize;
-   // Just in case error check
-   if (Result + Len > WorkSpace)
+   // FIXME: what if Len + 1 overflows?
+   const auto Result = RawAllocateAligned<char>(Len + 1);
+
+   if (Result)
    {
-      _error->Error("Dynamic MMap ran out of room");
-      return std::experimental::nullopt;
-   }   
-   
-   iSize += Len + 1;
-   memcpy((char *)Base + Result,String,Len);
-   ((char *)Base)[Result + Len] = 0;
+      memcpy(Base + *Result,String,Len);
+      (Base + *Result)[Len] = 0;
+   }
+
    return Result;
 }
 									/*}}}*/
