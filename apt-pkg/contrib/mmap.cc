@@ -250,14 +250,14 @@ unsigned long DynamicMMap::RawAllocate(unsigned long const Size,unsigned long co
    if (Aln != 0)
       Result += Aln - (iSize%Aln);
 
-   iSize = Result + Size;
-
    // Just in case error check
    if (Result + Size > WorkSpace)
    {
       _error->Error("Dynamic MMap ran out of room");
       return 0;
    }
+
+   iSize = Result + Size;
 
    return Result;
 }
