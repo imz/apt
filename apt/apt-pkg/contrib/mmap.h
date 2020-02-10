@@ -141,10 +141,11 @@ class DynamicMMap : public MMap
    public:
 
    // Allocation
-   std::experimental::optional<unsigned long> RawAllocate(unsigned long Size,unsigned long Aln = 0);
+   template<typename T>
+   std::experimental::optional<PtrDiff<T>> RawAllocateAligned(unsigned long Count);
    std::experimental::optional<unsigned long> Allocate(unsigned long ItemSize);
-   std::experimental::optional<unsigned long> WriteString(const char *String,unsigned long Len = (unsigned long)-1);
-   inline std::experimental::optional<unsigned long> WriteString(const string &S) {return WriteString(S.c_str(),S.length());};
+   std::experimental::optional<PtrDiff<char>> WriteString(const char *String,unsigned long Len = (unsigned long)-1);
+   inline std::experimental::optional<PtrDiff<char>> WriteString(const string &S) {return WriteString(S.c_str(),S.length());};
    void UsePools(Pool &P,unsigned int Count) {Pools = &P; PoolCount = Count;};
    
    DynamicMMap(FileFd &F,unsigned long Flags,unsigned long WorkSpace = 2*1024*1024);
