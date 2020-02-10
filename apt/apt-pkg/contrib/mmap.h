@@ -81,6 +81,16 @@ class PtrDiff
 
    public:
 
+   static inline PtrDiff<T> ExtendAndGetAligned(unsigned long &ptrdiff)
+   {
+      const unsigned long aln = sizeof(T);
+
+      // FIXME: what if ptrdiff overflows?
+      ptrdiff += aln - (ptrdiff%aln ? : aln);
+
+      return { ptrdiff/aln };
+   }
+
    PtrDiff(T * const ptr, T * const base)
    {
       value = ptr - base;
