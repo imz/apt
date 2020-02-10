@@ -115,7 +115,9 @@ inline T* operator+(T* base, const PtrDiff<T> diff)
    return base += diff;
 }
 
-/* Operations on a void* base are also quite safe. */
+/* Operations on a void* base are also quite safe;
+   And are useful to write shorter expressions.
+ */
 
 template<typename T>
 inline T* operator+(void* const base, const PtrDiff<T> diff)
