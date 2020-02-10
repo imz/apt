@@ -111,6 +111,14 @@ inline T* operator+(T* base, const PtrDiff<T> diff)
    return base += diff;
 }
 
+/* Operations on a void* base are also quite safe. */
+
+template<typename T>
+inline T* operator+(void* const base, const PtrDiff<T> diff)
+{
+   return static_cast<T*>(base) + diff;
+}
+
 class DynamicMMap : public MMap
 {
    public:
