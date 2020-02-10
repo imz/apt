@@ -79,6 +79,8 @@ class PtrDiff
 
    friend T*& operator+= <>(T* &lhs, PtrDiff<T>);
 
+   explicit PtrDiff(const unsigned long ptrdiff): value(ptrdiff) { }
+
    public:
 
    static inline PtrDiff<T> ExtendAndGetAligned(unsigned long &ptrdiff)
@@ -88,7 +90,9 @@ class PtrDiff
       // FIXME: what if ptrdiff overflows?
       ptrdiff += aln - (ptrdiff%aln ? : aln);
 
-      return { ptrdiff/aln };
+      // Using a private constructor, which is private for safety:
+      // one cannot convert arbitrary value to a typed PtrDiff.
+      return PtrDiff<T>(ptrdiff/aln);
    }
 
    PtrDiff(T * const ptr, T * const base)
