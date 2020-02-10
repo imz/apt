@@ -208,20 +208,26 @@ DynamicMMap::~DynamicMMap()
 // DynamicMMap::RawAllocate - Allocate a raw chunk of unaligned space	/*{{{*/
 // ---------------------------------------------------------------------
 /* This allocates a block of memory aligned to the given size */
-std::optional<unsigned long> DynamicMMap::RawAllocate(unsigned long Size,unsigned long Aln)
+template<typename T>
+std::optional<PtrDiff<T>> DynamicMMap::RawAllocateArray(const unsigned long Count)
 {
-   unsigned long Result = iSize;
-   if (Aln != 0)
-      Result += Aln - (iSize%Aln ? : Aln);
+   if (Count == 0)
+   {
+      _error->Error("Refusing to RawAllocateArray of 0 items");
+      return std::nullopt;
+   }
+
+   unsigned long newBlock = iSize;
+   const PtrDiff<T> Result = PtrDiff<T>::ExtendAndGetAligned(newBlock);
 
    // Just in case error check
-   if (Result + Size > WorkSpace)
+   if (newBlock + Count*sizeof(T) > WorkSpace)
    {
       _error->Error("Dynamic MMap ran out of room");
       return std::nullopt;
    }
 
-   iSize = Result + Size;
+   iSize = newBlock + Count*sizeof(T);
 
    return Result;
 }
@@ -284,7 +290,7 @@ std::optional<unsigned long> DynamicMMap::Allocate(unsigned long ItemSize)
 // DynamicMMap::WriteString - Write a string to the file		/*{{{*/
 // ---------------------------------------------------------------------
 /* Strings are not aligned to anything */
-std::optional<unsigned long> DynamicMMap::WriteString(const char *String,
+std::optional<PtrDiff<char>> DynamicMMap::WriteString(const char *String,
 				       unsigned long Len)
 {
    if (Len == std::numeric_limits<decltype(Len)>::max())
