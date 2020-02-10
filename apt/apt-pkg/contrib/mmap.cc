@@ -301,12 +301,12 @@ std::optional<PtrDiff<char>> DynamicMMap::WriteString(const char *String,
       so Len+1 will never overflow.
    */
 
-   const auto Result = RawAllocate(Len+1,0);
+   const auto Result = RawAllocateArray<char>(Len+1);
 
    if (!Result)
       return std::nullopt;
 
-   char * const dest = static_cast<char *>(Base) + *Result;
+   char * const dest = Base + *Result;
    memcpy(dest,String,Len);
    dest[Len] = 0;
 
