@@ -272,7 +272,7 @@ unsigned long DynamicMMap::RawAllocate(size_t const Size,size_t const Aln)
 {
    unsigned long Result = iSize;
 
-   if (Aln != 0)
+   if (Aln != 0 && Result%Aln != 0)
    {
       size_t const Padding = Aln - (Result%Aln);
       // Just in case error check
