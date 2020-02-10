@@ -71,6 +71,38 @@ class MMap
    virtual ~MMap();
 };
 
+template<typename T> class PtrDiff;
+template<typename T> T*& operator+=(T* &lhs, PtrDiff<T>);
+
+template<typename T>
+class PtrDiff
+{
+   unsigned long value;
+
+   friend T*& operator+= <>(T* &lhs, PtrDiff<T>);
+
+   public:
+
+   PtrDiff(T * const ptr, T * const base)
+   {
+      value = ptr - base;
+   }
+};
+
+template<typename T>
+inline T*& operator+=(T* &lhs, const PtrDiff<T> diff)
+{
+   // FIXME: what if lhs overflows?
+   return lhs += diff.value;
+}
+
+template<typename T>
+inline T* operator+(T* base, const PtrDiff<T> diff)
+{
+   // FIXME: what if base overflows?
+   return base += diff;
+}
+
 class DynamicMMap : public MMap
 {
    public:
