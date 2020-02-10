@@ -117,6 +117,18 @@ inline T* operator+(T* base, const PtrDiff<T> diff)
    return base += diff;
 }
 
+/* Operations on a void* base are also quite safe.
+   (FIXME: what if the void* ptr is not optimally aligned? Not as we'd wish?
+   If we want to check this, we should do this on type level.)
+   And are useful to write shorter expressions.
+ */
+
+template<typename T>
+inline T* operator+(void* const base, const PtrDiff<T> diff)
+{
+   return static_cast<T*>(base) + diff;
+}
+
 class DynamicMMap : public MMap
 {
    public:
