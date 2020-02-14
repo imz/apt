@@ -380,28 +380,7 @@ void rpmRecordParser::GetRec(const char *&Start,const char *&Stop)
 
 bool rpmRecordParser::HasFile(const char *File)
 {
-   bool ret = false;
-   const char *FileName;
-
-   if (*File == '\0')
-      return false;
-
-   rpmtd fileNames = rpmtdNew();
-
-   if (headerGet(HeaderP, RPMTAG_OLDFILENAMES, fileNames, HEADERGET_EXT) != 1 &&
-       headerGet(HeaderP, RPMTAG_FILENAMES, fileNames, HEADERGET_EXT) != 1) {
-      rpmtdFree(fileNames);
-      return ret;
-   }
-   while ((FileName = rpmtdNextString(fileNames)) != NULL) {
-      if (strcmp(File, FileName) == 0) {
-         ret = true;
-         break;
-      }
-   }
-   rpmtdFreeData(fileNames);
-   rpmtdFree(fileNames);
-   return ret;
+   return Handler->HasFile(File);
 }
 
 #endif /* HAVE_RPM */

@@ -448,16 +448,14 @@ bool rpmListParser::ParseDepends(pkgCache::VerIterator Ver,
 bool rpmListParser::CollectFileProvides(pkgCache &Cache,
 					pkgCache::VerIterator Ver)
 {
-   bool ret = true;
-   const char *FileName;
-   rpmtd fileNames = rpmtdNew();
+   vector<string> Files;
 
-   if (headerGet(header, RPMTAG_OLDFILENAMES, fileNames, HEADERGET_EXT) != 1 &&
-       headerGet(header, RPMTAG_FILENAMES, fileNames, HEADERGET_EXT) != 1) {
-      rpmtdFree(fileNames);
-      return true;
-   }
-   while ((FileName = rpmtdNextString(fileNames)) != NULL) {
+   if (!Handler->FileList(Files))
+      return false;
+
+   bool ret = true;
+   for (vector<string>::const_iterator I = Files.begin(); I != Files.end(); ++I) {
+      const char *FileName = (*I).c_str();
       pkgCache::Package *P = Cache.FindPackage(FileName);
       if (P != NULL) {
 	 // Check if this is already provided.
@@ -475,8 +473,6 @@ bool rpmListParser::CollectFileProvides(pkgCache &Cache,
 	 }
       }
    }
-   rpmtdFreeData(fileNames);
-   rpmtdFree(fileNames);
    return ret;
 }
 
