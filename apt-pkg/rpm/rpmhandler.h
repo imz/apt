@@ -67,6 +67,7 @@ class RPMHandler
    virtual string Maintainer() const = 0;
    virtual string Summary() const = 0;
    virtual string Description() const = 0;
+   virtual bool AutoInstalled() const = 0;
    virtual off_t InstalledSize() const = 0;
    virtual string SourceRpm() const = 0;
 
@@ -100,6 +101,7 @@ class RPMHdrHandler : public RPMHandler
    virtual string Maintainer() const override;
    virtual string Summary() const override {return GetSTag(RPMTAG_SUMMARY);}
    virtual string Description() const override {return GetSTag(RPMTAG_DESCRIPTION);}
+   virtual bool AutoInstalled() const override {return GetITag(RPMTAG_AUTOINSTALLED);}
    virtual off_t InstalledSize() const override {return GetITag(RPMTAG_SIZE);}
    virtual string SourceRpm() const override {return GetSTag(RPMTAG_SOURCERPM);}
 
