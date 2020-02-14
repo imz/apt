@@ -321,23 +321,7 @@ void rpmRecordParser::GetRec(const char *&Start,const char *&Stop)
        headerGetEntry(HeaderP, RPMTAG_VENDOR, &type, (void **)&str, &count);
    BufCatTag("\nMaintainer: ", str);
 
-   BufCat("\nVersion: ");
-   headerGetEntry(HeaderP, RPMTAG_VERSION, &type, (void **)&str, &count);
-   if (headerGetEntry(HeaderP, RPMTAG_EPOCH, &type, (void **)&numv, &count)==1)
-       snprintf(buf, sizeof(buf), "%" PRIu32 ":%s-", numv[0], str);
-   else
-       snprintf(buf, sizeof(buf), "%s-", str);
-   BufCat(buf);
-   headerGetEntry(HeaderP, RPMTAG_RELEASE, &type, (void **)&str, &count);
-   BufCat(str);
-   if (headerGetEntry(HeaderP, RPMTAG_DISTTAG, &type, (void **)&str, &count)==1) {
-       snprintf(buf, sizeof(buf), ":%s", str);
-       BufCat(buf);
-   }
-   if (headerGetEntry(HeaderP, RPMTAG_BUILDTIME, &type, (void **)&numv, &count)==1) {
-       snprintf(buf, sizeof(buf), "@%" PRIu32, numv[0]);
-       BufCat(buf);
-   }
+   BufCatTag("\nVersion: ", Handler->EVRDB().c_str());
 
 //   headerGetEntry(HeaderP, RPMTAG_DISTRIBUTION, &type, (void **)&str, &count);
 //   fprintf(f, "Distribution: %s\n", str);
