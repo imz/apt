@@ -428,8 +428,7 @@ void rpmRecordParser::GetRec(const char *&Start,const char *&Stop)
       }
    }
 
-   headerGetEntry(HeaderP, RPMTAG_ARCH, &type, (void **)&str, &count);
-   BufCatTag("\nArchitecture: ", str);
+   BufCatTag("\nArchitecture: ", Handler->Arch().c_str());
 
    snprintf(buf, sizeof(buf), "%llu", (unsigned long long) Handler->FileSize());
    BufCatTag("\nSize: ", buf);

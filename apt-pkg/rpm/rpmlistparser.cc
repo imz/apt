@@ -170,12 +170,7 @@ string rpmListParser::Architecture()
       return VI->Arch();
 #endif
 
-   rpm_tagtype_t type;
-   rpm_count_t count;
-   char *arch;
-   int res;
-   res = headerGetEntry(header, RPMTAG_ARCH, &type, (void **)&arch, &count);
-   return string(res?arch:"");
+   return Handler->Arch();
 }
                                                                         /*}}}*/
 
@@ -247,7 +242,7 @@ bool rpmListParser::NewVersion(pkgCache::VerIterator Ver)
 
    // Parse the section
    Ver->Section = UniqFindTagWrite(RPMTAG_GROUP);
-   Ver->Arch = UniqFindTagWrite(RPMTAG_ARCH);
+   Ver->Arch = WriteUniqString(Handler->Arch());
 
    // Archive Size
    Ver->Size = (unsigned long long)Handler->FileSize();
@@ -320,13 +315,13 @@ unsigned short rpmListParser::VersionHash()
    int Sections[] = {
 	  RPMTAG_VERSION,
 	  RPMTAG_RELEASE,
-	  RPMTAG_ARCH,
 	  RPMTAG_REQUIRENAME,
 	  RPMTAG_OBSOLETENAME,
 	  RPMTAG_CONFLICTNAME,
 	  0
    };
    unsigned long Result = INIT_FCS;
+   Result = AddCRC16(Result, Architecture());
 
    for (const int *sec = Sections; *sec != 0; sec++)
    {

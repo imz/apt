@@ -50,6 +50,7 @@ class RPMHandler
    virtual bool ProvideFileName() const {return false;}
 
    virtual string Name() const = 0;
+   virtual string Arch() const = 0;
 
    RPMHandler() : iOffset(0), iSize(0) {}
    virtual ~RPMHandler() {}
@@ -74,6 +75,7 @@ class RPMHdrHandler : public RPMHandler
    virtual string MD5Sum() const override {return "";}
 
    virtual string Name() const override {return GetSTag(RPMTAG_NAME);}
+   virtual string Arch() const override {return GetSTag(RPMTAG_ARCH);}
 
    RPMHdrHandler() : RPMHandler(), HeaderP(0) {}
    virtual ~RPMHdrHandler() {}
