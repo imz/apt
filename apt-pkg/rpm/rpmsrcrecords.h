@@ -18,7 +18,6 @@
 class rpmSrcRecordParser : public pkgSrcRecords::Parser
 {
    RPMHandler *Handler;
-   Header HeaderP;
 
    char *Buffer;
    unsigned int BufSize;

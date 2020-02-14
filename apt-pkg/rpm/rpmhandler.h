@@ -66,7 +66,6 @@ class RPMHandler
    virtual bool OrderedOffset() const {return true;}
    inline off_t Size() const {return iSize;}
    virtual bool IsDatabase() const {return false;}
-   virtual Header GetHeader() const = 0;
 
    virtual string FileName() const = 0;
    virtual string Directory() const = 0;
@@ -109,7 +108,6 @@ class RPMHdrHandler : public RPMHandler
 
    public:
 
-   virtual Header GetHeader() const override {return HeaderP;}
    virtual string FileName() const override {return "";}
    virtual string Directory() const override {return "";}
    virtual off_t FileSize() const override {return 1;}
