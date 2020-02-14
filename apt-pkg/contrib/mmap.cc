@@ -358,16 +358,20 @@ std::optional<unsigned long> DynamicMMap::Allocate(size_t const ItemSize)
 std::optional<unsigned long> DynamicMMap::WriteString(const char * const String,
 				       size_t const Len)
 {
-   unsigned long Result = iSize;
-   // Just in case error check
-   if ((Len == SIZE_MAX) || (Len + 1 > WorkSpace - Result))
+   // Very improbable.
+   // (Check: If std::string is always passed as arg, this never happens.)
+   if (Len == SIZE_MAX)
    {
-      _error->Error("Dynamic MMap ran out of room");
+      _error->Error("Dynamic MMap allocation error: string too long");
       return std::nullopt;
    }
 
-   iSize += Len + 1;
-   memcpy((char *)Base + Result,String,Len);
-   ((char *)Base)[Result + Len] = 0;
+   const auto Result = RawAllocate(Len+1,0);
+   if (Result)
+   {
+      char * const dest = static_cast<char *>(Base) + *Result;
+      memcpy(dest,String,Len);
+      dest[Len] = 0;
+   }
    return Result;
 }
