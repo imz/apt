@@ -114,42 +114,7 @@ string rpmRecordParser::ShortDesc()
 /* */
 string rpmRecordParser::LongDesc()
 {
-   char *str, *ret, *x, *y;
-   rpm_tagtype_t type;
-   rpm_count_t count;
-   int len;
-   assert(HeaderP != NULL);
-   int rc = headerGetEntry(HeaderP, RPMTAG_DESCRIPTION,
-			   &type, (void**)&str, &count);
-   if (rc != 1)
-      return "";
-
-   // Count size plus number of newlines
-   for (x = str, len = 0; *x; x++, len++)
-      if (*x == '\n')
-	 len++;
-
-   ret = (char*)malloc(len+1);
-   if (ret == NULL)
-      return "out of mem";
-
-   // Copy string, inserting a space after each newline
-   for (x = str, y = ret; *x; x++, y++)
-   {
-      *y = *x;
-      if (*x == '\n')
-	 *++y = ' ';
-   }
-   *y = 0;
-
-   // Remove spaces and newlines from end of string
-   for (y--; y > ret && (*y == ' ' || *y == '\n'); y--)
-      *y = 0;
-
-   string Ret = string(ret);
-   free(ret);
-
-   return Ret;
+   return Handler->Description();
 }
 									/*}}}*/
 // RecordParser::Changelog - Return package changelog if any		/*{{{*/
@@ -394,8 +359,7 @@ void rpmRecordParser::GetRec(const char *&Start,const char *&Stop)
 
    BufCatTag("\nDescription: ", Handler->Summary().c_str());
    BufCat("\n");
-   headerGetEntry(HeaderP, RPMTAG_DESCRIPTION, &type, (void **)&str, &count);
-   BufCatDescr(str);
+   BufCatDescr(Handler->Description().c_str());
 
    str = headerSprintf(HeaderP,
          "[* %{CHANGELOGTIME:day} %{CHANGELOGNAME}\n%{CHANGELOGTEXT}\n]",

@@ -337,8 +337,7 @@ string rpmSrcRecordParser::AsStr()
 
    BufCatTag("\nDescription: ", Handler->Summary().c_str());
    BufCat("\n");
-   headerGetEntry(HeaderP, RPMTAG_DESCRIPTION, &type, (void **)&str, &count);
-   BufCatDescr(str);
+   BufCatDescr(Handler->Description().c_str());
 
    str = headerSprintf(HeaderP,
          "[* %{CHANGELOGTIME:day} %{CHANGELOGNAME}\n%{CHANGELOGTEXT}\n]",
