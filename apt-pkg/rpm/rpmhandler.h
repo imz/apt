@@ -20,6 +20,16 @@
 
 #include "rapttypes.h"
 
+// Our Extra RPM tags. These should not be accessed directly. Use
+// the methods in RPMHandler instead.
+#define CRPMTAG_FILENAME          1000000
+#define CRPMTAG_FILESIZE          1000001
+#define CRPMTAG_MD5               1000005
+#define CRPMTAG_SHA1              1000006
+
+#define CRPMTAG_DIRECTORY         1000010
+#define CRPMTAG_BINARY            1000011
+
 class RPMHandler
 {
    protected:
@@ -106,10 +116,10 @@ class RPMFileHandler : public RPMHdrHandler
    virtual bool Jump(off_t Offset) override;
    virtual void Rewind() override;
 
-   virtual string FileName() const override;
-   virtual string Directory() const override;
-   virtual off_t FileSize() const override;
-   virtual string MD5Sum() const override;
+   virtual string FileName() const override {return GetSTag(CRPMTAG_FILENAME);}
+   virtual string Directory() const override {return GetSTag(CRPMTAG_DIRECTORY);}
+   virtual off_t FileSize() const override {return GetITag(CRPMTAG_FILESIZE);}
+   virtual string MD5Sum() const override {return GetSTag(CRPMTAG_MD5);}
 
    RPMFileHandler(FileFd *File);
    RPMFileHandler(string File);
@@ -193,21 +203,5 @@ class RPMDirHandler : public RPMHdrHandler
    RPMDirHandler(string DirName);
    virtual ~RPMDirHandler();
 };
-
-
-// Our Extra RPM tags. These should not be accessed directly. Use
-// the methods in RPMHandler instead.
-#define CRPMTAG_FILENAME          1000000
-#define CRPMTAG_FILESIZE          1000001
-#define CRPMTAG_MD5               1000005
-#define CRPMTAG_SHA1              1000006
-
-#define CRPMTAG_DIRECTORY         1000010
-#define CRPMTAG_BINARY            1000011
-
-#define CRPMTAG_UPDATE_SUMMARY    1000020
-#define CRPMTAG_UPDATE_IMPORTANCE 1000021
-#define CRPMTAG_UPDATE_DATE       1000022
-#define CRPMTAG_UPDATE_URL        1000023
 
 #endif
