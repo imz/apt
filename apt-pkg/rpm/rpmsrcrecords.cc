@@ -277,26 +277,14 @@ void rpmSrcRecordParser::BufCatDep(const char *pkg,
    BufCat(pkg);
    if (*version)
    {
-      int c = 0;
       *ptr++ = ' ';
       *ptr++ = '(';
       if (flags & RPMSENSE_LESS)
-      {
 	 *ptr++ = '<';
-	 c = '<';
-      }
       if (flags & RPMSENSE_GREATER)
-      {
 	 *ptr++ = '>';
-	 c = '>';
-      }
       if (flags & RPMSENSE_EQUAL)
-      {
 	 *ptr++ = '=';
-      }/* else {
-	 if (c)
-	   fputc(c, f);
-      }*/
       *ptr++ = ' ';
       *ptr = '\0';
 
