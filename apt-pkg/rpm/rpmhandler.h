@@ -60,6 +60,9 @@ class RPMHdrHandler : public RPMHandler
 
    Header HeaderP;
 
+   string GetSTag(raptTag Tag) const;
+   off_t GetITag(raptTag Tag) const;
+
    public:
 
    virtual Header GetHeader() const override {return HeaderP;}

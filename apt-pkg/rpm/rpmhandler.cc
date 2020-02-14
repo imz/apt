@@ -24,11 +24,30 @@
 
 #include "rpmhandler.h"
 #include "rpmpackagedata.h"
+#include "raptheader.h"
 
 #include <apti18n.h>
 
 #include <rpm/rpmts.h>
 #include <rpm/rpmdb.h>
+
+off_t RPMHdrHandler::GetITag(raptTag Tag) const
+{
+   raptInt val = 0;
+   raptHeader h(HeaderP);
+
+   h.getTag(Tag, val);
+   return val;
+}
+
+string RPMHdrHandler::GetSTag(raptTag Tag) const
+{
+   string str = "";
+   raptHeader h(HeaderP);
+
+   h.getTag(Tag, str);
+   return str;
+}
 
 RPMFileHandler::RPMFileHandler(string File)
 {
