@@ -149,13 +149,14 @@ static int send_reply(int sock, char *buf, ssize_t bufsize, int fd)
 
 	/* send last reply later */
 	if (!ac)
-		write(sock, &i, sizeof(int));
+		if (write(sock, &i, sizeof(i)) != sizeof(i))
+			return -1;
 
 	return(ac);
 }
 
 static int mainloop(int servsock) {
-	int cl;
+	int cl = -1;
 	int done = 0;
 	char buf[65536];
 
@@ -172,8 +173,10 @@ static int mainloop(int servsock) {
 		set_sighandler(SA_RESTART);
 		if ((received = recv_query(cl, buf, sizeof(buf), &fd)) > 0 && fd != -1)
 			done = send_reply(cl, buf, received, fd);
-		if (!done)
+		if (!done) {
 			close(cl);
+			cl = -1;
+		}
 	}
 
 	close(servsock);
@@ -196,7 +199,7 @@ static int daemonize()
 		/* parent */
 		close(fds[1]);
 		/* get child's status */
-		if (read(fds[0], &i, (sizeof(int))) != sizeof(int))
+		if (read(fds[0], &i, (sizeof(i))) != sizeof(i))
 			return -1;
 		return i;
 	}
@@ -204,7 +207,8 @@ static int daemonize()
 	/* child */
 	close(fds[0]);
 	setsid();
-	chdir("/");
+	if (chdir("/"))
+		exit(1);
 	while (fds[1] <= 2) {
 		fds[1] = dup(fds[1]);
 		if (fds[1] < 0)
@@ -245,7 +249,8 @@ static int daemonize()
 
 	/* we're still alive, notify parent */
 	i = 0;
-	write(fds[1], &i, sizeof(int));
+	if (write(fds[1], &i, sizeof(i)) != sizeof(i))
+		exit(1);
 	close(fds[1]);
 
 	/* enter main loop */
@@ -254,8 +259,9 @@ static int daemonize()
 	/* cleanup */
 	aptpipe_fini();
 	unlink(APT_PIPE_PATH);
-	if (fd)
-		write(fd, &i, sizeof(int));
+	if (fd >= 0)
+		if (write(fd, &i, sizeof(i)) != sizeof(i))
+			exit(1);
 	exit(EXIT_SUCCESS);
 }
 
@@ -352,7 +358,7 @@ static int recv_reply(int fd)
 {
 	int i;
 
-	if (read(fd, &i, (sizeof(int))) != sizeof(int))
+	if (read(fd, &i, (sizeof(i))) != sizeof(i))
 		return -1;
 	return i;
 }
