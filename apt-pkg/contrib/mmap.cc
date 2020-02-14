@@ -33,6 +33,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <cstring>
+#include <type_traits>
 									/*}}}*/
 
 // MMap::MMap - Constructor						/*{{{*/
@@ -66,7 +67,22 @@ MMap::~MMap()
 /* */
 bool MMap::Map(FileFd &Fd)
 {
-   iSize = Fd.Size();
+   /* Invalidate all fields so that they are not valid in case of failure. */
+   Base = nullptr;
+   iSize = 0;
+
+   auto const EndOfFile = Fd.Size();
+
+   // Check that the file size is in the range of size_t.
+   static_assert(std::is_unsigned<decltype(EndOfFile)>(),
+                 "we want to rely that Fd::Size() is unsigned");
+   if (EndOfFile > SIZE_MAX)
+      return _error->Error(_("File of %ju bytes is too large for mmap(2)"),
+                           static_cast<uintmax_t>(EndOfFile));
+   // After the check above, -Wconversion and -Wsign-conversion warnings here
+   // would be false, therefore we use static_cast below to suppress them.
+   if (EndOfFile == 0)
+      return _error->Error(_("Can't mmap an empty file"));
 
    // Set the permissions.
    int Prot = PROT_READ;
@@ -76,14 +92,13 @@ bool MMap::Map(FileFd &Fd)
    if ((Flags & Public) != Public)
       Map = MAP_PRIVATE;
 
-   if (iSize == 0)
-      return _error->Error(_("Can't mmap an empty file"));
-
    // Map it.
-   Base = mmap(0,iSize,Prot,Map,Fd.Fd(),0);
+   Base = mmap(0,static_cast<size_t>(EndOfFile),Prot,Map,Fd.Fd(),0);
    if (Base == (void *)-1)
-      return _error->Errno("mmap",_("Couldn't make mmap of %lu bytes"),iSize);
+      return _error->Errno("mmap",_("Couldn't make mmap of %zu bytes"),
+                           static_cast<size_t>(EndOfFile));
 
+   iSize = static_cast<size_t>(EndOfFile);
    return true;
 }
 									/*}}}*/
@@ -146,10 +161,10 @@ bool MMap::Sync(unsigned long const Start,unsigned long const Stop)
 /* */
 DynamicMMap::DynamicMMap(FileFd &F,
                          unsigned long const Flags,
-                         unsigned long const RequestedWorkSpace) :
+                         size_t const RequestedWorkSpace) :
    MMap(F,Flags | NoImmMap), /* NoImmMap to invoke MMap::Map() ourselves */
    Fd(&F),
-   WorkSpace(RequestedWorkSpace)
+   WorkSpace(0) // invalidate before all the structure is set up
 {
    if (_error->PendingError() == true)
       return;
@@ -173,37 +188,47 @@ DynamicMMap::DynamicMMap(FileFd &F,
       the size of the whole mmap'ed region already at the end of work.
 
       DynamicMMap::WorkSpace is the size of the whole region available
-      for new allocations and holding already allocated stuff.
+      for new allocations and holding already allocated stuff. So, in
+      this constructor, we must make WorkSpace at least as big as the
+      already allocated and saved stuff in the file initially
+      and at least as big as RequestedWorkSpace.
    */
 
-   auto EndOfFile = Fd->Size();
-   if (EndOfFile > WorkSpace)
-      /* The already allocated and saved stuff exceeds the requested workspace,
-         so workspace must be increased.
-      */
-      WorkSpace = EndOfFile;
-   else if (EndOfFile < WorkSpace)
+   auto const EndOfFile = Fd->Size();
+
+   /* The backing file must be made at least as big as the requested workspace
+      that we are going to use in the course of work.
+   */
+   if (EndOfFile < RequestedWorkSpace)
    {
-      /* The backing file must be made at least as big as the workspace
-         that we are going to use in the course of work.
-      */
-      if (!Fd->Truncate(WorkSpace))
+      if (!Fd->Truncate(RequestedWorkSpace))
          return;
    }
 
-   Map(F); /* sets iSize to the size of the whole, possibly extended file */
+   if (!Map(F))
+      return;
+
+   /* Map(F) has set iSize to the size of the whole, possibly extended file */
+
+   WorkSpace = iSize;
 
    /* Now decrease iSize back to only the already allocated stuff
       (that which has been saved in the file before extension)
       -- to satisfy the expectations of DynamicMMap methods.
+
+      Note that at this moment Map(F) has ensured the file size fits size_t.
+      (This note applies to the current size of the extended file as well as
+      the initial size EndOfFile.)
    */
-   iSize = EndOfFile;
+   static_assert(std::is_unsigned<decltype(EndOfFile)>(),
+                 "we want to rely that Fd::Size() is unsigned");
+   iSize = static_cast<size_t>(EndOfFile);
 }
 									/*}}}*/
 // DynamicMMap::DynamicMMap - Constructor for a non-file backed map	/*{{{*/
 // ---------------------------------------------------------------------
 /* This is just a fancy malloc really.. */
-DynamicMMap::DynamicMMap(unsigned long const Flags,unsigned long const WorkSpace) :
+DynamicMMap::DynamicMMap(unsigned long const Flags,size_t const WorkSpace) :
              MMap(Flags | NoImmMap | UnMapped), Fd(0), WorkSpace(WorkSpace)
 {
    if (_error->PendingError() == true)
@@ -225,7 +250,7 @@ DynamicMMap::~DynamicMMap()
       return;
    }
 
-   unsigned long EndOfFile = iSize;
+   size_t const EndOfFile = iSize;
 
    /* Prepare for Close(): iSize determines the region to be munmap'ed and
       therefore needs to be set to the whole file-backed workspace.
