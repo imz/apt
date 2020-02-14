@@ -65,6 +65,7 @@ class RPMHandler
    virtual string EVRDB() const = 0;
    virtual string Group() const = 0;
    virtual string Maintainer() const = 0;
+   virtual string Summary() const = 0;
    virtual off_t InstalledSize() const = 0;
    virtual string SourceRpm() const = 0;
 
@@ -96,6 +97,7 @@ class RPMHdrHandler : public RPMHandler
    virtual string EVRDB() const override;
    virtual string Group() const override {return GetSTag(RPMTAG_GROUP);}
    virtual string Maintainer() const override;
+   virtual string Summary() const override {return GetSTag(RPMTAG_SUMMARY);}
    virtual off_t InstalledSize() const override {return GetITag(RPMTAG_SIZE);}
    virtual string SourceRpm() const override {return GetSTag(RPMTAG_SOURCERPM);}
 

@@ -335,8 +335,7 @@ string rpmSrcRecordParser::AsStr()
 
    BufCatTag("\nFilename: ", Handler->FileName().c_str());
 
-   headerGetEntry(HeaderP, RPMTAG_SUMMARY, &type, (void **)&str, &count);
-   BufCatTag("\nDescription: ", str);
+   BufCatTag("\nDescription: ", Handler->Summary().c_str());
    BufCat("\n");
    headerGetEntry(HeaderP, RPMTAG_DESCRIPTION, &type, (void **)&str, &count);
    BufCatDescr(str);
