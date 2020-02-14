@@ -301,21 +301,15 @@ const char *getFileSigner(const char *file, const char *sigfile,
 
 bool makeTmpDir(string dir, string &path)
 {
-   char *buf;
+   path = dir + "/apt-gpg.XXXXXX";
+   /*
+    * Since C++11, path[path.size()] == '\0', hence
+    * the array returned by &path[0] is null-terminated.
+    */
+   if (mkdtemp(&path[0]))
+      return true;
 
-   path = dir+"/apt-gpg.XXXXXX";
-   buf = new char[path.length()+1];
-   if (buf == NULL)
-      return _error->Error(_("Could not allocate memory"));
-   strcpy(buf, path.c_str());
-
-   if (mkdtemp(buf) == NULL)
-      return _error->Errno("mkdtemp", _("Could not create temporary directory"));
-   path = buf;
-
-   delete [] buf;
-
-   return true;
+   return _error->Errno("mkdtemp", _("Could not create temporary directory"));
 }
 
 
