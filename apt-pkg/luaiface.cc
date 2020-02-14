@@ -74,7 +74,7 @@ static int AptLua_pkgcomp(lua_State *L);
 #define CACHE_KEY "ChunkCache"
 
 Lua::Lua()
-      : DepCache(0), Cache(0), CacheControl(0), Fix(0), DontFix(0)
+      : Cache(0), DepCache(0), CacheControl(0), Fix(0), DontFix(0)
 {
    _config->CndSet("Dir::Bin::scripts", "/usr/share/apt/scripts");
 
@@ -357,7 +357,7 @@ void Lua::SetGlobal(const char *Name, vector<const char *> &Value,
 		    int Total)
 {
    lua_newtable(L);
-   if (Total == -1 || Total > Value.size())
+   if (Total == -1 || (unsigned int) Total > Value.size())
       Total = Value.size();
    for (int i=0; i != Total && Value[i] != NULL; i++) {
       lua_pushstring(L, Value[i]);
@@ -371,7 +371,7 @@ void Lua::SetGlobal(const char *Name, vector<string> &Value,
 		    int Total)
 {
    lua_newtable(L);
-   if (Total == -1 || Total > Value.size())
+   if (Total == -1 || (unsigned int) Total > Value.size())
       Total = Value.size();
    for (int i=0; i != Total; i++) {
       lua_pushstring(L, Value[i].c_str());
@@ -385,7 +385,7 @@ void Lua::SetGlobal(const char *Name, const std::vector<apt_item> &Value, int To
 {
    lua_newtable(L);
 
-   if ((Total < 0) || (Total > Value.size()))
+   if ((Total < 0) || ((unsigned int) Total > Value.size()))
    {
       Total = Value.size();
    }
@@ -404,7 +404,7 @@ void Lua::SetGlobal(const char *Name, vector<pkgCache::Package*> &Value,
 		    int Total)
 {
    lua_newtable(L);
-   if (Total == -1 || Total > Value.size())
+   if (Total == -1 || (unsigned int) Total > Value.size())
       Total = Value.size();
    for (int i=0; i != Total && Value[i] != NULL; i++) {
       pushudata(pkgCache::Package*, Value[i]);
@@ -1153,19 +1153,9 @@ static int AptLua_markremove(lua_State *L)
    return AptAux_mark(L, MARK_REMOVE);
 }
 
-static int AptLua_marksimplekeep(lua_State *L)
-{
-   return AptAux_marksimple(L, MARK_KEEP);
-}
-
 static int AptLua_marksimpleinstall(lua_State *L)
 {
    return AptAux_marksimple(L, MARK_INSTALL);
-}
-
-static int AptLua_marksimpleremove(lua_State *L)
-{
-   return AptAux_marksimple(L, MARK_REMOVE);
 }
 
 static int AptLua_markdistupgrade(lua_State *L)
