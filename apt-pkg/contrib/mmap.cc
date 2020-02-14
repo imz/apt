@@ -176,20 +176,19 @@ DynamicMMap::DynamicMMap(FileFd &F,
       for new allocations and holding already allocated stuff.
    */
 
-   unsigned long EndOfFile = Fd->Size();
+   auto EndOfFile = Fd->Size();
    if (EndOfFile > WorkSpace)
       /* The already allocated and saved stuff exceeds the requested workspace,
          so workspace must be increased.
       */
       WorkSpace = EndOfFile;
-   else
+   else if (EndOfFile < WorkSpace)
    {
       /* The backing file must be made at least as big as the workspace
          that we are going to use in the course of work.
       */
-      Fd->Seek(WorkSpace);
-      char C = 0;
-      Fd->Write(&C,sizeof(C));
+      if (!Fd->Truncate(WorkSpace))
+         return;
    }
 
    Map(F); /* sets iSize to the size of the whole, possibly extended file */
