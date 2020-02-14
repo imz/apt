@@ -62,33 +62,6 @@ rpmListParser::~rpmListParser()
    delete SeenPackages;
 }
 
-// ListParser::UniqFindTagWrite - Find the tag and write a unq string	/*{{{*/
-// ---------------------------------------------------------------------
-/* */
-unsigned long rpmListParser::UniqFindTagWrite(int Tag)
-{
-   char *Start;
-   char *Stop;
-   rpm_tagtype_t type;
-   rpm_count_t count;
-   void *data;
-
-   if (headerGetEntry(header, Tag, &type, &data, &count) != 1)
-      return 0;
-
-   if (type == RPM_STRING_TYPE)
-   {
-      Start = (char*)data;
-      Stop = Start + strlen(Start);
-   } else {
-      cout << "oh shit, not handled:"<<type<<" Package:"<<Package()<<endl;
-      abort();
-   }
-
-   return WriteUniqString(Start,Stop - Start);
-}
-
-                                                                        /*}}}*/
 // ListParser::Package - Return the package name			/*{{{*/
 // ---------------------------------------------------------------------
 /* This is to return the name of the package this section describes */
