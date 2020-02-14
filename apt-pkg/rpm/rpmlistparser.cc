@@ -43,7 +43,6 @@ rpmListParser::rpmListParser(RPMHandler *Handler)
 	: Handler(Handler), VI(0)
 {
    Handler->Rewind();
-   header = NULL;
    if (Handler->IsDatabase() == true)
    {
       SeenPackages = new SeenPackagesType;
@@ -380,7 +379,6 @@ bool rpmListParser::Step()
 {
    while (Handler->Skip() == true)
    {
-      header = Handler->GetHeader();
       CurrentName = "";
 
 #ifdef WITH_VERSION_CACHING
@@ -400,7 +398,6 @@ bool rpmListParser::Step()
 	  RpmData->ArchScore(Architecture()) > 0)
 	 return true;
    }
-   header = NULL;
    return false;
 }
                                                                         /*}}}*/
