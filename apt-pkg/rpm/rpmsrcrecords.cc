@@ -151,12 +151,7 @@ string rpmSrcRecordParser::Version() const
 /* */
 string rpmSrcRecordParser::Maintainer() const
 {
-   char *str;
-   rpm_tagtype_t type;
-   rpm_count_t count;
-   int rc = headerGetEntry(HeaderP, RPMTAG_PACKAGER,
-			   &type, (void**)&str, &count);
-   return string(rc?str:"");
+   return Handler->Maintainer();
 }
 
 string rpmSrcRecordParser::Section() const
@@ -296,11 +291,7 @@ string rpmSrcRecordParser::AsStr()
    snprintf(buf, sizeof(buf), "%d", numv[0]);
    BufCatTag("\nInstalled Size: ", buf);
 
-   str = NULL;
-   headerGetEntry(HeaderP, RPMTAG_PACKAGER, &type, (void **)&str, &count);
-   if (!str)
-       headerGetEntry(HeaderP, RPMTAG_VENDOR, &type, (void **)&str, &count);
-   BufCatTag("\nMaintainer: ", str);
+   BufCatTag("\nMaintainer: ", Handler->Maintainer().c_str());
 
    BufCatTag("\nVersion: ", Handler->EVRDB().c_str());
 
