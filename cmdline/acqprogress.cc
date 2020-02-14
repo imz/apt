@@ -275,7 +275,7 @@ bool AcqTextStatus::MediaChange(string Media,string Drive)
    ioprintf(cout,_("Media Change: Please insert the media labeled\n"
 		   " '%s'\n"
 		   "and press enter\n"),
-	    Media.c_str(),Drive.c_str());
+	    Media.c_str());
    if (_config->FindB("simple-output"))
 	cout << "apt-get:media-change:" << Drive << ":" << Media << std::endl;
 
