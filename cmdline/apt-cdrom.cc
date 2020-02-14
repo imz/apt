@@ -536,8 +536,7 @@ void Prompt(const char *Text)
 {
    char C;
    cout << Text << ' ' << flush;
-   read(STDIN_FILENO,&C,1);
-   if (C != '\n')
+   if (read(STDIN_FILENO,&C,sizeof(C)) != sizeof(C) || C != '\n')
       cout << endl;
 }
 									/*}}}*/
@@ -636,7 +635,8 @@ bool DoAdd(CommandLine &)
       return false;
    }
 
-   chdir(StartDir.c_str());
+   if (chdir(StartDir.c_str()) != 0)
+      return _error->Errno("chdir","Unable to change to %s",StartDir.c_str());
 
    if (_config->FindB("Debug::aptcdrom",false) == true)
    {
