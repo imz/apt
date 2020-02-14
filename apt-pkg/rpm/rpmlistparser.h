@@ -40,7 +40,6 @@ class rpmListParser : public pkgCacheGenerator::ListParser
 
    bool Duplicated;
 
-   unsigned long UniqFindTagWrite(int Tag);
    bool ParseStatus(pkgCache::PkgIterator Pkg,pkgCache::VerIterator Ver);
    bool ParseDepends(pkgCache::VerIterator Ver,
 		     char **namel, char **verl, int32_t *flagl,
