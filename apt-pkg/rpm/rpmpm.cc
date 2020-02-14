@@ -555,7 +555,7 @@ bool pkgRPMExtPM::ExecRPM(Item::RPMOps op, const std::vector<apt_item> &files)
     {
 	if (!cmd.empty())
 	    cmd += ' ';
-	    cmd += Args[i];
+	cmd += Args[i];
     }
 
    bool FilesInArgs = true;
@@ -844,7 +844,7 @@ bool pkgRPMLibPM::Process(const std::vector<apt_item> &install,
    rpmReadConfigFiles(NULL, NULL);
 
    int probFilter = 0;
-   int notifyFlags = 0;
+   unsigned int notifyFlags = 0;
    int tsFlags = 0;
 
    if (uninstall.empty() == false)
@@ -1006,11 +1006,13 @@ bool pkgRPMLibPM::Process(const std::vector<apt_item> &install,
    probFilter |= rpmtsFilterFlags(TS);
    rpmtsSetFlags(TS, (rpmtransFlags)(rpmtsFlags(TS) | tsFlags));
    rpmtsClean(TS);
-   rc = rpmtsSetNotifyCallback(TS, rpmShowProgress, (void *)notifyFlags);
+   rc = rpmtsSetNotifyCallback(TS, rpmShowProgress,
+                               (void *) (unsigned long) notifyFlags);
    rc = rpmtsRun(TS, NULL, (rpmprobFilterFlags)probFilter);
    probs = rpmtsProblems(TS);
 #else
-   rc = rpmRunTransactions(TS, rpmShowProgress, (void *)notifyFlags, NULL,
+   rc = rpmRunTransactions(TS, rpmShowProgress,
+                           (void *) (unsigned long) notifyFlags, NULL,
                            &probs, (rpmtransFlags)tsFlags,
 			   (rpmprobFilterFlags)probFilter);
 #endif
