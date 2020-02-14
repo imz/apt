@@ -74,6 +74,19 @@ string RPMHdrHandler::EVRDB() const
    return res.str();
 }
 
+string RPMHdrHandler::Maintainer() const
+{
+   string str;
+   raptHeader h(HeaderP);
+
+   if (h.getTag(RPMTAG_PACKAGER, str))
+      return str;
+   if (h.getTag(RPMTAG_VENDOR, str))
+      return str;
+
+   return string("");
+}
+
 RPMFileHandler::RPMFileHandler(string File)
 {
    ID = File;

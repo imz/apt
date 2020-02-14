@@ -54,6 +54,7 @@ class RPMHandler
    virtual string Version() const = 0;
    virtual string EVRDB() const = 0;
    virtual string Group() const = 0;
+   virtual string Maintainer() const = 0;
 
    RPMHandler() : iOffset(0), iSize(0) {}
    virtual ~RPMHandler() {}
@@ -82,6 +83,7 @@ class RPMHdrHandler : public RPMHandler
    virtual string Version() const override {return GetSTag(RPMTAG_VERSION);}
    virtual string EVRDB() const override;
    virtual string Group() const override {return GetSTag(RPMTAG_GROUP);}
+   virtual string Maintainer() const override;
 
    RPMHdrHandler() : RPMHandler(), HeaderP(0) {}
    virtual ~RPMHdrHandler() {}
