@@ -40,7 +40,7 @@
 // ---------------------------------------------------------------------
 /* */
 MMap::MMap(FileFd &F,unsigned long const Flags) : Flags(Flags), iSize(0),
-                     Base(0)
+                     Base(nullptr)
 {
    if ((Flags & NoImmMap) != NoImmMap)
       Map(F);
@@ -50,7 +50,7 @@ MMap::MMap(FileFd &F,unsigned long const Flags) : Flags(Flags), iSize(0),
 // ---------------------------------------------------------------------
 /* */
 MMap::MMap(unsigned long const Flags) : Flags(Flags), iSize(0),
-                     Base(0)
+                     Base(nullptr)
 {
 }
 									/*}}}*/
@@ -94,7 +94,7 @@ bool MMap::Map(FileFd &Fd)
 
    // Map it.
    Base = mmap(0,static_cast<size_t>(EndOfFile),Prot,Map,Fd.Fd(),0);
-   if (Base == (void *)-1)
+   if (Base == (void *)MAP_FAILED)
       return _error->Errno("mmap",_("Couldn't make mmap of %zu bytes"),
                            static_cast<size_t>(EndOfFile));
 
