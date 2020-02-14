@@ -38,6 +38,8 @@
 // for distrover
 #include <rpmdb.h>
 
+#include "rapttypes.h"
+
 extern int _rpmds_nopromote;
 
 rpmSystem rpmSys;
@@ -286,7 +288,7 @@ string rpmSystem::DistroVer(Configuration const &Cnf)
       return DistroVersion;
 
    rpmdbMatchIterator iter;
-   iter = rpmtsInitIterator(ts, (rpmTag)RPMDBI_LABEL, DistroVerPkg.c_str(), 0);
+   iter = raptInitIterator(ts, RPMDBI_LABEL, DistroVerPkg.c_str(), 0);
    Header hdr;
    while ((hdr = rpmdbNextIterator(iter)) != NULL) {
       void *version;

@@ -22,6 +22,8 @@
 #include <rpm/rpmlib.h>
 #include <rpm/rpmmacro.h>
 
+#include "rapttypes.h"
+
 class RPMHandler
 {
    protected:
