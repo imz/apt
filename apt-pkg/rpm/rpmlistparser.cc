@@ -196,10 +196,6 @@ string rpmListParser::Version()
 /* */
 bool rpmListParser::NewVersion(pkgCache::VerIterator Ver)
 {
-   rpm_tagtype_t type;
-   rpm_count_t count;
-   int32_t *num;
-
 #if WITH_VERSION_CACHING
    // Cache it for future usage.
    RpmData->SetVersion(Handler->GetID(), Offset(), Ver);
@@ -213,8 +209,7 @@ bool rpmListParser::NewVersion(pkgCache::VerIterator Ver)
    Ver->Size = (unsigned long long)Handler->FileSize();
 
    // Unpacked Size (in kbytes)
-   headerGetEntry(header, RPMTAG_SIZE, &type, (void**)&num, &count);
-   Ver->InstalledSize = (unsigned long long)num[0];
+   Ver->InstalledSize = Handler->InstalledSize();
 
    if (ParseDepends(Ver,pkgCache::Dep::Depends) == false)
        return false;
@@ -630,12 +625,7 @@ bool rpmListParser::LoadReleaseInfo(pkgCache::PkgFileIterator FileI,
 
 unsigned long rpmListParser::Size()
 {
-   uint32_t *size;
-   rpm_tagtype_t type;
-   rpm_count_t count;
-   if (headerGetEntry(header, RPMTAG_SIZE, &type, (void **)&size, &count)!=1)
-       return 1;
-   return (size[0]+512)/1024;
+   return (Handler->InstalledSize() + 512) / 1024;
 }
 
 unsigned long rpmListParser::Flags()
