@@ -154,14 +154,13 @@ DynamicMMap::DynamicMMap(FileFd &F,unsigned long Flags,unsigned long WorkSpace) 
    if (_error->PendingError() == true)
       return;
 
-   unsigned long EndOfFile = Fd->Size();
-   if (EndOfFile > WorkSpace)
+   auto EndOfFile = Fd->Size();
+   if (WorkSpace < EndOfFile)
       WorkSpace = EndOfFile;
-   else
+   else if (WorkSpace > EndOfFile)
    {
-      Fd->Seek(WorkSpace);
-      char C = 0;
-      Fd->Write(&C,sizeof(C));
+      if (!Fd->Truncate(WorkSpace))
+	 return;
    }
 
    Map(F);
