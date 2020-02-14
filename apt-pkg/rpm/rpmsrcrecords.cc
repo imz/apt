@@ -142,40 +142,7 @@ string rpmSrcRecordParser::Package() const
 
 string rpmSrcRecordParser::Version() const
 {
-   char *version, *release;
-   int32_t *epoch;
-   rpm_tagtype_t type;
-   rpm_count_t count;
-   int rc;
-
-   rc = headerGetEntry(HeaderP, RPMTAG_VERSION,
-		       &type, (void **)&version, &count);
-   if (rc != 1)
-   {
-      _error->Error(_("error parsing source list %s"), "(RPMTAG_VERSION)");
-      return "";
-   }
-   rc = headerGetEntry(HeaderP, RPMTAG_RELEASE,
-		       &type, (void **)&release, &count);
-   if (rc != 1)
-   {
-      _error->Error(_("error parsing source list %s"), "(RPMTAG_RELEASE)");
-      return "";
-   }
-
-   rc = headerGetEntry(HeaderP, RPMTAG_EPOCH,
-			   &type, (void **)&epoch, &count);
-   string ret;
-   if (rc == 1 && count > 0)
-   {
-      char buf[32];
-      sprintf(buf, "%i", *epoch);
-      ret = string(buf)+":"+string(version)+"-"+string(release);
-   }
-   else
-      ret = string(version)+"-"+string(release);
-
-   return ret;
+   return Handler->EVRDB();
 }
 
 
@@ -341,15 +308,7 @@ string rpmSrcRecordParser::AsStr()
        headerGetEntry(HeaderP, RPMTAG_VENDOR, &type, (void **)&str, &count);
    BufCatTag("\nMaintainer: ", str);
 
-   BufCat("\nVersion: ");
-   headerGetEntry(HeaderP, RPMTAG_VERSION, &type, (void **)&str, &count);
-   if (headerGetEntry(HeaderP, RPMTAG_EPOCH, &type, (void **)&numv, &count)==1)
-       snprintf(buf, sizeof(buf), "%i:%s-", numv[0], str);
-   else
-       snprintf(buf, sizeof(buf), "%s-", str);
-   BufCat(buf);
-   headerGetEntry(HeaderP, RPMTAG_RELEASE, &type, (void **)&str, &count);
-   BufCat(str);
+   BufCatTag("\nVersion: ", Handler->EVRDB().c_str());
 
    headerGetEntry(HeaderP, RPMTAG_REQUIRENAME, &type, (void **)&strv, &count);
    assert(type == RPM_STRING_ARRAY_TYPE || count == 0);

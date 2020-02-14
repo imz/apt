@@ -17,6 +17,7 @@
 #include <utime.h>
 #include <unistd.h>
 #include <assert.h>
+#include <sstream>
 
 #include <apt-pkg/error.h>
 #include <apt-pkg/configuration.h>
@@ -47,6 +48,30 @@ string RPMHdrHandler::GetSTag(raptTag Tag) const
 
    h.getTag(Tag, str);
    return str;
+}
+
+string RPMHdrHandler::EVRDB() const
+{
+   string str;
+   raptInt val;
+   ostringstream res;
+   raptHeader h(HeaderP);
+
+   if (h.getTag(RPMTAG_EPOCH, val))
+      res << val << ":";
+
+   res << Version() << '-';
+
+   if (h.getTag(RPMTAG_RELEASE, str))
+      res << str;
+
+   if (h.getTag(RPMTAG_DISTTAG, str))
+      res << ":" << str;
+
+   if (h.getTag(RPMTAG_BUILDTIME, val))
+      res << "@" << val;
+
+   return res.str();
 }
 
 RPMFileHandler::RPMFileHandler(string File)
