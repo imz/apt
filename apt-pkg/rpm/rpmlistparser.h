@@ -30,7 +30,6 @@ class rpmListParser : public pkgCacheGenerator::ListParser
 {
    RPMHandler *Handler;
    RPMPackageData *RpmData;
-   Header header;
 
    string CurrentName;
    const pkgCache::VerIterator *VI;

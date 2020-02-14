@@ -30,7 +30,7 @@
 // ---------------------------------------------------------------------
 /* */
 rpmSrcRecordParser::rpmSrcRecordParser(string File,pkgIndexFile const *Index)
-    : Parser(Index), HeaderP(0), Buffer(0), BufSize(0), BufUsed(0)
+    : Parser(Index), Buffer(0), BufSize(0), BufUsed(0)
 {
    struct stat Buf;
    if (stat(File.c_str(),&Buf) == 0 && S_ISDIR(Buf.st_mode))
@@ -67,8 +67,6 @@ const char **rpmSrcRecordParser::Binaries()
    a complete source package */
 bool rpmSrcRecordParser::Files(vector<pkgSrcRecords::File> &List)
 {
-   assert(HeaderP != NULL);
-
    List.clear();
 
    pkgSrcRecords::File F;
@@ -92,18 +90,12 @@ bool rpmSrcRecordParser::Restart()
 
 bool rpmSrcRecordParser::Step()
 {
-   if (Handler->Skip() == false)
-       return false;
-   HeaderP = Handler->GetHeader();
-   return true;
+   return Handler->Skip();
 }
 
 bool rpmSrcRecordParser::Jump(off_t Off)
 {
-   if (!Handler->Jump(Off))
-       return false;
-   HeaderP = Handler->GetHeader();
-   return true;
+   return Handler->Jump(Off);
 }
 
 // RecordParser::FileName - Return the archive filename on the site	/*{{{*/
