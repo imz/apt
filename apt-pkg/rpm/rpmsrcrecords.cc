@@ -112,13 +112,7 @@ bool rpmSrcRecordParser::Jump(off_t Off)
 /* */
 string rpmSrcRecordParser::FileName() const
 {
-   char *str;
-   rpm_tagtype_t type;
-   rpm_count_t count;
-   assert(HeaderP != NULL);
-   int rc = headerGetEntry(HeaderP, CRPMTAG_FILENAME,
-			   &type, (void**)&str, &count);
-   return string(rc?str:"");
+   return Handler->FileName();
 }
 									/*}}}*/
 
@@ -264,7 +258,6 @@ string rpmSrcRecordParser::AsStr()
    char *str;
    char **strv;
    char **strv2;
-   int num;
    int32_t *numv;
    char buf[32];
 
@@ -335,15 +328,12 @@ string rpmSrcRecordParser::AsStr()
       }
    }
 
-   headerGetEntry(HeaderP, CRPMTAG_FILESIZE, &type, (void **)&num, &count);
-   snprintf(buf, sizeof(buf), "%d", num);
+   snprintf(buf, sizeof(buf), "%llu", (unsigned long long) Handler->FileSize());
    BufCatTag("\nSize: ", buf);
 
-   headerGetEntry(HeaderP, CRPMTAG_MD5, &type, (void **)&str, &count);
-   BufCatTag("\nMD5Sum: ", str);
+   BufCatTag("\nMD5Sum: ", Handler->MD5Sum().c_str());
 
-   headerGetEntry(HeaderP, CRPMTAG_FILENAME, &type, (void **)&str, &count);
-   BufCatTag("\nFilename: ", str);
+   BufCatTag("\nFilename: ", Handler->FileName().c_str());
 
    headerGetEntry(HeaderP, RPMTAG_SUMMARY, &type, (void **)&str, &count);
    BufCatTag("\nDescription: ", str);
