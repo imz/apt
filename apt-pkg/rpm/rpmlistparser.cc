@@ -206,7 +206,7 @@ bool rpmListParser::NewVersion(pkgCache::VerIterator Ver)
 #endif
 
    // Parse the section
-   Ver->Section = UniqFindTagWrite(RPMTAG_GROUP);
+   Ver->Section = WriteUniqString(Handler->Group());
    Ver->Arch = WriteUniqString(Handler->Arch());
 
    // Archive Size
@@ -244,7 +244,7 @@ bool rpmListParser::UsePackage(pkgCache::PkgIterator Pkg,
    if (SeenPackages != NULL)
       SeenPackages->insert(PkgName);
    if (Pkg->Section == 0)
-      Pkg->Section = UniqFindTagWrite(RPMTAG_GROUP);
+      Pkg->Section = WriteUniqString(Handler->Group());
    if (_error->PendingError())
        return false;
    string::size_type HashPos = PkgName.find('#');
