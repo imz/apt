@@ -159,7 +159,6 @@ AM_GNU_GETTEXT([external])
 
 rc_GLIBC_VER
 rc_LIBSTDCPP_VER
-rc_CXX11ABI
 
 AC_OUTPUT([
 	  Makefile
