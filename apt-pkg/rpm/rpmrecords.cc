@@ -296,8 +296,7 @@ void rpmRecordParser::GetRec(const char *&Start,const char *&Stop)
 
    BufCatTag("\nSection: ", Handler->Group().c_str());
 
-   headerGetEntry(HeaderP, RPMTAG_SIZE, &type, (void **)&numv, &count);
-   snprintf(buf, sizeof(buf), "%" PRIu32, numv[0]);
+   snprintf(buf, sizeof(buf), "%llu", (unsigned long long) Handler->InstalledSize());
    BufCatTag("\nInstalled Size: ", buf);
 
    BufCatTag("\nMaintainer: ", Handler->Maintainer().c_str());
