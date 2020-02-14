@@ -144,20 +144,7 @@ string rpmSrcRecordParser::Section() const
 // ----------------------------------------------
 string rpmSrcRecordParser::Changelog() const
 {
-   char *str;
-   string rval("");
-
-   str = headerSprintf(HeaderP,
-         "[* %{CHANGELOGTIME:day} %{CHANGELOGNAME}\n%{CHANGELOGTEXT}\n\n]",
-         rpmTagTable, rpmHeaderFormats, NULL);
-
-   if (str && *str) {
-	  rval = (const char *)str;
-   }
-   if (str)
-      free(str);
-
-   return rval;
+   return Handler->Changelog();
 }
 
 off_t rpmSrcRecordParser::Offset()
@@ -255,7 +242,6 @@ string rpmSrcRecordParser::AsStr()
    // FIXME: This method is leaking memory from headerGetEntry().
    rpm_tagtype_t type, type2, type3;
    rpm_count_t count;
-   char *str;
    char **strv;
    char **strv2;
    int32_t *numv;
@@ -339,15 +325,11 @@ string rpmSrcRecordParser::AsStr()
    BufCat("\n");
    BufCatDescr(Handler->Description().c_str());
 
-   str = headerSprintf(HeaderP,
-         "[* %{CHANGELOGTIME:day} %{CHANGELOGNAME}\n%{CHANGELOGTEXT}\n]",
-         rpmTagTable, rpmHeaderFormats, NULL);
-   if (str && *str) {
+   string changelog = Handler->Changelog();
+   if (!changelog.empty()) {
       BufCat("Changelog:\n");
-      BufCatDescr(str);
+      BufCatDescr(changelog.c_str());
    }
-   if (str)
-      free(str);
 
    BufCat("\n");
 
