@@ -12,6 +12,7 @@
 
 #include <sys/types.h>
 #include <dirent.h>
+#include <vector>
 
 #include <apt-pkg/fileutl.h>
 
@@ -71,6 +72,10 @@ class RPMHandler
    virtual off_t InstalledSize() const = 0;
    virtual string SourceRpm() const = 0;
 
+   virtual bool FileList(std::vector<string> &FileList) const = 0;
+
+   virtual bool HasFile(const char *File) const;
+
    RPMHandler() : iOffset(0), iSize(0) {}
    virtual ~RPMHandler() {}
 };
@@ -104,6 +109,8 @@ class RPMHdrHandler : public RPMHandler
    virtual bool AutoInstalled() const override {return GetITag(RPMTAG_AUTOINSTALLED);}
    virtual off_t InstalledSize() const override {return GetITag(RPMTAG_SIZE);}
    virtual string SourceRpm() const override {return GetSTag(RPMTAG_SOURCERPM);}
+
+   virtual bool FileList(std::vector<string> &FileList) const override;
 
    RPMHdrHandler() : RPMHandler(), HeaderP(0) {}
    virtual ~RPMHdrHandler() {}

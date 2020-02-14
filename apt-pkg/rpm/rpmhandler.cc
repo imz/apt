@@ -18,6 +18,7 @@
 #include <unistd.h>
 #include <assert.h>
 #include <sstream>
+#include <algorithm>
 
 #include <apt-pkg/error.h>
 #include <apt-pkg/configuration.h>
@@ -31,6 +32,17 @@
 
 #include <rpm/rpmts.h>
 #include <rpm/rpmdb.h>
+
+bool RPMHandler::HasFile(const char *File) const
+{
+   if (*File == '\0')
+      return false;
+
+   vector<string> Files;
+   FileList(Files);
+   vector<string>::const_iterator I = std::find(Files.begin(), Files.end(), File);
+   return I != Files.end();
+}
 
 off_t RPMHdrHandler::GetITag(raptTag Tag) const
 {
@@ -85,6 +97,15 @@ string RPMHdrHandler::Maintainer() const
       return str;
 
    return string("");
+}
+
+bool RPMHdrHandler::FileList(vector<string> &FileList) const
+{
+   raptHeader h(HeaderP);
+   if (!h.getTag(RPMTAG_OLDFILENAMES, FileList))
+      h.getTag(RPMTAG_FILENAMES, FileList);
+   // it's ok for a package not to have any files
+   return true;
 }
 
 RPMFileHandler::RPMFileHandler(string File)
