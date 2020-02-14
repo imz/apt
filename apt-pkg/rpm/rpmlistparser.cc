@@ -603,23 +603,7 @@ unsigned long rpmListParser::Size()
 
 unsigned long rpmListParser::Flags()
 {
-   unsigned long returnflags = 0;
-
-   uint32_t *autoinstalled;
-   rpm_tagtype_t type;
-   rpm_count_t count;
-
-   if ((headerGetEntry(header, RPMTAG_AUTOINSTALLED, &type, (void**)&autoinstalled, &count) == 1)
-      && (type == RPM_INT32_TYPE)
-      && (count == 1))
-   {
-      if (*autoinstalled)
-      {
-         returnflags |= pkgCache::Flag::Auto;
-      }
-   }
-
-   return returnflags;
+   return Handler->AutoInstalled() ? pkgCache::Flag::Auto : 0;
 }
 
 // This is a slightly complex operation. It must take a package, and
