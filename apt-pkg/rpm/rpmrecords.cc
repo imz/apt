@@ -484,7 +484,6 @@ bool rpmRecordParser::HasFile(const char *File)
 {
    bool ret = false;
    const char *FileName;
-   int count = 0;
 
    if (*File == '\0')
       return false;
