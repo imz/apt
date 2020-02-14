@@ -44,30 +44,6 @@ string raptHeader::format(const string &fmt) const
    return res;
 }
 
-bool raptHeader::getTag(raptTag tag, raptInt &data) const
-{
-   vector<raptInt> _data;
-   bool ret = false;
-
-   if (getTag(tag, _data) && _data.size() == 1) {
-      data = _data[0];
-      ret = true;
-   }
-   return ret;
-}
-
-bool raptHeader::getTag(raptTag tag, string &data, bool raw) const
-{
-   vector<string> _data;
-   bool ret = false;
-
-   if (getTag(tag, _data, raw) && _data.size() == 1) {
-      data = _data[0];
-      ret = true;
-   }
-   return ret;
-}
-
 // use MINMEM to avoid extra copy from header if possible
 #define HGDFL (headerGetFlags)(HEADERGET_EXT | HEADERGET_MINMEM)
 #define HGRAW (headerGetFlags)(HGDFL | HEADERGET_RAW)
@@ -102,6 +78,48 @@ bool raptHeader::getTag(raptTag tag, vector<raptInt> &data) const
 	    data.push_back(*num);
 	 }
 	 ret = true;
+      }
+      rpmtdFreeData(&td);
+   }
+   return ret;
+}
+
+bool raptHeader::getTag(raptTag tag, string &data, bool raw) const
+{
+   struct rpmtd_s td;
+   bool ret = false;
+   headerGetFlags flags = raw ? HGRAW : HGDFL;
+
+   if (headerGet(Hdr, tag, &td, flags)) {
+      if (rpmtdClass(&td) == RPM_STRING_CLASS) {
+	 const char *str = rpmtdNextString(&td);
+	 if (str && rpmtdNextString(&td)) {
+	    str = 0;
+	 }
+	 if (str) {
+	    data = str;
+	    ret = true;
+	 }
+      }
+      rpmtdFreeData(&td);
+   }
+   return ret;
+}
+
+bool raptHeader::getTag(raptTag tag, raptInt &data) const
+{
+   struct rpmtd_s td;
+   bool ret = false;
+   if (headerGet(Hdr, tag, &td, HGDFL)) {
+      if (rpmtdType(&td) == RPM_INT32_TYPE) {
+	 raptInt *num = rpmtdNextUint32(&td);
+	 if (num && rpmtdNextUint32(&td)) {
+	    num = 0;
+	 }
+	 if (num) {
+	    data = *num;
+	    ret = true;
+	 }
       }
       rpmtdFreeData(&td);
    }
