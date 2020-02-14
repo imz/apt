@@ -106,16 +106,7 @@ string rpmRecordParser::Maintainer()
 /* */
 string rpmRecordParser::ShortDesc()
 {
-   char *str;
-   rpm_tagtype_t type;
-   rpm_count_t count;
-   assert(HeaderP != NULL);
-   int rc = headerGetEntry(HeaderP, RPMTAG_SUMMARY,
-			   &type, (void**)&str, &count);
-   if (rc != 1)
-      return string();
-   else
-      return string(str,0,string(str).find('\n'));
+   return Handler->Summary();
 }
 									/*}}}*/
 // RecordParser::LongDesc - Return a longer description			/*{{{*/
@@ -401,8 +392,7 @@ void rpmRecordParser::GetRec(const char *&Start,const char *&Stop)
 
    BufCatTag("\nFilename: ", Handler->FileName().c_str());
 
-   headerGetEntry(HeaderP, RPMTAG_SUMMARY, &type, (void **)&str, &count);
-   BufCatTag("\nDescription: ", str);
+   BufCatTag("\nDescription: ", Handler->Summary().c_str());
    BufCat("\n");
    headerGetEntry(HeaderP, RPMTAG_DESCRIPTION, &type, (void **)&str, &count);
    BufCatDescr(str);
