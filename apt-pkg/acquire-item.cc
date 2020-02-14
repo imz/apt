@@ -40,6 +40,16 @@ using namespace std;
 
 using std::string;
 
+/*
+ * Zero-extend a signed integer type to unsigned long long.
+ */
+# define zero_extend_signed_to_ull(v) \
+	(sizeof(v) == sizeof(char) ? (unsigned long long) (unsigned char) (v) : \
+	 sizeof(v) == sizeof(short) ? (unsigned long long) (unsigned short) (v) : \
+	 sizeof(v) == sizeof(int) ? (unsigned long long) (unsigned int) (v) : \
+	 sizeof(v) == sizeof(long) ? (unsigned long long) (unsigned long) (v) : \
+	 (unsigned long long) (v))
+
 // CNC:2002-07-03
 // VerifyChecksums - Check MD5 and SHA-1 checksums of a file		/*{{{*/
 // ---------------------------------------------------------------------
@@ -52,7 +62,7 @@ static bool VerifyChecksums(string File, unsigned long Size, string MD5)
    if (stat(File.c_str(),&Buf) != 0)
       return true;
 
-   if (Buf.st_size != Size)
+   if (zero_extend_signed_to_ull(Buf.st_size) != Size)
    {
       if (_config->FindB("Acquire::Verbose", false) == true)
 	 cout << "Size of "<<File<<" did not match what's in the checksum list and was redownloaded."<<endl;
