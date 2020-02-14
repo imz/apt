@@ -29,7 +29,6 @@
 
 #include <rpm/rpmts.h>
 #include <rpm/rpmdb.h>
-#define rpmxxInitIterator(a,b,c,d) rpmtsInitIterator(a,(rpmTag)b,c,d)
 
 RPMFileHandler::RPMFileHandler(string File)
 {
@@ -391,19 +390,19 @@ RPMDBHandler::RPMDBHandler(bool WriteLock)
       _error->Error(_("could not open RPM database"));
       return;
    }
-   RpmIter = rpmxxInitIterator(Handler, RPMDBI_PACKAGES, NULL, 0);
+   RpmIter = raptInitIterator(Handler, RPMDBI_PACKAGES, NULL, 0);
    if (RpmIter == NULL) {
       _error->Error(_("could not create RPM database iterator"));
       return;
    }
    // iSize = rpmdbGetIteratorCount(RpmIter);
    // This doesn't seem to work right now. Code in rpm (4.0.4, at least)
-   // returns a 0 from rpmdbGetIteratorCount() if rpmxxInitIterator() is
+   // returns a 0 from rpmdbGetIteratorCount() if raptInitIterator() is
    // called with RPMDBI_PACKAGES or with keyp == NULL. The algorithm
    // below will be used until there's support for it.
    iSize = 0;
    rpmdbMatchIterator countIt;
-   countIt = rpmxxInitIterator(Handler, RPMDBI_PACKAGES, NULL, 0);
+   countIt = raptInitIterator(Handler, RPMDBI_PACKAGES, NULL, 0);
    while (rpmdbNextIterator(countIt) != NULL)
       iSize++;
    rpmdbFreeIterator(countIt);
@@ -469,9 +468,9 @@ bool RPMDBHandler::Jump(unsigned int Offset)
       return false;
    rpmdbFreeIterator(RpmIter);
    if (iOffset == 0)
-      RpmIter = rpmxxInitIterator(Handler, RPMDBI_PACKAGES, NULL, 0);
+      RpmIter = raptInitIterator(Handler, RPMDBI_PACKAGES, NULL, 0);
    else
-      RpmIter = rpmxxInitIterator(Handler, RPMDBI_PACKAGES,
+      RpmIter = raptInitIterator(Handler, RPMDBI_PACKAGES,
 				  &iOffset, sizeof(iOffset));
    HeaderP = rpmdbNextIterator(RpmIter);
    return true;
@@ -482,7 +481,7 @@ void RPMDBHandler::Rewind()
    if (RpmIter == NULL)
       return;
    rpmdbFreeIterator(RpmIter);
-   RpmIter = rpmxxInitIterator(Handler, RPMDBI_PACKAGES, NULL, 0);
+   RpmIter = raptInitIterator(Handler, RPMDBI_PACKAGES, NULL, 0);
    iOffset = 0;
 }
 #endif

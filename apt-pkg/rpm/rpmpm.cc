@@ -36,6 +36,8 @@
 #include <rpm/rpmdb.h>
 #include <rpm/rpmlog.h>
 
+#include "rapttypes.h"
+
 namespace {
 
 uint32_t collect_autoinstalled_flag(pkgDepCache &Cache, pkgCache::PkgIterator Pkg)
@@ -756,7 +758,7 @@ bool pkgRPMLibPM::AddToTransaction(Item::RPMOps op, const std::vector<apt_item> 
 
 	 case Item::RPMErase:
             rpmdbMatchIterator MI;
-	    MI = rpmtsInitIterator(TS, (rpmTag)RPMDBI_LABEL, I->file.c_str(), 0);
+	    MI = raptInitIterator(TS, RPMDBI_LABEL, I->file.c_str(), 0);
 	    while ((hdr = rpmdbNextIterator(MI)) != NULL)
 	    {
 	       unsigned int recOffset = rpmdbGetIteratorOffset(MI);
@@ -1057,7 +1059,7 @@ bool pkgRPMLibPM::UpdateMarks()
 
       rpmdbMatchIterator MI;
 
-      MI = rpmtsInitIterator(TS, (rpmTag)RPMDBI_LABEL, iter->file.c_str(), 0);
+      MI = raptInitIterator(TS, RPMDBI_LABEL, iter->file.c_str(), 0);
 
       scope_exit free_mi(std::bind(&rpmdbFreeIterator, MI));
 
