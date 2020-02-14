@@ -308,8 +308,7 @@ void rpmRecordParser::GetRec(const char *&Start,const char *&Stop)
 
    BufCatTag("Package: ", Name().c_str());
 
-   headerGetEntry(HeaderP, RPMTAG_GROUP, &type, (void **)&str, &count);
-   BufCatTag("\nSection: ", str);
+   BufCatTag("\nSection: ", Handler->Group().c_str());
 
    headerGetEntry(HeaderP, RPMTAG_SIZE, &type, (void **)&numv, &count);
    snprintf(buf, sizeof(buf), "%" PRIu32, numv[0]);

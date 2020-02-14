@@ -161,12 +161,7 @@ string rpmSrcRecordParser::Maintainer() const
 
 string rpmSrcRecordParser::Section() const
 {
-   char *str;
-   rpm_tagtype_t type;
-   rpm_count_t count;
-   int rc = headerGetEntry(HeaderP, RPMTAG_GROUP,
-			   &type, (void**)&str, &count);
-   return string(rc?str:"");
+   return Handler->Group();
 }
 
 // SrcRecordParser::Changelog - Package changelog
@@ -295,8 +290,7 @@ string rpmSrcRecordParser::AsStr()
 
    BufCatTag("Package: ", Handler->Name().c_str());
 
-   headerGetEntry(HeaderP, RPMTAG_GROUP, &type, (void **)&str, &count);
-   BufCatTag("\nSection: ", str);
+   BufCatTag("\nSection: ", Handler->Group().c_str());
 
    headerGetEntry(HeaderP, RPMTAG_SIZE, &type, (void **)&numv, &count);
    snprintf(buf, sizeof(buf), "%d", numv[0]);
