@@ -188,42 +188,7 @@ string rpmListParser::Version()
       return VI->VerStr();
 #endif
 
-   char *ver, *rel, *dtag;
-   bool has_dtag = false;
-   uint32_t *ser;
-   bool has_epoch = false;
-   uint32_t *btime;
-   bool has_btime = false;
-   rpm_tagtype_t type;
-   rpm_count_t count;
-   stringstream ss;
-
-   if (headerGetEntry(header, RPMTAG_EPOCH, &type, (void **)&ser, &count) == 1
-       && count > 0)
-      has_epoch = true;
-
-   headerGetEntry(header, RPMTAG_VERSION, &type, (void **)&ver, &count);
-   headerGetEntry(header, RPMTAG_RELEASE, &type, (void **)&rel, &count);
-
-   if (headerGetEntry(header, RPMTAG_DISTTAG, &type, (void **)&dtag, &count) == 1
-       && count > 0)
-      has_dtag = true;
-
-   if (headerGetEntry(header, RPMTAG_BUILDTIME, &type, (void **)&btime, &count) == 1
-       && count > 0)
-      has_btime = true;
-
-   if (has_epoch) {
-      ss << ser[0] << ":";
-   }
-   ss << ver << "-" << rel;
-   if (has_dtag) {
-      ss << ":" << dtag;
-   }
-   if (has_btime) {
-      ss << "@" << btime[0];
-   }
-   return ss.str();
+   return Handler->EVRDB();
 }
                                                                         /*}}}*/
 // ListParser::NewVersion - Fill in the version structure		/*{{{*/
@@ -313,14 +278,13 @@ unsigned short rpmListParser::VersionHash()
 #endif
 
    int Sections[] = {
-	  RPMTAG_VERSION,
-	  RPMTAG_RELEASE,
 	  RPMTAG_REQUIRENAME,
 	  RPMTAG_OBSOLETENAME,
 	  RPMTAG_CONFLICTNAME,
 	  0
    };
    unsigned long Result = INIT_FCS;
+   Result = AddCRC16(Result, Version());
    Result = AddCRC16(Result, Architecture());
 
    for (const int *sec = Sections; *sec != 0; sec++)

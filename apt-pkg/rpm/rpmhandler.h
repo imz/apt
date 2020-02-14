@@ -51,6 +51,8 @@ class RPMHandler
 
    virtual string Name() const = 0;
    virtual string Arch() const = 0;
+   virtual string Version() const = 0;
+   virtual string EVRDB() const = 0;
 
    RPMHandler() : iOffset(0), iSize(0) {}
    virtual ~RPMHandler() {}
@@ -76,6 +78,8 @@ class RPMHdrHandler : public RPMHandler
 
    virtual string Name() const override {return GetSTag(RPMTAG_NAME);}
    virtual string Arch() const override {return GetSTag(RPMTAG_ARCH);}
+   virtual string Version() const override {return GetSTag(RPMTAG_VERSION);}
+   virtual string EVRDB() const override;
 
    RPMHdrHandler() : RPMHandler(), HeaderP(0) {}
    virtual ~RPMHdrHandler() {}
