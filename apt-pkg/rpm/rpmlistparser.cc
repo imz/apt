@@ -614,7 +614,6 @@ bool rpmListParser::CollectFileProvides(pkgCache &Cache,
 {
    bool ret = true;
    const char *FileName;
-   int count = 0;
    rpmtd fileNames = rpmtdNew();
 
    if (headerGet(header, RPMTAG_OLDFILENAMES, fileNames, HEADERGET_EXT) != 1 &&
