@@ -25,6 +25,8 @@
 #define PKGLIB_MMAP_H
 
 #include <string>
+#include <limits>
+
 #include <apt-pkg/fileutl.h>
 
 using std::string;
@@ -71,7 +73,7 @@ class MMap
    MMap(const MMap &) = delete;
 
    MMap(FileFd &F,unsigned long Flags);
-   MMap(unsigned long Flags);
+   explicit MMap(unsigned long Flags);
    virtual ~MMap();
 };
 
