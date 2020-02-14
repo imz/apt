@@ -49,6 +49,8 @@ class RPMHandler
    virtual string MD5Sum() const = 0;
    virtual bool ProvideFileName() const {return false;}
 
+   virtual string Name() const = 0;
+
    RPMHandler() : iOffset(0), iSize(0) {}
    virtual ~RPMHandler() {}
 };
@@ -70,6 +72,8 @@ class RPMHdrHandler : public RPMHandler
    virtual string Directory() const override {return "";}
    virtual off_t FileSize() const override {return 1;}
    virtual string MD5Sum() const override {return "";}
+
+   virtual string Name() const override {return GetSTag(RPMTAG_NAME);}
 
    RPMHdrHandler() : RPMHandler(), HeaderP(0) {}
    virtual ~RPMHdrHandler() {}

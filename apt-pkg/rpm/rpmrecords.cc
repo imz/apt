@@ -82,13 +82,7 @@ string rpmRecordParser::FileName()
 /* */
 string rpmRecordParser::Name()
 {
-   char *str;
-   rpm_tagtype_t type;
-   rpm_count_t count;
-   assert(HeaderP != NULL);
-   int rc = headerGetEntry(HeaderP, RPMTAG_NAME,
-			   &type, (void**)&str, &count);
-   return string(rc?str:"");
+   return Handler->Name();
 }
 									/*}}}*/
 // RecordParser::MD5Hash - Return the archive hash			/*{{{*/
@@ -312,8 +306,7 @@ void rpmRecordParser::GetRec(const char *&Start,const char *&Stop)
 
    assert(HeaderP != NULL);
 
-   headerGetEntry(HeaderP, RPMTAG_NAME, &type, (void **)&str, &count);
-   BufCatTag("Package: ", str);
+   BufCatTag("Package: ", Name().c_str());
 
    headerGetEntry(HeaderP, RPMTAG_GROUP, &type, (void **)&str, &count);
    BufCatTag("\nSection: ", str);

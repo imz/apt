@@ -104,20 +104,16 @@ string rpmListParser::Package()
    }
 #endif
 
-   char *str;
-   rpm_tagtype_t type;
-   rpm_count_t count;
-
    Duplicated = false;
 
-   if (headerGetEntry(header, RPMTAG_NAME, &type, (void**)&str, &count) != 1)
+   string Name = Handler->Name();
+   if (Name.empty())
    {
       _error->Error(_("Corrupt pkglist: no RPMTAG_NAME in header entry"));
       return "";
    }
 
    bool IsDup = false;
-   string Name = str;
 
    if (RpmData->IsMultilibSys() && RpmData->IsCompatArch(Architecture())) {
 	 Name += ".32bit";
