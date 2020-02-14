@@ -98,13 +98,7 @@ string rpmRecordParser::MD5Hash()
 /* */
 string rpmRecordParser::Maintainer()
 {
-   char *str;
-   rpm_tagtype_t type;
-   rpm_count_t count;
-   assert(HeaderP != NULL);
-   int rc = headerGetEntry(HeaderP, RPMTAG_PACKAGER,
-			   &type, (void**)&str, &count);
-   return string(rc?str:"");
+   return Handler->Maintainer();
 }
 									/*}}}*/
 // RecordParser::ShortDesc - Return a 1 line description		/*{{{*/
@@ -314,11 +308,7 @@ void rpmRecordParser::GetRec(const char *&Start,const char *&Stop)
    snprintf(buf, sizeof(buf), "%" PRIu32, numv[0]);
    BufCatTag("\nInstalled Size: ", buf);
 
-   str = NULL;
-   headerGetEntry(HeaderP, RPMTAG_PACKAGER, &type, (void **)&str, &count);
-   if (!str)
-       headerGetEntry(HeaderP, RPMTAG_VENDOR, &type, (void **)&str, &count);
-   BufCatTag("\nMaintainer: ", str);
+   BufCatTag("\nMaintainer: ", Handler->Maintainer().c_str());
 
    BufCatTag("\nVersion: ", Handler->EVRDB().c_str());
 
