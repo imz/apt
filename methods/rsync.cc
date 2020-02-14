@@ -108,11 +108,11 @@ bool RsyncMethod::RsyncConn::initProxy()
    bool res = true;
    string var("RSYNC_PROXY=");
    var += proxy;
-   strncpy(proxy_value, var.c_str(), sizeof(proxy_value) );
-   if ( proxy_value[sizeof(proxy_value)-1]==0 ) {
+   if ( var.size() < sizeof(proxy_value) ) {
+	  strcpy(proxy_value, var.c_str());
 	  if ( putenv(proxy_value)!=0 ) {
 		 res = false;
-		 _error->Error("Failed to set RSYNC_PROXY: %s", proxy_value);
+		 _error->Error("Failed to set %s", proxy_value);
 	  }
    } else {
 	  res = false;
