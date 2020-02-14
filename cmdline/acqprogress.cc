@@ -279,9 +279,8 @@ bool AcqTextStatus::MediaChange(string Media,string Drive)
    if (_config->FindB("simple-output"))
 	cout << "apt-get:media-change:" << Drive << ":" << Media << std::endl;
 
-   char C = 0;
-   while (C != '\n' && C != '\r')
-      read(STDIN_FILENO,&C,1);
+   string dummy;
+   getline(cin, dummy);
 
    Update = true;
    return true;
@@ -300,19 +299,9 @@ bool AcqTextStatus::Authenticate(string Desc,string &User,string &Pass)
    ioprintf(cout,_("Please login to %s\nUsername: "), Desc.c_str());
    cout << flush;
 
-   char S[1024];
-   char C = 0;
-   size_t idx = 0;
-   while (C != '\n' && C != '\r' && idx < (sizeof(S) - 1))
-   {
-      read(STDIN_FILENO,&C,1);
-      S[idx++] = C;
-   }
-   S[--idx] = '\0';
-   User = S;
+   getline(cin, User);
 
-   ioprintf(cout,_("Password: "));
-   cout << flush;
+   cout << _("Password: ") << flush;
 
    // Turn off echo for entering the password
    struct termios TermIO;
@@ -323,21 +312,12 @@ bool AcqTextStatus::Authenticate(string Desc,string &User,string &Pass)
    TermIO_noecho.c_lflag &= !ECHO;
    tcsetattr(STDIN_FILENO, TCSANOW, &TermIO_noecho);
 
-   C = 0;
-   idx = 0;
-   while (C != '\n' && C != '\r' && idx < (sizeof(S) - 1))
-   {
-      read(STDIN_FILENO,&C,1);
-      S[idx++] = C;
-   }
-   S[--idx] = '\0';
-   Pass = S;
+   getline(cin, Pass);
 
    // Turn echo back on
    tcsetattr(STDIN_FILENO, TCSANOW, &TermIO);
 
-   ioprintf(cout,_("\n"));
-   cout << flush;
+   cout << endl << flush;
 
    Update = true;
    return true;
