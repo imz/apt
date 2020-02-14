@@ -196,7 +196,7 @@ DynamicMMap::~DynamicMMap()
    unsigned long EndOfFile = iSize;
    iSize = WorkSpace;
    Close(false);
-   ftruncate(Fd->Fd(),EndOfFile);
+   Fd->Truncate(EndOfFile);
 }
 									/*}}}*/
 // DynamicMMap::RawAllocate - Allocate a raw chunk of unaligned space	/*{{{*/
