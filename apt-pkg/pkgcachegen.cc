@@ -224,23 +224,24 @@ bool pkgCacheGenerator::MergeList(ListParser &List,
       // Add a new version
       const auto verindex = NewVersion(Ver,Version,*Last);
       if (!verindex)
-         return _error->Error(_("Error occurred while processing %s (NewVersion0)"),
-                              PackageName.c_str());
+         return _error->Error(_("Error occurred while processing %s (NewVersion%d)"),
+                              PackageName.c_str(), 0);
+
       *Last = *verindex;
 
       Ver->ParentPkg = Pkg.Index();
       Ver->Hash = Hash;
       if (List.NewVersion(Ver) == false)
-	 return _error->Error(_("Error occured while processing %s (NewVersion1)"),
-			      PackageName.c_str());
+	 return _error->Error(_("Error occured while processing %s (NewVersion%d)"),
+			      PackageName.c_str(), 1);
 
       if (List.UsePackage(Pkg,Ver) == false)
 	 return _error->Error(_("Error occured while processing %s (UsePackage3)"),
 			      PackageName.c_str());
 
       if (NewFileVer(Ver,List) == false)
-	 return _error->Error(_("Error occured while processing %s (NewVersion2)"),
-			      PackageName.c_str());
+	 return _error->Error(_("Error occured while processing %s (NewVersion%d)"),
+			      PackageName.c_str(), 2);
 
       // Read only a single record and return
       if (OutVer != 0)
