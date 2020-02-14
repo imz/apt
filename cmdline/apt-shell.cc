@@ -1043,7 +1043,6 @@ bool DoUpdate(CommandLine &CmdL)
    if (CheckHelp(CmdL) == true)
       return true;
 
-   bool Partial = false;
    pkgSourceList List;
 
    if (CmdL.FileSize() != 1)
@@ -1056,9 +1055,7 @@ bool DoUpdate(CommandLine &CmdL)
 	    Repo += ".list";
 	 if (FileExists(Repo) == true)
 	 {
-	    if (List.ReadAppend(Repo) == true)
-	       Partial = true;
-	    else
+	    if (List.ReadAppend(Repo) == false)
 	       return _error->Error(_("Sources list %s could not be read"),Repo.c_str());
 	 }
 	 else
@@ -2978,9 +2975,9 @@ bool DoList(CommandLine &CmdL)
 
    const char *PkgName;
    const char *PkgSection;
-   int Matches[Cache->Head().PackageCount];
-   int NumMatches = 0;
-   int Len = 0, NameMaxLen = 0, VerMaxLen = 0;
+   unsigned int Matches[Cache->Head().PackageCount];
+   unsigned int NumMatches = 0;
+   unsigned int Len = 0, NameMaxLen = 0, VerMaxLen = 0;
    bool Matched;
    for (unsigned int J = 0; J < Cache->Head().PackageCount; J++)
    {
@@ -3027,9 +3024,9 @@ bool DoList(CommandLine &CmdL)
       const char *NameLabel = _("Name");
       const char *InstalledLabel = _("Installed");
       const char *CandidateLabel = _("Candidate");
-      int NameLen = strlen(NameLabel);
-      int InstalledLen = strlen(InstalledLabel);
-      int CandidateLen = strlen(CandidateLabel);
+      unsigned int NameLen = strlen(NameLabel);
+      unsigned int InstalledLen = strlen(InstalledLabel);
+      unsigned int CandidateLen = strlen(CandidateLabel);
 
       unsigned int FirstColumn = NameMaxLen+2;
       if (FirstColumn < NameLen+2)
@@ -3059,7 +3056,7 @@ bool DoList(CommandLine &CmdL)
 	    << Bar+(ScreenWidth-CandidateLen) << endl;
 
       const char *Str;
-      int StrLen;
+      unsigned int StrLen;
       for (unsigned int K = 0; K != NumMatches; K++) {
 	 pkgCache::PkgIterator Pkg(Cache,Cache.List[Matches[K]]);
 	 Str = Pkg.Name();
@@ -3104,7 +3101,6 @@ bool DoList(CommandLine &CmdL)
 
       const char *Str;
       const char *PkgSection;
-      int StrLen;
       unsigned int K;
       for (unsigned int Line = 0; Line != NumLines; Line++) {
 	 for (unsigned int Entry = 0; Entry != PerLine; Entry++) {
@@ -3114,7 +3110,6 @@ bool DoList(CommandLine &CmdL)
 	    pkgCache::PkgIterator Pkg(Cache,Cache.List[Matches[K]]);
 	    Str = Pkg.Name();
 	    PkgSection = Pkg.Section();
-	    StrLen = strlen(Str);
 	    string status = "available";
 	    if (Pkg->CurrentVer != 0) status = "installed";
             if (Pkg->CurrentVer != 0)
@@ -3582,7 +3577,7 @@ void SigWinch(int)
 /* */
 char *ReadLineCompCommands(const char *Text, int State)
 {
-   static char *Commands[] =  {"update", "upgrade", "install", "remove",
+   static const char *Commands[] =  {"update", "upgrade", "install", "remove",
 	 "keep", "dist-upgrade", "dselect-upgrade", "build-dep", "clean",
 	 "autoclean", "check", "help", "commit", "exit", "quit", "status",
 	 "showpkg", "unmet", "search", "depends", "whatdepends", "rdepends",
@@ -3936,8 +3931,6 @@ int aptpipe_init(void)
 	_lua->SetDepCache(*GCache);
 	_lua->RunScripts("Scripts::AptShell::Init");
 	_lua->ResetCaches();
-	bool HasCmdScripts = (_lua->HasScripts("Scripts::AptGet::Command") ||
-						  _lua->HasScripts("Scripts::AptCache::Command"));
 #endif
 
 	return 0;
