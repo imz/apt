@@ -173,7 +173,7 @@ struct pkgCache::Header
    unsigned long OptionsHash;
 
    // Size of structure values
-   unsigned short HeaderSz;
+   unsigned int HeaderSz;
    unsigned short PackageSz;
    unsigned short PackageFileSz;
    unsigned short VersionSz;
