@@ -187,15 +187,7 @@ string rpmRecordParser::Changelog()
 /* */
 string rpmRecordParser::SourcePkg()
 {
-   // This must be the *package* name, not the *file* name. We have no
-   // current way to extract it safely from the file name.
-   char *str;
-   rpm_tagtype_t type;
-   rpm_count_t count;
-   assert(HeaderP != NULL);
-   int rc = headerGetEntry(HeaderP, RPMTAG_SOURCERPM,
-			   &type, (void**)&str, &count);
-   return string(rc?str:"");
+   return Handler->SourceRpm();
 }
 									/*}}}*/
 
