@@ -217,8 +217,9 @@ bool IdentCdrom(string CD,string &Res,unsigned int Version)
       Hash.Add(Dir->d_name);
    };
 
-   chdir(StartDir.c_str());
    closedir(D);
+   if (chdir(StartDir.c_str()) != 0)
+      return _error->Errno("chdir",_("Unable to change to %s"),StartDir.c_str());
 
    // Some stats from the fsys
    if (_config->FindB("Debug::identcdrom",false) == false)
