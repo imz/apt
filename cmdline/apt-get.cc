@@ -643,7 +643,7 @@ bool TryToInstall(pkgCache::PkgIterator Pkg,pkgDepCache &Cache,
 	    break;
       }
       vector<string> GoodSolutionNames;
-      unsigned int GoodSolutionsInstalled = 0, GoodSolutionInstallNumber = 0;
+      unsigned int GoodSolutionsInstalled = 0;
       for (unsigned int i = 0; i < GoodSolutions.size(); i++)
       {
 	 pkgCache::PkgIterator GoodPkg(Cache, GoodSolutions[i]);
@@ -651,7 +651,6 @@ bool TryToInstall(pkgCache::PkgIterator Pkg,pkgDepCache &Cache,
 	 if (GoodPkg.CurrentVer().end() == false)
 	 {
 	    GoodSolutionsInstalled++;
-	    GoodSolutionInstallNumber = i;
 	 }
       }
 #ifdef WITH_LUA
@@ -2830,8 +2829,8 @@ int main(int argc,const char *argv[])
 
      size_t len = new_filelist.size();
      CmdL.FileList = new const char *[len + 1];
-     for(int i=0;i<len;++i)
-        CmdL.FileList[i]=new_filelist[i];
+     for(size_t i=0; i<len; ++i)
+        CmdL.FileList[i] = new_filelist[i];
      CmdL.FileList[len] = 0;
    }
 
