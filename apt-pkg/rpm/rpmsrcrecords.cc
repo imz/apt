@@ -137,12 +137,7 @@ string rpmSrcRecordParser::FileName() const
 
 string rpmSrcRecordParser::Package() const
 {
-   char *str;
-   rpm_tagtype_t type;
-   rpm_count_t count;
-   int rc = headerGetEntry(HeaderP, RPMTAG_NAME,
-			   &type, (void**)&str, &count);
-   return string(rc?str:"");
+   return Handler->Name();
 }
 
 string rpmSrcRecordParser::Version() const
@@ -331,8 +326,7 @@ string rpmSrcRecordParser::AsStr()
 
    BufUsed = 0;
 
-   headerGetEntry(HeaderP, RPMTAG_NAME, &type, (void **)&str, &count);
-   BufCatTag("Package: ", str);
+   BufCatTag("Package: ", Handler->Name().c_str());
 
    headerGetEntry(HeaderP, RPMTAG_GROUP, &type, (void **)&str, &count);
    BufCatTag("\nSection: ", str);
