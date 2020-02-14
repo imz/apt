@@ -1101,11 +1101,12 @@ int main(int argc,const char *argv[])
 	 char S[300];
 	 snprintf(S,sizeof(S),"http_proxy=%s",getenv("ftp_proxy"));
 	 putenv(S);
-	 putenv("no_proxy=");
+	 char no_proxy[] = "no_proxy=";
+	 putenv(no_proxy);
 
 	 // Run the http method
 	 string Path = flNotFile(argv[0]) + "http";
-	 execl(Path.c_str(),Path.c_str(),0);
+	 execl(Path.c_str(), Path.c_str(), NULL);
 	 cerr << _("Unable to invoke ") << Path << endl;
 	 exit(100);
       }
