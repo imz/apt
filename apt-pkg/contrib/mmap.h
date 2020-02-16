@@ -54,7 +54,6 @@ class MMap
                    UnMapped = (1<<3)};
 
    // Simple accessors
-   inline operator void *() {return Base;}
    inline void *Data() {return Base;}
    inline size_t Size() {return iSize;}
 
