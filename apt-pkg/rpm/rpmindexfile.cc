@@ -510,26 +510,20 @@ unsigned long rpmSrcDirIndex::Size() const
 									/*}}}*/
 // SinglePkgIndex::ArchiveURI - URI for the archive		        /*{{{*/
 // ---------------------------------------------------------------------
-string rpmSinglePkgIndex::ArchiveURI(string File) const
+string rpmSinglePkgIndex::ArchiveURI(const string File) const
 {
-   char *cwd = getcwd(NULL,0);
-   if (File[0] == '.' && File[1] == '/')
-      File = string(File, 2);
-   string URI = "file://"+flCombine(cwd, File);
-   free(cwd);
-   return URI;
+   return "file://"+
+      flCombine(SafeGetCWD(),
+                (File[0] == '.' && File[1] == '/') ? string(File, 2) : File);
 }
 									/*}}}*/
 // SinglePkgIndex::ArchiveURI - URI for the archive		        /*{{{*/
 // ---------------------------------------------------------------------
-string rpmSingleSrcIndex::ArchiveURI(string File) const
+string rpmSingleSrcIndex::ArchiveURI(const string File) const
 {
-   char *cwd = getcwd(NULL,0);
-   if (File[0] == '.' && File[1] == '/')
-      File = string(File, 2);
-   string URI = "file://"+flCombine(cwd, File);
-   free(cwd);
-   return URI;
+   return "file://"+
+      flCombine(SafeGetCWD(),
+                (File[0] == '.' && File[1] == '/') ? string(File, 2) : File);
 }
 									/*}}}*/
 // DatabaseIndex::rpmDatabaseIndex - Constructor			/*{{{*/
