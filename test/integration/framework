@@ -676,7 +676,6 @@ nginxsetuphttp() {
 cat >> $TMPWORKINGDIRECTORY/nginx/nginx.conf << ENDCONFIG
 worker_processes 1;
 error_log $TMPWORKINGDIRECTORY/nginx/error.log;
-daemon off;
 pid $TMPWORKINGDIRECTORY/nginx/nginx.pid;
 
 events {
@@ -722,7 +721,6 @@ nginxsetuphttps() {
 	cat >> $TMPWORKINGDIRECTORY/nginx/nginx.conf << ENDCONFIG
 worker_processes 1;
 error_log $TMPWORKINGDIRECTORY/nginx/error.log;
-daemon off;
 pid $TMPWORKINGDIRECTORY/nginx/nginx.pid;
 
 events {
@@ -772,9 +770,15 @@ ENDCONFIG
 }
 
 nginxstart() {
+	local -r NGINXPIDFILE=$TMPWORKINGDIRECTORY/nginx/nginx.pid
 	local -r NGINXLOG=$TMPWORKINGDIRECTORY/nginx/process-stderr.log
-	/usr/sbin/nginx -c $TMPWORKINGDIRECTORY/nginx/nginx.conf -p $TMPWORKINGDIRECTORY &>>"$NGINXLOG" &
-	local -r NGINXPID=$!
+
+	/usr/sbin/nginx -c $TMPWORKINGDIRECTORY/nginx/nginx.conf -p $TMPWORKINGDIRECTORY &>>"$NGINXLOG" &&
+		local -r NGINXPID="$(cat "$NGINXPIDFILE" 2>>"$NGINXLOG")" &&
+		[ -n "$NGINXPID" ] ||
+			{ { echo NGINXLOG:; cat "$NGINXLOG"; } >&2 ||:
+			  msgdie 'nginx failed to start normally'
+			}
 
 	addtrap 'prefix' \
 			'kill -TERM %q ||:; [ "$EXIT_CODE" = 0 ] || if [ -e %q ]; then echo NGINXLOG:; cat %q ||:; fi;' \
