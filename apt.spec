@@ -250,6 +250,8 @@ unset RPM_PYTHON
 %define _unpackaged_files_terminate_build 1
 
 %check
+set -o pipefail
+
 # Run tests several times to make sure no tests are randomly succeeding.
 pushd test/integration
 
@@ -284,8 +286,12 @@ gpg-keygen --passphrase '' \
 
 export APT_TEST_GPGPUBKEY
 
-%runtests
+# To not run in parallel, build with --define 'nprocs_for_check %nil'
+%{?!nprocs_for_check:%global nprocs_for_check %__nprocs}
+NPROCS=%nprocs_for_check
 
+seq 0 1 | xargs -I'{}' ${NPROCS:+-P$NPROCS --process-slot-var=PARALLEL_SLOT} \
+	-- sh -efuo pipefail -c '%runtests '${NPROCS:+'|& sed --unbuffered -e "s/^/[$PARALLEL_SLOT {}] /"'}
 popd
 
 %files -f %name.lang
