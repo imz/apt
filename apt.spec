@@ -257,8 +257,12 @@ pushd test/integration
 # To not run in parallel, build with --define 'nprocs_for_check %nil'
 %{?!nprocs_for_check:%global nprocs_for_check %__nprocs}
 NPROCS=%nprocs_for_check
+TRIES=2
+if [ $TRIES -lt ${NPROCS:-0} ]; then
+	TRIES=$NPROCS
+fi
 
-seq 0 1 | xargs -I'{}' ${NPROCS:+-P$NPROCS --process-slot-var=PARALLEL_SLOT} \
+seq 0 $((TRIES-1)) | xargs -I'{}' ${NPROCS:+-P$NPROCS --process-slot-var=PARALLEL_SLOT} \
 	-- sh -efuo pipefail -c '\
 		LD_LIBRARY_PATH=%buildroot%_libdir \
 		PATH=$PATH:%buildroot%_bindir \
