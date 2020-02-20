@@ -249,14 +249,21 @@ unset RPM_PYTHON
 %define _unpackaged_files_terminate_build 1
 
 %check
+set -o pipefail
+
 # Run tests several times to make sure no tests are randomly succeeding.
 pushd test/integration
-	for i in $(seq 1 2); do
+
+# To not run in parallel, build with --define 'nprocs_for_check %nil'
+%{?!nprocs_for_check:%global nprocs_for_check %__nprocs}
+NPROCS=%nprocs_for_check
+
+seq 0 1 | xargs -I'{}' ${NPROCS:+-P$NPROCS --process-slot-var=PARALLEL_SLOT} \
+	-- sh -efuo pipefail -c '\
 		LD_LIBRARY_PATH=%buildroot%_libdir \
 		PATH=$PATH:%buildroot%_bindir \
 		METHODSDIR=%buildroot%_libdir/apt/methods \
-			./run-tests
-	done
+			./run-tests '${NPROCS:+'|& sed --unbuffered -e "s/^/[$PARALLEL_SLOT {}] /"'}
 popd
 
 %files -f %name.lang
