@@ -13,6 +13,9 @@ DIR=$(readlink -f $(dirname $0))
 # Global parameters which affect the tests (or the framework)
 # and must be set before running the tests and using the framework:
 
+# For multiple instances to be run in parallel under xargs:
+export PARALLEL_SLOT="${PARALLEL_SLOT:-0}"
+
 # If non-empty, test failures won't count as failures
 # (rather as expected failures due to known bugs).
 export APT_TEST_XFAIL="${APT_TEST_XFAIL-}"
