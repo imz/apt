@@ -656,11 +656,30 @@ http {
 ENDCONFIG
 }
 
+wait_for_file() {
+	# The message 'Waiting...' is intentionally printed regardless of $MSGLEVEL;
+	# otherwise it would be difficult to see why the process is hanging;
+	# it can appear only in extra-ordinary situations (under heavy load).
+	[ -s "$1" ] ||
+		printf >&2 'Waiting for %s\n' "$1" &&
+		while ! [ -s "$1" ]; do
+			sleep 0.5
+		done
+}
+
 nginxstart() {
 	local -r NGINXPIDFILE=$TMPWORKINGDIRECTORY/nginx/nginx.pid
 	local -r NGINXLOG=$TMPWORKINGDIRECTORY/nginx/process-stderr.log
 
+	# The wait_for_file workaround would not be needed if nginx fully conformed
+	# to the "traditional UNIX forking daemon" behavior described
+	# in systemd.service(5); unfortunately for us, the upstream hasn't "fixed"
+	# this race[1], although a patch for synchronizing the exit of the parent
+	# with the creation of the pidfile is available[2].
+	# [1]: https://trac.nginx.org/nginx/ticket/1897
+	# [2]: http://mailman.nginx.org/pipermail/nginx-ru/2017-November/060628.html
 	/usr/sbin/nginx -c $TMPWORKINGDIRECTORY/nginx/nginx.conf -p $TMPWORKINGDIRECTORY &>>"$NGINXLOG" &&
+		wait_for_file "$NGINXPIDFILE" &&
 		local -r NGINXPID="$(cat "$NGINXPIDFILE" 2>>"$NGINXLOG")" &&
 		[ -n "$NGINXPID" ] ||
 			{ cat >&2 "$NGINXLOG"
