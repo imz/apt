@@ -365,7 +365,7 @@ bool GPGMethod::Fetch(FetchItem *Itm)
       if (msg != NULL)
       {
 	 removeTmpDir(TempDir, SigCount);
-	 return _error->Error(msg);
+	 return _error->Error("%s", msg);
       }
    }
    else
@@ -389,7 +389,7 @@ bool GPGMethod::Fetch(FetchItem *Itm)
 	 if (msg != NULL)
 	 {
 	    removeTmpDir(TempDir, SigCount);
-	    return _error->Error(msg);
+	    return _error->Error("%s", msg);
 	 }
 	 if (KeyList.empty())
 	    KeyList = KeyID;
