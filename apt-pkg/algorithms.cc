@@ -1073,10 +1073,13 @@ void pkgProblemResolver::MakeScores()
       switch (p) {
          case pkgCache::State::Important:
 	   Scores[I->ID] += 1000;
+	   [[fallthrough]];
 	 case pkgCache::State::Required:
 	   Scores[I->ID] += 1000;
+	   [[fallthrough]];
 	 case pkgCache::State::Standard:
 	   Scores[I->ID] += 1000;
+	   [[fallthrough]];
 	 case pkgCache::State::Optional:
 	 case pkgCache::State::Extra:
 	 default:
