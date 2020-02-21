@@ -11,6 +11,7 @@
 
 #ifdef HAVE_RPM
 
+#define ALT_RPM_API
 #include <fcntl.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -32,6 +33,7 @@
 
 #include <rpm/rpmts.h>
 #include <rpm/rpmdb.h>
+#include <rpm/rpmlib.h>
 
 bool RPMHandler::HasFile(const char *File) const
 {
@@ -42,6 +44,67 @@ bool RPMHandler::HasFile(const char *File) const
    FileList(Files);
    vector<string>::const_iterator I = std::find(Files.begin(), Files.end(), File);
    return I != Files.end();
+}
+
+unsigned int RPMHandler::DepOp(raptDepFlags rpmflags) const
+{
+   unsigned int Op = 0;
+   raptDepFlags flags = (raptDepFlags)(rpmflags & RPMSENSE_SENSEMASK);
+   if (flags == RPMSENSE_ANY) {
+      Op = pkgCache::Dep::NoOp;
+   } else if (flags & RPMSENSE_LESS) {
+      if (flags & RPMSENSE_EQUAL)
+	 Op = pkgCache::Dep::LessEq;
+      else
+	 Op = pkgCache::Dep::Less;
+   } else if (flags & RPMSENSE_GREATER) {
+      if (flags & RPMSENSE_EQUAL)
+	 Op = pkgCache::Dep::GreaterEq;
+      else
+	 Op = pkgCache::Dep::Greater;
+   } else if (flags & RPMSENSE_EQUAL) {
+      Op = pkgCache::Dep::Equals;
+   } else {
+      /* can't happen, right? */
+      _error->Error(_("Impossible flags %d in %s"), rpmflags, Name().c_str());
+   }
+
+   return Op;
+}
+
+bool RPMHandler::InternalDep(const char *name, const char *ver, raptDepFlags flag) const
+{
+   static const char rpmlib_prefix[] = "rpmlib(";
+   if (strncmp(name, rpmlib_prefix, sizeof(rpmlib_prefix) - 1) != 0)
+      return false;
+
+   /* 4.13.0 (ALT specific) */
+   return rpmCheckRpmlibProvides(name, ver, flag);
+}
+
+bool RPMHandler::PutDep(const char *name, const char *ver, raptDepFlags flags,
+			unsigned int Type, bool checkInternalDep,
+			vector<Dependency*> &Deps) const
+{
+   if (checkInternalDep && InternalDep(name, ver, flags))
+      return true;
+
+   if (Type == pkgCache::Dep::Depends) {
+      if (flags & RPMSENSE_PREREQ)
+         Type = pkgCache::Dep::PreDepends;
+      else if (flags & RPMSENSE_MISSINGOK)
+         Type = pkgCache::Dep::Suggests;
+      else
+         Type = pkgCache::Dep::Depends;
+   }
+
+   Dependency *Dep = new Dependency;
+   Dep->Name = name;
+   Dep->Version = ver;
+   Dep->Op = DepOp(flags);
+   Dep->Type = Type;
+   Deps.push_back(Dep);
+   return true;
 }
 
 off_t RPMHdrHandler::GetITag(raptTag Tag) const
@@ -137,6 +200,40 @@ bool RPMHdrHandler::FileList(vector<string> &FileList) const
    if (!h.getTag(RPMTAG_OLDFILENAMES, FileList))
       h.getTag(RPMTAG_FILENAMES, FileList);
    // it's ok for a package not to have any files
+   return true;
+}
+
+bool RPMHdrHandler::DepsList(unsigned int Type, vector<Dependency*> &Deps,
+			     bool checkInternalDep) const
+{
+   rpmTag deptype;
+   switch (Type) {
+      case pkgCache::Dep::Depends:
+         deptype = RPMTAG_REQUIRENAME;
+         break;
+      case pkgCache::Dep::Obsoletes:
+         deptype = RPMTAG_OBSOLETENAME;
+         break;
+      case pkgCache::Dep::Conflicts:
+         deptype = RPMTAG_CONFLICTNAME;
+         break;
+      case pkgCache::Dep::Provides:
+         deptype = RPMTAG_PROVIDENAME;
+         break;
+      case pkgCache::Dep::Suggests:
+         deptype = RPMTAG_SUGGESTNAME;
+         break;
+      default:
+         /* can't happen... right? */
+         return false;
+   }
+   rpmds ds = rpmdsNew(HeaderP, deptype, 0);
+   if (ds) {
+      while (rpmdsNext(ds) >= 0)
+         PutDep(rpmdsN(ds), rpmdsEVR(ds), rpmdsFlags(ds), Type,
+		checkInternalDep, Deps);
+      rpmdsFree(ds);
+   }
    return true;
 }
 
