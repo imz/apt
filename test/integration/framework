@@ -845,8 +845,8 @@ nginxsetuphttp() {
 	mkdir -p $TMPWORKINGDIRECTORY/nginx/tmp ||:
 
 cat >> $TMPWORKINGDIRECTORY/nginx/nginx.conf << ENDCONFIG
+error_log stderr;
 worker_processes 1;
-error_log $TMPWORKINGDIRECTORY/nginx/error.log;
 pid $TMPWORKINGDIRECTORY/nginx/nginx.pid;
 
 events {
@@ -869,8 +869,8 @@ http {
 
 	ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
 	ssl_prefer_server_ciphers on;
-	access_log $TMPWORKINGDIRECTORY/nginx/http.access.log;
-	error_log $TMPWORKINGDIRECTORY/nginx/http.error.log;
+	access_log stderr;
+	error_log stderr;
 
 	server {
 		listen 8080;
@@ -890,8 +890,8 @@ nginxsetuphttps() {
 	mkdir -p $TMPWORKINGDIRECTORY/nginx/tmp ||:
 
 	cat >> $TMPWORKINGDIRECTORY/nginx/nginx.conf << ENDCONFIG
+error_log stderr;
 worker_processes 1;
-error_log $TMPWORKINGDIRECTORY/nginx/error.log;
 pid $TMPWORKINGDIRECTORY/nginx/nginx.pid;
 
 events {
@@ -914,8 +914,8 @@ http {
 
 	ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
 	ssl_prefer_server_ciphers on;
-	access_log $TMPWORKINGDIRECTORY/nginx/http.access.log;
-	error_log $TMPWORKINGDIRECTORY/nginx/http.error.log;
+	access_log stderr;
+	error_log stderr;
 
 	server {
 		listen 8080;
