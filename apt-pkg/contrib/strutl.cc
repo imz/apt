@@ -935,14 +935,12 @@ void ioprintf(ostream &out,const char *format,...)
 char *safe_snprintf(char *Buffer,char *End,const char *Format,...)
 {
    va_list args;
-   unsigned long Did;
-
    va_start(args,Format);
 
    if (End <= Buffer)
       return End;
 
-   Did = vsnprintf(Buffer,End - Buffer,Format,args);
+   auto Did = vsnprintf(Buffer,End - Buffer,Format,args);
    if (Did < 0 || Buffer + Did > End)
       return End;
    return Buffer + Did;
