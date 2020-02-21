@@ -10,6 +10,8 @@ if COMPILE_STATIC
 bin_PROGRAMS += apt-get-static apt-cache-static apt-cdrom-static
 endif
 
+AM_CFLAGS = $(WARN_CFLAGS)
+AM_CXXFLAGS = $(WARN_CXXFLAGS)
 LDADD = ../apt-pkg/libapt-pkg.la $(RPMLIBS)
 
 apt_get_SOURCES = apt-get.cc acqprogress.cc acqprogress.h

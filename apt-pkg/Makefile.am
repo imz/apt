@@ -5,6 +5,8 @@ libapt_pkg_la_LIBADD = @RPMLIBS@
 libapt_pkg_la_LDFLAGS = -version-info 8:0:1 -release @GLIBC_VER@-@LIBSTDCPP_VER@@NO_CXX11ABI_SUFFIX@@FILE_OFFSET_BITS_SUFFIX@
 
 AM_CPPFLAGS = -DLIBDIR=\"$(libdir)\"
+AM_CFLAGS = $(WARN_CFLAGS)
+AM_CXXFLAGS = $(WARN_CXXFLAGS)
 
 if WITH_LUA
 libapt_pkg_la_LIBADD += -llua
