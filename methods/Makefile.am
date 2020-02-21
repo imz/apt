@@ -2,6 +2,8 @@
 methodsdir=${libdir}/apt/methods
 methods_PROGRAMS = cdrom copy file ftp gpg gzip bzip2 http https rsh ssh rsync
 
+AM_CFLAGS = $(WARN_CFLAGS)
+AM_CXXFLAGS = $(WARN_CXXFLAGS)
 LDADD = ../apt-pkg/libapt-pkg.la
 
 cdrom_SOURCES = cdrom.cc

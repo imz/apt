@@ -21,6 +21,11 @@ AC_PROG_CXX
 AC_PROG_CPP
 AC_SYS_LARGEFILE
 
+apt_WARN_LANG_FLAGS
+AC_LANG_PUSH([C++])
+apt_WARN_LANG_FLAGS
+AC_LANG_POP([C++])
+
 case "$ac_cv_sys_file_offset_bits" in
 	no | unknown) FILE_OFFSET_BITS_SUFFIX=;;
 	*) FILE_OFFSET_BITS_SUFFIX="-$ac_cv_sys_file_offset_bits";;
