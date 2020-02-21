@@ -33,6 +33,11 @@ MD5Sum: [0-9a-fA-F]+
 Filename: simple-package-2-alt1\.$(getarchitecture)\.rpm
 Description: Test package
  Dummy description
+Changelog:
+ \* Tue Oct 01 2019 Nobody <nobody@altlinux\.org> 2-alt1
+ - Test package updated
+ \* Mon Sep 30 2019 Nobody <somebody@altlinux\.org> 1-alt1
+ - Test package created
 
 
 Package: simple-package
@@ -47,7 +52,10 @@ Size: [0-9]+
 MD5Sum: [0-9a-fA-F]+
 Filename: simple-package-1-alt1\.$(getarchitecture)\.rpm
 Description: Test package
- Dummy description" aptcache show 'simple-package'
+ Dummy description
+Changelog:
+ \* Mon Sep 30 2019 Nobody <nobody@altlinux\.org> 1-alt1
+ - Test package created" aptcache show 'simple-package'
 
 testregexmatch "Package: missing-dependency
 Section: Other
@@ -62,6 +70,9 @@ Size: [0-9]+
 MD5Sum: [0-9a-fA-F]+
 Filename: missing-dependency-1-alt1\.$(getarchitecture)\.rpm
 Description: Test package
- Dummy description" aptcache show 'missing-dependency'
+ Dummy description
+Changelog:
+ \* Mon Sep 30 2019 Nobody <nobody@altlinux\.org> 1-alt1
+ - Test package created" aptcache show 'missing-dependency'
 
 testempty aptcache show 'no-such-package'

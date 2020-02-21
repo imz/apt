@@ -34,6 +34,9 @@ MD5Sum: [0-9a-fA-F]+
 Filename: conflicting-package-two-1-alt1\.$(getarchitecture)\.rpm
 Description: Test package
  Dummy description
+Changelog:
+ \* Mon Sep 30 2019 Nobody <nobody@altlinux\.org> 1-alt1
+ - Test package created
 
 
 Package: simple-package-noarch
@@ -49,6 +52,9 @@ MD5Sum: [0-9a-fA-F]+
 Filename: simple-package-noarch-1-alt1\.noarch\.rpm
 Description: Test package
  Dummy description
+Changelog:
+ \* Mon Sep 30 2019 Nobody <nobody@altlinux\.org> 1-alt1
+ - Test package created
 
 
 Package: simple-package-new
@@ -66,6 +72,11 @@ MD5Sum: [0-9a-fA-F]+
 Filename: simple-package-new-3-alt1\.$(getarchitecture)\.rpm
 Description: Test package
  Dummy description
+Changelog:
+ \* Tue Oct 01 2019 Nobody <nobody@altlinux\.org> 3-alt1
+ - Test package updated
+ \* Mon Sep 30 2019 Nobody <somebody@altlinux\.org> 1-alt1
+ - Test package created
 
 
 Package: missing-dependency
@@ -82,6 +93,9 @@ MD5Sum: [0-9a-fA-F]+
 Filename: missing-dependency-1-alt1\.$(getarchitecture)\.rpm
 Description: Test package
  Dummy description
+Changelog:
+ \* Mon Sep 30 2019 Nobody <nobody@altlinux\.org> 1-alt1
+ - Test package created
 
 
 Package: simple-package
@@ -97,6 +111,11 @@ MD5Sum: [0-9a-fA-F]+
 Filename: simple-package-2-alt1\.$(getarchitecture)\.rpm
 Description: Test package
  Dummy description
+Changelog:
+ \* Tue Oct 01 2019 Nobody <nobody@altlinux\.org> 2-alt1
+ - Test package updated
+ \* Mon Sep 30 2019 Nobody <somebody@altlinux\.org> 1-alt1
+ - Test package created
 
 
 Package: conflicting-package-one
@@ -112,4 +131,9 @@ Size: [0-9]+
 MD5Sum: [0-9a-fA-F]+
 Filename: conflicting-package-one-2-alt1\.$(getarchitecture)\.rpm
 Description: Test package
- Dummy description" aptcache dumpavail
+ Dummy description
+Changelog:
+ \* Tue Oct 01 2019 Nobody <nobody@altlinux\.org> 2-alt1
+ - Test package updated
+ \* Mon Sep 30 2019 Nobody <somebody@altlinux\.org> 1-alt1
+ - Test package created" aptcache dumpavail

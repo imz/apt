@@ -519,6 +519,7 @@ generaterepository() {
 			--suite="${GB_REPO_SUITE:-$label}" \
 			--version="${GB_REPO_VERSION:-$date_s}" \
 			--topdir="$REPO_DIR" \
+			--changelog-since='@1' \
 			--flat --no-oldhashfile --no-bz2 --no-xz --mapi \
 			$dir $comps
 
