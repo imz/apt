@@ -15,5 +15,8 @@ Dummy description
 %files
 
 %changelog
-* Mon Sep 30 2019 Nobody <nobody@altlinux.org> 3-alt1
+* Tue Oct 01 2019 Nobody <nobody@altlinux.org> 3-alt1
+- Test package updated
+
+* Mon Sep 30 2019 Nobody <somebody@altlinux.org> 1-alt1
 - Test package created
