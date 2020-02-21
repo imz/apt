@@ -28,10 +28,7 @@ buildpackage 'conflicting-package-one'
 
 generaterepository_and_switch_sources "$TMPWORKINGDIRECTORY/usr/src/RPM/RPMS"
 
-/usr/sbin/nginx -c $TMPWORKINGDIRECTORY/nginx/nginx.conf -p $TMPWORKINGDIRECTORY &>> $TMPWORKINGDIRECTORY/nginx/process-stderr.log &
-NGINXPID=$!
-
-addtrap 'prefix' "kill -SIGTERM $NGINXPID; [ \"$EXIT_CODE\" = '0' ] || cat $TMPWORKINGDIRECTORY/nginx/process-stderr.log;"
+nginxstart
 
 testsuccess aptget update
 
