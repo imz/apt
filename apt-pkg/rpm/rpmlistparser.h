@@ -41,9 +41,6 @@ class rpmListParser : public pkgCacheGenerator::ListParser
    bool Duplicated;
 
    bool ParseStatus(pkgCache::PkgIterator Pkg,pkgCache::VerIterator Ver);
-   bool ParseDepends(pkgCache::VerIterator Ver,
-		     char **namel, char **verl, int32_t *flagl,
-		     int count, unsigned int Type);
    bool ParseDepends(pkgCache::VerIterator Ver, unsigned int Type);
    bool ParseProvides(pkgCache::VerIterator Ver);
 

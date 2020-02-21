@@ -15,7 +15,6 @@
 
 #ifdef HAVE_RPM
 
-#define ALT_RPM_API
 #include "rpmlistparser.h"
 #include "rpmhandler.h"
 #include "rpmpackagedata.h"
@@ -27,9 +26,9 @@
 #include <apt-pkg/crc-16.h>
 #include <apt-pkg/tagfile.h>
 
-#include <apti18n.h>
+#include <algorithm>
 
-#include <rpm/rpmlib.h>
+#include <apti18n.h>
 
 #include <rpm/rpmds.h>
 
@@ -231,12 +230,15 @@ bool rpmListParser::UsePackage(pkgCache::PkgIterator Pkg,
 // ---------------------------------------------------------------------
 /* */
 
-/*
-static int compare(const void *a, const void *b)
+static bool depsort(const Dependency *a, const Dependency *b)
 {
-   return strcmp(*(char**)a, *(char**)b);
+   return a->Name < b->Name;
 }
-*/
+
+static bool depuniq(const Dependency *a, const Dependency *b)
+{
+   return a->Name == b->Name;
+}
 
 unsigned short rpmListParser::VersionHash()
 {
@@ -245,59 +247,40 @@ unsigned short rpmListParser::VersionHash()
       return (*VI)->Hash;
 #endif
 
-   int Sections[] = {
-	  RPMTAG_REQUIRENAME,
-	  RPMTAG_OBSOLETENAME,
-	  RPMTAG_CONFLICTNAME,
-	  0
-   };
    unsigned long Result = INIT_FCS;
+   Result = AddCRC16(Result, Package());
    Result = AddCRC16(Result, Version());
    Result = AddCRC16(Result, Architecture());
 
-   for (const int *sec = Sections; *sec != 0; sec++)
-   {
-      char *Str;
-      int Len;
-      rpm_tagtype_t type;
-      rpm_count_t count;
-      int res;
-      char **strings = NULL;
+   int DepSections[] = {
+      pkgCache::Dep::Depends,
+      pkgCache::Dep::Conflicts,
+      pkgCache::Dep::Obsoletes,
+   };
 
-      res = headerGetEntry(header, *sec, &type, (void **)&strings, &count);
-      if (res != 1)
+   for (size_t i = 0; i < sizeof(DepSections)/sizeof(int); ++i) {
+      vector<Dependency*> Deps;
+
+      if (!Handler->DepsList(DepSections[i], Deps))
 	 continue;
 
-      switch (type)
-      {
-      case RPM_STRING_ARRAY_TYPE:
-	 //qsort(strings, count, sizeof(char*), compare);
-	 while (count-- > 0)
-	 {
-	    Str = strings[count];
-	    Len = strlen(Str);
+      std::sort(Deps.begin(), Deps.end(), depsort);
 
-	    /* Suse patch.rpm hack. */
-	    if (Len == 17 && *Str == 'r' && *sec == RPMTAG_REQUIRENAME &&
-	        strcmp(Str, "rpmlib(PatchRPMs)") == 0)
-	       continue;
+      // Rpmdb can give out dupes for scriptlet dependencies, filter them out.
+      // XXX Why is this done here instead of the handler?
+      vector<Dependency*> UniqDeps;
+      UniqDeps.assign(Deps.begin(), Deps.end());
+      vector<Dependency*>::const_iterator DepEnd =
+	 std::unique(UniqDeps.begin(), UniqDeps.end(), depuniq);
 
-	    Result = AddCRC16(Result,Str,Len);
-	 }
-	 free(strings);
-	 break;
-
-      case RPM_STRING_TYPE:
-	 Str = (char*)strings;
-	 Len = strlen(Str);
-	 Result = AddCRC16(Result,Str,Len);
-	 break;
-      }
+      for (vector<Dependency*>::const_iterator I = UniqDeps.begin(); I != DepEnd; ++I)
+	 Result = AddCRC16(Result, (*I)->Name);
+      for (vector<Dependency*>::const_iterator I = Deps.begin(); I != Deps.end(); ++I)
+	 delete (*I);
    }
-
    return Result;
 }
-                                                                        /*}}}*/
+
 // ListParser::ParseStatus - Parse the status field			/*{{{*/
 // ---------------------------------------------------------------------
 bool rpmListParser::ParseStatus(pkgCache::PkgIterator Pkg,
@@ -317,132 +300,26 @@ bool rpmListParser::ParseStatus(pkgCache::PkgIterator Pkg,
    return true;
 }
 
-
-bool rpmListParser::ParseDepends(pkgCache::VerIterator Ver,
-				 char **namel, char **verl, int32_t *flagl,
-				 int count, unsigned int Type)
-{
-   int i = 0;
-   unsigned int Op = 0;
-   bool DepMode = false;
-   if (Type == pkgCache::Dep::Depends)
-      DepMode = true;
-
-   for (; i < count; i++)
-   {
-      if (DepMode == true) {
-	 if (flagl[i] & RPMSENSE_PREREQ)
-	    Type = pkgCache::Dep::PreDepends;
-	 else if (flagl[i] & RPMSENSE_MISSINGOK)
-	    Type = pkgCache::Dep::Suggests;
-	 else
-	    Type = pkgCache::Dep::Depends;
-      }
-
-      if (namel[i][0] == 'r' && strncmp(namel[i], "rpmlib", 6) == 0)
-      {
-	 /* 4.13.0 (ALT specific) */
-	 int res = rpmCheckRpmlibProvides(namel[i], verl?verl[i]:NULL,
-					  flagl[i]);
-	 if (res) continue;
-      }
-
-      if (verl)
-      {
-	 if (!*verl[i])
-	 {
-	    Op = pkgCache::Dep::NoOp;
-	 }
-	 else
-	 {
-	    if (flagl[i] & RPMSENSE_LESS)
-	    {
-	       if (flagl[i] & RPMSENSE_EQUAL)
-		   Op = pkgCache::Dep::LessEq;
-	       else
-		   Op = pkgCache::Dep::Less;
-	    }
-	    else if (flagl[i] & RPMSENSE_GREATER)
-	    {
-	       if (flagl[i] & RPMSENSE_EQUAL)
-		   Op = pkgCache::Dep::GreaterEq;
-	       else
-		   Op = pkgCache::Dep::Greater;
-	    }
-	    else if (flagl[i] & RPMSENSE_EQUAL)
-	    {
-	       Op = pkgCache::Dep::Equals;
-	    }
-	 }
-
-	 if (NewDepends(Ver,namel[i],verl[i],Op,Type) == false)
-	     return false;
-      }
-      else
-      {
-	 if (NewDepends(Ver,namel[i],"",pkgCache::Dep::NoOp,Type) == false)
-	     return false;
-      }
-   }
-   return true;
-}
                                                                         /*}}}*/
 // ListParser::ParseDepends - Parse a dependency list			/*{{{*/
 // ---------------------------------------------------------------------
 /* This is the higher level depends parser. It takes a tag and generates
  a complete depends tree for the given version. */
-bool rpmListParser::ParseDepends(pkgCache::VerIterator Ver,
-				 unsigned int Type)
+bool rpmListParser::ParseDepends(pkgCache::VerIterator Ver, unsigned int Type)
 {
-   char **namel = NULL;
-   char **verl = NULL;
-   int *flagl = NULL;
-   int res;
-   rpm_tagtype_t type;
-   rpm_count_t count;
+   vector<Dependency*> Deps;
 
-   switch (Type)
-   {
-   case pkgCache::Dep::Depends:
-      res = headerGetEntry(header, RPMTAG_REQUIRENAME, &type,
-			   (void **)&namel, &count);
-      if (res != 1)
-	  return true;
-      res = headerGetEntry(header, RPMTAG_REQUIREVERSION, &type,
-			   (void **)&verl, &count);
-      res = headerGetEntry(header, RPMTAG_REQUIREFLAGS, &type,
-			   (void **)&flagl, &count);
-      break;
+   if (!Handler->DepsList(Type, Deps))
+      return false;
 
-   case pkgCache::Dep::Obsoletes:
-      res = headerGetEntry(header, RPMTAG_OBSOLETENAME, &type,
-			   (void **)&namel, &count);
-      if (res != 1)
-	  return true;
-      res = headerGetEntry(header, RPMTAG_OBSOLETEVERSION, &type,
-			   (void **)&verl, &count);
-      res = headerGetEntry(header, RPMTAG_OBSOLETEFLAGS, &type,
-			   (void **)&flagl, &count);
-      break;
-
-   case pkgCache::Dep::Conflicts:
-      res = headerGetEntry(header, RPMTAG_CONFLICTNAME, &type,
-			   (void **)&namel, &count);
-      if (res != 1)
-	  return true;
-      res = headerGetEntry(header, RPMTAG_CONFLICTVERSION, &type,
-			   (void **)&verl, &count);
-      res = headerGetEntry(header, RPMTAG_CONFLICTFLAGS, &type,
-			   (void **)&flagl, &count);
-      break;
+   bool rc = true;
+   for (vector<Dependency*>::const_iterator I = Deps.begin(); I != Deps.end(); ++I) {
+      if (!NewDepends(Ver, (*I)->Name, (*I)->Version, (*I)->Op, (*I)->Type))
+	 rc = false;
+      delete (*I);
    }
 
-   ParseDepends(Ver, namel, verl, flagl, count, Type);
-
-   free(namel);
-   free(verl);
-
-   return true;
+   return rc;
 }
                                                                         /*}}}*/
 bool rpmListParser::CollectFileProvides(pkgCache &Cache,
@@ -481,50 +358,19 @@ bool rpmListParser::CollectFileProvides(pkgCache &Cache,
 /* */
 bool rpmListParser::ParseProvides(pkgCache::VerIterator Ver)
 {
-   rpm_tagtype_t type;
-   rpm_count_t count;
-   char **namel = NULL;
-   char **verl = NULL;
-   int res;
+   vector<Dependency*> Deps;
 
-   res = headerGetEntry(header, RPMTAG_PROVIDENAME, &type,
-			(void **)&namel, &count);
-   if (res != 1)
-       return true;
-   /*
-    res = headerGetEntry(header, RPMTAG_PROVIDEFLAGS, &type,
-    (void **)&flagl, &count);
-    if (res != 1)
-    return true;
-    */
-   res = headerGetEntry(header, RPMTAG_PROVIDEVERSION, &type,
-			(void **)&verl, NULL);
-   if (res != 1)
-	verl = NULL;
+   if (!Handler->DepsList(pkgCache::Dep::Provides, Deps))
+      return false;
 
-   bool ret = true;
-   for (int i = 0; i < count; i++)
-   {
-      if (verl && *verl[i])
-      {
-	 if (NewProvides(Ver,namel[i],verl[i]) == false) {
-	    ret = false;
-	    break;
-	 }
-      }
-      else
-      {
-	 if (NewProvides(Ver,namel[i],"") == false) {
-	    ret = false;
-	    break;
-	 }
-      }
+   bool rc = true;
+   for (vector<Dependency*>::const_iterator I = Deps.begin(); I != Deps.end(); ++I) {
+      if (!NewProvides(Ver,(*I)->Name,(*I)->Version))
+	 rc = false;
+      delete (*I);
    }
 
-   free(namel);
-   free(verl);
-
-   return ret;
+   return rc;
 }
                                                                         /*}}}*/
 // ListParser::Step - Move to the next section in the file		/*{{{*/
