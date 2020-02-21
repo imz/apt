@@ -3360,6 +3360,7 @@ void CommandHelp(const char *Name)
 	    "  -o=? Set an arbitary configuration option, eg -o dir::cache=/tmp\n"
 	    "\n"
 	 );
+	 break;
 
       case 900401: // dist-upgrade
 	 c2out << _(
@@ -3376,6 +3377,7 @@ void CommandHelp(const char *Name)
 	    "  -o=? Set an arbitary configuration option, eg -o dir::cache=/tmp\n"
 	    "\n"
 	 );
+	 break;
 
       case 209563: // showpkg
 	 c2out << _(
@@ -3693,9 +3695,11 @@ char **ReadLineCompletion(const char *Text, int Start, int End)
 
 	 case 436466: // remove
 	    CompPackagesMode = MODE_REMOVE;
+	    [[fallthrough]];
 	 case 16517: // keep
 	    if (CompPackagesMode == -1)
 	       CompPackagesMode = MODE_KEEP;
+	    [[fallthrough]];
 	 case 2209563: // showpkg
 	 case 17649: // show
 	 case 16816: // list
