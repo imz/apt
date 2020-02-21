@@ -636,13 +636,11 @@ http {
 	error_log stderr;
 
 	server {
-		listen $((8080+PARALLEL_SLOT));
+		listen $((8080+PARALLEL_SLOT)) ssl;
 		server_name localhost localhost.localdomain;
 
 		ssl_certificate	$TMPWORKINGDIRECTORY/nginx/cert.crt;
 		ssl_certificate_key	$TMPWORKINGDIRECTORY/nginx/cert.key;
-
-		ssl on;
 
 		ssl_session_cache	builtin:1000	shared:SSL:10m;
 		ssl_protocols TLSv1.2;
