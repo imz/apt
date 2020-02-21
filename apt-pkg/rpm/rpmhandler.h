@@ -31,6 +31,14 @@
 #define CRPMTAG_DIRECTORY         1000010
 #define CRPMTAG_BINARY            1000011
 
+struct Dependency
+{
+   string Name;
+   string Version;
+   unsigned int Op;
+   unsigned int Type;
+};
+
 class RPMHandler
 {
    protected:
@@ -38,6 +46,12 @@ class RPMHandler
    off_t iOffset;
    off_t iSize;
    string ID;
+
+   unsigned int DepOp(raptDepFlags rpmflags) const;
+   bool InternalDep(const char *name, const char *ver, raptDepFlags flag) const;
+   bool PutDep(const char *name, const char *ver, raptDepFlags flags,
+	       unsigned int type, bool checkInternalDep,
+	       std::vector<Dependency*> &Deps) const;
 
    public:
 
@@ -73,6 +87,8 @@ class RPMHandler
    virtual off_t InstalledSize() const = 0;
    virtual string SourceRpm() const = 0;
 
+   virtual bool DepsList(unsigned int Type, std::vector<Dependency*> &Deps,
+			 bool checkInternalDep = true) const = 0;
    virtual bool FileList(std::vector<string> &FileList) const = 0;
 
    virtual bool HasFile(const char *File) const;
@@ -112,6 +128,8 @@ class RPMHdrHandler : public RPMHandler
    virtual off_t InstalledSize() const override {return GetITag(RPMTAG_SIZE);}
    virtual string SourceRpm() const override {return GetSTag(RPMTAG_SOURCERPM);}
 
+   virtual bool DepsList(unsigned int Type, std::vector<Dependency*> &Deps,
+			 bool checkInternalDep = true) const override;
    virtual bool FileList(std::vector<string> &FileList) const override;
 
    RPMHdrHandler() : RPMHandler(), HeaderP(0) {}

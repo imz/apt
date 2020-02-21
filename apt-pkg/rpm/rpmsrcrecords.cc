@@ -15,7 +15,6 @@
 
 #include <assert.h>
 
-#define ALT_RPM_API
 #include "rpmsrcrecords.h"
 #include "rpmhandler.h"
 
@@ -186,29 +185,35 @@ void rpmSrcRecordParser::BufCatTag(const char *tag, const char *value)
    BufCat(value);
 }
 
-void rpmSrcRecordParser::BufCatDep(const char *pkg,
-				   const char *version,
-				   int flags)
+void rpmSrcRecordParser::BufCatDep(Dependency *Dep)
 {
-   char buf[16];
-   char *ptr = (char*)buf;
+   string buf;
 
-   BufCat(pkg);
-   if (*version)
+   BufCat(Dep->Name.c_str());
+   if (Dep->Version.empty() == false)
    {
-      *ptr++ = ' ';
-      *ptr++ = '(';
-      if (flags & RPMSENSE_LESS)
-	 *ptr++ = '<';
-      if (flags & RPMSENSE_GREATER)
-	 *ptr++ = '>';
-      if (flags & RPMSENSE_EQUAL)
-	 *ptr++ = '=';
-      *ptr++ = ' ';
-      *ptr = '\0';
+      BufCat(" (");
+      switch (Dep->Op) {
+         case pkgCache::Dep::Less:
+            buf += "<";
+            break;
+         case pkgCache::Dep::LessEq:
+            buf += "<=";
+            break;
+         case pkgCache::Dep::Equals:
+            buf += "=";
+            break;
+         case pkgCache::Dep::Greater:
+            buf += ">";
+            break;
+         case pkgCache::Dep::GreaterEq:
+            buf += ">=";
+            break;
+      }
 
-      BufCat(buf);
-      BufCat(version);
+      BufCat(buf.c_str());
+      BufCat(" ");
+      BufCat(Dep->Version.c_str());
       BufCat(")");
    }
 }
@@ -235,16 +240,32 @@ void rpmSrcRecordParser::BufCatDescr(const char *descr)
    }
 }
 
+void rpmSrcRecordParser::BufCatDepList(unsigned int Type, unsigned int SubType,
+				       const char *prefix)
+{
+   vector<Dependency*> Deps;
+   if (!Handler->DepsList(Type, Deps, false))
+      return;
+
+   bool start = true;
+   for (vector<Dependency*>::const_iterator I = Deps.begin(); I != Deps.end(); ++I) {
+      if ((*I)->Type != SubType)
+	 continue;
+      if (start) {
+	 BufCat(prefix);
+	 start = false;
+      } else {
+	 BufCat(", ");
+      }
+      BufCatDep(*I);
+      delete (*I);
+   }
+}
+
 // SrcRecordParser::AsStr - The record in raw text
 // -----------------------------------------------
 string rpmSrcRecordParser::AsStr()
 {
-   // FIXME: This method is leaking memory from headerGetEntry().
-   rpm_tagtype_t type, type2, type3;
-   rpm_count_t count;
-   char **strv;
-   char **strv2;
-   int32_t *numv;
    char buf[32];
 
    BufUsed = 0;
@@ -260,59 +281,11 @@ string rpmSrcRecordParser::AsStr()
 
    BufCatTag("\nVersion: ", Handler->EVRDB().c_str());
 
-   headerGetEntry(HeaderP, RPMTAG_REQUIRENAME, &type, (void **)&strv, &count);
-   assert(type == RPM_STRING_ARRAY_TYPE || count == 0);
-
-   headerGetEntry(HeaderP, RPMTAG_REQUIREVERSION, &type2, (void **)&strv2, &count);
-   headerGetEntry(HeaderP, RPMTAG_REQUIREFLAGS, &type3, (void **)&numv, &count);
-
-   if (count > 0)
-   {
-      int i, j;
-
-      for (j = i = 0; i < count; i++)
-      {
-	 if ((numv[i] & RPMSENSE_PREREQ))
-	 {
-	    if (j == 0)
-		BufCat("\nPre-Depends: ");
-	    else
-		BufCat(", ");
-	    BufCatDep(strv[i], strv2[i], numv[i]);
-	    j++;
-	 }
-      }
-
-      for (j = 0, i = 0; i < count; i++)
-      {
-	 if (!(numv[i] & RPMSENSE_PREREQ))
-	 {
-	    if (j == 0)
-		BufCat("\nDepends: ");
-	    else
-		BufCat(", ");
-	    BufCatDep(strv[i], strv2[i], numv[i]);
-	    j++;
-	 }
-      }
-   }
-
-   headerGetEntry(HeaderP, RPMTAG_CONFLICTNAME, &type, (void **)&strv, &count);
-   assert(type == RPM_STRING_ARRAY_TYPE || count == 0);
-
-   headerGetEntry(HeaderP, RPMTAG_CONFLICTVERSION, &type2, (void **)&strv2, &count);
-   headerGetEntry(HeaderP, RPMTAG_CONFLICTFLAGS, &type3, (void **)&numv, &count);
-
-   if (count > 0)
-   {
-      BufCat("\nConflicts: ");
-      for (int i = 0; i < count; i++)
-      {
-	 if (i > 0)
-	     BufCat(", ");
-	 BufCatDep(strv[i], strv2[i], numv[i]);
-      }
-   }
+   BufCatDepList(pkgCache::Dep::Depends, pkgCache::Dep::Depends,
+		 "\nBuild-Depends: ");
+   // Doesn't do anything yet, build conflicts aren't recorded yet...
+   BufCatDepList(pkgCache::Dep::Conflicts, pkgCache::Dep::Conflicts,
+		 "\nBuild-Conflicts: ");
 
    snprintf(buf, sizeof(buf), "%llu", (unsigned long long) Handler->FileSize());
    BufCatTag("\nSize: ", buf);
@@ -342,83 +315,33 @@ string rpmSrcRecordParser::AsStr()
 bool rpmSrcRecordParser::BuildDepends(vector<pkgSrcRecords::Parser::BuildDepRec> &BuildDeps,
 				      bool ArchOnly)
 {
-   // FIXME: This method is leaking memory from headerGetEntry().
-   int RpmTypeTag[] = {RPMTAG_REQUIRENAME,
-		       RPMTAG_REQUIREVERSION,
-		       RPMTAG_REQUIREFLAGS,
-		       RPMTAG_CONFLICTNAME,
-		       RPMTAG_CONFLICTVERSION,
-		       RPMTAG_CONFLICTFLAGS};
-   int BuildType[] = {pkgSrcRecords::Parser::BuildDepend,
-		      pkgSrcRecords::Parser::BuildConflict};
-   BuildDepRec rec;
-
    BuildDeps.clear();
+   vector<Dependency*>::const_iterator I;
 
-   for (unsigned char Type = 0; Type != 2; Type++)
-   {
-      char **namel = NULL;
-      char **verl = NULL;
-      int *flagl = NULL;
-      int res;
-      rpm_tagtype_t type;
-      rpm_count_t count;
+   vector<Dependency*> Deps;
+   Handler->DepsList(pkgCache::Dep::Depends, Deps, false);
 
-      res = headerGetEntry(HeaderP, RpmTypeTag[0+Type*3], &type,
-			 (void **)&namel, &count);
-      if (res != 1)
-	 return true;
-      res = headerGetEntry(HeaderP, RpmTypeTag[1+Type*3], &type,
-			 (void **)&verl, &count);
-      res = headerGetEntry(HeaderP, RpmTypeTag[2+Type*3], &type,
-			 (void **)&flagl, &count);
+   for (I = Deps.begin(); I != Deps.end(); ++I) {
+      BuildDepRec rec;
+      rec.Package = (*I)->Name;
+      rec.Version = (*I)->Version;
+      rec.Op = (*I)->Op;
+      rec.Type = pkgSrcRecords::Parser::BuildDepend;
+      BuildDeps.push_back(rec);
+      delete (*I);
+   }
 
-      for (int i = 0; i < count; i++)
-      {
-	 if (strncmp(namel[i], "rpmlib", 6) == 0)
-	 {
-	    /* 4.13.0 (ALT specific) */
-	    int res = rpmCheckRpmlibProvides(namel[i], verl?verl[i]:NULL,
-					     flagl[i]);
-	    if (res) continue;
-	 }
+   vector<Dependency*> Conflicts;
+   Handler->DepsList(pkgCache::Dep::Conflicts, Conflicts, false);
 
-	 if (verl)
-	 {
-	    if (!*verl[i])
-	       rec.Op = pkgCache::Dep::NoOp;
-	    else
-	    {
-	       if (flagl[i] & RPMSENSE_LESS)
-	       {
-		  if (flagl[i] & RPMSENSE_EQUAL)
-		      rec.Op = pkgCache::Dep::LessEq;
-		  else
-		      rec.Op = pkgCache::Dep::Less;
-	       }
-	       else if (flagl[i] & RPMSENSE_GREATER)
-	       {
-		  if (flagl[i] & RPMSENSE_EQUAL)
-		      rec.Op = pkgCache::Dep::GreaterEq;
-		  else
-		      rec.Op = pkgCache::Dep::Greater;
-	       }
-	       else if (flagl[i] & RPMSENSE_EQUAL)
-		  rec.Op = pkgCache::Dep::Equals;
-	    }
-
-	    rec.Version = verl[i];
-	 }
-	 else
-	 {
-	    rec.Op = pkgCache::Dep::NoOp;
-	    rec.Version = "";
-	 }
-
-	 rec.Type = BuildType[Type];
-	 rec.Package = namel[i];
-	 BuildDeps.push_back(rec);
-      }
+   for (I = Conflicts.begin(); I != Conflicts.end(); ++I) {
+      BuildDepRec rec;
+      rec.Package = (*I)->Name;
+      rec.Version = (*I)->Version;
+      rec.Op = (*I)->Op;
+      rec.Type = pkgSrcRecords::Parser::BuildConflict;
+      BuildDeps.push_back(rec);
+      delete (*I);
    }
    return true;
 }

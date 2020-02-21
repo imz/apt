@@ -168,29 +168,30 @@ void rpmRecordParser::BufCatTag(const char *tag, const char *value)
    BufCat(value);
 }
 
-void rpmRecordParser::BufCatDep(const char *pkg,
-			        const char *version,
-				uint32_t flags)
+void rpmRecordParser::BufCatDep(Dependency *Dep)
 {
-   char buf[16];
-   char *ptr = buf;
-
-   BufCat(pkg);
-   if (*version)
-   {
-      *ptr++ = ' ';
-      *ptr++ = '(';
-      if (flags & RPMSENSE_LESS)
-	 *ptr++ = '<';
-      if (flags & RPMSENSE_GREATER)
-	 *ptr++ = '>';
-      if (flags & RPMSENSE_EQUAL)
-	 *ptr++ = '=';
-      *ptr++ = ' ';
-      *ptr = '\0';
-
-      BufCat(buf);
-      BufCat(version);
+   BufCat(Dep->Name.c_str());
+   if (!Dep->Version.empty()) {
+      BufCat(" (");
+      switch (Dep->Op) {
+         case pkgCache::Dep::Less:
+            BufCat("<");
+            break;
+         case pkgCache::Dep::LessEq:
+            BufCat("<=");
+            break;
+         case pkgCache::Dep::Equals:
+            BufCat("=");
+            break;
+         case pkgCache::Dep::Greater:
+            BufCat(">");
+            break;
+         case pkgCache::Dep::GreaterEq:
+            BufCat(">=");
+            break;
+      }
+      BufCat(" ");
+      BufCat(Dep->Version.c_str());
       BufCat(")");
    }
 }
@@ -198,36 +199,47 @@ void rpmRecordParser::BufCatDep(const char *pkg,
 void rpmRecordParser::BufCatDescr(const char *descr)
 {
    const char *begin = descr;
-   const char *p = descr;
 
-   while (*p)
-   {
-      if (*p=='\n')
-      {
+   while (*descr) {
+      if (*(descr++) == '\n') {
 	 BufCat(" ");
-	 BufCat(begin, p+1);
-	 begin = p+1;
+	 BufCat(begin, descr);
+	 begin = descr;
       }
-      p++;
    }
    if (*begin) {
       BufCat(" ");
-      BufCat(begin, p);
+      BufCat(begin, descr);
       BufCat("\n");
    }
 }
 
+void rpmRecordParser::BufCatDepList(unsigned int Type, unsigned int SubType,
+				    const char *prefix)
+{
+   vector<Dependency*> Deps;
+   if (!Handler->DepsList(Type, Deps, false))
+      return;
+
+   bool start = true;
+   for (vector<Dependency*>::const_iterator I = Deps.begin(); I != Deps.end(); ++I) {
+      if ((*I)->Type != SubType)
+	 continue;
+      if (start) {
+	 BufCat(prefix);
+	 start = false;
+      } else {
+	 BufCat(", ");
+      }
+      BufCatDep(*I);
+      delete (*I);
+   }
+}
 
 // RecordParser::GetRec - The record in raw text, in std Debian format	/*{{{*/
 // ---------------------------------------------------------------------
 void rpmRecordParser::GetRec(const char *&Start,const char *&Stop)
 {
-   // FIXME: This method is leaking memory from headerGetEntry().
-   rpm_tagtype_t type, type2, type3;
-   rpm_count_t count;
-   char **strv;
-   char **strv2;
-   uint32_t *numv;
    char buf[32];
 
    BufUsed = 0;
@@ -245,94 +257,19 @@ void rpmRecordParser::GetRec(const char *&Start,const char *&Stop)
 
    BufCatTag("\nVersion: ", Handler->EVRDB().c_str());
 
-//   headerGetEntry(HeaderP, RPMTAG_DISTRIBUTION, &type, (void **)&str, &count);
-//   fprintf(f, "Distribution: %s\n", str);
+   struct {
+      unsigned int Type, SubType;
+      const char *prefix;
+   } dep_types[] = {
+      { pkgCache::Dep::Depends, pkgCache::Dep::PreDepends, "\nPre-Depends: " },
+      { pkgCache::Dep::Depends, pkgCache::Dep::Depends, "\nDepends: " },
+      { pkgCache::Dep::Conflicts, pkgCache::Dep::Conflicts, "\nConflicts: " },
+      { pkgCache::Dep::Provides, pkgCache::Dep::Provides, "\nProvides: " },
+      { pkgCache::Dep::Obsoletes, pkgCache::Dep::Obsoletes, "\nObsoletes: " }
+   };
 
-   headerGetEntry(HeaderP, RPMTAG_REQUIRENAME, &type, (void **)&strv, &count);
-   assert(type == RPM_STRING_ARRAY_TYPE || count == 0);
-
-   headerGetEntry(HeaderP, RPMTAG_REQUIREVERSION, &type2, (void **)&strv2, &count);
-   headerGetEntry(HeaderP, RPMTAG_REQUIREFLAGS, &type3, (void **)&numv, &count);
-
-   if (count > 0)
-   {
-      int i, j;
-
-      for (j = i = 0; i < count; i++)
-      {
-	 if ((numv[i] & RPMSENSE_PREREQ))
-	 {
-	    if (j == 0)
-		BufCat("\nPre-Depends: ");
-	    else
-		BufCat(", ");
-	    BufCatDep(strv[i], strv2[i], numv[i]);
-	    j++;
-	 }
-      }
-
-      for (j = 0, i = 0; i < count; i++)
-      {
-	 if (!(numv[i] & RPMSENSE_PREREQ))
-	 {
-	    if (j == 0)
-		BufCat("\nDepends: ");
-	    else
-		BufCat(", ");
-	    BufCatDep(strv[i], strv2[i], numv[i]);
-	    j++;
-	 }
-      }
-   }
-
-   headerGetEntry(HeaderP, RPMTAG_CONFLICTNAME, &type, (void **)&strv, &count);
-   assert(type == RPM_STRING_ARRAY_TYPE || count == 0);
-
-   headerGetEntry(HeaderP, RPMTAG_CONFLICTVERSION, &type2, (void **)&strv2, &count);
-   headerGetEntry(HeaderP, RPMTAG_CONFLICTFLAGS, &type3, (void **)&numv, &count);
-
-   if (count > 0)
-   {
-      BufCat("\nConflicts: ");
-      for (int i = 0; i < count; i++)
-      {
-	 if (i > 0)
-	     BufCat(", ");
-	 BufCatDep(strv[i], strv2[i], numv[i]);
-      }
-   }
-
-   headerGetEntry(HeaderP, RPMTAG_PROVIDENAME, &type, (void **)&strv, &count);
-   assert(type == RPM_STRING_ARRAY_TYPE || count == 0);
-
-   headerGetEntry(HeaderP, RPMTAG_PROVIDEVERSION, &type2, (void **)&strv2, &count);
-   headerGetEntry(HeaderP, RPMTAG_PROVIDEFLAGS, &type3, (void **)&numv, &count);
-
-   if (count > 0)
-   {
-      BufCat("\nProvides: ");
-      for (int i = 0; i < count; i++)
-      {
-	 if (i > 0)
-	     BufCat(", ");
-	 BufCatDep(strv[i], strv2[i], numv[i]);
-      }
-   }
-
-   headerGetEntry(HeaderP, RPMTAG_OBSOLETENAME, &type, (void **)&strv, &count);
-   assert(type == RPM_STRING_ARRAY_TYPE || count == 0);
-
-   headerGetEntry(HeaderP, RPMTAG_OBSOLETEVERSION, &type2, (void **)&strv2, &count);
-   headerGetEntry(HeaderP, RPMTAG_OBSOLETEFLAGS, &type3, (void **)&numv, &count);
-   if (count > 0) {
-      BufCat("\nObsoletes: ");
-      for (int i = 0; i < count; i++)
-      {
-	 if (i > 0)
-	     BufCat(", ");
-	 BufCatDep(strv[i], strv2[i], numv[i]);
-      }
-   }
+   for (size_t i = 0; i < sizeof(dep_types) / sizeof(*dep_types); ++i)
+      BufCatDepList(dep_types[i].Type, dep_types[i].SubType, dep_types[i].prefix);
 
    BufCatTag("\nArchitecture: ", Handler->Arch().c_str());
 
