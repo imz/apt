@@ -130,9 +130,12 @@ shellsetedetector() {
 
 addtrap() {
 	if [ "$1" = 'prefix' ]; then
-		CURRENTTRAP="$2 $CURRENTTRAP"
+		shift
+		local -r fmt="$1"; shift
+		printf -v CURRENTTRAP "%s $fmt" "$CURRENTTRAP" "$@"
 	else
-		CURRENTTRAP="$CURRENTTRAP $1"
+		local -r fmt="$1"; shift
+		printf -v CURRENTTRAP "$fmt %s" "$@" "$CURRENTTRAP"
 	fi
 	trap "shellsetedetector; $CURRENTTRAP exitwithstatus;" 0 HUP INT QUIT ILL ABRT FPE SEGV PIPE TERM
 }
@@ -142,7 +145,7 @@ setupenvironment() {
 	TESTDIRECTORY=$(readlink -f $(dirname $0))
 	msgninfo "Preparing environment for ${CCMD}$(basename $0)${CINFO} in ${TMPWORKINGDIRECTORY}… "
 
-	addtrap "cd /; rm -rf $TMPWORKINGDIRECTORY;"
+	addtrap 'cd /; rm -rf %q;' "$TMPWORKINGDIRECTORY"
 	cd $TMPWORKINGDIRECTORY
 	mkdir rootdir aptarchive keys
 	cd rootdir
@@ -773,7 +776,8 @@ nginxstart() {
 	/usr/sbin/nginx -c $TMPWORKINGDIRECTORY/nginx/nginx.conf -p $TMPWORKINGDIRECTORY &>>"$NGINXLOG" &
 	local -r NGINXPID=$!
 
-	local NGINXTRAP
-	printf -v NGINXTRAP 'kill -TERM %q ||:; [ "$EXIT_CODE" = 0 ] || if [ -e %q ]; then echo NGINXLOG:; cat %q ||:; fi;' "$NGINXPID" "$NGINXLOG" "$NGINXLOG"
-	addtrap 'prefix' "$NGINXTRAP"
+	addtrap 'prefix' \
+			'kill -TERM %q ||:; [ "$EXIT_CODE" = 0 ] || if [ -e %q ]; then echo NGINXLOG:; cat %q ||:; fi;' \
+			"$NGINXPID" \
+			"$NGINXLOG"
 }
