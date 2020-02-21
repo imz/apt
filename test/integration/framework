@@ -767,3 +767,13 @@ http {
 }
 ENDCONFIG
 }
+
+nginxstart() {
+	local -r NGINXLOG=$TMPWORKINGDIRECTORY/nginx/process-stderr.log
+	/usr/sbin/nginx -c $TMPWORKINGDIRECTORY/nginx/nginx.conf -p $TMPWORKINGDIRECTORY &>>"$NGINXLOG" &
+	local -r NGINXPID=$!
+
+	local NGINXTRAP
+	printf -v NGINXTRAP 'kill -TERM %q ||:; [ "$EXIT_CODE" = 0 ] || if [ -e %q ]; then echo NGINXLOG:; cat %q ||:; fi;' "$NGINXPID" "$NGINXLOG" "$NGINXLOG"
+	addtrap 'prefix' "$NGINXTRAP"
+}

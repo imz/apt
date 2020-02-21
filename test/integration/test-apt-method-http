@@ -17,10 +17,7 @@ rpm http://localhost:8080/ $APT_TEST_USED_ARCH apt-tests
 rpm http://localhost:8080/ noarch apt-tests
 END
 
-/usr/sbin/nginx -c $TMPWORKINGDIRECTORY/nginx/nginx.conf -p $TMPWORKINGDIRECTORY &>> $TMPWORKINGDIRECTORY/nginx/process-stderr.log &
-NGINXPID=$!
-
-addtrap 'prefix' "kill -SIGTERM $NGINXPID; [ \"$EXIT_CODE\" = '0' ] || cat $TMPWORKINGDIRECTORY/nginx/process-stderr.log;"
+nginxstart
 
 testsuccess aptget update
 
