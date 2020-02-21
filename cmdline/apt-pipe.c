@@ -59,7 +59,7 @@ static void set_sighandler(int flags)
 	(void) sigaction(SIGHUP, &sa, NULL);
 }
 
-static int do_listen()
+static int do_listen(void)
 {
 	int servsock;
 	struct sockaddr_un sockaddr;
@@ -127,7 +127,7 @@ static int send_reply(int sock, char *buf, ssize_t bufsize, int fd)
 	/* apt's .Parse skips av[0], so fake it */
 	ac = argz_count(buf, bufsize) + 1;
 	av = (char **)calloc(ac + 1, sizeof(char *));
-	*av = "";
+	*av = (char *) "";
 
 	argz_extract(buf, bufsize, ++av);
 
@@ -183,7 +183,7 @@ static int mainloop(int servsock) {
 	return(cl);
 }
 
-static int daemonize()
+static int daemonize(void)
 {
 	pid_t pid;
 	int i, fd;
@@ -268,7 +268,7 @@ static int daemonize()
 /* ----------------------------------------------------------------------------
    client
 */
-static int do_connect()
+static int do_connect(void)
 {
 	int sock;
 	struct sockaddr_un servaddr;
