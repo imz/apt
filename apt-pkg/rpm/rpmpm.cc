@@ -731,6 +731,7 @@ bool pkgRPMLibPM::AddToTransaction(Item::RPMOps op, const std::vector<apt_item> 
       {
 	 case Item::RPMUpgrade:
 	    upgrade = 1;
+	    [[fallthrough]];
 	 case Item::RPMInstall:
 	  {
 	    fd = Fopen(I->file.c_str(), "r.ufdio");
