@@ -2,6 +2,8 @@
 
 EXIT_CODE=0
 
+: ${PARALLEL_SLOT:=0}
+
 # we all like colorful messages
 if [ "$MSGCOLOR" != 'NO' ]; then
 	if [ ! -t 1 ]; then # but check that we output to a terminal
@@ -589,7 +591,7 @@ http {
 	error_log stderr;
 
 	server {
-		listen 8080;
+		listen $((8080+PARALLEL_SLOT));
 		server_name localhost localhost.localdomain;
 
 		location / {
@@ -634,7 +636,7 @@ http {
 	error_log stderr;
 
 	server {
-		listen 8080;
+		listen $((8080+PARALLEL_SLOT));
 		server_name localhost localhost.localdomain;
 
 		ssl_certificate	$TMPWORKINGDIRECTORY/nginx/cert.crt;
