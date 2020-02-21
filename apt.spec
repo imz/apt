@@ -196,12 +196,12 @@ printf '%_target_cpu\t%_target_cpu' >> buildlib/archtable
 
 gettextize --force --quiet --no-changelog --symlink
 %autoreconf
-%add_optflags -Werror=suggest-override
-%add_optflags -DAPTRPM_ID=\\\"%name-%{?epoch:%epoch:}%version-%release%{?disttag::%disttag}.%_target_cpu\\\"
 %ifarch %e2k
 %add_optflags -std=gnu++11
 %endif
-%configure --includedir=%_includedir/apt-pkg %{subst_enable static}
+%configure --includedir=%_includedir/apt-pkg --enable-Werror %{subst_enable static}
+echo '#define APTRPM_ID "%name-%{?epoch:%epoch:}%version-%release%{?disttag::%disttag}.%_target_cpu"' \
+	>> include/config.h
 
 # Probably this obsolete now?
 find -type f -print0 |
