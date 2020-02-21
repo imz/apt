@@ -628,6 +628,7 @@ generaterepository() {
 			--suite="$suite" \
 			--version="$version" \
 			--topdir="$REPO_DIR" \
+			--changelog-since='@1' \
 			--flat --no-oldhashfile --no-bz2 --no-xz --mapi \
 			$dir $comps
 
