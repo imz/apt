@@ -206,7 +206,7 @@ getarchitecture() {
 }
 
 getarchitectures() {
-	echo "$(aptconfig dump | grep APT::Architecture | cut -d'"' -f 2 | sed '/^$/ d' | sort | uniq | tr '\n' ' ')"
+	echo "$(aptconfig dump | grep APT::Architecture | cut -d\" -f 2 | sed '/^$/ d' | sort | uniq | tr '\n' ' ')"
 }
 
 getarchitecturesfromcommalist() {
