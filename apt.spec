@@ -61,6 +61,7 @@ BuildRequires: libgnutls-devel
 # dependencies of tests
 %if_enabled check
 BuildRequires: /usr/bin/genbasedir
+BuildRequires: gpg-keygen
 %endif
 
 %package -n libapt
@@ -312,6 +313,15 @@ pushd test/integration
 		./run-tests\
 	%nil
 
+	%runtests
+
+	# prepare data for rpm --import
+	TESTGPGPUBKEY="$PWD"/example-pubkey.asc
+	gpg-keygen --passphrase '' \
+		--name-real 'Some One' --name-email someone@example.com \
+		/dev/null "$TESTGPGPUBKEY"
+
+	export TESTGPGPUBKEY
 	for i in $(seq 1 2); do
 		%runtests
 	done

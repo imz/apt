@@ -186,6 +186,11 @@ END
 	# Initialize rpmdb
 	rpmdb --dbpath="$TMPWORKINGDIRECTORY/var/lib/rpm" --initdb
 
+	# Include a special kind of pkg in the db to see how APT processes it
+	if [ -n "${TESTGPGPUBKEY-}" ]; then
+		rpm --dbpath="$TMPWORKINGDIRECTORY/var/lib/rpm" --import "$TESTGPGPUBKEY"
+	fi
+
 	# setup rpm dbpath
 	echo "RPM::DBPath \"$TMPWORKINGDIRECTORY/var/lib/rpm\";" > rootdir/etc/apt/apt.conf.d/99rpmdbpath.conf
 
