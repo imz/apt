@@ -20,7 +20,25 @@ generaterepository_and_switch_sources "$TMPWORKINGDIRECTORY/usr/src/RPM/RPMS"
 
 testsuccess aptget update
 
-testregexmatch 'Using Versioning System: Standard \.rpm
+if [ -n "$APT_TEST_GPGPUBKEY" ]; then
+	dump_with_gpgpubkey=(
+		'Package: gpg\([^)]*@[^)]*\)'
+
+		'Package: gpg\([^)]*\)'
+
+		# $'' is used for \n
+		$'Package: gpg-pubkey
+ Version: [^-]*-[^-]*@[0-9]+
+     File: /[^\n]*/var/lib/rpm/Packages'
+
+	)
+else
+	dump_with_gpgpubkey=()
+fi
+readonly -a dump_with_gpgpubkey
+
+testpartsexhaust "${dump_with_gpgpubkey[@]}" \
+'Using Versioning System: Standard \.rpm
 Package: conflicting-package-two
  Version: 1-alt1@[0-9]+
      File: /.*/rootdir/var/lib/apt/lists/.*_usr_src_RPM_REPO_.*_base_pkglist\.apt-tests
@@ -89,4 +107,5 @@ File: /.*/rootdir/var/lib/apt/lists/.*_usr_src_RPM_REPO_.*_base_pkglist\.apt-tes
  Origin: ALT Linux Team
  Site:[ ]*
  Label: apt-tests'"
- Architecture: $APT_TEST_USED_ARCH" aptcache dump
+ Architecture: $APT_TEST_USED_ARCH" \
+-- aptcache dump

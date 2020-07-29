@@ -21,12 +21,21 @@ generaterepository_and_switch_sources "$TMPWORKINGDIRECTORY/usr/src/RPM/RPMS"
 
 testsuccess aptget update
 
-testequal 'conflicting-package-two
+if [ -n "$APT_TEST_GPGPUBKEY" ]; then
+	pkgnames_with_gpgpubkey=('gpg-pubkey' 'gpg\([^)]*@[^)]*\)' 'gpg\([^)]*\)')
+else
+	pkgnames_with_gpgpubkey=()
+fi
+readonly -a pkgnames_with_gpgpubkey
+
+testpartsexhaust "${pkgnames_with_gpgpubkey[@]}" \
+'conflicting-package-two
 no-such-package
 simple-virtual
 simple-package-noarch
-virtual(dummy)
+virtual\(dummy\)
 simple-package-new
 missing-dependency
 simple-package
-conflicting-package-one' aptcache pkgnames
+conflicting-package-one' \
+-- aptcache pkgnames

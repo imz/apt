@@ -46,6 +46,7 @@ BuildRequires: libgnutls-devel
 # dependencies of tests
 %if_enabled check
 BuildRequires: /usr/bin/genbasedir
+BuildRequires: gpg-keygen
 %endif
 
 %package -n libapt
@@ -271,6 +272,16 @@ export APT_TEST_TARGET="$system_arch"
 	for i in $(seq 1 2); do
 		%runtests
 	done
+
+# prepare data for rpm --import
+APT_TEST_GPGPUBKEY="$PWD"/example-pubkey.asc
+gpg-keygen --passphrase '' \
+	--name-real 'Some One' --name-email someone@example.com \
+	/dev/null "$APT_TEST_GPGPUBKEY"
+
+export APT_TEST_GPGPUBKEY
+
+%runtests
 
 popd
 
