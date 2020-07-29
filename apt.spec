@@ -260,11 +260,16 @@ pushd test/integration
 system_arch="$(rpm -q rpm --qf='%%{ARCH}')"
 export APT_TEST_TARGET="$system_arch"
 
+# this macro can be prefixed (e.g., by environment assignments),
+# therefore the extra backslash in the first line
+%global runtests \\\
+	LD_LIBRARY_PATH=%buildroot%_libdir \\\
+	PATH=$PATH:%buildroot%_bindir \\\
+	METHODSDIR=%buildroot%_libdir/apt/methods \\\
+		./run-tests
+
 	for i in $(seq 1 2); do
-		LD_LIBRARY_PATH=%buildroot%_libdir \
-		PATH=$PATH:%buildroot%_bindir \
-		METHODSDIR=%buildroot%_libdir/apt/methods \
-			./run-tests
+		%runtests
 	done
 popd
 
