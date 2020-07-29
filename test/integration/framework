@@ -384,12 +384,12 @@ testregexmatch() {
 	local COMPAREFILE="${TMPWORKINGDIRECTORY}/rootdir/tmp/testregexmatch.comparefile"
 	local RESULTFILE="${TMPWORKINGDIRECTORY}/rootdir/tmp/testregexmatch.resultfile"
 
-	echo "^$COMPAREMSG\$" > $COMPAREFILE
+	echo "$COMPAREMSG" > $COMPAREFILE
 	set +e
 	"$@" &> $RESULTFILE
 	set -e
 
-	if [[ "$(cat $RESULTFILE)" =~ $(cat $COMPAREFILE) ]] ; then
+	if [[ "$(cat $RESULTFILE)" =~ ^$(cat $COMPAREFILE)$ ]] ; then
 		msgpass
 	else
 		checkdiff $COMPAREFILE $RESULTFILE
