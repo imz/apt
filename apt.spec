@@ -305,11 +305,15 @@ unset RPM_PYTHON
 %check
 # Run tests several times to make sure no tests are randomly succeeding.
 pushd test/integration
+%global runtests \
+	LD_LIBRARY_PATH=%buildroot%_libdir \\\
+	PATH=$PATH:%buildroot%_bindir \\\
+	METHODSDIR=%buildroot%_libdir/apt/methods \\\
+		./run-tests\
+	%nil
+
 	for i in $(seq 1 2); do
-		LD_LIBRARY_PATH=%buildroot%_libdir \
-		PATH=$PATH:%buildroot%_bindir \
-		METHODSDIR=%buildroot%_libdir/apt/methods \
-			./run-tests
+		%runtests
 	done
 popd
 
