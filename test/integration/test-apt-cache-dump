@@ -20,7 +20,15 @@ generaterepository "$TMPWORKINGDIRECTORY/usr/src/RPM/RPMS" "$TMPWORKINGDIRECTORY
 
 testsuccess aptget update
 
-testregexmatch 'Using Versioning System: Standard \.rpm
+# $'' is used for \n
+testpartsexhaust ${APT_TEST_GPGPUBKEY:+\
+$'Package: gpg-pubkey
+ Version: [^-]*-[^-]*@[0-9]+
+     File: /[^\n]*/var/lib/rpm/Packages' \
+'Package: gpg\([^)]*@[^)]*\)' \
+'Package: gpg\([^)]*\)' \
+} \
+'Using Versioning System: Standard \.rpm
 Package: conflicting-package-two
  Version: 1-alt1@[0-9]+
      File: /.*/rootdir/var/lib/apt/lists/.*_usr_src_RPM_REPO_.*_base_pkglist\.apt-tests
@@ -89,4 +97,5 @@ File: /.*/rootdir/var/lib/apt/lists/.*_usr_src_RPM_REPO_.*_base_pkglist\.apt-tes
  Origin: ALT Linux Team
  Site:[ ]*
  Label: apt-tests'"
- Architecture: $APT_TEST_USED_ARCH" aptcache dump
+ Architecture: $APT_TEST_USED_ARCH" \
+-- aptcache dump
