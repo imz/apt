@@ -4,6 +4,12 @@ set -e
 TESTDIR=$(readlink -f $(dirname $0))
 . $TESTDIR/framework
 
+# The hardcoded data below is wrong if there is an extra pkg in the db.
+if [ -n "${APT_TEST_GPGPUBKEY-}" ]; then
+	msgskip
+	exit 0
+fi
+
 setupenvironment
 
 buildpackage 'conflicting-package-distupgrade'

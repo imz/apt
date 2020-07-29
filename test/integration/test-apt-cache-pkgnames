@@ -21,12 +21,14 @@ generaterepository "$TMPWORKINGDIRECTORY/usr/src/RPM/RPMS" "$TMPWORKINGDIRECTORY
 
 testsuccess aptget update
 
-testequal 'conflicting-package-two
+testpartsexhaust ${APT_TEST_GPGPUBKEY:+'gpg-pubkey' 'gpg\([^)]*@[^)]*\)' 'gpg\([^)]*\)'} \
+'conflicting-package-two
 no-such-package
 simple-virtual
 simple-package-noarch
-virtual(dummy)
+virtual\(dummy\)
 simple-package-new
 missing-dependency
 simple-package
-conflicting-package-one' aptcache pkgnames
+conflicting-package-one' \
+-- aptcache pkgnames

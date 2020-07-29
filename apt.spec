@@ -46,6 +46,7 @@ BuildRequires: libgnutls-devel
 # dependencies of tests
 %if_enabled check
 BuildRequires: /usr/bin/genbasedir
+BuildRequires: gpg-keygen
 %endif
 
 %package -n libapt
@@ -272,6 +273,16 @@ export APT_TEST_TARGET="$system_arch"
 
 # The same tests, but via cdrom:
 APT_TEST_CDROM=yes %runtests
+
+# prepare data for rpm --import
+APT_TEST_GPGPUBKEY="$PWD"/example-pubkey.asc
+gpg-keygen --passphrase '' \
+	--name-real 'Some One' --name-email someone@example.com \
+	/dev/null "$APT_TEST_GPGPUBKEY"
+
+export APT_TEST_GPGPUBKEY
+
+%runtests
 
 popd
 
