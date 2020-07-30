@@ -381,17 +381,17 @@ testregexmatch() {
 		msgtest "$MSG" "$*"
 	fi
 
-	local COMPAREFILE="${TMPWORKINGDIRECTORY}/rootdir/tmp/testregexmatch.comparefile"
 	local RESULTFILE="${TMPWORKINGDIRECTORY}/rootdir/tmp/testregexmatch.resultfile"
 
-	echo "$COMPAREMSG" > $COMPAREFILE
 	set +e
 	"$@" &> $RESULTFILE
 	set -e
 
-	if [[ "$(cat $RESULTFILE)" =~ ^$(cat $COMPAREFILE)$ ]] ; then
+	if [[ "$(cat $RESULTFILE)" =~ ^$COMPAREMSG$ ]] ; then
 		msgpass
 	else
+		local COMPAREFILE="${TMPWORKINGDIRECTORY}/rootdir/tmp/testregexmatch.comparefile"
+		echo "$COMPAREMSG" > $COMPAREFILE
 		checkdiff $COMPAREFILE $RESULTFILE
 		msgfail
 	fi
