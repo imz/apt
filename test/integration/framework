@@ -397,6 +397,60 @@ testregexmatch() {
 	fi
 }
 
+match_and_delete() {
+	local -r PATTERN="$1"; shift
+	local -r VARNAME="$1"; shift
+
+	[[ "${!VARNAME}" =~ ^(|.*$'\n')$PATTERN(|$'\n'(.*))$ ]] &&
+		printf -v "$VARNAME" '%s%s' "${BASH_REMATCH[1]}" "${BASH_REMATCH[-1]}"
+}
+
+testpartsexhaust() {
+	local MSG='Test that regex parts exhaust the output of'
+	if [ "$1" = '--nomsg' ]; then
+		MSG=''
+		shift
+	fi
+
+	local -a REGEXPARTS
+	while [ "$1" != '--' ]; do
+		REGEXPARTS=("${REGEXPARTS[@]}" "$1"); shift
+		: ${1?"Missing '--' arg." 'Usage: testpartsexhaust REGEX.. -- CMD'}
+	done
+	# The loop would fail if there was no '--' arg.
+	shift # the '--' arg
+
+	if [ -n "$MSG" ]; then
+		msgtest "$MSG" "$*"
+	fi
+
+	local RESULTFILE="${TMPWORKINGDIRECTORY}/rootdir/tmp/testregexmatch.resultfile"
+
+	set +e
+	"$@" &> $RESULTFILE
+	set -e
+	local RESULT="$(cat "$RESULTFILE")"
+
+	local REGEXPART
+	for REGEXPART in "${REGEXPARTS[@]}"; do
+		if ! match_and_delete "$REGEXPART" RESULT; then
+			echo -e "\n${CINFO}A part couldn't be matched with the remaining result:${CNORMAL}"
+			echo "$RESULT"
+			echo -e "${CINFO}The part that didn't match:${CNORMAL}"
+			echo "$REGEXPART"
+			msgfail
+			return
+		fi
+	done
+	if [ "$RESULT" != '' ]; then
+		echo -e "\n${CINFO}The remaining unmatched result:"
+		echo "$RESULT"
+		msgfail
+	else
+		msgpass
+	fi
+}
+
 skiplines() {
 	local count="$1"
 	shift
