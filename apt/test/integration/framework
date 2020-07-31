@@ -341,7 +341,7 @@ testequalor2() {
 	then
 		msgpass
 	else
-		echo -n "\n${CINFO}Diff against OR 1${CNORMAL}"
+		echo -ne "\n${CINFO}Diff against OR 1${CNORMAL}"
 		checkdiff $COMPAREFILE1 $COMPAREAGAINST || true
 		echo -n "${CINFO}Diff against OR 2${CNORMAL}"
 		checkdiff $COMPAREFILE2 $COMPAREAGAINST || true
