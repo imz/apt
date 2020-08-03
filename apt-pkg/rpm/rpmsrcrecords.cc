@@ -112,7 +112,7 @@ bool rpmSrcRecordParser::Step()
    return true;
 }
 
-bool rpmSrcRecordParser::Jump(unsigned long Off)
+bool rpmSrcRecordParser::Jump(off_t Off)
 {
    if (!Handler->Jump(Off))
        return false;
@@ -227,7 +227,7 @@ string rpmSrcRecordParser::Changelog() const
    return rval;
 }
 
-unsigned long rpmSrcRecordParser::Offset()
+off_t rpmSrcRecordParser::Offset()
 {
     return Handler->Offset();
 }
