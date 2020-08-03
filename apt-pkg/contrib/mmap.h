@@ -26,6 +26,7 @@
 
 #include <string>
 #include <limits>
+#include <optional>
 
 #include <apt-pkg/fileutl.h>
 
@@ -99,10 +100,10 @@ class DynamicMMap : public MMap
    public:
 
    // Allocation
-   unsigned long RawAllocate(size_t Size,size_t Aln = 0);
-   unsigned long Allocate(size_t ItemSize);
-   unsigned long WriteString(const char *String,size_t Len);
-   inline unsigned long WriteString(const string &S) {return WriteString(S.c_str(),S.length());}
+   std::optional<unsigned long> RawAllocate(size_t Size,size_t Aln = 0);
+   std::optional<unsigned long> Allocate(size_t ItemSize);
+   std::optional<unsigned long> WriteString(const char *String,size_t Len);
+   inline std::optional<unsigned long> WriteString(const string &S) {return WriteString(S.c_str(),S.length());}
    void UsePools(Pool &P,unsigned int const Count) {Pools = &P; PoolCount = Count;}
 
    DynamicMMap(FileFd &F,unsigned long Flags,size_t RequestedWorkSpace = 2*1024*1024);

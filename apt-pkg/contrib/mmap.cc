@@ -268,7 +268,7 @@ DynamicMMap::~DynamicMMap()
 // DynamicMMap::RawAllocate - Allocate a raw chunk of unaligned space	/*{{{*/
 // ---------------------------------------------------------------------
 /* This allocates a block of memory aligned to the given size */
-unsigned long DynamicMMap::RawAllocate(size_t const Size,size_t const Aln)
+std::optional<unsigned long> DynamicMMap::RawAllocate(size_t const Size,size_t const Aln)
 {
    unsigned long Result = iSize;
 
@@ -279,7 +279,7 @@ unsigned long DynamicMMap::RawAllocate(size_t const Size,size_t const Aln)
       if (Padding > WorkSpace - Result)
       {
          _error->Error("Dynamic MMap ran out of room");
-         return 0;
+         return std::nullopt;
       }
       Result += Padding;
    }
@@ -288,7 +288,7 @@ unsigned long DynamicMMap::RawAllocate(size_t const Size,size_t const Aln)
    if (Size > WorkSpace - Result)
    {
       _error->Error("Dynamic MMap ran out of room");
-      return 0;
+      return std::nullopt;
    }
 
    iSize = Result + Size;
@@ -300,7 +300,7 @@ unsigned long DynamicMMap::RawAllocate(size_t const Size,size_t const Aln)
 // ---------------------------------------------------------------------
 /* This allocates an Item of size ItemSize so that it is aligned to its
    size in the file. */
-unsigned long DynamicMMap::Allocate(size_t const ItemSize)
+std::optional<unsigned long> DynamicMMap::Allocate(size_t const ItemSize)
 {
    // Look for a matching pool entry
    Pool *I;
@@ -320,7 +320,7 @@ unsigned long DynamicMMap::Allocate(size_t const ItemSize)
       if (Empty == 0)
       {
 	 _error->Error("Ran out of allocation pools");
-	 return 0;
+	 return std::nullopt;
       }
 
       I = Empty;
@@ -332,7 +332,13 @@ unsigned long DynamicMMap::Allocate(size_t const ItemSize)
    if (I->Count == 0)
    {
       I->Count = 20*1024/ItemSize;
-      I->Start = RawAllocate(I->Count*ItemSize,ItemSize);
+      auto idxResult = RawAllocate(I->Count*ItemSize,ItemSize);
+
+      // Has the allocation failed?
+      if (!idxResult)
+         return std::nullopt;
+
+      I->Start = *idxResult;
    }
 
    I->Count--;
@@ -344,7 +350,7 @@ unsigned long DynamicMMap::Allocate(size_t const ItemSize)
 // DynamicMMap::WriteString - Write a string to the file		/*{{{*/
 // ---------------------------------------------------------------------
 /* Strings are not aligned to anything */
-unsigned long DynamicMMap::WriteString(const char * const String,
+std::optional<unsigned long> DynamicMMap::WriteString(const char * const String,
 				       size_t const Len)
 {
    unsigned long Result = iSize;
@@ -352,7 +358,7 @@ unsigned long DynamicMMap::WriteString(const char * const String,
    if ((Len == SIZE_MAX) || (Len + 1 > WorkSpace - Result))
    {
       _error->Error("Dynamic MMap ran out of room");
-      return 0;
+      return std::nullopt;
    }
 
    iSize += Len + 1;

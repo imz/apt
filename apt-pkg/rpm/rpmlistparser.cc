@@ -173,8 +173,15 @@ bool rpmListParser::NewVersion(pkgCache::VerIterator &Ver)
 #endif
 
    // Parse the section
-   Ver->Section = WriteUniqString(Handler->Group());
-   Ver->Arch = WriteUniqString(Handler->Arch());
+   {
+      const auto idxSection = WriteUniqString(Handler->Group());
+      const auto idxArch = WriteUniqString(Handler->Arch());
+      if ((!idxSection) || (!idxArch))
+         return false;
+
+      Ver->Section = *idxSection;
+      Ver->Arch = *idxArch;
+   }
 
    // Archive Size
    Ver->Size = (unsigned long long)Handler->FileSize();
@@ -210,7 +217,14 @@ bool rpmListParser::UsePackage(pkgCache::PkgIterator &Pkg,
    if (SeenPackages != NULL)
       SeenPackages->insert(PkgName);
    if (Pkg->Section == 0)
-      Pkg->Section = WriteUniqString(Handler->Group());
+   {
+      const auto idxSection = WriteUniqString(Handler->Group());
+      if (!idxSection)
+         return false;
+
+      Pkg->Section = *idxSection;
+   }
+
    if (_error->PendingError())
        return false;
    string::size_type HashPos = PkgName.find('#');
@@ -414,18 +428,61 @@ bool rpmListParser::LoadReleaseInfo(pkgCache::PkgFileIterator &FileI,
 
    const char *Start;
    const char *Stop;
+
    if (Section.Find("Archive",Start,Stop))
-       FileI->Archive = WriteUniqString(Start,Stop - Start);
+   {
+      const auto idx = WriteUniqString(Start, Stop - Start);
+      if (!idx)
+         return false;
+
+       FileI->Archive = *idx;
+   }
+
    if (Section.Find("Component",Start,Stop))
-       FileI->Component = WriteUniqString(Start,Stop - Start);
+   {
+      const auto idx = WriteUniqString(Start, Stop - Start);
+      if (!idx)
+         return false;
+
+      FileI->Component = *idx;
+   }
+
    if (Section.Find("Version",Start,Stop))
-       FileI->Version = WriteUniqString(Start,Stop - Start);
+   {
+      const auto idx = WriteUniqString(Start, Stop - Start);
+      if (!idx)
+         return false;
+
+      FileI->Version = *idx;
+   }
+
    if (Section.Find("Origin",Start,Stop))
-       FileI->Origin = WriteUniqString(Start,Stop - Start);
+   {
+      const auto idx = WriteUniqString(Start, Stop - Start);
+      if (!idx)
+         return false;
+
+      FileI->Origin = *idx;
+   }
+
    if (Section.Find("Label",Start,Stop))
-       FileI->Label = WriteUniqString(Start,Stop - Start);
+   {
+      const auto idx = WriteUniqString(Start, Stop - Start);
+      if (!idx)
+         return false;
+
+      FileI->Label = *idx;
+   }
+
    if (Section.Find("Architecture",Start,Stop))
-       FileI->Architecture = WriteUniqString(Start,Stop - Start);
+   {
+      const auto idx = WriteUniqString(Start, Stop - Start);
+      if (!idx)
+         return false;
+
+      FileI->Architecture = *idx;
+   }
+
 
    if (Section.FindFlag("NotAutomatic",FileI->Flags,
 			pkgCache::Flag::NotAutomatic) == false)
