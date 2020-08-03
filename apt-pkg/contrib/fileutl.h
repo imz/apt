@@ -37,13 +37,6 @@ class FileFd
    public:
    enum OpenMode {ReadOnly,WriteEmpty,WriteExists,WriteAny,WriteTemp};
 
-   inline bool Read(void *To,unsigned long Size,bool AllowEof)
-   {
-      unsigned long Jnk;
-      if (AllowEof)
-	 return Read(To,Size,&Jnk);
-      return Read(To,Size);
-   }
    bool Read(void *To,unsigned long Size,unsigned long *Actual = 0);
    bool Write(const void *From,unsigned long Size);
    bool Seek(unsigned long To);
