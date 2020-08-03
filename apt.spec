@@ -196,9 +196,20 @@ printf '%_target_cpu\t%_target_cpu' >> buildlib/archtable
 
 gettextize --force --quiet --no-changelog --symlink
 %autoreconf
-%ifarch %e2k
-%add_optflags -std=gnu++11
+
+# std::optional support
+# (We set a GNU dialect in -std= in order to minimally diverge
+# from GCC's default, which is also -std=gnu++NN.)
+%ifnarch %e2k
+%add_optflags -std=gnu++17
+%else
+find -type f -'(' -name '*.cc' -or -name '*.h' -')' -print0 \
+| xargs -0 sed -i -re \
+'s,(std::)(optional|nullopt),\1experimental::\2,g;
+ s,^(#[[:blank:]]*include[[:blank:]]*<)(optional>),\1experimental/\2,'
+%add_optflags -std=gnu++14
 %endif
+
 %configure --includedir=%_includedir/apt-pkg --enable-Werror %{subst_enable static}
 echo '#define APTRPM_ID "%name-%{?epoch:%epoch:}%version-%release%{?disttag::%disttag}.%_target_cpu"' \
 	>> include/config.h
