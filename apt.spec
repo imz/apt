@@ -196,6 +196,7 @@ printf '%_target_cpu\t%_target_cpu' >> buildlib/archtable
 
 gettextize --force --quiet --no-changelog --symlink
 %autoreconf
+%add_optflags -Werror=suggest-override
 %add_optflags -DAPTRPM_ID=\\\"%name-%{?epoch:%epoch:}%version-%release%{?disttag::%disttag}.%_target_cpu\\\"
 %ifarch %e2k
 %add_optflags -std=gnu++11
