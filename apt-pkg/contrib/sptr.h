@@ -3,6 +3,8 @@
 /* ######################################################################
 
    Trivial non-ref counted 'smart pointer'
+   FIXME: replace its uses in our code simply by std::unique_ptr for clarity
+   (to new people reading the code).
 
    This is really only good to eliminate
      {
@@ -20,69 +22,12 @@
 #ifndef SMART_POINTER_H
 #define SMART_POINTER_H
 
-template <class T>
-class SPtr
-{
-   public:
-   T *Ptr;
-
-   inline T *operator ->() const {return Ptr;}
-   inline T &operator *() const {return *Ptr;}
-   inline T *release() {T * const Tmp = Ptr; Ptr = 0; return Tmp;}
-   inline bool operator ==(std::nullptr_t) const {return Ptr == nullptr;}
-   inline bool operator !=(std::nullptr_t) const {return Ptr != nullptr;}
-   inline T * get() const {return Ptr;}
-
-   void reset(T * const NewPtr = nullptr) {
-      T * const Tmp = Ptr;
-      Ptr = NewPtr;
-      if (Tmp)
-         delete Tmp;
-   }
-
-   // Prohibit copying; otherwise, two objects would own the pointer
-   // and would try to delete it (on destruction). Actually,
-   // -Werror=deprecated-copy -Werror=deprecated-copy-dtor should also
-   // prohibit the use of the implictly-defined copy constructor and assignment
-   // operator because we have a user-defined destructor (which is a hint that
-   // there is some non-trivial resource management that is going on),
-   // but the flags don't work in our case (with gcc10) for some reason...
-   SPtr & operator= (const SPtr &) = delete;
-   SPtr(const SPtr &) = delete;
-
-   inline explicit SPtr(T * const Ptr) : Ptr(Ptr) {}
-   inline SPtr() : Ptr(0) {}
-   inline ~SPtr() {delete Ptr;}
-};
+#include <memory>
 
 template <class T>
-class SPtrArray
-{
-   public:
-   T *Ptr;
+using SPtr = std::unique_ptr<T>;
 
-   //inline T &operator *() const {return *Ptr;}
-   inline T *release() {T * const Tmp = Ptr; Ptr = 0; return Tmp;}
-   inline T & operator [](std::size_t const I) const {return Ptr[I];}
-   inline bool operator ==(std::nullptr_t) const {return Ptr == nullptr;}
-   inline bool operator !=(std::nullptr_t) const {return Ptr != nullptr;}
-   inline T * get() const {return Ptr;}
-
-   void reset(T * const NewPtr = nullptr) {
-      T * const Tmp = Ptr;
-      Ptr = NewPtr;
-      if (Tmp)
-         delete [] Tmp;
-   }
-
-   // Prohibit copying; otherwise, two objects would own the pointer
-   // and would try to delete it (on destruction).
-   SPtrArray & operator= (const SPtrArray &) = delete;
-   SPtrArray(const SPtrArray &) = delete;
-
-   inline explicit SPtrArray(T * const Ptr) : Ptr(Ptr) {}
-   inline SPtrArray() : Ptr(0) {}
-   inline ~SPtrArray() {delete [] Ptr;}
-};
+template <class T>
+using SPtrArray = std::unique_ptr<T[]>;
 
 #endif
