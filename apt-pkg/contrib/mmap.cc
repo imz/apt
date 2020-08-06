@@ -144,23 +144,60 @@ bool MMap::Sync(unsigned long Start,unsigned long Stop)
 // DynamicMMap::DynamicMMap - Constructor				/*{{{*/
 // ---------------------------------------------------------------------
 /* */
-DynamicMMap::DynamicMMap(FileFd &F,unsigned long Flags,unsigned long WorkSpace) :
-             MMap(F,Flags | NoImmMap), Fd(&F), WorkSpace(WorkSpace)
+DynamicMMap::DynamicMMap(FileFd &F,
+                         unsigned long Flags,
+                         unsigned long RequestedWorkSpace) :
+   MMap(F,Flags | NoImmMap), /* NoImmMap to invoke MMap::Map() ourselves */
+   Fd(&F),
+   WorkSpace(RequestedWorkSpace)
 {
    if (_error->PendingError() == true)
       return;
 
+   /* Purpose of MMap::iSize:
+
+      1. It is set by MMap::Map() to the size of the mmap'ed region
+      (determined by the file size)
+      and is used by ~MMap() to determine the size of the region to munmap.
+
+      2. Additionally, in the course of work, DynamicMMap uses MMap::iSize
+      to track the size of the region already occupied by allocations; i.e.,
+      Base+iSize is the beginning of the free space.
+
+      The two purposes are not obviously conflict-free with each
+      other, therefore DynamicMMap() constructor needs to take special
+      care to leave it in a state suitable for the second purpose
+      (DynamicMMap's course of work), and ~DynamicMMap() destructor
+      needs to do special tweaks to satisfy the expectations of ~MMap()
+      according to the first purpose, in spite of iSize not reflecting
+      the size of the whole mmap'ed region already at the end of work.
+
+      DynamicMMap::WorkSpace is the size of the whole region available
+      for new allocations and holding already allocated stuff.
+   */
+
    unsigned long EndOfFile = Fd->Size();
    if (EndOfFile > WorkSpace)
+      /* The already allocated and saved stuff exceeds the requested workspace,
+         so workspace must be increased.
+      */
       WorkSpace = EndOfFile;
    else
    {
+      /* The backing file must be made at least as big as the workspace
+         that we are going to use in the course of work.
+      */
       Fd->Seek(WorkSpace);
       char C = 0;
       Fd->Write(&C,sizeof(C));
    }
 
-   Map(F);
+   Map(F); /* sets iSize to the size of the whole, possibly extended file */
+
+   /* Now decrease iSize back to only the already allocated stuff
+      (that which has been saved in the file before extension)
+      -- to satisfy the expectations of DynamicMMap methods.
+   */
    iSize = EndOfFile;
 }
 									/*}}}*/
@@ -190,8 +227,17 @@ DynamicMMap::~DynamicMMap()
    }
 
    unsigned long EndOfFile = iSize;
+
+   /* Prepare for Close(): iSize determines the region to be munmap'ed and
+      therefore needs to be set to the whole file-backed workspace.
+   */
    iSize = WorkSpace;
+
    Close(false);
+
+   /* Finally, truncate the file to the region used for our actual allocations.
+      (Not all of the initially mmap'ed workspace might have been used.)
+    */
    Fd->Truncate(EndOfFile);
 }
 									/*}}}*/
