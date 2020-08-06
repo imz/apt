@@ -268,7 +268,7 @@ DynamicMMap::~DynamicMMap()
 // DynamicMMap::RawAllocate - Allocate a raw chunk of unaligned space	/*{{{*/
 // ---------------------------------------------------------------------
 /* This allocates a block of memory aligned to the given size */
-unsigned long DynamicMMap::RawAllocate(unsigned long const Size,unsigned long const Aln)
+unsigned long DynamicMMap::RawAllocate(size_t const Size,size_t const Aln)
 {
    unsigned long Result = iSize;
    if (Aln != 0)
@@ -290,7 +290,7 @@ unsigned long DynamicMMap::RawAllocate(unsigned long const Size,unsigned long co
 // ---------------------------------------------------------------------
 /* This allocates an Item of size ItemSize so that it is aligned to its
    size in the file. */
-unsigned long DynamicMMap::Allocate(unsigned long const ItemSize)
+unsigned long DynamicMMap::Allocate(size_t const ItemSize)
 {
    // Look for a matching pool entry
    Pool *I;
@@ -335,7 +335,7 @@ unsigned long DynamicMMap::Allocate(unsigned long const ItemSize)
 // ---------------------------------------------------------------------
 /* Strings are not aligned to anything */
 unsigned long DynamicMMap::WriteString(const char * const String,
-				       unsigned long const Len)
+				       size_t const Len)
 {
    unsigned long Result = iSize;
    // Just in case error check
