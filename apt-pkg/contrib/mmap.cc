@@ -326,10 +326,3 @@ unsigned long DynamicMMap::WriteString(const char * const String,
    ((char *)Base)[Result + Len] = 0;
    return Result;
 }
-									/*}}}*/
-// DynamicMMap::WriteString - Write a string to the file; uses strlen() /*{{{*/
-// ---------------------------------------------------------------------
-unsigned long DynamicMMap::WriteString(const char * const String)
-{
-   return WriteString(String,strlen(String));
-}
