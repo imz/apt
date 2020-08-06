@@ -38,7 +38,7 @@
 // MMap::MMap - Constructor						/*{{{*/
 // ---------------------------------------------------------------------
 /* */
-MMap::MMap(FileFd &F,unsigned long Flags) : Flags(Flags), iSize(0),
+MMap::MMap(FileFd &F,unsigned long const Flags) : Flags(Flags), iSize(0),
                      Base(0)
 {
    if ((Flags & NoImmMap) != NoImmMap)
@@ -48,7 +48,7 @@ MMap::MMap(FileFd &F,unsigned long Flags) : Flags(Flags), iSize(0),
 // MMap::MMap - Constructor						/*{{{*/
 // ---------------------------------------------------------------------
 /* */
-MMap::MMap(unsigned long Flags) : Flags(Flags), iSize(0),
+MMap::MMap(unsigned long const Flags) : Flags(Flags), iSize(0),
                      Base(0)
 {
 }
@@ -90,7 +90,7 @@ bool MMap::Map(FileFd &Fd)
 // MMap::Close - Close the map						/*{{{*/
 // ---------------------------------------------------------------------
 /* */
-bool MMap::Close(bool DoSync)
+bool MMap::Close(bool const DoSync)
 {
    if ((Flags & UnMapped) == UnMapped || Base == 0 || iSize == 0)
       return true;
@@ -126,7 +126,7 @@ bool MMap::Sync()
 // MMap::Sync - Syncronize a section of the file to disk		/*{{{*/
 // ---------------------------------------------------------------------
 /* */
-bool MMap::Sync(unsigned long Start,unsigned long Stop)
+bool MMap::Sync(unsigned long const Start,unsigned long const Stop)
 {
    if ((Flags & UnMapped) == UnMapped)
       return true;
@@ -145,8 +145,8 @@ bool MMap::Sync(unsigned long Start,unsigned long Stop)
 // ---------------------------------------------------------------------
 /* */
 DynamicMMap::DynamicMMap(FileFd &F,
-                         unsigned long Flags,
-                         unsigned long RequestedWorkSpace) :
+                         unsigned long const Flags,
+                         unsigned long const RequestedWorkSpace) :
    MMap(F,Flags | NoImmMap), /* NoImmMap to invoke MMap::Map() ourselves */
    Fd(&F),
    WorkSpace(RequestedWorkSpace)
@@ -204,7 +204,7 @@ DynamicMMap::DynamicMMap(FileFd &F,
 // DynamicMMap::DynamicMMap - Constructor for a non-file backed map	/*{{{*/
 // ---------------------------------------------------------------------
 /* This is just a fancy malloc really.. */
-DynamicMMap::DynamicMMap(unsigned long Flags,unsigned long WorkSpace) :
+DynamicMMap::DynamicMMap(unsigned long const Flags,unsigned long const WorkSpace) :
              MMap(Flags | NoImmMap | UnMapped), Fd(0), WorkSpace(WorkSpace)
 {
    if (_error->PendingError() == true)
@@ -244,7 +244,7 @@ DynamicMMap::~DynamicMMap()
 // DynamicMMap::RawAllocate - Allocate a raw chunk of unaligned space	/*{{{*/
 // ---------------------------------------------------------------------
 /* This allocates a block of memory aligned to the given size */
-unsigned long DynamicMMap::RawAllocate(unsigned long Size,unsigned long Aln)
+unsigned long DynamicMMap::RawAllocate(unsigned long const Size,unsigned long const Aln)
 {
    unsigned long Result = iSize;
    if (Aln != 0)
@@ -266,7 +266,7 @@ unsigned long DynamicMMap::RawAllocate(unsigned long Size,unsigned long Aln)
 // ---------------------------------------------------------------------
 /* This allocates an Item of size ItemSize so that it is aligned to its
    size in the file. */
-unsigned long DynamicMMap::Allocate(unsigned long ItemSize)
+unsigned long DynamicMMap::Allocate(unsigned long const ItemSize)
 {
    // Look for a matching pool entry
    Pool *I;
@@ -310,7 +310,7 @@ unsigned long DynamicMMap::Allocate(unsigned long ItemSize)
 // DynamicMMap::WriteString - Write a string to the file		/*{{{*/
 // ---------------------------------------------------------------------
 /* Strings are not aligned to anything */
-unsigned long DynamicMMap::WriteString(const char *String,
+unsigned long DynamicMMap::WriteString(const char * const String,
 				       unsigned long Len)
 {
    unsigned long Result = iSize;
