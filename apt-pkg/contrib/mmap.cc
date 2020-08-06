@@ -311,11 +311,8 @@ unsigned long DynamicMMap::Allocate(unsigned long const ItemSize)
 // ---------------------------------------------------------------------
 /* Strings are not aligned to anything */
 unsigned long DynamicMMap::WriteString(const char * const String,
-				       unsigned long Len)
+				       unsigned long const Len)
 {
-   if (Len == (unsigned long)-1)
-      Len = strlen(String);
-
    unsigned long Result = iSize;
    // Just in case error check
    if (Result + Len > WorkSpace)
@@ -330,3 +327,9 @@ unsigned long DynamicMMap::WriteString(const char * const String,
    return Result;
 }
 									/*}}}*/
+// DynamicMMap::WriteString - Write a string to the file; uses strlen() /*{{{*/
+// ---------------------------------------------------------------------
+unsigned long DynamicMMap::WriteString(const char * const String)
+{
+   return WriteString(String,strlen(String));
+}
