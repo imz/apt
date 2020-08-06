@@ -271,11 +271,21 @@ DynamicMMap::~DynamicMMap()
 unsigned long DynamicMMap::RawAllocate(size_t const Size,size_t const Aln)
 {
    unsigned long Result = iSize;
+
    if (Aln != 0)
-      Result += Aln - (iSize%Aln);
+   {
+      size_t const Padding = Aln - (Result%Aln);
+      // Just in case error check
+      if (Padding > WorkSpace - Result)
+      {
+         _error->Error("Dynamic MMap ran out of room");
+         return 0;
+      }
+      Result += Padding;
+   }
 
    // Just in case error check
-   if (Result + Size > WorkSpace)
+   if (Size > WorkSpace - Result)
    {
       _error->Error("Dynamic MMap ran out of room");
       return 0;
@@ -339,7 +349,7 @@ unsigned long DynamicMMap::WriteString(const char * const String,
 {
    unsigned long Result = iSize;
    // Just in case error check
-   if (Result + Len > WorkSpace)
+   if ((Len == SIZE_MAX) || (Len + 1 > WorkSpace - Result))
    {
       _error->Error("Dynamic MMap ran out of room");
       return 0;
