@@ -71,7 +71,7 @@ class DynamicMMap : public MMap
    // This is the allocation pool structure
    struct Pool
    {
-      unsigned long ItemSize;
+      size_t ItemSize;
       unsigned long Start;
       unsigned long Count;
    };
@@ -86,9 +86,9 @@ class DynamicMMap : public MMap
    public:
 
    // Allocation
-   unsigned long RawAllocate(unsigned long Size,unsigned long Aln = 0);
-   unsigned long Allocate(unsigned long ItemSize);
-   unsigned long WriteString(const char *String,unsigned long Len);
+   unsigned long RawAllocate(size_t Size,size_t Aln = 0);
+   unsigned long Allocate(size_t ItemSize);
+   unsigned long WriteString(const char *String,size_t Len);
    inline unsigned long WriteString(string const S) {return WriteString(S.c_str(),S.length());}
    void UsePools(Pool &P,unsigned int const Count) {Pools = &P; PoolCount = Count;}
 
