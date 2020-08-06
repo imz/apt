@@ -88,7 +88,8 @@ class DynamicMMap : public MMap
    // Allocation
    unsigned long RawAllocate(unsigned long Size,unsigned long Aln = 0);
    unsigned long Allocate(unsigned long ItemSize);
-   unsigned long WriteString(const char *String,unsigned long Len = (unsigned long)-1);
+   unsigned long WriteString(const char *String,unsigned long Len);
+   unsigned long WriteString(const char *String); // uses strlen()
    inline unsigned long WriteString(string const S) {return WriteString(S.c_str(),S.length());}
    void UsePools(Pool &P,unsigned int const Count) {Pools = &P; PoolCount = Count;}
 
