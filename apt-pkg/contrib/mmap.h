@@ -89,8 +89,8 @@ class DynamicMMap : public MMap
    unsigned long RawAllocate(unsigned long Size,unsigned long Aln = 0);
    unsigned long Allocate(unsigned long ItemSize);
    unsigned long WriteString(const char *String,unsigned long Len = (unsigned long)-1);
-   inline unsigned long WriteString(string S) {return WriteString(S.c_str(),S.length());}
-   void UsePools(Pool &P,unsigned int Count) {Pools = &P; PoolCount = Count;}
+   inline unsigned long WriteString(string const S) {return WriteString(S.c_str(),S.length());}
+   void UsePools(Pool &P,unsigned int const Count) {Pools = &P; PoolCount = Count;}
 
    DynamicMMap(FileFd &F,unsigned long Flags,unsigned long RequestedWorkSpace = 2*1024*1024);
    DynamicMMap(unsigned long Flags,unsigned long WorkSpace = 2*1024*1024);
