@@ -6,33 +6,33 @@ TESTDIR=$(readlink -f $(dirname $0))
 
 setupenvironment
 
-buildpackage "conflicting-package-distupgrade"
-buildpackage "conflicting-package-one"
-buildpackage "conflicting-package-two"
-buildpackage "missing-dependency"
-buildpackage "simple-package-new"
-buildpackage "simple-package-noarch"
-buildpackage "simple-package"
-buildpackage "simple-package-update-conflict"
-buildpackage "simple-package-update"
+buildpackage 'conflicting-package-distupgrade'
+buildpackage 'conflicting-package-one'
+buildpackage 'conflicting-package-two'
+buildpackage 'missing-dependency'
+buildpackage 'simple-package-new'
+buildpackage 'simple-package-noarch'
+buildpackage 'simple-package'
+buildpackage 'simple-package-update-conflict'
+buildpackage 'simple-package-update'
 
 generaterepository "$TMPWORKINGDIRECTORY/usr/src/RPM/RPMS" "$TMPWORKINGDIRECTORY/usr/src/RPM/REPO"
 
 testsuccess aptget update
 
-testequal "simple-package - Test package
+testequal 'simple-package - Test package
 simple-package-new - Test package
-simple-package-noarch - Test package" aptcache search "simple-package"
+simple-package-noarch - Test package' aptcache search 'simple-package'
 
-testequal "simple-package - Test package
+testequal 'simple-package - Test package
 simple-package-new - Test package
-simple-package-noarch - Test package" aptcache search "simple-package-*"
+simple-package-noarch - Test package' aptcache search 'simple-package-*'
 
-testequal "simple-package - Test package
+testequal 'simple-package - Test package
 simple-package-new - Test package
-simple-package-noarch - Test package" aptcache search "simple-package*"
+simple-package-noarch - Test package' aptcache search 'simple-package*'
 
-testequal "simple-package-new - Test package
-simple-package-noarch - Test package" aptcache search "simple-package-n*"
+testequal 'simple-package-new - Test package
+simple-package-noarch - Test package' aptcache search 'simple-package-n*'
 
-testempty aptcache search "no-such-package"
+testempty aptcache search 'no-such-package'

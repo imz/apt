@@ -6,10 +6,10 @@ TESTDIR=$(readlink -f $(dirname $0))
 
 setupenvironment
 
-buildpackage "conflicting-package-one"
-buildpackage "conflicting-package-two"
+buildpackage 'conflicting-package-one'
+buildpackage 'conflicting-package-two'
 
-testpkgnotinstalled "conflicting-package-one" "conflicting-package-two"
+testpkgnotinstalled 'conflicting-package-one' 'conflicting-package-two'
 
 testregexmatch "Reading Package Lists\.\.\.
 Building Dependency Tree\.\.\.

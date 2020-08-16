@@ -6,21 +6,21 @@ TESTDIR=$(readlink -f $(dirname $0))
 
 setupenvironment
 
-buildpackage "conflicting-package-distupgrade"
-buildpackage "conflicting-package-one"
-buildpackage "conflicting-package-two"
-buildpackage "missing-dependency"
-buildpackage "simple-package-new"
-buildpackage "simple-package-noarch"
-buildpackage "simple-package"
-buildpackage "simple-package-update-conflict"
-buildpackage "simple-package-update"
+buildpackage 'conflicting-package-distupgrade'
+buildpackage 'conflicting-package-one'
+buildpackage 'conflicting-package-two'
+buildpackage 'missing-dependency'
+buildpackage 'simple-package-new'
+buildpackage 'simple-package-noarch'
+buildpackage 'simple-package'
+buildpackage 'simple-package-update-conflict'
+buildpackage 'simple-package-update'
 
 generaterepository "$TMPWORKINGDIRECTORY/usr/src/RPM/RPMS" "$TMPWORKINGDIRECTORY/usr/src/RPM/REPO"
 
 testsuccess aptget update
 
-testregexmatch "Total Package Names : 7 \([^\)]*\)
+testregexmatch 'Total Package Names : 7 \([^\)]*\)
   Normal Packages: 0
   Pure Virtual Packages: 0
   Single Virtual Packages: 0
@@ -33,4 +33,4 @@ Total Provides Mappings: 9 \([^\)]*\)
 Total Globbed Strings: 10 \([^\)]*\)
 Total Dependency Version space: 14
 Total Slack space: .*
-Total Space Accounted for: .*" aptcache stats
+Total Space Accounted for: .*' aptcache stats

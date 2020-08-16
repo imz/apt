@@ -6,18 +6,18 @@ TESTDIR=$(readlink -f $(dirname $0))
 
 setupenvironment
 
-buildpackage "simple-package"
-buildpackage "simple-package-update"
+buildpackage 'simple-package'
+buildpackage 'simple-package-update'
 
-testpkgnotinstalled "simple-package"
-aptgetinstallpackage "simple-package" "1" "alt1" "$(getarchitecture)"
-testpkginstalled "simple-package"
+testpkgnotinstalled 'simple-package'
+aptgetinstallpackage 'simple-package' '1' 'alt1' "$(getarchitecture)"
+testpkginstalled 'simple-package'
 
-testequal '1-alt1' getpackageversion "simple-package"
+testequal '1-alt1' getpackageversion 'simple-package'
 
 generaterepository "$TMPWORKINGDIRECTORY/usr/src/RPM/RPMS" "$TMPWORKINGDIRECTORY/usr/src/RPM/REPO"
 
 testsuccess aptget update
 
 testsuccess aptget dist-upgrade -y
-testequal '2-alt1' getpackageversion "simple-package"
+testequal '2-alt1' getpackageversion 'simple-package'
