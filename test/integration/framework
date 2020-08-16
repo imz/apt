@@ -67,7 +67,7 @@ if [ $MSGLEVEL -le 2 ]; then
 	if [ -n "$CFAIL" ]; then
 		msgfail() { printf " ${CFAIL}FAIL${CNORMAL}" >&2; EXIT_CODE=$((EXIT_CODE+1)); }
 	else
-		msgfail() { printf " ###FAILED###" >&2; EXIT_CODE=$((EXIT_CODE+1)); }
+		msgfail() { printf ' ###FAILED###' >&2; EXIT_CODE=$((EXIT_CODE+1)); }
 	fi
 fi
 if [ $MSGLEVEL -le 3 ]; then
@@ -79,11 +79,11 @@ if [ $MSGLEVEL -le 4 ]; then
 	msgndebug() { true; }
 fi
 msgdone() {
-	if [ "$1" = "debug" -a $MSGLEVEL -le 4 ] ||
-	   [ "$1" = "info" -a $MSGLEVEL -le 3 ] ||
-	   [ "$1" = "msg" -a $MSGLEVEL -le 2 ] ||
-	   [ "$1" = "warn" -a $MSGLEVEL -le 1 ] ||
-	   [ "$1" = "die" -a $MSGLEVEL -le 0 ]; then
+	if [ "$1" = 'debug' -a $MSGLEVEL -le 4 ] ||
+	   [ "$1" = 'info' -a $MSGLEVEL -le 3 ] ||
+	   [ "$1" = 'msg' -a $MSGLEVEL -le 2 ] ||
+	   [ "$1" = 'warn' -a $MSGLEVEL -le 1 ] ||
+	   [ "$1" = 'die' -a $MSGLEVEL -le 0 ]; then
 		true;
 	else
 		printf "${CDONE}DONE${CNORMAL}\n";
@@ -91,9 +91,9 @@ msgdone() {
 }
 getaptconfig() {
 	if [ -f ./aptconfig.conf ]; then
-            echo "./aptconfig.conf"
+            echo './aptconfig.conf'
 	elif [ -f ../aptconfig.conf ]; then
-            echo "../aptconfig.conf"
+            echo '../aptconfig.conf'
         fi
 }
 runapt() {
@@ -153,7 +153,7 @@ setupenvironment() {
 	cd ..
 
 	echo "Dir \"${TMPWORKINGDIRECTORY}/rootdir\";" > aptconfig.conf
-	echo "Debug::NoLocking \"true\";" >> aptconfig.conf
+	echo 'Debug::NoLocking "true";' >> aptconfig.conf
 	echo "Dir::Etc::sourcelist \"${TMPWORKINGDIRECTORY}/rootdir/etc/apt/sources.list\";" >> aptconfig.conf
 
 	if [ -n "$METHODSDIR" ] ; then
@@ -189,11 +189,11 @@ END
 	# setup rpm dbpath
 	echo "RPM::DBPath \"$TMPWORKINGDIRECTORY/var/lib/rpm\";" > rootdir/etc/apt/apt.conf.d/99rpmdbpath.conf
 
-	msgdone "info"
+	msgdone 'info'
 }
 
 getarchitecture() {
-	if [ "$1" = "native" -o -z "$1" ]; then
+	if [ "$1" = 'native' -o -z "$1" ]; then
 		eval `aptconfig shell ARCH APT::Architecture`
 		if [ -n "$ARCH" ]; then
 			echo $ARCH
@@ -254,16 +254,16 @@ checkdiff() {
 testfileequal() {
 	local FILE="$1"
 	shift
-	msgtest "Test for correctness of file" "$FILE"
+	msgtest 'Test for correctness of file' "$FILE"
 	if [ -z "$*" ]; then
-		echo -n "" | checkdiff $FILE - && msgpass || msgfail
+		echo -n '' | checkdiff $FILE - && msgpass || msgfail
 	else
 		echo "$*" | checkdiff $FILE - && msgpass || msgfail
 	fi
 }
 
 testempty() {
-	msgtest "Test for no output of" "$*"
+	msgtest 'Test for no output of' "$*"
 	local COMPAREFILE="${TMPWORKINGDIRECTORY}/rootdir/tmp/testempty.comparefile"
 	if $* >$COMPAREFILE 2>&1 && test ! -s $COMPAREFILE; then
 		msgpass
@@ -334,7 +334,7 @@ testequalor2() {
 	echo "$1" > $COMPAREFILE1
 	echo "$2" > $COMPAREFILE2
 	shift 2
-	msgtest "Test for equality OR of" "$*"
+	msgtest 'Test for equality OR of' "$*"
 	$* >$COMPAREAGAINST 2>&1 || true
 	if checkdiff $COMPAREFILE1 $COMPAREAGAINST >/dev/null 2>&1 || \
 		checkdiff $COMPAREFILE2 $COMPAREAGAINST >/dev/null 2>&1
@@ -359,7 +359,7 @@ N: Can't select versions from package '$1' as it is purely virtual"
 		PACKAGE="${PACKAGE} $1"
 		shift
 	done
-	msgtest "Test for virtual packages" "apt-cache show $PACKAGE"
+	msgtest 'Test for virtual packages' "apt-cache show $PACKAGE"
 	VIRTUAL="${VIRTUAL}
 N: No packages found"
 	local COMPAREFILE="${TMPWORKINGDIRECTORY}/rootdir/tmp/testshowvirtual.comparefile"
@@ -369,7 +369,7 @@ N: No packages found"
 }
 
 testnopackage() {
-	msgtest "Test for non-existent packages" "apt-cache show $*"
+	msgtest 'Test for non-existent packages' "apt-cache show $*"
 	local SHOWPKG="$(aptcache show "$@" 2>&1 | grep '^Package: ')"
 	if [ -n "$SHOWPKG" ]; then
 		echo >&2
@@ -381,7 +381,7 @@ testnopackage() {
 }
 
 testpkginstalled() {
-	msgtest "Test that package(s) are installed with" "rpm -q $*"
+	msgtest 'Test that package(s) are installed with' "rpm -q $*"
 
 	local result=0
 
@@ -408,7 +408,7 @@ getpackageversion() {
 }
 
 testpkgnotinstalled() {
-	msgtest "Test that package(s) are not installed with" "rpm -q $*"
+	msgtest 'Test that package(s) are not installed with' "rpm -q $*"
 
 	local result=0
 

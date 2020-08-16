@@ -6,22 +6,22 @@ TESTDIR=$(readlink -f $(dirname $0))
 
 setupenvironment
 
-buildpackage "conflicting-package-distupgrade"
-buildpackage "conflicting-package-one"
-buildpackage "conflicting-package-two"
-buildpackage "missing-dependency"
-buildpackage "simple-package-new"
-buildpackage "simple-package-noarch"
-buildpackage "simple-package"
-buildpackage "simple-package-update-conflict"
-buildpackage "simple-package-update"
-buildpackage "simple-virtual"
+buildpackage 'conflicting-package-distupgrade'
+buildpackage 'conflicting-package-one'
+buildpackage 'conflicting-package-two'
+buildpackage 'missing-dependency'
+buildpackage 'simple-package-new'
+buildpackage 'simple-package-noarch'
+buildpackage 'simple-package'
+buildpackage 'simple-package-update-conflict'
+buildpackage 'simple-package-update'
+buildpackage 'simple-virtual'
 
 generaterepository "$TMPWORKINGDIRECTORY/usr/src/RPM/RPMS" "$TMPWORKINGDIRECTORY/usr/src/RPM/REPO"
 
 testsuccess aptget update
 
-testequal "conflicting-package-two
+testequal 'conflicting-package-two
 no-such-package
 simple-virtual
 simple-package-noarch
@@ -29,4 +29,4 @@ virtual(dummy)
 simple-package-new
 missing-dependency
 simple-package
-conflicting-package-one" aptcache pkgnames
+conflicting-package-one' aptcache pkgnames

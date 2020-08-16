@@ -6,21 +6,21 @@ TESTDIR=$(readlink -f $(dirname $0))
 
 setupenvironment
 
-buildpackage "conflicting-package-distupgrade"
-buildpackage "conflicting-package-one"
-buildpackage "conflicting-package-two"
-buildpackage "missing-dependency"
-buildpackage "simple-package-new"
-buildpackage "simple-package-noarch"
-buildpackage "simple-package"
-buildpackage "simple-package-update-conflict"
-buildpackage "simple-package-update"
+buildpackage 'conflicting-package-distupgrade'
+buildpackage 'conflicting-package-one'
+buildpackage 'conflicting-package-two'
+buildpackage 'missing-dependency'
+buildpackage 'simple-package-new'
+buildpackage 'simple-package-noarch'
+buildpackage 'simple-package'
+buildpackage 'simple-package-update-conflict'
+buildpackage 'simple-package-update'
 
 generaterepository "$TMPWORKINGDIRECTORY/usr/src/RPM/RPMS" "$TMPWORKINGDIRECTORY/usr/src/RPM/REPO"
 
 testsuccess aptget update
 
-testregexmatch "Using Versioning System: Standard \.rpm
+testregexmatch 'Using Versioning System: Standard \.rpm
 Package: conflicting-package-two
  Version: 1-alt1@[0-9]+
      File: /.*/rootdir/var/lib/apt/lists/.*_usr_src_RPM_REPO_.*_base_pkglist\.apt-tests
@@ -88,5 +88,5 @@ File: /.*/rootdir/var/lib/apt/lists/.*_usr_src_RPM_REPO_.*_base_pkglist\.apt-tes
  Version: [0-9]+
  Origin: ALT Linux Team
  Site:[ ]*
- Label: apt-tests
+ Label: apt-tests'"
  Architecture: $(getarchitecture)" aptcache dump

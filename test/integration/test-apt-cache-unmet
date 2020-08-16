@@ -6,14 +6,14 @@ TESTDIR=$(readlink -f $(dirname $0))
 
 setupenvironment
 
-buildpackage "conflicting-package-distupgrade"
-buildpackage "conflicting-package-one"
-buildpackage "conflicting-package-two"
-buildpackage "simple-package-new"
-buildpackage "simple-package-noarch"
-buildpackage "simple-package"
-buildpackage "simple-package-update-conflict"
-buildpackage "simple-package-update"
+buildpackage 'conflicting-package-distupgrade'
+buildpackage 'conflicting-package-one'
+buildpackage 'conflicting-package-two'
+buildpackage 'simple-package-new'
+buildpackage 'simple-package-noarch'
+buildpackage 'simple-package'
+buildpackage 'simple-package-update-conflict'
+buildpackage 'simple-package-update'
 
 generaterepository "$TMPWORKINGDIRECTORY/usr/src/RPM/RPMS" "$TMPWORKINGDIRECTORY/usr/src/RPM/REPO"
 
@@ -21,11 +21,11 @@ testsuccess aptget update
 
 testempty aptcache unmet
 
-buildpackage "missing-dependency"
+buildpackage 'missing-dependency'
 
 generaterepository "$TMPWORKINGDIRECTORY/usr/src/RPM/RPMS" "$TMPWORKINGDIRECTORY/usr/src/RPM/REPO" "$(date +%s --date='now +1 day')"
 
 testsuccess aptget update
 
-testregexmatch "Package missing-dependency version 1-alt1@[0-9]+ has an unmet dep:
- Depends: no-such-package" aptcache unmet
+testregexmatch 'Package missing-dependency version 1-alt1@[0-9]+ has an unmet dep:
+ Depends: no-such-package' aptcache unmet

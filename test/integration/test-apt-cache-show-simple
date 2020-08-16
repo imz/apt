@@ -6,15 +6,15 @@ TESTDIR=$(readlink -f $(dirname $0))
 
 setupenvironment
 
-buildpackage "conflicting-package-distupgrade"
-buildpackage "conflicting-package-one"
-buildpackage "conflicting-package-two"
-buildpackage "missing-dependency"
-buildpackage "simple-package-new"
-buildpackage "simple-package-noarch"
-buildpackage "simple-package"
-buildpackage "simple-package-update-conflict"
-buildpackage "simple-package-update"
+buildpackage 'conflicting-package-distupgrade'
+buildpackage 'conflicting-package-one'
+buildpackage 'conflicting-package-two'
+buildpackage 'missing-dependency'
+buildpackage 'simple-package-new'
+buildpackage 'simple-package-noarch'
+buildpackage 'simple-package'
+buildpackage 'simple-package-update-conflict'
+buildpackage 'simple-package-update'
 
 generaterepository "$TMPWORKINGDIRECTORY/usr/src/RPM/RPMS" "$TMPWORKINGDIRECTORY/usr/src/RPM/REPO"
 
@@ -47,7 +47,7 @@ Size: [0-9]+
 MD5Sum: [0-9a-fA-F]+
 Filename: simple-package-1-alt1\.$(getarchitecture)\.rpm
 Description: Test package
- Dummy description" aptcache show "simple-package"
+ Dummy description" aptcache show 'simple-package'
 
 testregexmatch "Package: missing-dependency
 Section: Other
@@ -62,6 +62,6 @@ Size: [0-9]+
 MD5Sum: [0-9a-fA-F]+
 Filename: missing-dependency-1-alt1\.$(getarchitecture)\.rpm
 Description: Test package
- Dummy description" aptcache show "missing-dependency"
+ Dummy description" aptcache show 'missing-dependency'
 
-testempty aptcache show "no-such-package"
+testempty aptcache show 'no-such-package'
