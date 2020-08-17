@@ -275,6 +275,8 @@ string rpmSystem::DistroVer(Configuration const &Cnf)
    string DistroVerPkg = _config->Find("Apt::DistroVerPkg");
    string DistroVersion;
 
+   string DBDir = _config->Find("RPM::DBPath");
+
    if (DistroVerPkg.empty())
       return DistroVersion;
 
@@ -283,6 +285,14 @@ string rpmSystem::DistroVer(Configuration const &Cnf)
    ts = rpmtsCreate();
    rpmtsSetVSFlags(ts, (rpmVSFlags_e)-1);
    rpmtsSetRootDir(ts, NULL);
+
+   if (!DBDir.empty())
+   {
+      string dbpath_macro = string("_dbpath ") + DBDir;
+      if (rpmDefineMacro(NULL, dbpath_macro.c_str(), 0) != 0)
+         return DistroVersion;
+   }
+
    if (rpmtsOpenDB(ts, O_RDONLY))
       return DistroVersion;
 #else
@@ -486,7 +496,8 @@ static void HashOptionFile(unsigned long &Hash, const char *Name)
    string FileName = _config->FindFile(Name);
    struct stat st;
    stat(FileName.c_str(), &st);
-   Hash += st.st_mtime;
+   Hash += st.st_mtim.tv_sec;
+   Hash += st.st_mtim.tv_nsec;
 }
 unsigned long rpmSystem::OptionsHash() const
 {

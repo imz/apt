@@ -1,0 +1,22 @@
+#!/bin/bash
+set -e
+
+TESTDIR=$(readlink -f $(dirname $0))
+. $TESTDIR/framework
+
+setupenvironment
+
+buildpackage 'simple-package'
+buildpackage 'conflicting-package-one'
+
+testpkgnotinstalled 'simple-package' 'conflicting-package-one'
+aptgetinstallpackage 'simple-package' '1' 'alt1' "$(getarchitecture)"
+msgmsg 'Installed package "simple-package"'
+aptgetinstallpackage 'conflicting-package-one' '1' 'alt1' "$(getarchitecture)"
+msgmsg 'Installed package "conflicting-package-one"'
+testpkginstalled 'simple-package' 'conflicting-package-one'
+testsuccess aptget -y remove 'simple-package'
+testpkgnotinstalled 'simple-package'
+testpkginstalled 'conflicting-package-one'
+testsuccess aptget -y remove 'conflicting-package-one'
+testpkgnotinstalled 'simple-package' 'conflicting-package-one'
