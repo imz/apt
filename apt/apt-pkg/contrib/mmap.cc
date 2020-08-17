@@ -37,6 +37,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <cstring>
+#include <cassert>
    									/*}}}*/
 
 // MMap::MMap - Constructor						/*{{{*/
@@ -231,6 +232,10 @@ std::optional<unsigned long> DynamicMMap::RawAllocate(unsigned long Size,unsigne
    size in the file. */
 std::optional<unsigned long> DynamicMMap::Allocate(unsigned long ItemSize)
 {
+   assert(ItemSize != 0); /* Actually, we are always called with sizeof(...)
+                             compile-time non-zero constant as the argument.
+                          */
+
    // Look for a matching pool entry
    Pool *I;
    Pool *Empty = 0;
@@ -285,17 +290,20 @@ std::optional<unsigned long> DynamicMMap::WriteString(const char *String,
    if (Len == std::numeric_limits<decltype(Len)>::max())
       Len = strlen(String);
 
-   unsigned long Result = iSize;
-   // Just in case error check
-   if (Result + Len > WorkSpace)
-   {
-      _error->Error("Dynamic MMap ran out of room");
-      return std::nullopt;
-   }
+   /* Len != std::numeric_limits<decltype(Len)>::max()
+      because the final 0 in String fits in the memory;
+      so Len+1 will never overflow.
+   */
 
-   iSize += Len + 1;
-   memcpy((char *)Base + Result,String,Len);
-   ((char *)Base)[Result + Len] = 0;
+   const auto Result = RawAllocate(Len+1,0);
+
+   if (!Result)
+      return std::nullopt;
+
+   char * const dest = static_cast<char *>(Base) + *Result;
+   memcpy(dest,String,Len);
+   dest[Len] = 0;
+
    return Result;
 }
 									/*}}}*/
