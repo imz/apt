@@ -79,7 +79,14 @@ std::optional<unsigned long> rpmListParser::UniqFindTagWrite(int Tag)
    void *data;
    
    if (headerGetEntry(header, Tag, &type, &data, &count) != 1)
-      return std::nullopt;
+   {
+      /*
+       * Some 3rd-party rpm packages may not contain these tags.
+       * But since cacheiterators treat zero as special value,
+       * just pass it instead of failing
+       */
+      return 0;
+   }
    
    if (type == RPM_STRING_TYPE) 
    {
