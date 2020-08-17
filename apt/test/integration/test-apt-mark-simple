@@ -1,0 +1,62 @@
+#!/bin/bash
+set -e
+
+TESTDIR=$(readlink -f $(dirname $0))
+. $TESTDIR/framework
+
+setupenvironment
+
+buildpackage 'simple-package'
+buildpackage 'conflicting-package-one'
+
+aptgetinstallpackage 'simple-package' '1' 'alt1' "$(getarchitecture)"
+aptgetinstallpackage 'conflicting-package-one' '1' 'alt1' "$(getarchitecture)"
+
+testpkginstalled 'simple-package'
+testpkginstalled 'conflicting-package-one'
+
+testequal 'Reading Package Lists...
+Building Dependency Tree...
+conflicting-package-one manual
+simple-package manual' aptmark showstate simple-package conflicting-package-one
+
+testequal "Reading Package Lists...
+Building Dependency Tree...
+conflicting-package-one manual${TESTGPGPUBKEY:+
+gpg-pubkey manual}
+simple-package manual" aptmark showstate
+
+testequal 'Reading Package Lists...
+Building Dependency Tree...' aptmark showauto
+
+testequal "Reading Package Lists...
+Building Dependency Tree...
+conflicting-package-one${TESTGPGPUBKEY:+
+gpg-pubkey}
+simple-package" aptmark showmanual
+
+testsuccess aptmark auto simple-package
+
+testequal 'Reading Package Lists...
+Building Dependency Tree...
+conflicting-package-one manual
+simple-package auto' aptmark showstate simple-package conflicting-package-one
+
+testequal 'Reading Package Lists...
+Building Dependency Tree...
+conflicting-package-one manual' aptmark showstate conflicting-package-one
+
+testequal "Reading Package Lists...
+Building Dependency Tree...
+conflicting-package-one manual${TESTGPGPUBKEY:+
+gpg-pubkey manual}
+simple-package auto" aptmark showstate
+
+testequal 'Reading Package Lists...
+Building Dependency Tree...
+simple-package' aptmark showauto
+
+testequal "Reading Package Lists...
+Building Dependency Tree...
+conflicting-package-one${TESTGPGPUBKEY:+
+gpg-pubkey}" aptmark showmanual

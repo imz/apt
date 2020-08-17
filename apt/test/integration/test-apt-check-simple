@@ -1,0 +1,26 @@
+#!/bin/bash
+set -e
+
+TESTDIR=$(readlink -f $(dirname $0))
+. $TESTDIR/framework
+
+setupenvironment
+
+buildpackage 'missing-dependency'
+buildpackage 'simple-package'
+
+testpkgnotinstalled 'missing-dependency'
+testpkgnotinstalled 'simple-package'
+testsuccess aptget check
+
+installpackage 'simple-package' '1' 'alt1' "$(getarchitecture)"
+
+testpkgnotinstalled 'missing-dependency'
+testpkginstalled 'simple-package'
+testsuccess aptget check
+
+installpackage 'missing-dependency' '1' 'alt1' "$(getarchitecture)"
+
+testpkginstalled 'missing-dependency'
+testpkginstalled 'simple-package'
+testfailure aptget check

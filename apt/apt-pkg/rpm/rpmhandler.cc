@@ -384,7 +384,8 @@ RPMDBHandler::RPMDBHandler(bool WriteLock)
    RpmIter = NULL;
 #endif
    string Dir = _config->Find("RPM::RootDir");
-   
+   string DBDir = _config->Find("RPM::DBPath");
+
    rpmReadConfigFiles(NULL, NULL);
    ID = DataPath(false);
 
@@ -396,12 +397,24 @@ RPMDBHandler::RPMDBHandler(bool WriteLock)
    // restore the mtime and save our cache.
    struct stat St;
    stat(DataPath(false).c_str(), &St);
-   DbFileMtime = St.st_mtime;
+   DbFileMtime = St.st_mtim.tv_sec;
+   DbFileMnanotime = St.st_mtim.tv_nsec;
 
 #if RPM_VERSION >= 0x040100
    Handler = rpmtsCreate();
    rpmtsSetVSFlags(Handler, (rpmVSFlags_e)-1);
    rpmtsSetRootDir(Handler, Dir.c_str());
+
+   if (!DBDir.empty())
+   {
+      string dbpath_macro = string("_dbpath ") + DBDir;
+      if (rpmDefineMacro(NULL, dbpath_macro.c_str(), 0) != 0)
+      {
+         _error->Error(_("Failed to set rpm dbpath"));
+         return;
+      }
+   }
+
    if (rpmtsOpenDB(Handler, O_RDONLY) != 0)
    {
       _error->Error(_("could not open RPM database"));
@@ -479,9 +492,12 @@ RPMDBHandler::~RPMDBHandler()
 string RPMDBHandler::DataPath(bool DirectoryOnly)
 {
    string File = "Packages";
-   char *tmp = (char *) rpmExpand("%{_dbpath}", NULL);
-   string DBPath(_config->Find("RPM::RootDir")+tmp);
-   free(tmp);
+   string DBPath = _config->Find("RPM::DBPath");
+   if (DBPath.empty()) {
+      char *tmp = (char *) rpmExpand("%{_dbpath}", NULL);
+      DBPath = _config->Find("RPM::RootDir") + tmp;
+      free(tmp);
+   }
 
    if (DirectoryOnly == true)
        return DBPath;

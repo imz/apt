@@ -1,0 +1,26 @@
+#!/bin/bash
+set -e
+
+TESTDIR=$(readlink -f $(dirname $0))
+. $TESTDIR/framework
+
+setupenvironment
+
+buildpackage 'simple-package'
+buildpackage 'simple-package-new'
+
+testpkgnotinstalled 'simple-package'
+testpkgnotinstalled 'simple-package-new'
+
+aptgetinstallpackage 'simple-package' '1' 'alt1' "$(getarchitecture)"
+testpkginstalled 'simple-package'
+testpkgnotinstalled 'simple-package-new'
+
+generaterepository "$TMPWORKINGDIRECTORY/usr/src/RPM/RPMS" "$TMPWORKINGDIRECTORY/usr/src/RPM/REPO"
+
+testsuccess aptget update
+
+testsuccess aptget dist-upgrade -y
+
+testpkgnotinstalled 'simple-package'
+testpkginstalled 'simple-package-new'

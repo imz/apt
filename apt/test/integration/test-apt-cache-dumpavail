@@ -1,0 +1,139 @@
+#!/bin/bash
+set -e
+
+TESTDIR=$(readlink -f $(dirname $0))
+. $TESTDIR/framework
+
+setupenvironment
+
+buildpackage 'conflicting-package-distupgrade'
+buildpackage 'conflicting-package-one'
+buildpackage 'conflicting-package-two'
+buildpackage 'missing-dependency'
+buildpackage 'simple-package-new'
+buildpackage 'simple-package-noarch'
+buildpackage 'simple-package'
+buildpackage 'simple-package-update-conflict'
+buildpackage 'simple-package-update'
+
+generaterepository "$TMPWORKINGDIRECTORY/usr/src/RPM/RPMS" "$TMPWORKINGDIRECTORY/usr/src/RPM/REPO"
+
+testsuccess aptget update
+
+testregexmatch "Package: conflicting-package-two
+Section: Other
+Installed Size: 0
+Maintainer: test@example.net
+Version: 1-alt1@[0-9]+
+Pre-Depends: rpmlib\(PayloadIsLzma\)
+Conflicts: conflicting-package-one
+Provides: conflicting-package-two \(= 1-alt1\)
+Architecture: $(getarchitecture)
+Size: [0-9]+
+MD5Sum: [0-9a-fA-F]+
+Filename: conflicting-package-two-1-alt1\.$(getarchitecture)\.rpm
+Description: Test package
+ Dummy description
+Changelog:
+ \* Mon Sep 30 2019 Nobody <nobody@altlinux\.org> 1-alt1
+ - Test package created
+
+
+Package: simple-package-noarch
+Section: Other
+Installed Size: 0
+Maintainer: test@example.net
+Version: 1-alt1@[0-9]+
+Pre-Depends: rpmlib\(PayloadIsLzma\)
+Provides: simple-package-noarch \(= 1-alt1\)
+Architecture: noarch
+Size: [0-9]+
+MD5Sum: [0-9a-fA-F]+
+Filename: simple-package-noarch-1-alt1\.noarch\.rpm
+Description: Test package
+ Dummy description
+Changelog:
+ \* Mon Sep 30 2019 Nobody <nobody@altlinux\.org> 1-alt1
+ - Test package created
+
+
+Package: simple-package-new
+Section: Other
+Installed Size: 0
+Maintainer: test@example.net
+Version: 3-alt1@[0-9]+
+Pre-Depends: rpmlib\(PayloadIsLzma\)
+Conflicts: simple-package \(< 3-alt1\)
+Provides: simple-package \(= 3-alt1\), simple-package-new \(= 3-alt1\)
+Obsoletes: simple-package \(< 3-alt1\)
+Architecture: $(getarchitecture)
+Size: [0-9]+
+MD5Sum: [0-9a-fA-F]+
+Filename: simple-package-new-3-alt1\.$(getarchitecture)\.rpm
+Description: Test package
+ Dummy description
+Changelog:
+ \* Tue Oct 01 2019 Nobody <nobody@altlinux\.org> 3-alt1
+ - Test package updated
+ \* Mon Sep 30 2019 Nobody <somebody@altlinux\.org> 1-alt1
+ - Test package created
+
+
+Package: missing-dependency
+Section: Other
+Installed Size: 0
+Maintainer: test@example.net
+Version: 1-alt1@[0-9]+
+Pre-Depends: rpmlib\(PayloadIsLzma\)
+Depends: no-such-package
+Provides: missing-dependency \(= 1-alt1\)
+Architecture: $(getarchitecture)
+Size: [0-9]+
+MD5Sum: [0-9a-fA-F]+
+Filename: missing-dependency-1-alt1\.$(getarchitecture)\.rpm
+Description: Test package
+ Dummy description
+Changelog:
+ \* Mon Sep 30 2019 Nobody <nobody@altlinux\.org> 1-alt1
+ - Test package created
+
+
+Package: simple-package
+Section: Other
+Installed Size: 0
+Maintainer: test@example.net
+Version: 2-alt1@[0-9]+
+Pre-Depends: rpmlib\(PayloadIsLzma\)
+Provides: simple-package \(= 2-alt1\)
+Architecture: $(getarchitecture)
+Size: [0-9]+
+MD5Sum: [0-9a-fA-F]+
+Filename: simple-package-2-alt1\.$(getarchitecture)\.rpm
+Description: Test package
+ Dummy description
+Changelog:
+ \* Tue Oct 01 2019 Nobody <nobody@altlinux\.org> 2-alt1
+ - Test package updated
+ \* Mon Sep 30 2019 Nobody <somebody@altlinux\.org> 1-alt1
+ - Test package created
+
+
+Package: conflicting-package-one
+Section: Other
+Installed Size: 0
+Maintainer: test@example.net
+Version: 2-alt1@[0-9]+
+Pre-Depends: rpmlib\(PayloadIsLzma\)
+Conflicts: conflicting-package-two, simple-package
+Provides: conflicting-package-one \(= 2-alt1\)
+Architecture: $(getarchitecture)
+Size: [0-9]+
+MD5Sum: [0-9a-fA-F]+
+Filename: conflicting-package-one-2-alt1\.$(getarchitecture)\.rpm
+Description: Test package
+ Dummy description
+Changelog:
+ \* Tue Oct 01 2019 Nobody <nobody@altlinux\.org> 2-alt1
+ - Test package updated
+ \* Mon Sep 30 2019 Nobody <somebody@altlinux\.org> 1-alt1
+ - Test package created" aptcache dumpavail
