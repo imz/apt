@@ -1,0 +1,52 @@
+#!/bin/bash
+set -e
+
+TESTDIR=$(readlink -f $(dirname $0))
+. $TESTDIR/framework
+
+setupenvironment
+
+testregexmatch 'APT "";'"
+APT::Architecture \"$(getarchitecture)\";"'
+APT::DistroVersion "";
+APT::Get "";
+APT::Get::ReInstall "";
+APT::Get::ReInstall::MarkManual "1";
+APT::Get::Obsoletes "";
+APT::Get::Obsoletes::AptMarkInheritanceAuto "all";
+Dir "[^"]*";
+Dir::State "var/lib/apt/";
+Dir::State::lists "lists/";
+Dir::State::cdroms "cdroms\.list";
+Dir::State::prefetch "prefetch";
+Dir::Cache "var/cache/apt/";
+Dir::Cache::archives "archives/";
+Dir::Cache::srcpkgcache "srcpkgcache\.bin";
+Dir::Cache::pkgcache "pkgcache\.bin";
+Dir::Etc "etc/apt/";
+Dir::Etc::sourcelist "[^"]*";
+Dir::Etc::sourceparts "sources\.list\.d";
+Dir::Etc::vendorlist "vendors\.list";
+Dir::Etc::vendorparts "vendors\.list\.d";
+Dir::Etc::main "apt\.conf";
+Dir::Etc::parts "apt\.conf\.d";
+Dir::Etc::preferences "preferences";
+Dir::Etc::preferencesparts "preferences\.d";
+Dir::Etc::pkgpriorities "pkgpriorities";
+Dir::Etc::translatelist "translate\.list";
+Dir::Etc::translateparts "translate\.list\.d";
+Dir::Bin "";
+Dir::Bin::methods "[^"]*";
+Dir::Bin::scripts "[^"]*";
+Dir::Bin::rpm "/bin/rpm";
+Dir::Locale "/usr/share/locale";
+Acquire "";
+Acquire::ComprExtension "\.bz2";
+Acquire::DistroID "ALT Linux";
+Acquire::CDROM "";
+Acquire::CDROM::Mount "/media/ALTLinux";
+Acquire::CDROM::Copy-All "true";
+Debug "";
+Debug::NoLocking "true";
+RPM "";
+RPM::DBPath "[^"]*";' aptconfig dump

@@ -626,7 +626,8 @@ bool pkgCache::PkgFileIterator::IsOk()
    if (stat(FileName(),&Buf) != 0)
       return false;
 
-   if (Buf.st_size != (signed)File->Size || Buf.st_mtime != File->mtime)
+   if (Buf.st_size != (signed)File->Size || Buf.st_mtim.tv_sec != File->mtime ||
+       (unsigned long) Buf.st_mtim.tv_nsec != File->mnanotime)
       return false;
 
    return true;
