@@ -442,7 +442,7 @@ bool InstallPackages(CacheFile &Cache,bool ShwKept,bool Ask = true,
       }
    }
 
-   // Just print out the uris an exit if the --print-uris flag was used
+   // Just print out the uris and exit if the --print-uris flag was used
    if (_config->FindB("APT::Get::Print-URIs") == true)
    {
       pkgAcquire::UriIterator I = Fetcher.UriBegin();
@@ -1108,7 +1108,7 @@ bool DoUpdate(CommandLine &CmdL)
    if (List.GetIndexes(&Fetcher) == false)
 	 return false;
 
-   // Just print out the uris an exit if the --print-uris flag was used
+   // Just print out the uris and exit if the --print-uris flag was used
    if (_config->FindB("APT::Get::Print-URIs") == true)
    {
       pkgAcquire::UriIterator I = Fetcher.UriBegin();
