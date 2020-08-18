@@ -46,9 +46,6 @@
 
 #include <apti18n.h>
 
-// CNC:2003-03-17
-#include <apt-pkg/luaiface.h>
-
 #include "acqprogress.h"
 
 // CNC:2003-02-14 - apti18n.h includes libintl.h which includes locale.h,
@@ -67,6 +64,9 @@
 #include <errno.h>
 #include <regex.h>
 #include <sys/wait.h>
+
+// CNC:2003-03-17
+#include <apt-pkg/luaiface.h>
 
 #ifndef APT_PIPE
 #include <readline/readline.h>
@@ -621,9 +621,9 @@ bool TryToInstall(pkgCache::PkgIterator Pkg,pkgDepCache &Cache,
       {
          bool instVirtual = _config->FindB("APT::Install::Virtual", false);
          pkgCache::PkgIterator PrvPkg = pkgCache::PkgIterator(*Pkg.Cache(), PList[p]);
-	 pkgCache::PrvIterator Prv = Pkg.ProvidesList();
+         pkgCache::PrvIterator Prv = Pkg.ProvidesList();
          for (; Prv.end() == false && Prv.OwnerPkg() != PrvPkg; Prv++)
-	    ;
+            ;
 	 // Check if it's a different version of a package already
 	 // considered as a good solution.
 	 bool AlreadySeen = false;
@@ -682,8 +682,8 @@ bool TryToInstall(pkgCache::PkgIterator Pkg,pkgDepCache &Cache,
 	 _lua->SetGlobal("selected");
 	 _lua->RunScripts("Scripts::AptGet::Install::SelectPackage");
 	 pkgCache::Package *selected = _lua->GetGlobalPkg("selected");
-	 if (selected)
-	 {
+         if (selected)
+         {
 	    GoodSolutions.clear();
 	    GoodSolutions.push_back(selected);
 	 }
@@ -1530,7 +1530,6 @@ bool DoInstall(CommandLine &CmdL)
    }
 #endif
 
-
    // Now we check the state of the packages,
    if (Cache->BrokenCount() != 0)
    {
@@ -1729,7 +1728,7 @@ class LogCleaner : public pkgArchiveCleaner
       c1out << "Del " << Pkg << " " << Ver << " [" << SizeToStr(St.st_size) << "B]" << endl;
 
       if (_config->FindB("APT::Get::Simulate") == false)
-	 unlink(File);
+         unlink(File);
    }
 };
 
@@ -1989,6 +1988,7 @@ bool DoBuildDep(CommandLine &CmdL)
                   continue;
                }
             }
+
             if (IV.end() == false)
             {
                if (_config->FindB("Debug::BuildDeps",false) == true)
@@ -2044,8 +2044,10 @@ bool DoBuildDep(CommandLine &CmdL)
 
       // Now we check the state of the packages,
       if (Cache->BrokenCount() != 0)
+      {
 	 return _error->Error(_("Some broken packages were found while trying to process build-dependencies for %s.\n"
 				"You might want to run `apt-get --fix-broken install' to correct these."),*I);
+      }
    }
 
    ConfirmChanges(Cache, StateGuard);
@@ -2144,7 +2146,7 @@ static bool ShowAuto(CommandLine &CmdL)
    return true;
 }
 
-// * - Scripting stuff.							/*{{{*/
+// DoScript - Scripting stuff.						/*{{{*/
 // ---------------------------------------------------------------------
 /* */
 bool DoScript(CommandLine &CmdL)

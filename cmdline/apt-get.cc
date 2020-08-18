@@ -595,7 +595,7 @@ bool TryToInstall(pkgCache::PkgIterator Pkg,pkgDepCache &Cache,
          pkgCache::PkgIterator PrvPkg = pkgCache::PkgIterator(*Pkg.Cache(), PList[p]);
          pkgCache::PrvIterator Prv = Pkg.ProvidesList();
          for (; Prv.end() == false && Prv.OwnerPkg() != PrvPkg; Prv++)
-           ;
+            ;
 	 // Check if it's a different version of a package already
 	 // considered as a good solution.
 	 bool AlreadySeen = false;
@@ -644,7 +644,7 @@ bool TryToInstall(pkgCache::PkgIterator Pkg,pkgDepCache &Cache,
       }
       vector<string> GoodSolutionNames;
       unsigned int GoodSolutionsInstalled = 0;
-      for (unsigned int i = 0; i < GoodSolutions.size(); i++)
+      for (unsigned int i = 0; i != GoodSolutions.size(); i++)
       {
 	 pkgCache::PkgIterator GoodPkg(Cache, GoodSolutions[i]);
 	 GoodSolutionNames.push_back(GoodPkg.Name());
@@ -665,7 +665,8 @@ bool TryToInstall(pkgCache::PkgIterator Pkg,pkgDepCache &Cache,
 	 _lua->SetGlobal("selected");
 	 _lua->RunScripts("Scripts::AptGet::Install::SelectPackage");
 	 pkgCache::Package *selected = _lua->GetGlobalPkg("selected");
-	 if (selected) {
+         if (selected)
+         {
 	    GoodSolutions.clear();
 	    GoodSolutions.push_back(selected);
 	 }
@@ -797,7 +798,7 @@ bool TryToInstall(pkgCache::PkgIterator Pkg,pkgDepCache &Cache,
 	       continue;
 	    Seen[Dep.ParentPkg()->ID] = true;
 	    List += string(Dep.ParentPkg().Name()) + " ";
-        //VersionsList += string(Dep.ParentPkg().CurVersion) + "\n"; ???
+            //VersionsList += string(Dep.ParentPkg().CurVersion) + "\n"; ???
 	 }
 	 if (!List.empty()) c3out<<"apt-get:however-replace-list:"<<List<<endl;
 	 ShowList(c1out,_("However the following packages replace it:"),List,VersionsList,ScreenWidth);
@@ -1119,16 +1120,6 @@ class UpdateLogCleaner : public pkgArchiveCleaner
 
 bool DoUpdate(CommandLine &CmdL)
 {
-// CNC:2003-03-27
-#if 0
-   if (CmdL.FileSize() != 1)
-      return _error->Error(_("The update command takes no arguments"));
-
-   // Get the source list
-   pkgSourceList List;
-   if (List.ReadMainList() == false)
-      return false;
-#else
    bool Partial = false;
    pkgSourceList List;
 
@@ -1153,7 +1144,6 @@ bool DoUpdate(CommandLine &CmdL)
    }
    else if (List.ReadMainList() == false)
       return false;
-#endif
 
    // Lock the list directory
    FileFd Lock;
@@ -1914,7 +1904,7 @@ class LogCleaner : public pkgArchiveCleaner
       c1out << "Del " << Pkg << " " << Ver << " [" << SizeToStr(St.st_size) << "B]" << endl;
 
       if (_config->FindB("APT::Get::Simulate") == false)
-	 unlink(File);
+         unlink(File);
    }
 };
 
