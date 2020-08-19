@@ -1111,10 +1111,11 @@ bool DoUpdate(CommandLine &CmdL)
    // Just print out the uris and exit if the --print-uris flag was used
    if (_config->FindB("APT::Get::Print-URIs") == true)
    {
-      pkgAcquire::UriIterator I = Fetcher.UriBegin();
-      for (; I != Fetcher.UriEnd(); I++)
-	 cout << '\'' << I->URI << "' " << flNotDir(I->Owner->DestFile) << ' ' <<
-	       I->Owner->FileSize << ' ' << I->Owner->MD5Sum() << endl;
+
+      for (pkgAcquire::UriIterator I = Fetcher.UriBegin(); I != Fetcher.UriEnd(); ++I)
+         cout << '\'' << I->URI << "' " << flNotDir(I->Owner->DestFile) << ' ' <<
+            I->Owner->FileSize << ' ' << I->Owner->MD5Sum() << endl;
+
       return true;
    }
 
