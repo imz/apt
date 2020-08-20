@@ -1145,24 +1145,6 @@ bool DoUpdate(CommandLine &CmdL)
    else if (List.ReadMainList() == false)
       return false;
 
-   // Lock the list directory
-   FileFd Lock;
-   if (!_config->FindB("Debug::NoLocking", false))
-   {
-      Lock.Fd(GetLock(_config->FindDir("Dir::State::Lists") + "lock"));
-      if (_error->PendingError())
-         return _error->Error(_("Unable to lock the list directory"));
-   }
-
-// CNC:2003-03-19
-#ifdef WITH_LUA
-   if (_lua->HasScripts("Scripts::AptGet::Update::Pre")) {
-      _lua->RunScripts("Scripts::AptGet::Update::Pre");
-      LuaCacheControl *LuaCache = _lua->GetCacheControl();
-      LuaCache->Close();
-   }
-#endif
-
    // Just print out the uris and exit if the --print-uris flag was used
    if (_config->FindB("APT::Get::Print-URIs") == true)
    {
@@ -1200,6 +1182,24 @@ bool DoUpdate(CommandLine &CmdL)
    // Create the download object
    AcqTextStatus Stat(ScreenWidth,_config->FindI("quiet",0));
    pkgAcquire Fetcher(&Stat);
+
+   // Lock the list directory
+   FileFd Lock;
+   if (!_config->FindB("Debug::NoLocking", false))
+   {
+      Lock.Fd(GetLock(_config->FindDir("Dir::State::Lists") + "lock"));
+      if (_error->PendingError())
+         return _error->Error(_("Unable to lock the list directory"));
+   }
+
+// CNC:2003-03-19
+#ifdef WITH_LUA
+   if (_lua->HasScripts("Scripts::AptGet::Update::Pre")) {
+      _lua->RunScripts("Scripts::AptGet::Update::Pre");
+      LuaCacheControl *LuaCache = _lua->GetCacheControl();
+      LuaCache->Close();
+   }
+#endif
 
    // CNC:2002-07-03
    bool Failed = false;
