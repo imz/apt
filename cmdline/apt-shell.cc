@@ -1081,6 +1081,30 @@ bool DoUpdate(CommandLine &CmdL)
    _lua->ResetCaches();
 #endif
 
+   // Just print out the uris and exit if the --print-uris flag was used
+   if (_config->FindB("APT::Get::Print-URIs") == true)
+   {
+      // Create the download object
+      AcqTextStatus Stat(ScreenWidth,_config->FindI("quiet",0));
+      pkgAcquire Fetcher(&Stat);
+
+      // Populate it with release file URIs
+      if (!List.GetReleases(&Fetcher))
+         return false;
+
+      // Populate it with the source selection
+      if (!List.GetIndexes(&Fetcher))
+         return false;
+
+      for (pkgAcquire::UriIterator I = Fetcher.UriBegin(); I != Fetcher.UriEnd(); ++I)
+         cout << '\'' << I->URI << "' " << flNotDir(I->Owner->DestFile) << ' ' <<
+            I->Owner->FileSize << ' ' << I->Owner->MD5Sum() << endl;
+
+      return true;
+   }
+
+   // do the work
+
    // Create the download object
    AcqTextStatus Stat(ScreenWidth,_config->FindI("quiet",0));
    pkgAcquire Fetcher(&Stat);
@@ -1090,34 +1114,21 @@ bool DoUpdate(CommandLine &CmdL)
    // Populate it with release file URIs
    if (!List.GetReleases(&Fetcher))
       return false;
-   if (_config->FindB("APT::Get::Print-URIs") == false)
+
+   Fetcher.Run();
+   for (pkgAcquire::ItemIterator I = Fetcher.ItemsBegin(); I != Fetcher.ItemsEnd(); I++)
    {
-      Fetcher.Run();
-      for (pkgAcquire::ItemIterator I = Fetcher.ItemsBegin(); I != Fetcher.ItemsEnd(); I++)
-      {
-	 if ((*I)->Status == pkgAcquire::Item::StatDone)
-	    continue;
-	 (*I)->Finished();
-	 Failed = true;
-      }
-      if (Failed)
-	 _error->Warning(_("Release files for some repositories could not be retrieved or authenticated. Such repositories are being ignored."));
+      if ((*I)->Status == pkgAcquire::Item::StatDone)
+         continue;
+      (*I)->Finished();
+      Failed = true;
    }
+   if (Failed)
+      _error->Warning(_("Release files for some repositories could not be retrieved or authenticated. Such repositories are being ignored."));
 
    // Populate it with the source selection
    if (!List.GetIndexes(&Fetcher))
       return false;
-
-   // Just print out the uris and exit if the --print-uris flag was used
-   if (_config->FindB("APT::Get::Print-URIs") == true)
-   {
-
-      for (pkgAcquire::UriIterator I = Fetcher.UriBegin(); I != Fetcher.UriEnd(); ++I)
-         cout << '\'' << I->URI << "' " << flNotDir(I->Owner->DestFile) << ' ' <<
-            I->Owner->FileSize << ' ' << I->Owner->MD5Sum() << endl;
-
-      return true;
-   }
 
    // Run it
    if (Fetcher.Run() == pkgAcquire::Failed)

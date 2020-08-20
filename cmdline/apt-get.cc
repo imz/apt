@@ -1163,38 +1163,20 @@ bool DoUpdate(CommandLine &CmdL)
    }
 #endif
 
-   // Create the download object
-   AcqTextStatus Stat(ScreenWidth,_config->FindI("quiet",0));
-   pkgAcquire Fetcher(&Stat);
-
-   // CNC:2002-07-03
-   bool Failed = false;
-   // Populate it with release file URIs
-   if (!List.GetReleases(&Fetcher))
-      return false;
-   if (_config->FindB("APT::Get::Print-URIs") == false)
-   {
-
-      Fetcher.Run();
-      for (pkgAcquire::ItemIterator I = Fetcher.ItemsBegin(); I != Fetcher.ItemsEnd(); I++)
-      {
-	 if ((*I)->Status == pkgAcquire::Item::StatDone)
-	    continue;
-	 (*I)->Finished();
-	 Failed = true;
-      }
-      if (Failed)
-	 _error->Warning(_("Release files for some repositories could not be retrieved or authenticated. Such repositories are being ignored."));
-
-   }
-
-   // Populate it with the source selection
-   if (!List.GetIndexes(&Fetcher))
-      return false;
-
    // Just print out the uris and exit if the --print-uris flag was used
    if (_config->FindB("APT::Get::Print-URIs") == true)
    {
+      // Create the download object
+      AcqTextStatus Stat(ScreenWidth,_config->FindI("quiet",0));
+      pkgAcquire Fetcher(&Stat);
+
+      // Populate it with release file URIs
+      if (!List.GetReleases(&Fetcher))
+         return false;
+
+      // Populate it with the source selection
+      if (!List.GetIndexes(&Fetcher))
+         return false;
 
       if (_config->FindB("APT::Get::PrintLocalFile"))
       {
@@ -1212,6 +1194,33 @@ bool DoUpdate(CommandLine &CmdL)
 
       return true;
    }
+
+   // do the work
+
+   // Create the download object
+   AcqTextStatus Stat(ScreenWidth,_config->FindI("quiet",0));
+   pkgAcquire Fetcher(&Stat);
+
+   // CNC:2002-07-03
+   bool Failed = false;
+   // Populate it with release file URIs
+   if (!List.GetReleases(&Fetcher))
+      return false;
+
+   Fetcher.Run();
+   for (pkgAcquire::ItemIterator I = Fetcher.ItemsBegin(); I != Fetcher.ItemsEnd(); I++)
+   {
+      if ((*I)->Status == pkgAcquire::Item::StatDone)
+         continue;
+      (*I)->Finished();
+      Failed = true;
+   }
+   if (Failed)
+      _error->Warning(_("Release files for some repositories could not be retrieved or authenticated. Such repositories are being ignored."));
+
+   // Populate it with the source selection
+   if (!List.GetIndexes(&Fetcher))
+      return false;
 
    // Run it
    if (Fetcher.Run() == pkgAcquire::Failed)
