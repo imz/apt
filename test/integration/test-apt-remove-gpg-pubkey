@@ -1,0 +1,16 @@
+#!/bin/bash
+set -e
+
+TESTDIR=$(readlink -f $(dirname $0))
+. $TESTDIR/framework
+
+if [ -z "${TESTGPGPUBKEY-}" ]; then
+	msgskip
+	exit 0
+fi
+
+setupenvironment
+
+testpkginstalled 'gpg-pubkey'
+testsuccess aptget -y remove 'gpg-pubkey'
+testpkgnotinstalled 'gpg-pubkey'
