@@ -2,7 +2,7 @@
 lib_LTLIBRARIES = libapt-pkg.la
 
 libapt_pkg_la_LIBADD = @RPMLIBS@
-libapt_pkg_la_LDFLAGS = -version-info 8:0:1 -release @GLIBC_VER@-@LIBSTDCPP_VER@@FILE_OFFSET_BITS_SUFFIX@
+libapt_pkg_la_LDFLAGS = -version-info 10:0:1 -release @GLIBC_VER@-@LIBSTDCPP_VER@@FILE_OFFSET_BITS_SUFFIX@
 
 AM_CPPFLAGS = -DLIBDIR=\"$(libdir)\"
 AM_CFLAGS = $(WARN_CFLAGS)
