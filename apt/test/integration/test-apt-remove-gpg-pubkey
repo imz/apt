@@ -4,12 +4,13 @@ set -e
 TESTDIR=$(readlink -f $(dirname $0))
 . $TESTDIR/framework
 
+if [ -z "${TESTGPGPUBKEY-}" ]; then
+	msgskip
+	exit 0
+fi
+
 setupenvironment
 
-buildpackage 'simple-package'
-testpkgnotinstalled 'simple-package'
-aptgetinstallpackage 'simple-package' '1' 'alt1' "$(getarchitecture)"
-msgmsg 'Installed package "simple-package"'
-testpkginstalled 'simple-package'
-testsuccess aptget -y remove 'simple-package'
-testpkgnotinstalled 'simple-package'
+testpkginstalled 'gpg-pubkey'
+testsuccess aptget -y remove 'gpg-pubkey'
+testpkgnotinstalled 'gpg-pubkey'
