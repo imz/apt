@@ -362,15 +362,26 @@ popd
 %_datadir/%name/tests/
 
 %changelog
-* Tue Feb 11 2020 Aleksei Nikiforov <darktemplar@altlinux.org> 0.5.15lorg2-alt72
-- Updated apt history.
-- Fixed dynamic memory allocation leak (Closes: #37481).
-- Fixed apt-cdrom, now it properly copies release information (Closes: #37531).
+* Tue Aug 25 2020 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt72
+- Code cleanup (thx ldv@).
+- Reverted (for a while) new features with unreliable implementation introduced
+  in 0.5.15lorg2-alt70 (dynamic resizing of allocated memory;
+  some support for large files). (And bumped soname again.)
+- Fixed some recently introduced and recently discovered bugs
+  (thx darktemplar@ et al):
+  + apt-cdrom now properly copies release information (ALT#37531).
+  + APT now can handle packages without ARCH tag (such as gpg-pubkey, brought
+    by 3rd-party packages) without a crash (ALT#38381, ALT#38642).
+  + ...
 
 * Mon Jul 22 2019 Aleksei Nikiforov <darktemplar@altlinux.org> 0.5.15lorg2-alt71
 - Introduced new function ListUpdate for improved packagekit support.
   (Note that the APT::Get::Archive-Cleanup configuration option has no longer
   any effect after this change.)
+
+* Mon Jul 22 2019 Aleksei Nikiforov <darktemplar@altlinux.org> 0.5.15lorg2-alt70
+- Ported dynamic memory allocation from Debian.
+- Bumped soname due to ABI changes.
 
 * Wed Jul 17 2019 Andrew Savchenko <bircoph@altlinux.org> 0.5.15lorg2-alt69
 - Add E2K arch support.
