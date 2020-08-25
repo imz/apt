@@ -208,6 +208,7 @@ find -type f -'(' -name '*.cc' -or -name '*.h' -')' -print0 \
 's,(std::)(optional|nullopt),\1experimental::\2,g;
  s,^(#[[:blank:]]*include[[:blank:]]*<)(optional>),\1experimental/\2,'
 %add_optflags -std=gnu++14
+%remove_optflags -Wno-error
 %endif
 
 %configure --includedir=%_includedir/apt-pkg --enable-Werror %{subst_enable static}
