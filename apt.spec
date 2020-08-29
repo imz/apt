@@ -213,6 +213,8 @@ find -type f -'(' -name '*.cc' -or -name '*.h' -')' -print0 \
  s,^(#[[:blank:]]*include[[:blank:]]*<)(type_traits>),\1experimental/\2,'
 %add_optflags -std=gnu++14
 %remove_optflags -Wno-error
+# [[fallthrough]] attribute is not yet known to lcc:
+%add_optflags -Wno-error=attributes
 %endif
 
 %configure --includedir=%_includedir/apt-pkg --enable-Werror %{subst_enable static}
