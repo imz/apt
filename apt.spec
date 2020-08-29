@@ -207,6 +207,10 @@ find -type f -'(' -name '*.cc' -or -name '*.h' -')' -print0 \
 | xargs -0 sed -i -re \
 's,(std::)(optional|nullopt),\1experimental::\2,g;
  s,^(#[[:blank:]]*include[[:blank:]]*<)(optional>),\1experimental/\2,'
+find -type f -'(' -name '*.cc' -or -name '*.h' -')' -print0 \
+| xargs -0 sed -i -re \
+'s,(std::)(is_unsigned_v),\1experimental::\2,g;
+ s,^(#[[:blank:]]*include[[:blank:]]*<)(type_traits>),\1experimental/\2,'
 %add_optflags -std=gnu++14
 %endif
 

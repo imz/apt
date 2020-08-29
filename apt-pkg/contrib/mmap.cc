@@ -74,7 +74,7 @@ bool MMap::Map(FileFd &Fd)
    auto const EndOfFile = Fd.Size();
 
    // Check that the file size is in the range of size_t.
-   static_assert(std::is_unsigned<decltype(EndOfFile)>(),
+   static_assert(std::is_unsigned_v<decltype(EndOfFile)>,
                  "we want to rely that Fd::Size() is unsigned");
    if (EndOfFile > SIZE_MAX)
       return _error->Error(_("File of %ju bytes is too large for mmap(2)"),
@@ -220,7 +220,7 @@ DynamicMMap::DynamicMMap(FileFd &F,
       (This note applies to the current size of the extended file as well as
       the initial size EndOfFile.)
    */
-   static_assert(std::is_unsigned<decltype(EndOfFile)>(),
+   static_assert(std::is_unsigned_v<decltype(EndOfFile)>,
                  "we want to rely that Fd::Size() is unsigned");
    iSize = static_cast<size_t>(EndOfFile);
 }
