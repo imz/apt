@@ -102,7 +102,7 @@ class pkgAcqIndex : public pkgAcquire::Item
    virtual void Done(const string &Message,unsigned long Size,const string &Md5Hash,
 		     pkgAcquire::MethodConfig *Cnf) override;
    virtual string Custom600Headers() override;
-   virtual string DescURI() override {return RealURI;} // CNC:2003-02-14
+   virtual string DescURI() {return RealURI;} // CNC:2003-02-14
 
    // CNC:2002-07-03
    pkgAcqIndex(pkgAcquire *Owner,pkgRepository *Repository,const string &URI,
