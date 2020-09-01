@@ -202,7 +202,7 @@ getarchitecture() {
 		local ARCH # to be set by the following eval
 		eval `aptconfig shell ARCH APT::Architecture`
 		if [ -n "$ARCH" ]; then
-			echo $ARCH
+			echo "$ARCH"
 		else
 			uname -m
 		fi
