@@ -215,10 +215,6 @@ getarchitectures() {
 	echo "$(aptconfig dump | grep APT::Architecture | cut -d\" -f 2 | sed '/^$/ d' | sort | uniq | tr '\n' ' ')"
 }
 
-getarchitecturesfromcommalist() {
-	echo "$1" | sed -e 's#,#\n#g' | sed -e "s/^native\$/$(getarchitecture 'native')/"
-}
-
 buildpackage() {
 	local NAME="$1"
 
