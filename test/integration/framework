@@ -211,10 +211,6 @@ getarchitecture() {
 	fi
 }
 
-getarchitectures() {
-	echo "$(aptconfig dump | grep APT::Architecture | cut -d\" -f 2 | sed '/^$/ d' | sort | uniq | tr '\n' ' ')"
-}
-
 buildpackage() {
 	local NAME="$1"
 
