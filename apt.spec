@@ -249,6 +249,17 @@ unset RPM_PYTHON
 %check
 # Run tests several times to make sure no tests are randomly succeeding.
 pushd test/integration
+
+# force the target arch for the tests
+#
+# By default, the packages would be built for the arch detected by rpm-build
+# (rpmbuild --eval %%_arch). On installation, they would be compared
+# by rpm for compatibility with the arch detected by rpm. Currently,
+# the mismatch in the detection between rpm and rpm-build can lead to problems,
+# at least, on armh. So, we se the target by force to a value that must work.
+system_arch="$(rpm -q rpm --qf='%%{ARCH}')"
+export APT_TEST_TARGET="$system_arch"
+
 	for i in $(seq 1 2); do
 		LD_LIBRARY_PATH=%buildroot%_libdir \
 		PATH=$PATH:%buildroot%_bindir \
