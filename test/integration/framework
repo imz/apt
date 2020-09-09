@@ -232,27 +232,62 @@ buildpackage() {
 		1>/dev/null
 }
 
+builtpackagefile() {
+	local -r NAME="$1"
+
+	. "${TESTDIRECTORY}/specs/${NAME}.metainfo"
+	# To type less in *.metainfo, assume that the spec's filename coincides with
+	# the package's name by default:
+	if [ -z "${name-}" ]; then
+		name="$NAME"
+	fi
+	# If arch is not specified in the spec, we know what was given as --target.
+	if [ -z "${arch-}" ]; then
+		arch="$(getarchitecture)"
+	fi
+
+	echo "$TMPWORKINGDIRECTORY/usr/src/RPM/RPMS/${arch}/${name}-${version}-${release}.${arch}.rpm"
+}
+
+builtpackagearch() {
+	local -r NAME="$1"
+
+	. "${TESTDIRECTORY}/specs/${NAME}.metainfo"
+	# If arch is not specified in the spec, we know what was given as --target.
+	if [ -z "${arch-}" ]; then
+		arch="$(getarchitecture)"
+	fi
+
+	echo "${arch}"
+}
+
+builtpackageversion() {
+	local -r NAME="$1"
+
+	. "${TESTDIRECTORY}/specs/${NAME}.metainfo"
+
+	echo "${version}-${release}"
+}
+
 installpackage() {
 	local NAME="$1"
-	local VERSION="$2"
-	local RELEASE="$3"
-	local ARCH="$4"
 
-	msgmsg "Installing package via rpm: ${NAME}-${VERSION}-${RELEASE}.${ARCH}.rpm"
+	local PKGFILE="$(builtpackagefile "$NAME")"
+
+	msgmsg "Installing package via rpm: $(basename "$PKGFILE")"
 	rpm --dbpath="$TMPWORKINGDIRECTORY/var/lib/rpm" \
 		--nodeps \
-		-i "$TMPWORKINGDIRECTORY/usr/src/RPM/RPMS/${ARCH}/${NAME}-${VERSION}-${RELEASE}.${ARCH}.rpm" \
+		-i "$PKGFILE" \
 		1>/dev/null
 }
 
 aptgetinstallpackage() {
 	local NAME="$1"
-	local VERSION="$2"
-	local RELEASE="$3"
-	local ARCH="$4"
 
-	msgmsg "Installing package via apt-get: ${NAME}-${VERSION}-${RELEASE}.${ARCH}.rpm"
-	aptget install "$TMPWORKINGDIRECTORY/usr/src/RPM/RPMS/${ARCH}/${NAME}-${VERSION}-${RELEASE}.${ARCH}.rpm" \
+	local PKGFILE="$(builtpackagefile "$NAME")"
+
+	msgmsg "Installing package via apt-get: $(basename "$PKGFILE")"
+	aptget install "$PKGFILE" \
 		   1>/dev/null
 }
 

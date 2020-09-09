@@ -13,8 +13,8 @@ buildpackage 'conflicting-package-distupgrade'
 
 testpkgnotinstalled 'simple-package'
 testpkgnotinstalled 'conflicting-package-one'
-aptgetinstallpackage 'simple-package' '1' 'alt1' "$(getarchitecture)"
-aptgetinstallpackage 'conflicting-package-one' '1' 'alt1' "$(getarchitecture)"
+aptgetinstallpackage 'simple-package'
+aptgetinstallpackage 'conflicting-package-one'
 testpkginstalled 'simple-package'
 testpkginstalled 'conflicting-package-one'
 

@@ -28,7 +28,7 @@ Provides:[ ]*
 Reverse Provides:[ ]*
 simple-package 1-alt1@[0-9]+[ ]*' aptcache showpkg 'simple-package'
 
-aptgetinstallpackage 'simple-package' '1' 'alt1' "$(getarchitecture)"
+aptgetinstallpackage 'simple-package'
 
 testpkginstalled 'simple-package'
 testregexmatch 'Package: simple-package[ ]*

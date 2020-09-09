@@ -12,7 +12,7 @@ buildpackage 'simple-package-new'
 testpkgnotinstalled 'simple-package'
 testpkgnotinstalled 'simple-package-new'
 
-aptgetinstallpackage 'simple-package' '1' 'alt1' "$(getarchitecture)"
+aptgetinstallpackage 'simple-package'
 testpkginstalled 'simple-package'
 testpkgnotinstalled 'simple-package-new'
 

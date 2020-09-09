@@ -10,14 +10,14 @@ buildpackage 'simple-package'
 buildpackage 'simple-package-update'
 
 testpkgnotinstalled 'simple-package'
-aptgetinstallpackage 'simple-package' '1' 'alt1' "$(getarchitecture)"
+aptgetinstallpackage 'simple-package'
 testpkginstalled 'simple-package'
 
-testequal '1-alt1' getpackageversion 'simple-package'
+testequal "$(builtpackageversion 'simple-package')" getpackageversion 'simple-package'
 
 generaterepository "$TMPWORKINGDIRECTORY/usr/src/RPM/RPMS" "$TMPWORKINGDIRECTORY/usr/src/RPM/REPO"
 
 testsuccess aptget update
 
 testsuccess aptget dist-upgrade -y
-testequal '2-alt1' getpackageversion 'simple-package'
+testequal "$(builtpackageversion 'simple-package-update')" getpackageversion 'simple-package'

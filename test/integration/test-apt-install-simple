@@ -9,5 +9,5 @@ setupenvironment
 buildpackage 'simple-package'
 
 testpkgnotinstalled 'simple-package'
-aptgetinstallpackage 'simple-package' '1' 'alt1' "$(getarchitecture)"
+aptgetinstallpackage 'simple-package'
 testpkginstalled 'simple-package'
