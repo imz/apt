@@ -7,7 +7,7 @@ TESTDIR=$(readlink -f $(dirname $0))
 setupenvironment
 
 testregexmatch 'APT "";'"
-APT::Architecture \"$(getarchitecture)\";"'
+APT::Architecture \"$APT_TEST_DEFAULT_ARCH\";"'
 APT::DistroVersion "";
 APT::Get "";
 APT::Get::ReInstall "";

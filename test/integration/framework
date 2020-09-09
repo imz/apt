@@ -177,7 +177,7 @@ Standard:
 END
 
 	cat > rootdir/etc/apt/sources.list << END
-rpm file://$TMPWORKINGDIRECTORY/usr/src/RPM/REPO $(getarchitecture) apt-tests
+rpm file://$TMPWORKINGDIRECTORY/usr/src/RPM/REPO $APT_TEST_USED_ARCH apt-tests
 rpm file://$TMPWORKINGDIRECTORY/usr/src/RPM/REPO noarch apt-tests
 END
 
@@ -211,6 +211,20 @@ getarchitecture() {
 	fi
 }
 
+# The arch (the machine arch) as detected by rpm or apt
+# (and as expected to appear in the APT conf by default).
+#
+# getarchitecture is the old way to determine the arch (which is
+# neither the default arch by rpmbuild --eval %_arch, nor the one
+# detected by rpm, which is more fine-grained than the one used by APT
+# to set APT::Architecture; FIXME: APT should probably use the same
+# value as rpm for APT::Architecture.)
+APT_TEST_DEFAULT_ARCH="${APT_TEST_DEFAULT_ARCH:-$(getarchitecture)}"
+
+# The arch used for the built packages, repos, etc.
+# (--target is set to the same value.)
+APT_TEST_USED_ARCH="${APT_TEST_USED_ARCH:-$APT_TEST_DEFAULT_ARCH}"
+
 buildpackage() {
 	local NAME="$1"
 
@@ -220,7 +234,7 @@ buildpackage() {
 		--define 'packager test@example.net' \
 		--define="_usr $TMPWORKINGDIRECTORY/usr" \
 		--root="$TMPWORKINGDIRECTORY" \
-		--target="$(getarchitecture)" \
+		--target="$APT_TEST_USED_ARCH" \
 		-ba "${TESTDIRECTORY}/specs/${NAME}.spec" \
 		1>/dev/null
 }
@@ -236,7 +250,7 @@ builtpackagefile() {
 	fi
 	# If arch is not specified in the spec, we know what was given as --target.
 	if [ -z "${arch-}" ]; then
-		arch="$(getarchitecture)"
+		arch="$APT_TEST_USED_ARCH"
 	fi
 
 	echo "$TMPWORKINGDIRECTORY/usr/src/RPM/RPMS/${arch}/${name}-${version}-${release}.${arch}.rpm"
@@ -248,7 +262,7 @@ builtpackagearch() {
 	. "${TESTDIRECTORY}/specs/${NAME}.metainfo"
 	# If arch is not specified in the spec, we know what was given as --target.
 	if [ -z "${arch-}" ]; then
-		arch="$(getarchitecture)"
+		arch="$APT_TEST_USED_ARCH"
 	fi
 
 	echo "${arch}"
@@ -509,7 +523,7 @@ generaterepository() {
 	local label="${GB_REPO_LABEL:-apt-tests}"
 	local description="${GB_REPO_DESCRIPTION:-ALT Linux $label}"
 	local date_s="$(date +%s)"
-	local arch="$(getarchitecture)"
+	local arch="$APT_TEST_USED_ARCH"
 	local comps="${label}"
 
 	if [ -n "$REPO_DATE" ] ; then

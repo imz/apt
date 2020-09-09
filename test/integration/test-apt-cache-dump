@@ -89,4 +89,4 @@ File: /.*/rootdir/var/lib/apt/lists/.*_usr_src_RPM_REPO_.*_base_pkglist\.apt-tes
  Origin: ALT Linux Team
  Site:[ ]*
  Label: apt-tests'"
- Architecture: $(getarchitecture)" aptcache dump
+ Architecture: $APT_TEST_USED_ARCH" aptcache dump
