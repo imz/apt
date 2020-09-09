@@ -8,7 +8,7 @@ setupenvironment
 
 buildpackage 'simple-package'
 testpkgnotinstalled 'simple-package'
-aptgetinstallpackage 'simple-package' '1' 'alt1' "$(getarchitecture)"
+aptgetinstallpackage 'simple-package'
 msgmsg 'Installed package "simple-package"'
 testpkginstalled 'simple-package'
 testsuccess aptget -y remove 'simple-package'

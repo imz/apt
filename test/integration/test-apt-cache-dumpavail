@@ -28,10 +28,10 @@ Version: 1-alt1@[0-9]+
 Pre-Depends: rpmlib\(PayloadIsLzma\)
 Conflicts: conflicting-package-one
 Provides: conflicting-package-two \(= 1-alt1\)
-Architecture: $(getarchitecture)
+Architecture: $(builtpackagearch 'conflicting-package-two')
 Size: [0-9]+
 MD5Sum: [0-9a-fA-F]+
-Filename: conflicting-package-two-1-alt1\.$(getarchitecture)\.rpm
+Filename: conflicting-package-two-1-alt1\.$(builtpackagearch 'conflicting-package-two')\.rpm
 Description: Test package
  Dummy description
 
@@ -43,10 +43,10 @@ Maintainer: test@example.net
 Version: 1-alt1@[0-9]+
 Pre-Depends: rpmlib\(PayloadIsLzma\)
 Provides: simple-package-noarch \(= 1-alt1\)
-Architecture: noarch
+Architecture: $(builtpackagearch 'simple-package-noarch')
 Size: [0-9]+
 MD5Sum: [0-9a-fA-F]+
-Filename: simple-package-noarch-1-alt1\.noarch\.rpm
+Filename: simple-package-noarch-1-alt1\.$(builtpackagearch 'simple-package-noarch')\.rpm
 Description: Test package
  Dummy description
 
@@ -60,10 +60,10 @@ Pre-Depends: rpmlib\(PayloadIsLzma\)
 Conflicts: simple-package \(< 3-alt1\)
 Provides: simple-package \(= 3-alt1\), simple-package-new \(= 3-alt1\)
 Obsoletes: simple-package \(< 3-alt1\)
-Architecture: $(getarchitecture)
+Architecture: $(builtpackagearch 'simple-package-new')
 Size: [0-9]+
 MD5Sum: [0-9a-fA-F]+
-Filename: simple-package-new-3-alt1\.$(getarchitecture)\.rpm
+Filename: simple-package-new-3-alt1\.$(builtpackagearch 'simple-package-new')\.rpm
 Description: Test package
  Dummy description
 
@@ -76,10 +76,10 @@ Version: 1-alt1@[0-9]+
 Pre-Depends: rpmlib\(PayloadIsLzma\)
 Depends: no-such-package
 Provides: missing-dependency \(= 1-alt1\)
-Architecture: $(getarchitecture)
+Architecture: $(builtpackagearch 'missing-dependency')
 Size: [0-9]+
 MD5Sum: [0-9a-fA-F]+
-Filename: missing-dependency-1-alt1\.$(getarchitecture)\.rpm
+Filename: missing-dependency-1-alt1\.$(builtpackagearch 'missing-dependency')\.rpm
 Description: Test package
  Dummy description
 
@@ -91,10 +91,10 @@ Maintainer: test@example.net
 Version: 2-alt1@[0-9]+
 Pre-Depends: rpmlib\(PayloadIsLzma\)
 Provides: simple-package \(= 2-alt1\)
-Architecture: $(getarchitecture)
+Architecture: $(builtpackagearch 'simple-package')
 Size: [0-9]+
 MD5Sum: [0-9a-fA-F]+
-Filename: simple-package-2-alt1\.$(getarchitecture)\.rpm
+Filename: simple-package-2-alt1\.$(builtpackagearch 'simple-package')\.rpm
 Description: Test package
  Dummy description
 
@@ -107,9 +107,9 @@ Version: 2-alt1@[0-9]+
 Pre-Depends: rpmlib\(PayloadIsLzma\)
 Conflicts: conflicting-package-two, simple-package
 Provides: conflicting-package-one \(= 2-alt1\)
-Architecture: $(getarchitecture)
+Architecture: $(builtpackagearch 'conflicting-package-one')
 Size: [0-9]+
 MD5Sum: [0-9a-fA-F]+
-Filename: conflicting-package-one-2-alt1\.$(getarchitecture)\.rpm
+Filename: conflicting-package-one-2-alt1\.$(builtpackagearch 'conflicting-package-one')\.rpm
 Description: Test package
  Dummy description" aptcache dumpavail

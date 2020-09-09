@@ -1,0 +1,3 @@
+local name=simple-package
+local version=2
+local release=alt1

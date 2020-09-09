@@ -24,4 +24,4 @@ The following information may help to resolve the situation:
 The following packages have unmet dependencies:
   conflicting-package-one: Conflicts: conflicting-package-two
   conflicting-package-two: Conflicts: conflicting-package-one
-E: Broken packages" aptget install "$TMPWORKINGDIRECTORY/usr/src/RPM/RPMS/$(getarchitecture)/conflicting-package-one-1-alt1.$(getarchitecture).rpm" "$TMPWORKINGDIRECTORY/usr/src/RPM/RPMS/$(getarchitecture)/conflicting-package-two-1-alt1.$(getarchitecture).rpm"
+E: Broken packages" aptget install "$(builtpackagefile 'conflicting-package-one')" "$(builtpackagefile 'conflicting-package-two')"

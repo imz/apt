@@ -13,13 +13,13 @@ testpkgnotinstalled 'missing-dependency'
 testpkgnotinstalled 'simple-package'
 testsuccess aptget check
 
-installpackage 'simple-package' '1' 'alt1' "$(getarchitecture)"
+installpackage 'simple-package'
 
 testpkgnotinstalled 'missing-dependency'
 testpkginstalled 'simple-package'
 testsuccess aptget check
 
-installpackage 'missing-dependency' '1' 'alt1' "$(getarchitecture)"
+installpackage 'missing-dependency'
 
 testpkginstalled 'missing-dependency'
 testpkginstalled 'simple-package'
