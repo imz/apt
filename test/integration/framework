@@ -215,7 +215,7 @@ APT_TEST_DEFAULT_ARCH="${APT_TEST_DEFAULT_ARCH:-$(uname -m)}"
 
 # The arch used for the built packages, repos, etc.
 # (--target is set to the same value.)
-APT_TEST_USED_ARCH="${APT_TEST_USED_ARCH:-$APT_TEST_DEFAULT_ARCH}"
+APT_TEST_USED_ARCH="${APT_TEST_TARGET:-$APT_TEST_DEFAULT_ARCH}"
 
 buildpackage() {
 	local NAME="$1"
@@ -226,7 +226,7 @@ buildpackage() {
 		--define 'packager test@example.net' \
 		--define="_usr $TMPWORKINGDIRECTORY/usr" \
 		--root="$TMPWORKINGDIRECTORY" \
-		--target="$APT_TEST_USED_ARCH" \
+		${APT_TEST_TARGET:+--target="$APT_TEST_TARGET"} \
 		-ba "${TESTDIRECTORY}/specs/${NAME}.spec" \
 		1>/dev/null
 }
