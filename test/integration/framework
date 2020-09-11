@@ -197,29 +197,21 @@ END
 	msgdone 'info'
 }
 
-getarchitecture() {
-	if [ "$1" = 'native' -o -z "$1" ]; then
-		local ARCH # to be set by the following eval
-		eval `aptconfig shell ARCH APT::Architecture`
-		if [ -n "$ARCH" ]; then
-			echo "$ARCH"
-		else
-			uname -m
-		fi
-	else
-		echo $1
-	fi
-}
-
 # The arch (the machine arch) as detected by rpm or apt
 # (and as expected to appear in the APT conf by default).
 #
-# getarchitecture is the old way to determine the arch (which is
-# neither the default arch by rpmbuild --eval %_arch, nor the one
-# detected by rpm, which is more fine-grained than the one used by APT
-# to set APT::Architecture; FIXME: APT should probably use the same
-# value as rpm for APT::Architecture.)
-APT_TEST_DEFAULT_ARCH="${APT_TEST_DEFAULT_ARCH:-$(getarchitecture)}"
+# * `uname -m` gives the base value.
+# * rpm-build has its own way to determine the arch, which refines `uname -m`.
+#   See: rpmbuild --eval %_arch 2>/dev/null ||:
+#   (Packages are built by default for this arch, i.e.,
+#   when there is no explicit --target.)
+# * rpm has its own way to determine the arch (with more incompatible refinements
+#   on ARM compared to rpm-build).
+# * APT has its own simplistic way to determine the arch based on `uname -m`.
+#
+# FIXME: APT should probably use the same value as rpm for APT::Architecture.
+# FIXME: rpmbuild's and rpm's ways need to be synchronized, particularly on ARM.
+APT_TEST_DEFAULT_ARCH="${APT_TEST_DEFAULT_ARCH:-$(uname -m)}"
 
 # The arch used for the built packages, repos, etc.
 # (--target is set to the same value.)
