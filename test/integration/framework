@@ -407,8 +407,6 @@ N: Can't select versions from package '$1' as it is purely virtual"
 	VIRTUAL="${VIRTUAL}
 N: No packages found"
 	local COMPAREFILE="${TMPWORKINGDIRECTORY}/rootdir/tmp/testshowvirtual.comparefile"
-	local ARCH="$(getarchitecture 'native')"
-	echo "$VIRTUAL" | sed -e "s/:$ARCH//" -e 's/:all//' > $COMPAREFILE
 	aptcache show -q=0 $PACKAGE 2>&1 | checkdiff $COMPAREFILE - &&
 		msgpass || msgfail
 }
