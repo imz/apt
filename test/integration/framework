@@ -67,9 +67,9 @@ if [ $MSGLEVEL -le 2 ]; then
 	msgpass() { printf " ${CPASS}P${CNORMAL}"; }
 	msgskip() { printf " ${CWARNING}S${CNORMAL}" >&2; }
 	if [ -n "$CFAIL" ]; then
-		msgfail() { printf " ${CFAIL}FAIL${CNORMAL}" >&2; EXIT_CODE=$((EXIT_CODE+1)); }
+		msgfail() { printf " ${CFAIL}FAIL${CNORMAL}" >&2; if [ -z "${APT_TEST_IGNORE_FAIL-}" ]; then EXIT_CODE=$((EXIT_CODE+1)); fi; }
 	else
-		msgfail() { printf ' ###FAILED###' >&2; EXIT_CODE=$((EXIT_CODE+1)); }
+		msgfail() { printf ' ###FAILED###' >&2; if [ -z "${APT_TEST_IGNORE_FAIL-}" ]; then EXIT_CODE=$((EXIT_CODE+1)); fi; }
 	fi
 fi
 if [ $MSGLEVEL -le 3 ]; then
