@@ -1,6 +1,6 @@
 Name: apt
 Version: 0.5.15lorg2
-Release: alt71.1.1
+Release: alt71.3.1
 
 Summary: Debian's Advanced Packaging Tool with RPM support
 Summary(ru_RU.UTF-8): Debian APT - Усовершенствованное средство управления пакетами с поддержкой RPM
@@ -320,6 +320,10 @@ unset RPM_PYTHON
 %_libdir/%name/methods/https
 
 %changelog
+* Mon Sep 21 2020 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt71.3
+- Fixed copying release information from cdrom (thx Aleksei Nikiforov).
+  (Closes: #37531)
+
 * Mon Sep 16 2019 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt71.1.1
 - Added debugging output for allocation and grow functions. (Thx darktemplar@)
 - Fixed dynamic memory allocation pointer arithmetics issue:
