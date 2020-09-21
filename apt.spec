@@ -279,8 +279,9 @@ export APT_TEST_TARGET="$system_arch"
 # The same tests, but via cdrom:
 APT_TEST_CDROM=yes %runtests
 
-# Also test with pkgs for an incompatible arch:
-APT_TEST_TARGET=alpha %runtests
+# Also test with pkgs for an incompatible arch
+# (test just for crashes, not for test failures):
+APT_TEST_TARGET=alpha APT_TEST_IGNORE_FAIL=yes %runtests
 
 # prepare data for rpm --import
 APT_TEST_GPGPUBKEY="$PWD"/example-pubkey.asc
