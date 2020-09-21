@@ -320,6 +320,10 @@ unset RPM_PYTHON
 %_libdir/%name/methods/https
 
 %changelog
+* Mon Sep 21 2020 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt71.3.1
+- Build the variant for E2K
+  (where the pointer arithmetics works without errors on E2K).
+
 * Mon Sep 21 2020 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt71.3
 - Fixed copying release information from cdrom (thx Aleksei Nikiforov).
   (Closes: #37531)
