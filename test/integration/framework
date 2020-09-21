@@ -223,6 +223,7 @@ buildpackage() {
 
 	msgmsg "Building package: ${NAME}"
 	HOME="$TMPWORKINGDIRECTORY" rpmbuild \
+		--define 'EVR %{?epoch:%epoch:}%{version}-%{release}' \
 		--define 'packager test@example.net' \
 		--define="_usr $TMPWORKINGDIRECTORY/usr" \
 		--root="$TMPWORKINGDIRECTORY" \
