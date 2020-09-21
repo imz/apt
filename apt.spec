@@ -279,6 +279,9 @@ export APT_TEST_TARGET="$system_arch"
 # The same tests, but via cdrom:
 APT_TEST_CDROM=yes %runtests
 
+# Also test with pkgs for a different arch:
+APT_TEST_TARGET=i586 %runtests
+
 # prepare data for rpm --import
 APT_TEST_GPGPUBKEY="$PWD"/example-pubkey.asc
 gpg-keygen --passphrase '' \
