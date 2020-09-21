@@ -280,7 +280,7 @@ export APT_TEST_TARGET="$system_arch"
 APT_TEST_CDROM=yes %runtests
 
 # Also test with pkgs for an incompatible arch:
-APT_TEST_TARGET=armv8l %runtests
+APT_TEST_TARGET=alpha %runtests
 
 # prepare data for rpm --import
 APT_TEST_GPGPUBKEY="$PWD"/example-pubkey.asc
