@@ -268,9 +268,10 @@ export APT_TEST_TARGET="$system_arch"
 	METHODSDIR=%buildroot%_libdir/apt/methods \\\
 		./run-tests
 
-	for i in $(seq 1 2); do
-		%runtests
-	done
+%runtests
+
+# The same tests, but via cdrom:
+APT_TEST_CDROM=yes %runtests
 
 popd
 
