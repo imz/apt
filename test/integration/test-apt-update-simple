@@ -12,6 +12,16 @@ buildpackage 'conflicting-package-one'
 buildpackage 'conflicting-package-two'
 
 generaterepository "$TMPWORKINGDIRECTORY/usr/src/RPM/RPMS" "$TMPWORKINGDIRECTORY/usr/src/RPM/REPO"
+if [ -n "$APT_TEST_CDROM" ]; then
+	readonly APT_TEST_CDROM_DISKFS="$TMPWORKINGDIRECTORY/usr/src/RPM/REPO"
+	echo >"$TMPWORKINGDIRECTORY/rootdir/etc/apt/sources.list"
+	mkdir "$APT_TEST_CDROM_DISKFS"/.disk
+	echo 'Distribution Disk 1' >"$APT_TEST_CDROM_DISKFS"/.disk/info
+	# Let's have an idea of the FS tree there:
+	ls -laR "$APT_TEST_CDROM_DISKFS"
+	find "$APT_TEST_CDROM_DISKFS" -name 'release*' -print -delete
+	aptcdrom --no-mount -d "$APT_TEST_CDROM_DISKFS" add
+fi
 
 testsuccess aptget update
 testsuccess aptcache show simple-package
