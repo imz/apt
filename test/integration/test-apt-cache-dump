@@ -26,8 +26,16 @@ readonly ANY="[^$NL]"
 readonly FNAME="[^/$NL]+"
 
 # paths occuring many times:
-readonly NOARCH_PKGLIST="/$ANY*/rootdir/var/lib/apt/lists/${FNAME}_usr_src_RPM_REPO_noarch_base_pkglist\.apt-tests"
-readonly MYARCH_PKGLIST="/$ANY*/rootdir/var/lib/apt/lists/${FNAME}_usr_src_RPM_REPO_[^/_$NL]+_base_pkglist\.apt-tests"
+case "$APT_TEST_METHOD" in
+	cdrom*)
+		readonly ESCAPED_REPO="Distribution[^/_$NL]+Disk"
+		;;
+	*)
+		readonly ESCAPED_REPO="${FNAME}_usr_src_RPM_REPO"
+		;;
+esac
+readonly NOARCH_PKGLIST="/$ANY*/rootdir/var/lib/apt/lists/${ESCAPED_REPO}_noarch_base_pkglist\.apt-tests"
+readonly MYARCH_PKGLIST="/$ANY*/rootdir/var/lib/apt/lists/${ESCAPED_REPO}_[^/_$NL]+_base_pkglist\.apt-tests"
 
 readonly -a dump_pkgs=(
 	"Package: conflicting-package-two
@@ -99,8 +107,42 @@ readonly dump_rpmdb="File: /$ANY*/var/lib/rpm/Packages
  Label: \(null\)
  Architecture: \(null\)"
 
-readonly -a dump_lists=(
-	"File: $NOARCH_PKGLIST
+case "$APT_TEST_METHOD" in
+	cdrom*)
+		readonly -a dump_lists=(
+			"File: $NOARCH_PKGLIST
+ Type: RPM Package Index
+ Size: [0-9]+
+ ID: [01]
+ Flags: 0
+ Time: $ANY*
+ Archive: \(null\)
+ Component: \(null\)
+ Version: \(null\)
+ Origin: \(null\)
+ Site: Distribution$ANY+Disk
+ Label: \(null\)
+ Architecture: \(null\)"
+
+			"File: $MYARCH_PKGLIST
+ Type: RPM Package Index
+ Size: [0-9]+
+ ID: [01]
+ Flags: 0
+ Time: $ANY*
+ Archive: \(null\)
+ Component: \(null\)
+ Version: \(null\)
+ Origin: \(null\)
+ Site: Distribution$ANY+Disk
+ Label: \(null\)
+ Architecture: \(null\)"
+
+		)
+		;;
+	*)
+		readonly -a dump_lists=(
+			"File: $NOARCH_PKGLIST
  Type: RPM Package Index
  Size: [0-9]+
  ID: [01]
@@ -114,7 +156,7 @@ readonly -a dump_lists=(
  Label: apt-tests
  Architecture: noarch"
 
-	"File: $MYARCH_PKGLIST
+			"File: $MYARCH_PKGLIST
  Type: RPM Package Index
  Size: [0-9]+
  ID: [01]
@@ -128,7 +170,9 @@ readonly -a dump_lists=(
  Label: apt-tests
  Architecture: $APT_TEST_USED_ARCH"
 
-)
+		)
+		;;
+esac
 
 testpartsexhaust 'Using Versioning System: Standard \.rpm' \
 				 "${dump_pkgs[@]}" \

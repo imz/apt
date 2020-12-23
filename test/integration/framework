@@ -134,8 +134,8 @@ runapt() {
 }
 aptconfig() { runapt apt-config "$@"; }
 aptcache() { runapt apt-cache "$@"; }
-aptcdrom() { runapt apt-cdrom "$@"; }
-aptget() { runapt apt-get "$@"; }
+aptcdrom() { runapt apt-cdrom "${CDROM_OPTS[@]}" "$@"; }
+aptget() { runapt apt-get "${CDROM_OPTS[@]}" "$@"; }
 aptmark() { runapt apt-mark "$@"; }
 
 
@@ -249,6 +249,15 @@ END
 	# setup bash scripts
 	mkdir -p $TMPWORKINGDIRECTORY/bash/scripts
 	mkdir -p $TMPWORKINGDIRECTORY/bash/results
+
+	# emulate CDROM (without affecting the config)
+	CDROM_URI="$TMPWORKINGDIRECTORY/usr/src/RPM/DISK"
+	CDROM_OPTS=(-o Acquire::CDROM::Mount="$CDROM_URI"
+				-o Acquire::CDROM::"$CDROM_URI/"::Mount=/bin/true
+				-o Acquire::CDROM::"$CDROM_URI/"::UMount=/bin/true
+				# this is needed not to statvfs of the emulated CDROM FS:
+				-o Debug::identcdrom=true
+			   )
 
 	msgdone 'info'
 }
@@ -698,6 +707,9 @@ generaterepository() {
 		# (FIXME: fix APT so that the used compression doesn't matter!)
 		case "$APT_TEST_METHOD" in
 
+			cdrom*) compression_opts='--bz2 --no-xz'
+			   ;;
+
 			*) compression_opts='--no-bz2 --no-xz'
 			   ;;
 
@@ -755,6 +767,27 @@ generaterepository_and_switch_sources() {
 				rpm $APT_TEST_METHOD://$REPO_DIR $APT_TEST_USED_ARCH apt-tests
 				rpm $APT_TEST_METHOD://$REPO_DIR noarch apt-tests
 			END
+			;;
+
+		cdrom|cdrom_missing_release)
+
+			generaterepository "$ORIG_DIR" "$CDROM_URI" "$REPO_DATE"
+			mkdir "$CDROM_URI"/.disk
+			# trailing whitespace here might be misinterpreted
+			echo "Distribution $REPO_DATE Disk" >"$CDROM_URI"/.disk/info
+
+			# DEBUG: Let's have an idea of the FS tree there:
+			#ls -laR "$CDROM_URI"
+
+			case "$APT_TEST_METHOD" in
+				cdrom_missing_release)
+					find "$CDROM_URI"/*/base -name 'release*' -print -delete
+					;;
+			esac
+
+			# overwrite old sources.list
+			echo >| rootdir/etc/apt/sources.list
+			aptcdrom add
 			;;
 
 		*)
