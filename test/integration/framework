@@ -146,19 +146,23 @@ setupenvironment() {
 	cd $TMPWORKINGDIRECTORY
 	mkdir rootdir aptarchive keys
 	cd rootdir
-	mkdir -p etc/apt/apt.conf.d etc/apt/sources.list.d etc/apt/trusted.gpg.d etc/apt/preferences.d
+	mkdir -p \
+		  etc/apt/apt.conf.d etc/apt/sources.list.d \
+		  etc/apt/trusted.gpg.d etc/apt/preferences.d
 	mkdir -p var/cache var/lib/apt var/log tmp
 	mkdir -p var/lib/rpm
 	mkdir -p var/lib/apt/lists/partial var/cache/apt/archives/partial
 	cd ..
 
-	echo "Dir \"${TMPWORKINGDIRECTORY}/rootdir\";" > aptconfig.conf
-	echo 'Debug::NoLocking "true";' >> aptconfig.conf
-	echo "Dir::Etc::sourcelist \"${TMPWORKINGDIRECTORY}/rootdir/etc/apt/sources.list\";" >> aptconfig.conf
+	{
+		echo "Dir \"${TMPWORKINGDIRECTORY}/rootdir\";"
+		echo 'Debug::NoLocking "true";'
+		echo "Dir::Etc::sourcelist \"${TMPWORKINGDIRECTORY}/rootdir/etc/apt/sources.list\";"
 
-	if [ -n "$METHODSDIR" ] ; then
-		echo "Dir::Bin::methods \"$METHODSDIR\";" >> aptconfig.conf
-	fi
+		if [ -n "$METHODSDIR" ] ; then
+			echo "Dir::Bin::methods \"$METHODSDIR\";"
+		fi
+	} > aptconfig.conf
 
 	cat > rootdir/etc/apt/pkgpriorities << END
 Important:
@@ -187,7 +191,8 @@ END
 	rpmdb --dbpath="$TMPWORKINGDIRECTORY/var/lib/rpm" --initdb
 
 	# setup rpm dbpath
-	echo "RPM::DBPath \"$TMPWORKINGDIRECTORY/var/lib/rpm\";" > rootdir/etc/apt/apt.conf.d/99rpmdbpath.conf
+	echo "RPM::DBPath \"$TMPWORKINGDIRECTORY/var/lib/rpm\";" \
+		 > rootdir/etc/apt/apt.conf.d/99rpmdbpath.conf
 
 	msgdone 'info'
 }
@@ -217,7 +222,13 @@ buildpackage() {
 	local NAME="$1"
 
 	msgmsg "Building package: ${NAME}"
-	HOME="$TMPWORKINGDIRECTORY" rpmbuild --target="$(getarchitecture)" --define 'packager test@example.net' --define="_usr $TMPWORKINGDIRECTORY/usr" --root="$TMPWORKINGDIRECTORY" -ba "${TESTDIRECTORY}/specs/${NAME}.spec" 1>/dev/null
+	HOME="$TMPWORKINGDIRECTORY" rpmbuild \
+		--define 'packager test@example.net' \
+		--define="_usr $TMPWORKINGDIRECTORY/usr" \
+		--root="$TMPWORKINGDIRECTORY" \
+		--target="$(getarchitecture)" \
+		-ba "${TESTDIRECTORY}/specs/${NAME}.spec" \
+		1>/dev/null
 }
 
 installpackage() {
@@ -227,7 +238,10 @@ installpackage() {
 	local ARCH="$4"
 
 	msgmsg "Installing package via rpm: ${NAME}-${VERSION}-${RELEASE}.${ARCH}.rpm"
-	rpm --dbpath="$TMPWORKINGDIRECTORY/var/lib/rpm" --nodeps -i "$TMPWORKINGDIRECTORY/usr/src/RPM/RPMS/${ARCH}/${NAME}-${VERSION}-${RELEASE}.${ARCH}.rpm" 1>/dev/null
+	rpm --dbpath="$TMPWORKINGDIRECTORY/var/lib/rpm" \
+		--nodeps \
+		-i "$TMPWORKINGDIRECTORY/usr/src/RPM/RPMS/${ARCH}/${NAME}-${VERSION}-${RELEASE}.${ARCH}.rpm" \
+		1>/dev/null
 }
 
 aptgetinstallpackage() {
@@ -237,7 +251,8 @@ aptgetinstallpackage() {
 	local ARCH="$4"
 
 	msgmsg "Installing package via apt-get: ${NAME}-${VERSION}-${RELEASE}.${ARCH}.rpm"
-	aptget install "$TMPWORKINGDIRECTORY/usr/src/RPM/RPMS/${ARCH}/${NAME}-${VERSION}-${RELEASE}.${ARCH}.rpm" 1>/dev/null
+	aptget install "$TMPWORKINGDIRECTORY/usr/src/RPM/RPMS/${ARCH}/${NAME}-${VERSION}-${RELEASE}.${ARCH}.rpm" \
+		   1>/dev/null
 }
 
 checkdiff() {
@@ -365,7 +380,8 @@ N: No packages found"
 	local COMPAREFILE="${TMPWORKINGDIRECTORY}/rootdir/tmp/testshowvirtual.comparefile"
 	local ARCH="$(getarchitecture 'native')"
 	echo "$VIRTUAL" | sed -e "s/:$ARCH//" -e 's/:all//' > $COMPAREFILE
-	aptcache show -q=0 $PACKAGE 2>&1 | checkdiff $COMPAREFILE - && msgpass || msgfail
+	aptcache show -q=0 $PACKAGE 2>&1 | checkdiff $COMPAREFILE - &&
+		msgpass || msgfail
 }
 
 testnopackage() {
@@ -401,7 +417,9 @@ getpackageversion() {
 	local result=
 
 	set +e
-	result=$(rpm --dbpath="$TMPWORKINGDIRECTORY/var/lib/rpm" -q --qf '%{EVR}\n' "$@" 2>/dev/null)
+	result=$(rpm --dbpath="$TMPWORKINGDIRECTORY/var/lib/rpm" \
+				 -q --qf '%{EVR}\n' "$@" \
+				 2>/dev/null)
 	set -e
 
 	echo $result
@@ -474,7 +492,8 @@ generaterepository() {
 	for dir in ${arch} noarch ; do
 		mkdir -p "${REPO_DIR}/${dir}/RPMS.${label}"
 		mkdir -p "${REPO_DIR}/${dir}/base"
-		stat "${ORIG_DIR}/${dir}/"*.rpm &>/dev/null && cp "${ORIG_DIR}/${dir}/"*.rpm "${REPO_DIR}/${dir}/RPMS.${label}"/
+		stat "${ORIG_DIR}/${dir}/"*.rpm &>/dev/null &&
+			cp "${ORIG_DIR}/${dir}/"*.rpm "${REPO_DIR}/${dir}/RPMS.${label}"/
 	done
 
 	mkdir -p "${TMPWORKINGDIRECTORY}/cache"
@@ -496,7 +515,8 @@ generaterepository() {
 			$dir $comps
 
 		if [ -n "$REPO_DATE" ] ; then
-			touch -t $(date --date=@${REPO_DATE} '+%Y%m%d%H%M.%S') "${REPO_DIR}/${dir}/base/"*
+			touch -t $(date --date=@${REPO_DATE} '+%Y%m%d%H%M.%S') \
+				  "${REPO_DIR}/${dir}/base/"*
 		fi
 	done
 }
