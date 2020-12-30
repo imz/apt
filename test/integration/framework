@@ -544,7 +544,7 @@ generaterepository() {
 			--suite="${GB_REPO_SUITE:-$label}" \
 			--version="${GB_REPO_VERSION:-$date_s}" \
 			--topdir="$REPO_DIR" \
-			--flat --no-oldhashfile --no-bz2 --no-xz --mapi \
+			--flat --no-oldhashfile --bz2 --xz --mapi \
 			$dir $comps
 
 		if [ -n "$REPO_DATE" ] ; then
