@@ -986,7 +986,7 @@ bool pkgMakeStatusCache(pkgSourceList &List,OpProgress &Progress,
       return false;
    if (OutMap != 0)
    {
-      if (CacheF != 0)
+      if (CacheF != nullptr)
       {
 	 delete Map.UnGuard();
 	 *OutMap = new MMap(*CacheF,MMap::Public | MMap::ReadOnly);
