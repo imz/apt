@@ -842,16 +842,16 @@ bool pkgMakeStatusCache(pkgSourceList &List,OpProgress &Progress,
    if (Writeable == true && CacheFile.empty() == false)
    {
       unlink(CacheFile.c_str());
-      CacheF = new FileFd(CacheFile,FileFd::WriteEmpty);
+      CacheF.reset(new FileFd(CacheFile,FileFd::WriteEmpty));
       if (_error->PendingError() == true)
 	 return false;
       fchmod(CacheF->Fd(),0644);
-      Map = new DynamicMMap(*CacheF,MMap::Public,MapSize);
+      Map.reset(new DynamicMMap(*CacheF,MMap::Public,MapSize));
    }
    else
    {
       // Just build it in memory..
-      Map = new DynamicMMap(MMap::Public,MapSize);
+      Map.reset(new DynamicMMap(MMap::Public,MapSize));
    }
 
    // Lets try the source cache.
@@ -1015,8 +1015,7 @@ bool pkgMakeOnlyStatusCache(OpProgress &Progress,DynamicMMap **OutMap)
    if (_system->AddStatusFiles(Files) == false)
       return false;
 
-   SPtr<DynamicMMap> Map;
-   Map = new DynamicMMap(MMap::Public,MapSize);
+   SPtr<DynamicMMap> Map(new DynamicMMap(MMap::Public,MapSize));
    unsigned long CurrentSize = 0;
    unsigned long TotalSize = 0;
 

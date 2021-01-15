@@ -36,6 +36,13 @@ class SPtr
    inline bool operator !=(std::nullptr_t) const {return Ptr != nullptr;}
    inline T*Get() const {return Ptr;}
 
+   void reset(T * const NewPtr) {
+      T * const Tmp = Ptr;
+      Ptr = NewPtr;
+      if (Tmp)
+         delete Tmp;
+   }
+
    // Prohibit copying; otherwise, two objects would own the pointer
    // and would try to delete it (on destruction). Actually,
    // -Werror=deprecated-copy -Werror=deprecated-copy-dtor should also
@@ -66,6 +73,13 @@ class SPtrArray
    inline bool operator ==(std::nullptr_t) const {return Ptr == nullptr;}
    inline bool operator !=(std::nullptr_t) const {return Ptr != nullptr;}
    inline T *Get() const {return Ptr;}
+
+   void reset(T * const NewPtr) {
+      T * const Tmp = Ptr;
+      Ptr = NewPtr;
+      if (Tmp)
+         delete [] Tmp;
+   }
 
    // Prohibit copying; otherwise, two objects would own the pointer
    // and would try to delete it (on destruction).
