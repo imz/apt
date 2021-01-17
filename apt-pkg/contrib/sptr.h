@@ -33,7 +33,7 @@ class SPtr
    inline T *UnGuard() {T *Tmp = Ptr; Ptr = 0; return Tmp;}
    inline bool operator ==(std::nullptr_t) const {return Ptr == nullptr;}
    inline bool operator !=(std::nullptr_t) const {return Ptr != nullptr;}
-   inline T*Get() const {return Ptr;}
+   inline T * get() const {return Ptr;}
 
    void reset(T * const NewPtr) {
       T * const Tmp = Ptr;
@@ -70,7 +70,7 @@ class SPtrArray
    //inline T &operator [](signed long I) const {return Ptr[I];}
    inline bool operator ==(std::nullptr_t) const {return Ptr == nullptr;}
    inline bool operator !=(std::nullptr_t) const {return Ptr != nullptr;}
-   inline T *Get() const {return Ptr;}
+   inline T * get() const {return Ptr;}
 
    void reset(T * const NewPtr) {
       T * const Tmp = Ptr;
