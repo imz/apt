@@ -870,7 +870,7 @@ static int AptLua_pkgid(lua_State *L)
 
 static int AptLua_pkgsummary(lua_State *L)
 {
-   SPtr<pkgCache::PkgIterator> PkgI = AptAux_ToPkgIterator(L, 1);
+   const SPtr<pkgCache::PkgIterator> PkgI(AptAux_ToPkgIterator(L, 1));
    if (PkgI == nullptr)
       return 0;
    if ((*PkgI)->VersionList == 0) {
@@ -889,7 +889,7 @@ static int AptLua_pkgsummary(lua_State *L)
 
 static int AptLua_pkgdescr(lua_State *L)
 {
-   SPtr<pkgCache::PkgIterator> PkgI = AptAux_ToPkgIterator(L, 1);
+   const SPtr<pkgCache::PkgIterator> PkgI(AptAux_ToPkgIterator(L, 1));
    if (PkgI == nullptr)
       return 0;
    if ((*PkgI)->VersionList == 0) {
@@ -919,7 +919,7 @@ static int AptLua_pkgisvirtual(lua_State *L)
 
 static int AptLua_pkgvercur(lua_State *L)
 {
-   SPtr<pkgCache::PkgIterator> PkgI = AptAux_ToPkgIterator(L, 1);
+   const SPtr<pkgCache::PkgIterator> PkgI(AptAux_ToPkgIterator(L, 1));
    if (PkgI == nullptr)
       return 0;
    int Ret = AptAux_PushVersion(L, (*PkgI)->CurrentVer);
@@ -931,7 +931,7 @@ static int AptLua_pkgverinst(lua_State *L)
    pkgDepCache *DepCache = _lua->GetDepCache(L);
    if (DepCache == NULL)
       return 0;
-   SPtr<pkgCache::PkgIterator> PkgI = AptAux_ToPkgIterator(L, 1);
+   const SPtr<pkgCache::PkgIterator> PkgI(AptAux_ToPkgIterator(L, 1));
    if (PkgI == nullptr)
       return 0;
    pkgCache::Version *InstVer = (*DepCache)[(*PkgI)].InstallVer;
@@ -946,7 +946,7 @@ static int AptLua_pkgvercand(lua_State *L)
    pkgDepCache *DepCache = _lua->GetDepCache(L);
    if (DepCache == NULL)
       return 0;
-   SPtr<pkgCache::PkgIterator> PkgI = AptAux_ToPkgIterator(L, 1);
+   const SPtr<pkgCache::PkgIterator> PkgI(AptAux_ToPkgIterator(L, 1));
    if (PkgI == nullptr)
       return 0;
    pkgCache::Version *CandVer = (*DepCache)[(*PkgI)].CandidateVer;
@@ -958,7 +958,7 @@ static int AptLua_pkgvercand(lua_State *L)
 
 static int AptLua_pkgverlist(lua_State *L)
 {
-   SPtr<pkgCache::PkgIterator> PkgI = AptAux_ToPkgIterator(L, 1);
+   const SPtr<pkgCache::PkgIterator> PkgI(AptAux_ToPkgIterator(L, 1));
    if (PkgI == nullptr)
       return 0;
    lua_newtable(L);
@@ -1189,7 +1189,7 @@ static int AptLua_statkeep(lua_State *L)
    pkgDepCache *DepCache = _lua->GetDepCache(L);
    if (DepCache == NULL)
       return 0;
-   SPtr<pkgCache::PkgIterator> PkgI = AptAux_ToPkgIterator(L, 1);
+   const SPtr<pkgCache::PkgIterator> PkgI(AptAux_ToPkgIterator(L, 1));
    if (PkgI == nullptr)
       return 0;
    return AptAux_PushBool(L,
@@ -1202,7 +1202,7 @@ static int AptLua_statinstall(lua_State *L)
    pkgDepCache *DepCache = _lua->GetDepCache(L);
    if (DepCache == NULL)
       return 0;
-   SPtr<pkgCache::PkgIterator> PkgI = AptAux_ToPkgIterator(L, 1);
+   const SPtr<pkgCache::PkgIterator> PkgI(AptAux_ToPkgIterator(L, 1));
    if (PkgI == nullptr)
       return 0;
    return AptAux_PushBool(L, (*DepCache)[*PkgI].Install());
@@ -1213,7 +1213,7 @@ static int AptLua_statremove(lua_State *L)
    pkgDepCache *DepCache = _lua->GetDepCache(L);
    if (DepCache == NULL)
       return 0;
-   SPtr<pkgCache::PkgIterator> PkgI = AptAux_ToPkgIterator(L, 1);
+   const SPtr<pkgCache::PkgIterator> PkgI(AptAux_ToPkgIterator(L, 1));
    if (PkgI == nullptr)
       return 0;
    return AptAux_PushBool(L, (*DepCache)[*PkgI].Delete());
@@ -1224,7 +1224,7 @@ static int AptLua_statnewinstall(lua_State *L)
    pkgDepCache *DepCache = _lua->GetDepCache(L);
    if (DepCache == NULL)
       return 0;
-   SPtr<pkgCache::PkgIterator> PkgI = AptAux_ToPkgIterator(L, 1);
+   const SPtr<pkgCache::PkgIterator> PkgI(AptAux_ToPkgIterator(L, 1));
    if (PkgI == nullptr)
       return 0;
    return AptAux_PushBool(L, (*DepCache)[*PkgI].NewInstall());
@@ -1235,7 +1235,7 @@ static int AptLua_statreinstall(lua_State *L)
    pkgDepCache *DepCache = _lua->GetDepCache(L);
    if (DepCache == NULL)
       return 0;
-   SPtr<pkgCache::PkgIterator> PkgI = AptAux_ToPkgIterator(L, 1);
+   const SPtr<pkgCache::PkgIterator> PkgI(AptAux_ToPkgIterator(L, 1));
    if (PkgI == nullptr)
       return 0;
    return AptAux_PushBool(L,
@@ -1248,7 +1248,7 @@ static int AptLua_statupgrade(lua_State *L)
    pkgDepCache *DepCache = _lua->GetDepCache(L);
    if (DepCache == NULL)
       return 0;
-   SPtr<pkgCache::PkgIterator> PkgI = AptAux_ToPkgIterator(L, 1);
+   const SPtr<pkgCache::PkgIterator> PkgI(AptAux_ToPkgIterator(L, 1));
    if (PkgI == nullptr)
       return 0;
    return AptAux_PushBool(L, (*DepCache)[*PkgI].Upgrade());
@@ -1259,7 +1259,7 @@ static int AptLua_statupgradable(lua_State *L)
    pkgDepCache *DepCache = _lua->GetDepCache(L);
    if (DepCache == NULL)
       return 0;
-   SPtr<pkgCache::PkgIterator> PkgI = AptAux_ToPkgIterator(L, 1);
+   const SPtr<pkgCache::PkgIterator> PkgI(AptAux_ToPkgIterator(L, 1));
    if (PkgI == nullptr)
       return 0;
    return AptAux_PushBool(L, (*DepCache)[*PkgI].Upgradable());
@@ -1270,7 +1270,7 @@ static int AptLua_statdowngrade(lua_State *L)
    pkgDepCache *DepCache = _lua->GetDepCache(L);
    if (DepCache == NULL)
       return 0;
-   SPtr<pkgCache::PkgIterator> PkgI = AptAux_ToPkgIterator(L, 1);
+   const SPtr<pkgCache::PkgIterator> PkgI(AptAux_ToPkgIterator(L, 1));
    if (PkgI == nullptr)
       return 0;
    return AptAux_PushBool(L, (*DepCache)[*PkgI].Downgrade());
@@ -1281,7 +1281,7 @@ static int AptLua_statnowbroken(lua_State *L)
    pkgDepCache *DepCache = _lua->GetDepCache(L);
    if (DepCache == NULL)
       return 0;
-   SPtr<pkgCache::PkgIterator> PkgI = AptAux_ToPkgIterator(L, 1);
+   const SPtr<pkgCache::PkgIterator> PkgI(AptAux_ToPkgIterator(L, 1));
    if (PkgI == nullptr)
       return 0;
    return AptAux_PushBool(L, (*DepCache)[*PkgI].NowBroken());
@@ -1292,7 +1292,7 @@ static int AptLua_statinstbroken(lua_State *L)
    pkgDepCache *DepCache = _lua->GetDepCache(L);
    if (DepCache == NULL)
       return 0;
-   SPtr<pkgCache::PkgIterator> PkgI = AptAux_ToPkgIterator(L, 1);
+   const SPtr<pkgCache::PkgIterator> PkgI(AptAux_ToPkgIterator(L, 1));
    if (PkgI == nullptr)
       return 0;
    return AptAux_PushBool(L, (*DepCache)[*PkgI].InstBroken());
@@ -1303,7 +1303,7 @@ static int AptLua_statstr(lua_State *L)
    pkgDepCache *DepCache = _lua->GetDepCache(L);
    if (DepCache == NULL)
       return 0;
-   SPtr<pkgCache::PkgIterator> PkgI = AptAux_ToPkgIterator(L, 1);
+   const SPtr<pkgCache::PkgIterator> PkgI(AptAux_ToPkgIterator(L, 1));
    if (PkgI == nullptr)
       return 0;
    pkgDepCache::StateCache &S = (*DepCache)[*PkgI];

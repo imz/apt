@@ -79,7 +79,7 @@ bool pkgPolicy::InitDefaults()
 
    // Apply the defaults..
    // allocate and zero memory
-   SPtrArray<bool> Fixed = new bool[Cache->HeaderP->PackageFileCount]();
+   const SPtrArray<bool> Fixed(new bool[Cache->HeaderP->PackageFileCount]());
    signed Cur = 989;
    StatusOverride = false;
    for (vector<Pin>::const_iterator I = Defaults.begin(); I != Defaults.end();

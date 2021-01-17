@@ -138,8 +138,8 @@ bool pkgOrderList::DoRun()
 {
    // Temp list
    unsigned long Size = Cache.Head().PackageCount;
-   SPtrArray<Package *> NList = new Package *[Size];
-   SPtrArray<Package *> AfterList = new Package *[Size];
+   SPtrArray<Package *> NList(new Package *[Size]);
+   const SPtrArray<Package *> AfterList(new Package *[Size]);
    AfterEnd = AfterList;
 
    Depth = 0;
@@ -159,6 +159,8 @@ bool pkgOrderList::DoRun()
       }
 
    // Copy the after list to the end of the main list
+   // FIXME: this seems to have no effect, because
+   // AfterEnd initally points to the beginning of AfterList.
    for (Package **I = AfterList; I != AfterEnd; I++)
       *End++ = *I;
 
@@ -479,7 +481,7 @@ bool pkgOrderList::VisitRProvides(DepFunc F,VerIterator Ver)
 /* This routine calls visit on all providing packages. */
 bool pkgOrderList::VisitProvides(DepIterator D,bool Critical)
 {
-   SPtrArray<Version *> List = D.AllTargets();
+   const SPtrArray<Version *> List(D.AllTargets());
    for (Version **I = List; *I != 0; I++)
    {
       VerIterator Ver(Cache,*I);
@@ -924,7 +926,7 @@ void pkgOrderList::WipeFlags(unsigned long F)
    this fails to produce a suitable result. */
 bool pkgOrderList::CheckDep(DepIterator D)
 {
-   SPtrArray<Version *> List = D.AllTargets();
+   const SPtrArray<Version *> List(D.AllTargets());
    bool Hit = false;
    for (Version **I = List; *I != 0; I++)
    {

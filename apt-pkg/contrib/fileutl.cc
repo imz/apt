@@ -48,7 +48,7 @@ bool CopyFile(FileFd &From,FileFd &To)
       return false;
 
    // Buffered copy between fds
-   SPtrArray<unsigned char> Buf = new unsigned char[64000];
+   const SPtrArray<unsigned char> Buf(new unsigned char[64000]);
    unsigned long Size = From.Size();
    while (Size != 0)
    {

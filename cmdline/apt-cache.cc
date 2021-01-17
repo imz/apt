@@ -556,7 +556,7 @@ bool Depends(CommandLine &CmdL)
 {
    pkgCache &Cache = *GCache;
    // allocate and zero memory
-   SPtrArray<unsigned> Colours = new unsigned[Cache.Head().PackageCount]();
+   const SPtrArray<unsigned> Colours(new unsigned[Cache.Head().PackageCount]());
 
    for (const char **I = CmdL.FileList + 1; *I != 0; I++)
    {
@@ -621,7 +621,7 @@ bool Depends(CommandLine &CmdL)
 	      }
 
 	    // Display all solutions
-	    SPtrArray<pkgCache::Version *> List = D.AllTargets();
+	    const SPtrArray<pkgCache::Version *> List(D.AllTargets());
 	    pkgPrioSortList(Cache,List);
 	    for (pkgCache::Version **I = List; *I != 0; I++)
 	    {
@@ -651,7 +651,7 @@ bool RDepends(CommandLine &CmdL)
 {
    pkgCache &Cache = *GCache;
    // allocate and zero memory
-   SPtrArray<unsigned> Colours = new unsigned[Cache.Head().PackageCount]();
+   const SPtrArray<unsigned> Colours(new unsigned[Cache.Head().PackageCount]());
 
    for (const char **I = CmdL.FileList + 1; *I != 0; I++)
    {
@@ -711,7 +711,7 @@ bool RDepends(CommandLine &CmdL)
 	      }
 
 	    // Display all solutions
-	    SPtrArray<pkgCache::Version *> List = D.AllTargets();
+	    const SPtrArray<pkgCache::Version *> List(D.AllTargets());
 	    pkgPrioSortList(Cache,List);
 	    for (pkgCache::Version **I = List; *I != 0; I++)
 	    {
@@ -741,7 +741,7 @@ bool WhatDepends(CommandLine &CmdL)
 {
    pkgCache &Cache = *GCache;
    // allocate and zero memory
-   SPtrArray<unsigned> Colours = new unsigned[Cache.Head().PackageCount]();
+   const SPtrArray<unsigned> Colours(new unsigned[Cache.Head().PackageCount]());
 
    for (const char **I = CmdL.FileList + 1; *I != 0; I++)
    {
@@ -773,8 +773,7 @@ bool WhatDepends(CommandLine &CmdL)
 	    cout << Pkg.Name() << "-" << Ver.VerStr() << endl;
 
          // allocate and zero memory
-	 SPtrArray<unsigned> LocalColours =
-            new unsigned[Cache.Head().PackageCount]();
+         const SPtrArray<unsigned> LocalColours(new unsigned[Cache.Head().PackageCount]());
 
 	 // Display all dependencies directly on the package.
 	 for (pkgCache::DepIterator RD = Pkg.RevDependsList();
@@ -845,7 +844,7 @@ bool WhatDepends(CommandLine &CmdL)
 				 << D.TargetVer() << endl;
 
 	       // Display all solutions
-	       SPtrArray<pkgCache::Version *> List = D.AllTargets();
+	       const SPtrArray<pkgCache::Version *> List(D.AllTargets());
 	       pkgPrioSortList(Cache,List);
 	       for (pkgCache::Version **I = List; *I != 0; I++)
 	       {
@@ -917,7 +916,7 @@ bool WhatDepends(CommandLine &CmdL)
 				    << D.TargetVer() << endl;
 
 		  // Display all solutions
-		  SPtrArray<pkgCache::Version *> List = D.AllTargets();
+		  const SPtrArray<pkgCache::Version *> List(D.AllTargets());
 		  pkgPrioSortList(Cache,List);
 		  for (pkgCache::Version **I = List; *I != 0; I++)
 		  {

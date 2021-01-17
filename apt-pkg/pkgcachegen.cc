@@ -656,7 +656,7 @@ static bool CheckValidity(string CacheFile, FileIterator Start,
 
    // Map it
    FileFd CacheF(CacheFile,FileFd::ReadOnly);
-   SPtr<MMap> Map = new MMap(CacheF,MMap::Public | MMap::ReadOnly);
+   SPtr<MMap> Map(new MMap(CacheF,MMap::Public | MMap::ReadOnly));
    pkgCache Cache(Map);
    if (_error->PendingError() == true || Map->Size() == 0)
    {
@@ -671,7 +671,7 @@ static bool CheckValidity(string CacheFile, FileIterator Start,
    /* Now we check every index file, see if it is in the cache,
       verify the IMS data and check that it is on the disk too.. */
    // allocate and zero memory
-   SPtrArray<bool> Visited = new bool[Cache.HeaderP->PackageFileCount]();
+   const SPtrArray<bool> Visited(new bool[Cache.HeaderP->PackageFileCount]());
    for (; Start != End; Start++)
    {
       if ((*Start)->HasPackages() == false)

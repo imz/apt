@@ -277,7 +277,7 @@ bool InstallPackages(CacheFile &Cache,bool ShwKept,bool Ask = true,
       return _error->Error(_("The list of sources could not be read."));
 
    // Create the package manager and prepare to download
-   SPtr<pkgPackageManager> PM= _system->CreatePM(Cache);
+   const SPtr<pkgPackageManager> PM(_system->CreatePM(Cache));
    if (PM->GetArchives(&Fetcher,&List,&Recs) == false ||
        _error->PendingError() == true)
       return false;
@@ -582,7 +582,7 @@ bool TryToInstall(pkgCache::PkgIterator Pkg,pkgDepCache &Cache,
       for (pkgCache::PrvIterator Prv = Pkg.ProvidesList();
 	   Prv.end() == false; Prv++)
 	 Size++;
-      SPtrArray<pkgCache::Package *> PList = new pkgCache::Package *[Size];
+      const SPtrArray<pkgCache::Package *> PList(new pkgCache::Package *[Size]);
       pkgCache::Package **PEnd = PList;
       for (pkgCache::PrvIterator Prv = Pkg.ProvidesList(); Prv.end() == false; Prv++)
          *PEnd++ = Prv.OwnerPkg();
@@ -785,7 +785,7 @@ bool TryToInstall(pkgCache::PkgIterator Pkg,pkgDepCache &Cache,
 	 string List;
 	 string VersionsList;
          // allocate and zero memory
-	 SPtrArray<bool> Seen = new bool[Cache.Head().PackageCount]();
+         const SPtrArray<bool> Seen(new bool[Cache.Head().PackageCount]());
 	 pkgCache::DepIterator Dep = Pkg.RevDependsList();
 	 for (; Dep.end() == false; Dep++)
 	 {
