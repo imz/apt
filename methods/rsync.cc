@@ -47,8 +47,8 @@ unsigned int RsyncMethod::Timeout = 0;
 /* Argv implementation */
 Argv::Argv(int msize): max_size(msize), size(0)
 {
-   args = new char*[max_size];
-   memset(args,0, max_size * sizeof(char*));
+   // allocate and zero memory
+   args = new char*[max_size]();
 }
 
 Argv::~Argv()
