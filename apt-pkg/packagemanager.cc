@@ -323,7 +323,7 @@ bool pkgPackageManager::DepAdd(pkgOrderList &OList,PkgIterator Pkg,int Depth)
 	    continue;
 
 	 const SPtrArray<Version *> VList(D.AllTargets());
-	 for (Version **I = VList; *I != 0 && Bad == true; I++)
+	 for (Version **I = VList.get(); *I != 0 && Bad == true; I++)
 	 {
 	    VerIterator Ver(Cache,*I);
 	    PkgIterator Pkg = Ver.ParentPkg();

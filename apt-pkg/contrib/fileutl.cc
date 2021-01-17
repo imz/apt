@@ -56,8 +56,8 @@ bool CopyFile(FileFd &From,FileFd &To)
       if (Size > 64000)
 	 ToRead = 64000;
 
-      if (From.Read(Buf,ToRead) == false ||
-	  To.Write(Buf,ToRead) == false)
+      if (From.Read(Buf.get(),ToRead) == false ||
+	  To.Write(Buf.get(),ToRead) == false)
 	 return false;
 
       Size -= ToRead;

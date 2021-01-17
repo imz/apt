@@ -140,7 +140,7 @@ bool pkgOrderList::DoRun()
    unsigned long Size = Cache.Head().PackageCount;
    SPtrArray<Package *> NList(new Package *[Size]);
    const SPtrArray<Package *> AfterList(new Package *[Size]);
-   AfterEnd = AfterList;
+   AfterEnd = AfterList.get();
 
    Depth = 0;
    WipeFlags(Added | AddPending | Loop | InList);
@@ -150,7 +150,7 @@ bool pkgOrderList::DoRun()
 
    // Rebuild the main list into the temp list.
    iterator OldEnd = End;
-   End = NList;
+   End = NList.get();
    for (iterator I = List; I != OldEnd; I++)
       if (VisitNode(PkgIterator(Cache,*I)) == false)
       {
@@ -161,7 +161,7 @@ bool pkgOrderList::DoRun()
    // Copy the after list to the end of the main list
    // FIXME: this seems to have no effect, because
    // AfterEnd initally points to the beginning of AfterList.
-   for (Package **I = AfterList; I != AfterEnd; I++)
+   for (Package **I = AfterList.get(); I != AfterEnd; I++)
       *End++ = *I;
 
    // Swap the main list to the new list
@@ -482,7 +482,7 @@ bool pkgOrderList::VisitRProvides(DepFunc F,VerIterator Ver)
 bool pkgOrderList::VisitProvides(DepIterator D,bool Critical)
 {
    const SPtrArray<Version *> List(D.AllTargets());
-   for (Version **I = List; *I != 0; I++)
+   for (Version **I = List.get(); *I != 0; I++)
    {
       VerIterator Ver(Cache,*I);
       PkgIterator Pkg = Ver.ParentPkg();
@@ -928,7 +928,7 @@ bool pkgOrderList::CheckDep(DepIterator D)
 {
    const SPtrArray<Version *> List(D.AllTargets());
    bool Hit = false;
-   for (Version **I = List; *I != 0; I++)
+   for (Version **I = List.get(); *I != 0; I++)
    {
       VerIterator Ver(Cache,*I);
       PkgIterator Pkg = Ver.ParentPkg();

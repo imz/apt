@@ -908,7 +908,7 @@ void pkgDepCache::MarkInstallRec(PkgIterator const &Pkg,
       if ((DepState[Start->ID] & DepCVer) == DepCVer)
       {
 	 // Right, find the best version to install..
-	 Version **Cur = List;
+	 Version **Cur = List.get();
 	 PkgIterator P = Start.TargetPkg();
 	 PkgIterator InstPkg(*Cache,0);
 
@@ -960,7 +960,7 @@ void pkgDepCache::MarkInstallRec(PkgIterator const &Pkg,
          Conflicts may not have or groups */
       if (Start->Type == Dep::Conflicts || Start->Type == Dep::Obsoletes)
       {
-	 for (Version **I = List; *I != 0; I++)
+	 for (Version **I = List.get(); *I != 0; I++)
 	 {
 	    VerIterator Ver(*this,*I);
 	    PkgIterator Pkg = Ver.ParentPkg();
