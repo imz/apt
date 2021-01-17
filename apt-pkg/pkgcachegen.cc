@@ -657,7 +657,7 @@ static bool CheckValidity(string CacheFile, FileIterator Start,
    // Map it
    FileFd CacheF(CacheFile,FileFd::ReadOnly);
    SPtr<MMap> Map(new MMap(CacheF,MMap::Public | MMap::ReadOnly));
-   pkgCache Cache(Map);
+   pkgCache Cache(Map.get());
    if (_error->PendingError() == true || Map->Size() == 0)
    {
       _error->Discard();

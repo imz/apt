@@ -583,11 +583,11 @@ bool TryToInstall(pkgCache::PkgIterator Pkg,pkgDepCache &Cache,
 	   Prv.end() == false; Prv++)
 	 Size++;
       const SPtrArray<pkgCache::Package *> PList(new pkgCache::Package *[Size]);
-      pkgCache::Package **PEnd = PList;
+      pkgCache::Package **PEnd = PList.get();
       for (pkgCache::PrvIterator Prv = Pkg.ProvidesList(); Prv.end() == false; Prv++)
          *PEnd++ = Prv.OwnerPkg();
       Fix.MakeScores();
-      qsort(PList,PEnd - PList,sizeof(*PList),&(Fix.ScoreSort));
+      qsort(PList.get(),PEnd - PList.get(),sizeof(PList[0]),&(Fix.ScoreSort));
 
       for (unsigned int p=0; p<Size; ++p)
       {
