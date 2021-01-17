@@ -875,7 +875,7 @@ bool pkgMakeStatusCache(pkgSourceList &List,OpProgress &Progress,
       TotalSize = TotalSize+(TotalSize+SrcSize);
 
       // Build the status cache
-      pkgCacheGenerator Gen(Map.Get(),&Progress);
+      pkgCacheGenerator Gen(Map.get(),&Progress);
       if (_error->PendingError() == true)
 	 return false;
       if (BuildCache(Gen,Progress,CurrentSize,TotalSize,
@@ -909,7 +909,7 @@ bool pkgMakeStatusCache(pkgSourceList &List,OpProgress &Progress,
       TotalSize = (TotalSize*2)+SrcSize;
 
       // Build the source cache
-      pkgCacheGenerator Gen(Map.Get(),&Progress);
+      pkgCacheGenerator Gen(Map.get(),&Progress);
       if (_error->PendingError() == true)
 	 return false;
       if (BuildCache(Gen,Progress,CurrentSize,TotalSize,
@@ -1027,7 +1027,7 @@ bool pkgMakeOnlyStatusCache(OpProgress &Progress,DynamicMMap **OutMap)
 
    // Build the status cache
    Progress.OverallProgress(0,1,1,_("Reading Package Lists"));
-   pkgCacheGenerator Gen(Map.Get(),&Progress);
+   pkgCacheGenerator Gen(Map.get(),&Progress);
    if (_error->PendingError() == true)
       return false;
    if (BuildCache(Gen,Progress,CurrentSize,TotalSize,
