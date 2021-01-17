@@ -904,7 +904,7 @@ void pkgDepCache::MarkInstallRec(PkgIterator const &Pkg,
 
       /* This bit is for processing the possibilty of an install/upgrade
          fixing the problem */
-      SPtrArray<Version *> List = Start.AllTargets();
+      const SPtrArray<Version *> List(Start.AllTargets());
       if ((DepState[Start->ID] & DepCVer) == DepCVer)
       {
 	 // Right, find the best version to install..
