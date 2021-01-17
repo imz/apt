@@ -234,8 +234,8 @@ DynamicMMap::DynamicMMap(unsigned long const Flags,size_t const WorkSpace) :
    if (_error->PendingError() == true)
       return;
 
-   Base = new unsigned char[WorkSpace];
-   memset(Base,0,WorkSpace);
+   // allocate and zero memory
+   Base = new unsigned char[WorkSpace]();
    iSize = 0;
 }
 									/*}}}*/

@@ -24,8 +24,8 @@
 /* This will create the necessary structures to access the status files */
 pkgRecords::pkgRecords(pkgCache &Cache) : Cache(Cache), Files(0)
 {
-   Files = new Parser *[Cache.HeaderP->PackageFileCount];
-   memset(Files,0,sizeof(*Files)*Cache.HeaderP->PackageFileCount);
+   // allocate and zero memory
+   Files = new Parser *[Cache.HeaderP->PackageFileCount]();
 
    for (pkgCache::PkgFileIterator I = Cache.FileBegin();
 	I.end() == false; I++)

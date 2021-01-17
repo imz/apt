@@ -43,8 +43,8 @@ pkgSimulate::pkgSimulate(pkgDepCache *Cache) : pkgPackageManager(Cache),
                             Sim(&Cache->GetCache(),&iPolicy)
 {
    Sim.Init(0);
-   Flags = new unsigned char[Cache->Head().PackageCount];
-   memset(Flags,0,sizeof(*Flags)*Cache->Head().PackageCount);
+   // allocate and zero memory
+   Flags = new unsigned char[Cache->Head().PackageCount]();
 
    // Fake a filename so as not to activate the media swapping
    string Jnk = "SIMULATE";
@@ -943,8 +943,8 @@ pkgProblemResolver::pkgProblemResolver(pkgDepCache *pCache) : Cache(*pCache)
    // Allocate memory
    unsigned long Size = Cache.Head().PackageCount;
    Scores = new signed short[Size];
-   Flags = new unsigned char[Size];
-   memset(Flags,0,sizeof(*Flags)*Size);
+   // allocate and zero memory
+   Flags = new unsigned char[Size]();
 
    // Set debug to true to see its decision logic
    Debug = _config->FindB("Debug::pkgProblemResolver",false);
