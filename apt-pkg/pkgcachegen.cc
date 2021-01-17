@@ -670,8 +670,8 @@ static bool CheckValidity(string CacheFile, FileIterator Start,
 
    /* Now we check every index file, see if it is in the cache,
       verify the IMS data and check that it is on the disk too.. */
-   SPtrArray<bool> Visited = new bool[Cache.HeaderP->PackageFileCount];
-   memset(Visited,0,sizeof(*Visited)*Cache.HeaderP->PackageFileCount);
+   // allocate and zero memory
+   SPtrArray<bool> Visited = new bool[Cache.HeaderP->PackageFileCount]();
    for (; Start != End; Start++)
    {
       if ((*Start)->HasPackages() == false)
