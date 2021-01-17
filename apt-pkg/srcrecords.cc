@@ -25,8 +25,8 @@
 /* Open all the source index files */
 pkgSrcRecords::pkgSrcRecords(pkgSourceList &List) : Files(0), Current(0)
 {
-   Files = new Parser *[List.end() - List.begin() + 1];
-   memset(Files,0,sizeof(*Files)*(List.end() - List.begin() + 1));
+   // allocate and zero memory
+   Files = new Parser *[List.end() - List.begin() + 1]();
 
    unsigned int Count = 0;
    pkgSourceList::const_iterator I = List.begin();

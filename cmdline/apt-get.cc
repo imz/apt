@@ -784,8 +784,8 @@ bool TryToInstall(pkgCache::PkgIterator Pkg,pkgDepCache &Cache,
 
 	 string List;
 	 string VersionsList;
-	 SPtrArray<bool> Seen = new bool[Cache.Head().PackageCount];
-	 memset(Seen,0,Cache.Head().PackageCount*sizeof(*Seen));
+         // allocate and zero memory
+	 SPtrArray<bool> Seen = new bool[Cache.Head().PackageCount]();
 	 pkgCache::DepIterator Dep = Pkg.RevDependsList();
 	 for (; Dep.end() == false; Dep++)
 	 {

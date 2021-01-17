@@ -94,9 +94,9 @@ pkgOrderList::pkgOrderList(pkgDepCache *pCache) : Cache(*pCache)
    /* Construct the arrays, egcs 1.0.1 bug requires the package count
       hack */
    unsigned long Size = Cache.Head().PackageCount;
-   Flags = new unsigned short[Size];
+   // allocate and zero memory
+   Flags = new unsigned short[Size]();
    End = List = new Package *[Size];
-   memset(Flags,0,sizeof(*Flags)*Size);
 }
 									/*}}}*/
 // OrderList::~pkgOrderList - Destructor				/*{{{*/

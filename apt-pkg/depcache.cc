@@ -63,10 +63,11 @@ bool pkgDepCache::Init(OpProgress *Prog)
 {
    delete [] PkgState;
    delete [] DepState;
-   PkgState = new StateCache[Head().PackageCount];
-   DepState = new unsigned char[Head().DependsCount];
-   memset(PkgState,0,sizeof(*PkgState)*Head().PackageCount);
-   memset(DepState,0,sizeof(*DepState)*Head().DependsCount);
+   // allocate and zero memory (for a struct with
+   // no user-provided constructors and only non-class members)
+   PkgState = new StateCache[Head().PackageCount]();
+   // allocate and zero memory
+   DepState = new unsigned char[Head().DependsCount]();
 
    if (Prog != 0)
    {
@@ -1199,10 +1200,10 @@ void pkgDepCache::State::Save(pkgDepCache *dep)
    int Size = Dep->Head().PackageCount;
    int DepSize = Dep->Head().DependsCount;
    PkgState = new StateCache[Size];
-   PkgIgnore = new bool[Size];
+   // allocate and zero memory
+   PkgIgnore = new bool[Size]();
    DepState = new unsigned char[DepSize];
    memcpy(PkgState, Dep->PkgState, Size*sizeof(*PkgState));
-   memset(PkgIgnore, 0, Size*sizeof(*PkgIgnore));
    memcpy(DepState, Dep->DepState, DepSize*sizeof(*DepState));
    iUsrSize = Dep->iUsrSize;
    iDownloadSize= Dep->iDownloadSize;

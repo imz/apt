@@ -403,8 +403,8 @@ bool DumpAvail(CommandLine &Cmd)
       return false;
 
    unsigned long Count = Cache.HeaderP->PackageCount+1;
-   pkgCache::VerFile **VFList = new pkgCache::VerFile *[Count];
-   memset(VFList,0,sizeof(*VFList)*Count);
+   // allocate and zero memory
+   pkgCache::VerFile **VFList = new pkgCache::VerFile *[Count]();
 
    // Map versions that we want to write out onto the VerList array.
    for (pkgCache::PkgIterator P = Cache.PkgBegin(); P.end() == false; P++)
@@ -555,8 +555,8 @@ bool DumpAvail(CommandLine &Cmd)
 bool Depends(CommandLine &CmdL)
 {
    pkgCache &Cache = *GCache;
-   SPtrArray<unsigned> Colours = new unsigned[Cache.Head().PackageCount];
-   memset(Colours,0,sizeof(*Colours)*Cache.Head().PackageCount);
+   // allocate and zero memory
+   SPtrArray<unsigned> Colours = new unsigned[Cache.Head().PackageCount]();
 
    for (const char **I = CmdL.FileList + 1; *I != 0; I++)
    {
@@ -650,8 +650,8 @@ bool Depends(CommandLine &CmdL)
 bool RDepends(CommandLine &CmdL)
 {
    pkgCache &Cache = *GCache;
-   SPtrArray<unsigned> Colours = new unsigned[Cache.Head().PackageCount];
-   memset(Colours,0,sizeof(*Colours)*Cache.Head().PackageCount);
+   // allocate and zero memory
+   SPtrArray<unsigned> Colours = new unsigned[Cache.Head().PackageCount]();
 
    for (const char **I = CmdL.FileList + 1; *I != 0; I++)
    {
@@ -740,8 +740,8 @@ bool RDepends(CommandLine &CmdL)
 bool WhatDepends(CommandLine &CmdL)
 {
    pkgCache &Cache = *GCache;
-   SPtrArray<unsigned> Colours = new unsigned[Cache.Head().PackageCount];
-   memset(Colours,0,sizeof(*Colours)*Cache.Head().PackageCount);
+   // allocate and zero memory
+   SPtrArray<unsigned> Colours = new unsigned[Cache.Head().PackageCount]();
 
    for (const char **I = CmdL.FileList + 1; *I != 0; I++)
    {
@@ -772,9 +772,9 @@ bool WhatDepends(CommandLine &CmdL)
 	 else
 	    cout << Pkg.Name() << "-" << Ver.VerStr() << endl;
 
+         // allocate and zero memory
 	 SPtrArray<unsigned> LocalColours =
-		     new unsigned[Cache.Head().PackageCount];
-	 memset(LocalColours,0,sizeof(*LocalColours)*Cache.Head().PackageCount);
+            new unsigned[Cache.Head().PackageCount]();
 
 	 // Display all dependencies directly on the package.
 	 for (pkgCache::DepIterator RD = Pkg.RevDependsList();
@@ -966,7 +966,8 @@ bool XVcg(CommandLine &CmdL)
    enum States {None=0, ToShow, ToShowNR, DoneNR, Done};
    enum TheFlags {ForceNR=(1<<0)};
    unsigned char *Show = new unsigned char[Cache.Head().PackageCount];
-   unsigned char *Flags = new unsigned char[Cache.Head().PackageCount];
+   // allocate and zero memory
+   unsigned char *Flags = new unsigned char[Cache.Head().PackageCount]();
    unsigned char *ShapeMap = new unsigned char[Cache.Head().PackageCount];
 
    // Show everything if no arguments given
@@ -976,7 +977,6 @@ bool XVcg(CommandLine &CmdL)
    else
       for (unsigned long I = 0; I != Cache.Head().PackageCount; I++)
 	 Show[I] = None;
-   memset(Flags,0,sizeof(*Flags)*Cache.Head().PackageCount);
 
    // Map the shapes
    for (pkgCache::PkgIterator Pkg = Cache.PkgBegin(); Pkg.end() == false; Pkg++)
@@ -1184,7 +1184,8 @@ bool Dotty(CommandLine &CmdL)
    enum States {None=0, ToShow, ToShowNR, DoneNR, Done};
    enum TheFlags {ForceNR=(1<<0)};
    unsigned char *Show = new unsigned char[Cache.Head().PackageCount];
-   unsigned char *Flags = new unsigned char[Cache.Head().PackageCount];
+   // allocate and zero memory
+   unsigned char *Flags = new unsigned char[Cache.Head().PackageCount]();
    unsigned char *ShapeMap = new unsigned char[Cache.Head().PackageCount];
 
    // Show everything if no arguments given
@@ -1194,7 +1195,6 @@ bool Dotty(CommandLine &CmdL)
    else
       for (unsigned long I = 0; I != Cache.Head().PackageCount; I++)
 	 Show[I] = None;
-   memset(Flags,0,sizeof(*Flags)*Cache.Head().PackageCount);
 
    // Map the shapes
    for (pkgCache::PkgIterator Pkg = Cache.PkgBegin(); Pkg.end() == false; Pkg++)
@@ -1495,8 +1495,8 @@ bool Search(CommandLine &CmdL)
       return _error->Error(_("You must give exactly one pattern"));
 
    // Compile the regex pattern
-   regex_t *Patterns = new regex_t[NumPatterns];
-   memset(Patterns,0,sizeof(*Patterns)*NumPatterns);
+   // allocate and zero memory
+   regex_t *Patterns = new regex_t[NumPatterns]();
    for (unsigned I = 0; I != NumPatterns; I++)
    {
       if (regcomp(&Patterns[I],CmdL.FileList[I+1],REG_EXTENDED | REG_ICASE |
@@ -1517,8 +1517,9 @@ bool Search(CommandLine &CmdL)
       return false;
    }
 
-   ExVerFile *VFList = new ExVerFile[Cache.HeaderP->PackageCount+1];
-   memset(VFList,0,sizeof(*VFList)*Cache.HeaderP->PackageCount+1);
+   // allocate and zero memory (for a struct with
+   // no user-provided constructors and only non-class members)
+   ExVerFile *VFList = new ExVerFile[Cache.HeaderP->PackageCount+1]();
 
    // Map versions that we want to write out onto the VerList array.
    for (pkgCache::PkgIterator P = Cache.PkgBegin(); P.end() == false; P++)
