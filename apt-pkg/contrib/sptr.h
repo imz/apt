@@ -46,7 +46,7 @@ class SPtr
    SPtr & operator= (const SPtr &) = delete;
    SPtr(const SPtr &) = delete;
 
-   inline SPtr(T *Ptr) : Ptr(Ptr) {}
+   inline explicit SPtr(T * const Ptr) : Ptr(Ptr) {}
    inline SPtr() : Ptr(0) {}
    inline ~SPtr() {delete Ptr;}
 };
@@ -72,7 +72,7 @@ class SPtrArray
    SPtrArray & operator= (const SPtrArray &) = delete;
    SPtrArray(const SPtrArray &) = delete;
 
-   inline SPtrArray(T *Ptr) : Ptr(Ptr) {}
+   inline explicit SPtrArray(T * const Ptr) : Ptr(Ptr) {}
    inline SPtrArray() : Ptr(0) {}
    inline ~SPtrArray() {delete [] Ptr;}
 };
