@@ -178,7 +178,7 @@ void CacheFile::Sort()
    }
 
    SortCache = *this;
-   std::qsort(List.get(), Cache->Head().PackageCount, sizeof(*(List.get())), NameComp);
+   std::qsort(List.get(), Cache->Head().PackageCount, sizeof(List[0]), NameComp);
 }
 									/*}}}*/
 // CacheFile::CheckDeps - Open the cache file				/*{{{*/
