@@ -166,7 +166,7 @@ bool pkgOrderList::DoRun()
 
    // Swap the main list to the new list
    delete [] List;
-   List = NList.UnGuard();
+   List = NList.release();
    return true;
 }
 									/*}}}*/
