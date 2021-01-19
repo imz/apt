@@ -704,7 +704,7 @@ static bool CheckValidity(string CacheFile, FileIterator Start,
    }
 
    if (OutMap != 0)
-      *OutMap = Map.UnGuard();
+      *OutMap = Map.release();
    return true;
 }
 									/*}}}*/
@@ -988,12 +988,12 @@ bool pkgMakeStatusCache(pkgSourceList &List,OpProgress &Progress,
    {
       if (CacheF != nullptr)
       {
-	 delete Map.UnGuard();
+	 Map.reset();
 	 *OutMap = new MMap(*CacheF,MMap::Public | MMap::ReadOnly);
       }
       else
       {
-	 *OutMap = Map.UnGuard();
+	 *OutMap = Map.release();
       }
    }
 
@@ -1043,7 +1043,7 @@ bool pkgMakeOnlyStatusCache(OpProgress &Progress,DynamicMMap **OutMap)
 
    if (_error->PendingError() == true)
       return false;
-   *OutMap = Map.UnGuard();
+   *OutMap = Map.release();
 
    // CNC:2003-03-07 - Signal to the system so that it can free it's
    //		       internal caches, if any.
