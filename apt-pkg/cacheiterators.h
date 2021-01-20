@@ -103,7 +103,6 @@ class pkgCache::VerIterator
    void operator ++(int) {if (Ver != Owner->VerP) Ver = Owner->VerP + Ver->NextVer;}
    inline void operator ++() {operator ++(0);}
    inline bool end() const {return Ver == Owner->VerP?true:false;}
-   inline void operator =(const VerIterator &B) {Ver = B.Ver; Owner = B.Owner;}
 
    // Comparison
    inline bool operator ==(const VerIterator &B) const {return Ver == B.Ver;}
