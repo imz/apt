@@ -36,6 +36,16 @@ class SPtr
    inline bool operator !=(std::nullptr_t) const {return Ptr != nullptr;}
    inline T*Get() const {return Ptr;}
 
+   // Prohibit copying; otherwise, two objects would own the pointer
+   // and would try to delete it (on destruction). Actually,
+   // -Werror=deprecated-copy -Werror=deprecated-copy-dtor should also
+   // prohibit the use of the implictly-defined copy constructor and assignment
+   // operator because we have a user-defined destructor (which is a hint that
+   // there is some non-trivial resource management that is going on),
+   // but the flags don't work in our case (with gcc10) for some reason...
+   SPtr & operator= (const SPtr &) = delete;
+   SPtr(const SPtr &) = delete;
+
    inline SPtr(T *Ptr) : Ptr(Ptr) {}
    inline SPtr() : Ptr(0) {}
    inline ~SPtr() {delete Ptr;}
@@ -56,6 +66,11 @@ class SPtrArray
    inline bool operator ==(std::nullptr_t) const {return Ptr == nullptr;}
    inline bool operator !=(std::nullptr_t) const {return Ptr != nullptr;}
    inline T *Get() const {return Ptr;}
+
+   // Prohibit copying; otherwise, two objects would own the pointer
+   // and would try to delete it (on destruction).
+   SPtrArray & operator= (const SPtrArray &) = delete;
+   SPtrArray(const SPtrArray &) = delete;
 
    inline SPtrArray(T *Ptr) : Ptr(Ptr) {}
    inline SPtrArray() : Ptr(0) {}
