@@ -106,7 +106,7 @@ bool pkgCache::Header::CheckSizes(Header &Against) const
 // Cache::pkgCache - Constructor					/*{{{*/
 // ---------------------------------------------------------------------
 /* */
-pkgCache::pkgCache(MMap *Map, bool DoMap) : Map(*Map)
+pkgCache::pkgCache(MMap &aMap, bool DoMap) : Map(aMap)
 {
    if (DoMap == true)
       ReMap();

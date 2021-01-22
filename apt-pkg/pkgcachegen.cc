@@ -38,8 +38,8 @@ typedef vector<pkgIndexFile *>::iterator FileIterator;
 // CacheGenerator::pkgCacheGenerator - Constructor			/*{{{*/
 // ---------------------------------------------------------------------
 /* We set the diry flag and make sure that is written to the disk */
-pkgCacheGenerator::pkgCacheGenerator(DynamicMMap *pMap,OpProgress *Prog) :
-		    Map(*pMap), Cache(pMap,false), Progress(Prog),
+pkgCacheGenerator::pkgCacheGenerator(DynamicMMap &aMap,OpProgress *Prog) :
+		    Map(aMap), Cache(aMap,false), Progress(Prog),
 		    FoundFileDeps(0)
 {
    CurrentFile = 0;
@@ -657,7 +657,7 @@ static bool CheckValidity(string CacheFile, FileIterator Start,
    // Map it
    FileFd CacheF(CacheFile,FileFd::ReadOnly);
    SPtr<MMap> Map(new MMap(CacheF,MMap::Public | MMap::ReadOnly));
-   pkgCache Cache(Map.get());
+   pkgCache Cache(*Map.get());
    if (_error->PendingError() == true || Map->Size() == 0)
    {
       _error->Discard();
@@ -875,7 +875,7 @@ bool pkgMakeStatusCache(pkgSourceList &List,OpProgress &Progress,
       TotalSize = TotalSize+(TotalSize+SrcSize);
 
       // Build the status cache
-      pkgCacheGenerator Gen(Map.get(),&Progress);
+      pkgCacheGenerator Gen(*Map.get(),&Progress);
       if (_error->PendingError() == true)
 	 return false;
       if (BuildCache(Gen,Progress,CurrentSize,TotalSize,
@@ -909,7 +909,7 @@ bool pkgMakeStatusCache(pkgSourceList &List,OpProgress &Progress,
       TotalSize = (TotalSize*2)+SrcSize;
 
       // Build the source cache
-      pkgCacheGenerator Gen(Map.get(),&Progress);
+      pkgCacheGenerator Gen(*Map.get(),&Progress);
       if (_error->PendingError() == true)
 	 return false;
       if (BuildCache(Gen,Progress,CurrentSize,TotalSize,
@@ -1027,7 +1027,7 @@ bool pkgMakeOnlyStatusCache(OpProgress &Progress,DynamicMMap **OutMap)
 
    // Build the status cache
    Progress.OverallProgress(0,1,1,_("Reading Package Lists"));
-   pkgCacheGenerator Gen(Map.get(),&Progress);
+   pkgCacheGenerator Gen(*Map.get(),&Progress);
    if (_error->PendingError() == true)
       return false;
    if (BuildCache(Gen,Progress,CurrentSize,TotalSize,

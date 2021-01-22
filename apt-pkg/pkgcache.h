@@ -153,7 +153,7 @@ class pkgCache
    static const char *CompType(unsigned char Comp);
    static const char *DepType(unsigned char Dep);
 
-   pkgCache(MMap *Map,bool DoMap = true);
+   pkgCache(MMap &Map,bool DoMap = true);
    virtual ~pkgCache() {}
 };
 
