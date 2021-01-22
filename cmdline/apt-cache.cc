@@ -2035,7 +2035,7 @@ int main(int argc,const char *argv[])
 
       if (_error->PendingError() == false)
       {
-	 pkgCache Cache(Map);
+	 pkgCache Cache(*Map);
 	 GCache = &Cache;
 // CNC:2003-11-23
 #ifdef WITH_LUA

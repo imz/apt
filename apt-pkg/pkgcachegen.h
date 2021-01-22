@@ -73,7 +73,7 @@ class pkgCacheGenerator
    // CNC:2003-03-18
    inline void ResetFileDeps() {FoundFileDeps = false;}
 
-   pkgCacheGenerator(DynamicMMap *Map,OpProgress *Progress);
+   pkgCacheGenerator(DynamicMMap &aMap,OpProgress *Progress);
    ~pkgCacheGenerator();
 };
 
