@@ -2033,7 +2033,16 @@ int main(int argc,const char *argv[])
 	 Map = pkgMakeStatusCache(*SrcList,Prog,true);
       }
 
-      if (_error->PendingError() == false)
+      if (Map == nullptr) {
+         // Sometimes we can't proceed because there is no Map, but
+         // there are also no other errors. Then, at least, we report
+         // something as in cachefile.cc (pkgCacheFile::BuildCaches).
+         if (_error->PendingError() == false)
+         {
+            _error->Error(_("The package lists or status file could not be parsed or opened."));
+         }
+      }
+      else if (_error->PendingError() == false)
       {
 	 pkgCache Cache(*Map);
 	 GCache = &Cache;
