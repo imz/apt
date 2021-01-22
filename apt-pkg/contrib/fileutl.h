@@ -65,6 +65,16 @@ class FileFd
    inline bool Eof() {return (Flags & HitEof) == HitEof;}
    inline string &Name() {return FileName;}
 
+   // Prohibit copying; otherwise, two objects would own the fd
+   // and would try to close it (on destruction). Actually,
+   // -Werror=deprecated-copy -Werror=deprecated-copy-dtor should also
+   // prohibit the use of the implictly-defined copy constructor and assignment
+   // operator because we have a user-defined destructor (which is a hint that
+   // there is some non-trivial resource management that is going on),
+   // but the flags don't work in our case (with gcc10) for some reason...
+   FileFd & operator= (const FileFd &) = delete;
+   FileFd(const FileFd &) = delete;
+
    FileFd(string FileName,OpenMode Mode,unsigned long Perms = 0666) : iFd(-1),
             Flags(0)
    {
