@@ -26,7 +26,7 @@ class pkgCacheFile
 {
    protected:
 
-   MMap *Map;
+   std::unique_ptr<MMap> Map;
    pkgCache *Cache;
    pkgDepCache *DCache;
 

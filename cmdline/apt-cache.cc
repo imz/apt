@@ -1864,7 +1864,7 @@ bool GenCaches(CommandLine &Cmd)
    pkgSourceList List;
    if (List.ReadMainList() == false)
       return false;
-   return pkgMakeStatusCache(List,Progress);
+   return (pkgMakeStatusCache(List,Progress) != nullptr);
 }
 									/*}}}*/
 // ShowHelp - Show a help screen					/*{{{*/
@@ -2016,11 +2016,11 @@ int main(int argc,const char *argv[])
 
    if (CmdL.DispatchArg(CmdsA,false) == false && _error->PendingError() == false)
    {
-      MMap *Map = 0;
+      std::unique_ptr<MMap> Map;
       if (_config->FindB("APT::Cache::Generate",true) == false)
       {
-	 Map = new MMap(*new FileFd(_config->FindFile("Dir::Cache::pkgcache"),
-				    FileFd::ReadOnly),MMap::Public|MMap::ReadOnly);
+	 Map.reset(new MMap(*new FileFd(_config->FindFile("Dir::Cache::pkgcache"),
+                                        FileFd::ReadOnly),MMap::Public|MMap::ReadOnly));
       }
       else
       {
@@ -2030,7 +2030,7 @@ int main(int argc,const char *argv[])
 
 	 // Generate it and map it
 	 OpProgress Prog;
-	 pkgMakeStatusCache(*SrcList,Prog,&Map,true);
+	 Map = pkgMakeStatusCache(*SrcList,Prog,true);
       }
 
       if (_error->PendingError() == false)
@@ -2057,7 +2057,6 @@ int main(int argc,const char *argv[])
 	 if (_error->PendingError() == false)
 	    CmdL.DispatchArg(CmdsB);
       }
-      delete Map;
    }
 
    // Print any errors or warnings found during parsing

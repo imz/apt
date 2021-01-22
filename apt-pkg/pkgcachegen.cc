@@ -637,13 +637,13 @@ unsigned long pkgCacheGenerator::WriteUniqString(const char *S,
 // ---------------------------------------------------------------------
 /* This just verifies that each file in the list of index files exists,
    has matching attributes with the cache and the cache does not have
-   any extra files. */
-static bool CheckValidity(string CacheFile, FileIterator Start,
-                          FileIterator End,MMap **OutMap = 0)
+   any extra files. On success, passes a non-null MMap as the returned value. */
+static std::unique_ptr<MMap> CheckValidity(string CacheFile, FileIterator Start,
+                                           FileIterator End)
 {
    // No file, certainly invalid
    if (CacheFile.empty() == true || FileExists(CacheFile) == false)
-      return false;
+      return nullptr;
 
    // CNC:2003-02-20 - When --reinstall is used during a cache building
    //		       process, the algorithm is sligthly changed to
@@ -652,7 +652,9 @@ static bool CheckValidity(string CacheFile, FileIterator Start,
    //		       the cache when it's used.
    bool ReInstall = _config->FindB("APT::Get::ReInstall", false);
    if (ReInstall == true)
-      return false;
+   {
+      return nullptr;
+   }
 
    // Map it
    FileFd CacheF(CacheFile,FileFd::ReadOnly);
@@ -661,12 +663,14 @@ static bool CheckValidity(string CacheFile, FileIterator Start,
    if (_error->PendingError() == true || Map->Size() == 0)
    {
       _error->Discard();
-      return false;
+      return nullptr;
    }
 
    // CNC:2003-11-24
    if (_system->OptionsHash() != Cache.HeaderP->OptionsHash)
-      return false;
+   {
+      return nullptr;
+   }
 
    /* Now we check every index file, see if it is in the cache,
       verify the IMS data and check that it is on the disk too.. */
@@ -688,24 +692,26 @@ static bool CheckValidity(string CacheFile, FileIterator Start,
       // FindInCache is also expected to do an IMS check.
       pkgCache::PkgFileIterator File = (*Start)->FindInCache(Cache);
       if (File.end() == true)
-	 return false;
+      {
+	 return nullptr;
+      }
 
       Visited[File->ID] = true;
    }
 
    for (unsigned I = 0; I != Cache.HeaderP->PackageFileCount; I++)
       if (Visited[I] == false)
-	 return false;
+      {
+	 return nullptr;
+      }
 
    if (_error->PendingError() == true)
    {
       _error->Discard();
-      return false;
+      return nullptr;
    }
 
-   if (OutMap != 0)
-      *OutMap = Map.release();
-   return true;
+   return Map;
 }
 									/*}}}*/
 // ComputeSize - Compute the total size of a bunch of files		/*{{{*/
@@ -793,15 +799,15 @@ static bool CollectFileProvides(pkgCacheGenerator &Gen,
    the cache will be stored there. This is pretty much mandetory if you
    are using AllowMem. AllowMem lets the function be run as non-root
    where it builds the cache 'fast' into a memory buffer. */
-bool pkgMakeStatusCache(pkgSourceList &List,OpProgress &Progress,
-			MMap **OutMap,bool AllowMem)
+std::unique_ptr<MMap> pkgMakeStatusCache(pkgSourceList &List,OpProgress &Progress,
+                                         bool AllowMem)
 {
    unsigned long MapSize = _config->FindI("APT::Cache-Limit",6*(16+sizeof(long))*1024*1024);
 
    vector<pkgIndexFile *> Files(List.begin(),List.end());
    unsigned long EndOfSource = Files.size();
    if (_system->AddStatusFiles(Files) == false)
-      return false;
+      return nullptr;
 
    // Decide if we can write to the files..
    string CacheFile = _config->FindFile("Dir::Cache::pkgcache");
@@ -816,15 +822,21 @@ bool pkgMakeStatusCache(pkgSourceList &List,OpProgress &Progress,
 	 Writeable = access(flNotFile(SrcCacheFile).c_str(),W_OK) == 0;
 
    if (Writeable == false && AllowMem == false && CacheFile.empty() == false)
-      return _error->Error(_("Unable to write to %s"),flNotFile(CacheFile).c_str());
+   {
+      _error->Error(_("Unable to write to %s"),flNotFile(CacheFile).c_str());
+      return nullptr;
+   }
 
    Progress.OverallProgress(0,1,1,_("Reading Package Lists"));
 
-   // Cache is OK, Fin.
-   if (CheckValidity(CacheFile,Files.begin(),Files.end(),OutMap) == true)
    {
-      Progress.OverallProgress(1,1,1,_("Reading Package Lists"));
-      return true;
+      std::unique_ptr<MMap> Map = CheckValidity(CacheFile,Files.begin(),Files.end());
+      // Cache is OK, Fin.
+      if (Map)
+      {
+         Progress.OverallProgress(1,1,1,_("Reading Package Lists"));
+         return Map;
+      }
    }
 
    // CNC:2002-07-03
@@ -832,7 +844,7 @@ bool pkgMakeStatusCache(pkgSourceList &List,OpProgress &Progress,
    if (_system->PreProcess(Files.begin(),Files.end(),Progress) == false)
    {
        _error->Error(_("Error pre-processing package lists"));
-       return false;
+       return nullptr;
    }
 #endif
    /* At this point we know we need to reconstruct the package cache,
@@ -844,7 +856,7 @@ bool pkgMakeStatusCache(pkgSourceList &List,OpProgress &Progress,
       unlink(CacheFile.c_str());
       CacheF.reset(new FileFd(CacheFile,FileFd::WriteEmpty));
       if (_error->PendingError() == true)
-	 return false;
+	 return nullptr;
       fchmod(CacheF->Fd(),0644);
       Map.reset(new DynamicMMap(*CacheF,MMap::Public,MapSize));
    }
@@ -858,13 +870,13 @@ bool pkgMakeStatusCache(pkgSourceList &List,OpProgress &Progress,
    unsigned long CurrentSize = 0;
    unsigned long TotalSize = 0;
    if (CheckValidity(SrcCacheFile,Files.begin(),
-		     Files.begin()+EndOfSource) == true)
+		     Files.begin()+EndOfSource))
    {
       // Preload the map with the source cache
       FileFd SCacheF(SrcCacheFile,FileFd::ReadOnly);
       if (SCacheF.Read((unsigned char *)Map->Data() + Map->RawAllocate(SCacheF.Size()),
 		       SCacheF.Size()) == false)
-	 return false;
+	 return nullptr;
 
       TotalSize = ComputeSize(Files.begin()+EndOfSource,Files.end());
 
@@ -877,10 +889,10 @@ bool pkgMakeStatusCache(pkgSourceList &List,OpProgress &Progress,
       // Build the status cache
       pkgCacheGenerator Gen(*Map.get(),&Progress);
       if (_error->PendingError() == true)
-	 return false;
+	 return nullptr;
       if (BuildCache(Gen,Progress,CurrentSize,TotalSize,
 		     Files.begin()+EndOfSource,Files.end()) == false)
-	 return false;
+	 return nullptr;
 
       // CNC:2003-03-18
       if (Gen.HasFileDeps() == true) {
@@ -888,14 +900,14 @@ bool pkgMakeStatusCache(pkgSourceList &List,OpProgress &Progress,
 	 Gen.GetCache().HeaderP->HasFileDeps = true;
 	 if (CollectFileProvides(Gen,Progress,CurrentSize,TotalSize,
 				 Files.begin(),Files.end()) == false)
-	    return false;
+	    return nullptr;
       } else if (Gen.GetCache().HeaderP->HasFileDeps == true) {
 	 // Jump entries which are not going to be parsed.
 	 CurrentSize += SrcSize;
 	 // No new file dependencies. Collect over the new packages.
 	 if (CollectFileProvides(Gen,Progress,CurrentSize,TotalSize,
 				 Files.begin()+EndOfSource,Files.end()) == false)
-	    return false;
+	    return nullptr;
       }
    }
    else
@@ -911,10 +923,10 @@ bool pkgMakeStatusCache(pkgSourceList &List,OpProgress &Progress,
       // Build the source cache
       pkgCacheGenerator Gen(*Map.get(),&Progress);
       if (_error->PendingError() == true)
-	 return false;
+	 return nullptr;
       if (BuildCache(Gen,Progress,CurrentSize,TotalSize,
 		     Files.begin(),Files.begin()+EndOfSource) == false)
-	 return false;
+	 return nullptr;
 
       // CNC:2003-11-24
       Gen.GetCache().HeaderP->OptionsHash = _system->OptionsHash();
@@ -925,7 +937,7 @@ bool pkgMakeStatusCache(pkgSourceList &List,OpProgress &Progress,
 	 Gen.GetCache().HeaderP->HasFileDeps = true;
 	 if (CollectFileProvides(Gen,Progress,CurrentSize,TotalSize,
 		     Files.begin(),Files.begin()+EndOfSource) == false)
-	    return false;
+	    return nullptr;
 	 // Reset to check for new file dependencies in the status cache.
 	 Gen.ResetFileDeps();
       } else {
@@ -943,19 +955,25 @@ bool pkgMakeStatusCache(pkgSourceList &List,OpProgress &Progress,
 	 unlink(SrcCacheFile.c_str());
 	 FileFd SCacheF(SrcCacheFile,FileFd::WriteEmpty);
 	 if (_error->PendingError() == true)
-	    return false;
+	    return nullptr;
 	 fchmod(SCacheF.Fd(),0644);
 
 	 // Write out the main data
 	 if (SCacheF.Write(Map->Data(),Map->Size()) == false)
-	    return _error->Error(_("IO Error saving source cache"));
+         {
+            _error->Error(_("IO Error saving source cache"));
+	    return nullptr;
+         }
 	 SCacheF.Sync();
 
 	 // Write out the proper header
 	 Gen.GetCache().HeaderP->Dirty = false;
 	 if (SCacheF.Seek(0) == false ||
 	     SCacheF.Write(Map->Data(),sizeof(*Gen.GetCache().HeaderP)) == false)
-	    return _error->Error(_("IO Error saving source cache"));
+         {
+            _error->Error(_("IO Error saving source cache"));
+	    return nullptr;
+         }
 	 Gen.GetCache().HeaderP->Dirty = true;
 	 SCacheF.Sync();
       }
@@ -963,7 +981,7 @@ bool pkgMakeStatusCache(pkgSourceList &List,OpProgress &Progress,
       // Build the status cache
       if (BuildCache(Gen,Progress,CurrentSize,TotalSize,
 		     Files.begin()+EndOfSource,Files.end()) == false)
-	 return false;
+	 return nullptr;
 
       // CNC:2003-03-18
       if (Gen.HasFileDeps() == true) {
@@ -971,49 +989,42 @@ bool pkgMakeStatusCache(pkgSourceList &List,OpProgress &Progress,
 	 Gen.GetCache().HeaderP->HasFileDeps = true;
 	 if (CollectFileProvides(Gen,Progress,CurrentSize,TotalSize,
 				 Files.begin(),Files.end()) == false)
-	    return false;
+	    return nullptr;
       } else if (Gen.GetCache().HeaderP->HasFileDeps == true) {
 	 // Jump entries which are not going to be parsed.
 	 CurrentSize += SrcSize;
 	 // No new file dependencies. Collect over the new packages.
 	 if (CollectFileProvides(Gen,Progress,CurrentSize,TotalSize,
 		     Files.begin()+EndOfSource,Files.end()) == false)
-	    return false;
+	    return nullptr;
       }
    }
 
    if (_error->PendingError() == true)
-      return false;
-   if (OutMap != 0)
-   {
-      if (CacheF != nullptr)
-      {
-	 Map.reset();
-	 *OutMap = new MMap(*CacheF,MMap::Public | MMap::ReadOnly);
-      }
-      else
-      {
-	 *OutMap = Map.release();
-      }
-   }
+      return nullptr;
 
    // CNC:2003-03-07 - Signal to the system so that it can free it's
    //		       internal caches, if any.
    _system->CacheBuilt();
 
-   return true;
+   if (CacheF != nullptr)
+   {
+      return std::unique_ptr<MMap>(new MMap(*CacheF,MMap::Public | MMap::ReadOnly));
+   }
+
+   return Map;
 }
 									/*}}}*/
 // MakeOnlyStatusCache - Build a cache with just the status files	/*{{{*/
 // ---------------------------------------------------------------------
 /* */
-bool pkgMakeOnlyStatusCache(OpProgress &Progress,DynamicMMap **OutMap)
+std::unique_ptr<DynamicMMap> pkgMakeOnlyStatusCache(OpProgress &Progress)
 {
    unsigned long MapSize = _config->FindI("APT::Cache-Limit",6*(16+sizeof(long))*1024*1024);
    vector<pkgIndexFile *> Files;
    unsigned long EndOfSource = Files.size();
    if (_system->AddStatusFiles(Files) == false)
-      return false;
+      return nullptr;
 
    SPtr<DynamicMMap> Map(new DynamicMMap(MMap::Public,MapSize));
    unsigned long CurrentSize = 0;
@@ -1029,28 +1040,26 @@ bool pkgMakeOnlyStatusCache(OpProgress &Progress,DynamicMMap **OutMap)
    Progress.OverallProgress(0,1,1,_("Reading Package Lists"));
    pkgCacheGenerator Gen(*Map.get(),&Progress);
    if (_error->PendingError() == true)
-      return false;
+      return nullptr;
    if (BuildCache(Gen,Progress,CurrentSize,TotalSize,
 		  Files.begin()+EndOfSource,Files.end()) == false)
-      return false;
+      return nullptr;
 
    // CNC:2003-03-18
    if (Gen.HasFileDeps() == true) {
       if (CollectFileProvides(Gen,Progress,CurrentSize,TotalSize,
 			      Files.begin()+EndOfSource,Files.end()) == false)
-	 return false;
+	 return nullptr;
    }
 
    if (_error->PendingError() == true)
-      return false;
-   *OutMap = Map.release();
+      return nullptr;
 
    // CNC:2003-03-07 - Signal to the system so that it can free it's
    //		       internal caches, if any.
    _system->CacheBuilt();
 
-
-   return true;
+   return Map;
 }
 									/*}}}*/
 
