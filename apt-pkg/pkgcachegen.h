@@ -19,6 +19,7 @@
 #define PKGLIB_PKGCACHEGEN_H
 
 #include <apt-pkg/pkgcache.h>
+#include <memory>
 
 class pkgSourceList;
 class OpProgress;
@@ -139,20 +140,17 @@ class pkgCacheGenerator::ListParser
    virtual ~ListParser() {}
 };
 
-bool pkgMakeStatusCache(pkgSourceList &List,OpProgress &Progress,
-			MMap **OutMap = 0,bool AllowMem = false);
-bool pkgMakeOnlyStatusCache(OpProgress &Progress,DynamicMMap **OutMap);
+std::unique_ptr<MMap> pkgMakeStatusCache(pkgSourceList &List,OpProgress &Progress,
+                                         bool AllowMem = false);
+std::unique_ptr<DynamicMMap> pkgMakeOnlyStatusCache(OpProgress &Progress);
 
 #ifdef APT_COMPATIBILITY
 #if APT_COMPATIBILITY != 986
 #warning "Using APT_COMPATIBILITY"
 #endif
-MMap *pkgMakeStatusCacheMem(pkgSourceList &List,OpProgress &Progress)
+std::unique_ptr<MMap> pkgMakeStatusCacheMem(pkgSourceList &List,OpProgress &Progress)
 {
-   MMap *Map = 0;
-   if (pkgMakeStatusCache(List,Progress,&Map,true) == false)
-      return 0;
-   return Map;
+   return pkgMakeStatusCache(List,Progress,true);
 }
 #endif
 
