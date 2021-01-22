@@ -59,6 +59,17 @@ class MMap
    bool Sync();
    bool Sync(unsigned long Start,unsigned long Stop);
 
+
+   // Prohibit copying; otherwise, two objects would own the mmap
+   // and would try to munmap it twice etc. (on destruction). Actually,
+   // -Werror=deprecated-copy -Werror=deprecated-copy-dtor should also
+   // prohibit the use of the implictly-defined copy constructor and assignment
+   // operator because we have a user-defined destructor (which is a hint that
+   // there is some non-trivial resource management that is going on),
+   // but the flags don't work in our case (with gcc10) for some reason...
+   MMap & operator= (const MMap &) = delete;
+   MMap(const MMap &) = delete;
+
    MMap(FileFd &F,unsigned long Flags);
    MMap(unsigned long Flags);
    virtual ~MMap();
