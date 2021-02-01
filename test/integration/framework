@@ -220,10 +220,8 @@ Standard:
   postfix
 END
 
-	cat > rootdir/etc/apt/sources.list << END
-rpm file://$TMPWORKINGDIRECTORY/usr/src/RPM/REPO $APT_TEST_USED_ARCH apt-tests
-rpm file://$TMPWORKINGDIRECTORY/usr/src/RPM/REPO noarch apt-tests
-END
+	# just an empty sources.list for the beginning
+	echo > rootdir/etc/apt/sources.list
 
 	# cleanup the environment a bit
 	export PATH="${PATH}:/usr/local/sbin:/usr/sbin:/sbin"
@@ -606,6 +604,20 @@ generaterepository() {
 		version="$date_s"
 	fi
 
+	# The compression opts can be forced from the environment.
+	local compression_opts="$APT_TEST_BASEDIR_COMPRESSION_OPTS"
+	if [ -z "$compression_opts" ]; then
+		# By default, choose minimal required compressions
+		# for the chosen method to work without errors.
+		# (FIXME: fix APT so that the used compression doesn't matter!)
+		case "$APT_TEST_METHOD" in
+
+			*) compression_opts='--no-bz2 --no-xz'
+			   ;;
+
+		esac
+	fi
+
 	rm -rf "$REPO_DIR"
 	for dir in ${arch} noarch ; do
 		mkdir -p "${REPO_DIR}/${dir}/RPMS.${label}"
@@ -630,7 +642,7 @@ generaterepository() {
 			--version="$version" \
 			--topdir="$REPO_DIR" \
 			--changelog-since='@1' \
-			--flat --no-oldhashfile --no-bz2 --no-xz --mapi \
+			--flat --no-oldhashfile $compression_opts --mapi \
 			$dir $comps
 
 		if [ -n "$REPO_DATE" ] ; then
@@ -638,4 +650,30 @@ generaterepository() {
 				  "${REPO_DIR}/${dir}/base/"*
 		fi
 	done
+}
+
+generaterepository_and_switch_sources() {
+	local -r ORIG_DIR="$1"
+	local REPO_DIR # will be set depending on the method
+	local -r REPO_DATE="${2-}"
+
+	case "$APT_TEST_METHOD" in
+
+		file)
+			REPO_DIR="$TMPWORKINGDIRECTORY/usr/src/RPM/REPO"
+
+			generaterepository "$ORIG_DIR" "$REPO_DIR" "$REPO_DATE"
+
+			# overwrite old sources.list
+			cat >| rootdir/etc/apt/sources.list <<- END
+				rpm $APT_TEST_METHOD://$REPO_DIR $APT_TEST_USED_ARCH apt-tests
+				rpm $APT_TEST_METHOD://$REPO_DIR noarch apt-tests
+			END
+			;;
+
+		*)
+			msgdie 'unknown $APT_TEST_METHOD'
+			;;
+
+	esac
 }

@@ -15,7 +15,7 @@ testpkginstalled 'simple-package'
 
 testequal "$(builtpackageversion 'simple-package')" getpackageversion 'simple-package'
 
-generaterepository "$TMPWORKINGDIRECTORY/usr/src/RPM/RPMS" "$TMPWORKINGDIRECTORY/usr/src/RPM/REPO"
+generaterepository_and_switch_sources "$TMPWORKINGDIRECTORY/usr/src/RPM/RPMS"
 
 testsuccess aptget update
 

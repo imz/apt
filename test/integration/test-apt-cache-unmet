@@ -15,7 +15,7 @@ buildpackage 'simple-package'
 buildpackage 'simple-package-update-conflict'
 buildpackage 'simple-package-update' # overwrites the previous built package
 
-generaterepository "$TMPWORKINGDIRECTORY/usr/src/RPM/RPMS" "$TMPWORKINGDIRECTORY/usr/src/RPM/REPO"
+generaterepository_and_switch_sources "$TMPWORKINGDIRECTORY/usr/src/RPM/RPMS"
 
 testsuccess aptget update
 
@@ -23,7 +23,7 @@ testempty aptcache unmet
 
 buildpackage 'missing-dependency'
 
-generaterepository "$TMPWORKINGDIRECTORY/usr/src/RPM/RPMS" "$TMPWORKINGDIRECTORY/usr/src/RPM/REPO" "$(date +%s --date='now +1 day')"
+generaterepository_and_switch_sources "$TMPWORKINGDIRECTORY/usr/src/RPM/RPMS" "$(date +%s --date='now +1 day')"
 
 testsuccess aptget update
 

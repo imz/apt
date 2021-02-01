@@ -33,6 +33,14 @@ export APT_TEST_DEFAULT_ARCH="${APT_TEST_DEFAULT_ARCH-}"
 # If empty, no --target option will be passed when building pkgs.
 export APT_TEST_TARGET="${APT_TEST_TARGET-}"
 
+# One must choose the method to access the repo (specified in sources.list).
+export APT_TEST_METHOD="${APT_TEST_METHOD:-file}"
+
+# The compression options for the basedir can be forced by the environment.
+# (Some methods don't work without some option;
+# that determines which ones are chosen by default.)
+export APT_TEST_BASEDIR_COMPRESSION_OPTS="${APT_TEST_BASEDIR_COMPRESSION_OPTS-}"
+
 # setupenvironment()'s parameters: if non-empty, they override the APT config.
 export METHODSDIR="${METHODSDIR-}" # could override Dir::Bin::methods
 

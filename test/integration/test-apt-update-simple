@@ -11,7 +11,7 @@ buildpackage 'simple-package-noarch'
 buildpackage 'conflicting-package-one'
 buildpackage 'conflicting-package-two'
 
-generaterepository "$TMPWORKINGDIRECTORY/usr/src/RPM/RPMS" "$TMPWORKINGDIRECTORY/usr/src/RPM/REPO"
+generaterepository_and_switch_sources "$TMPWORKINGDIRECTORY/usr/src/RPM/RPMS"
 
 testsuccess aptget update
 testsuccess aptcache show simple-package

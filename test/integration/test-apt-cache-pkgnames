@@ -17,7 +17,7 @@ buildpackage 'simple-package-update-conflict'
 buildpackage 'simple-package-update' # overwrites the previous built package
 buildpackage 'simple-virtual'
 
-generaterepository "$TMPWORKINGDIRECTORY/usr/src/RPM/RPMS" "$TMPWORKINGDIRECTORY/usr/src/RPM/REPO"
+generaterepository_and_switch_sources "$TMPWORKINGDIRECTORY/usr/src/RPM/RPMS"
 
 testsuccess aptget update
 

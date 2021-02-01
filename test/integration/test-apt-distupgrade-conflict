@@ -21,7 +21,7 @@ testpkginstalled 'conflicting-package-one'
 testequal '1-alt1' getpackageversion 'simple-package'
 testequal '1-alt1' getpackageversion 'conflicting-package-one'
 
-generaterepository "$TMPWORKINGDIRECTORY/usr/src/RPM/RPMS" "$TMPWORKINGDIRECTORY/usr/src/RPM/REPO"
+generaterepository_and_switch_sources "$TMPWORKINGDIRECTORY/usr/src/RPM/RPMS"
 
 testsuccess aptget update
 
