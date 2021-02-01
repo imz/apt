@@ -606,6 +606,7 @@ generaterepository() {
 		version="$date_s"
 	fi
 
+	rm -rf "$REPO_DIR"
 	for dir in ${arch} noarch ; do
 		mkdir -p "${REPO_DIR}/${dir}/RPMS.${label}"
 		mkdir -p "${REPO_DIR}/${dir}/base"
