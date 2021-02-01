@@ -269,9 +269,7 @@ export APT_TEST_TARGET="$system_arch"
 	METHODSDIR=%buildroot%_libdir/apt/methods \\\
 		./run-tests
 
-	for i in $(seq 1 2); do
-		%runtests
-	done
+%runtests
 
 # prepare data for rpm --import
 APT_TEST_GPGPUBKEY="$PWD"/example-pubkey.asc
