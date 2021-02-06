@@ -68,7 +68,9 @@ msgfail() {
 
 # enable / disable Debugging
 if [ $MSGLEVEL -le 0 ]; then
-	msgdie() { true; }
+	# Although this override never happens with nonnegative MSGLEVEL, let's not
+	# change the semantics: this msg*() function doesn't just print a message.
+	msgdie() { exit 1; }
 fi
 if [ $MSGLEVEL -le 1 ]; then
 	msgwarn() { true; }
