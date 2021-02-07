@@ -80,13 +80,11 @@ for testcase in $(ls $DIR | egrep '^test-'); do
 	else
 		printf "${CTEST}Run Testcase ($(($ALL+1))/${TOTAL}) ${CHIGH}$(basename ${testcase})${CRESET}\n"
 	fi
-	if ! ./${testcase}; then
+	./${testcase} && PASS=$((PASS+1)) || {
 		FAIL=$((FAIL+1))
 		FAILED_TESTS="$FAILED_TESTS $(basename $testcase)"
 		echo >&2 "$(basename $testcase) ... FAIL"
-	else
-		PASS=$((PASS+1))
-	fi
+	}
 	ALL=$((ALL+1))
 	if [ "$MSGLEVEL" -le 2 ]; then
 		echo

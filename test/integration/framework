@@ -4,6 +4,12 @@
 
 EXIT_CODE=0
 
+# During the most lifetime of the script (until the exiting traps), this var is
+# just used to count the failed tests. Better do this via a dedicated function:
+one_more_failure() {
+	EXIT_CODE=$((EXIT_CODE+1))
+}
+
 # we all like colorful messages
 if [ "$MSGCOLOR" != 'NO' ]; then
 	if [ ! -t 1 ]; then # but check that we output to a terminal
@@ -63,7 +69,7 @@ msgskip() { printf "${CWARNING}SKIP${CNORMAL}\n" >&2; }
 msgfail() {
 	if [ $# -gt 0 ]; then printf "${CFAIL}FAIL: $*${CNORMAL}\n" >&2;
 	else printf "${CFAIL}FAIL${CNORMAL}\n" >&2; fi
-	EXIT_CODE=$((EXIT_CODE+1));
+	one_more_failure
 }
 
 # enable / disable Debugging
@@ -83,9 +89,9 @@ if [ $MSGLEVEL -le 2 ]; then
 	msgpass() { printf " ${CPASS}P${CNORMAL}"; }
 	msgskip() { printf " ${CWARNING}S${CNORMAL}" >&2; }
 	if [ -n "$CFAIL" ]; then
-		msgfail() { printf " ${CFAIL}FAIL${CNORMAL}" >&2; EXIT_CODE=$((EXIT_CODE+1)); }
+		msgfail() { printf " ${CFAIL}FAIL${CNORMAL}" >&2; one_more_failure; }
 	else
-		msgfail() { printf ' ###FAILED###' >&2; EXIT_CODE=$((EXIT_CODE+1)); }
+		msgfail() { printf ' ###FAILED###' >&2; one_more_failure; }
 	fi
 fi
 if [ $MSGLEVEL -le 3 ]; then
