@@ -297,7 +297,7 @@ export APT_TEST_TARGET="$system_arch"
 # The same tests, but via cdrom:
 APT_TEST_METHOD=cdrom %runtests
 # ...with a missing release:
-APT_TEST_METHOD=cdrom_missing_release %runtests
+#APT_TEST_METHOD=cdrom_missing_release %runtests
 
 # prepare data for rpm --import
 APT_TEST_GPGPUBKEY="$PWD"/example-pubkey.asc
