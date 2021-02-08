@@ -6,8 +6,13 @@ EXIT_CODE=0
 
 # During the most lifetime of the script (until the exiting traps), this var is
 # just used to count the failed tests. Better do this via a dedicated function:
+XFAILED=0
 one_more_failure() {
-	EXIT_CODE=$((EXIT_CODE+1))
+	if [ "$APT_TEST_XFAIL" = '' ]; then
+		EXIT_CODE=$((EXIT_CODE+1))
+	else
+		XFAILED=$((XFAILED+1))
+	fi
 }
 
 # we all like colorful messages
@@ -137,10 +142,16 @@ aptmark() { runapt apt-mark "$@"; }
 exitwithstatus() {
         # error if we about to overflow, but ...
         #   "255 failures ought to be enough for everybody"
-        if [ $EXIT_CODE -gt 255 ]; then
+        if [ $EXIT_CODE -gt 254 ]; then
             msgdie "Total failure count $EXIT_CODE too big"
         fi
-        exit $((EXIT_CODE <= 255 ? EXIT_CODE : 255));
+		if [ $EXIT_CODE -gt 0 ]; then
+			exit $((EXIT_CODE <= 254 ? EXIT_CODE : 254));
+		elif [ $XFAILED -gt 0 ]; then
+			exit 255
+		else
+			exit 0
+		fi
 }
 
 shellsetedetector() {

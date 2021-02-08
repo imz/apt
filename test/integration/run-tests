@@ -2,14 +2,20 @@
 set -e
 
 FAIL=0
+XFAIL=0
 PASS=0
 ALL=0
 
 FAILED_TESTS=""
+XFAILED_TESTS=""
 DIR=$(readlink -f $(dirname $0))
 
 # Global parameters which affect the tests (or the framework)
 # and must be set before running the tests and using the framework:
+
+# If non-empty, test failures won't count as failures
+# (rather as expected failures due to known bugs).
+export APT_TEST_XFAIL="${APT_TEST_XFAIL-}"
 
 # If empty or unset, a temporary dir will be created and then cleaned up.
 # Setting this parameter explicitly is useful for debugging.
@@ -81,9 +87,15 @@ for testcase in $(ls $DIR | egrep '^test-'); do
 		printf "${CTEST}Run Testcase ($(($ALL+1))/${TOTAL}) ${CHIGH}$(basename ${testcase})${CRESET}\n"
 	fi
 	./${testcase} && PASS=$((PASS+1)) || {
-		FAIL=$((FAIL+1))
-		FAILED_TESTS="$FAILED_TESTS $(basename $testcase)"
-		echo >&2 "$(basename $testcase) ... FAIL"
+			if ! [ $? -eq 255 ]; then
+				FAIL=$((FAIL+1))
+				FAILED_TESTS="$FAILED_TESTS $(basename $testcase)"
+				echo >&2 "$(basename $testcase) ... FAIL"
+			else
+				XFAIL=$((XFAIL+1))
+				XFAILED_TESTS="$XFAILED_TESTS $(basename $testcase)"
+				echo >&2 "$(basename $testcase) ... XFAIL"
+			fi
 	}
 	ALL=$((ALL+1))
 	if [ "$MSGLEVEL" -le 2 ]; then
@@ -91,7 +103,7 @@ for testcase in $(ls $DIR | egrep '^test-'); do
 	fi
 done
 
-echo >&2 "Statistics: $ALL tests were run: $PASS successfully and $FAIL failed"
+echo >&2 "Statistics: $ALL tests were run: $PASS successfully and $FAIL failed and $XFAIL xfailed"
 if [ -n "$FAILED_TESTS" ]; then
 	echo >&2 "Failed tests: $FAILED_TESTS"
 else
