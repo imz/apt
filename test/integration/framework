@@ -1,4 +1,4 @@
-#!/bin/bash -X
+#!/bin/bash4 -X
 # This code is to be sourced from other scripts.
 # set -eu is assumed.
 

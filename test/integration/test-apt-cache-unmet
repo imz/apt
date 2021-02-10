@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash4
 set -eu
 
 TESTDIR=$(readlink -f $(dirname $0))
