@@ -1,5 +1,4 @@
-#!/bin/bash4 -X
-# This code is to be sourced from other scripts.
+#!/bin/bash4 -X # no runnable script, just for editors
 # set -eu is assumed.
 
 EXIT_CODE=0
