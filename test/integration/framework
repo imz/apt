@@ -464,7 +464,7 @@ testregexmatch() {
 	else
 		local COMPAREFILE="${TMPWORKINGDIRECTORY}/rootdir/tmp/testregexmatch.comparefile"
 		echo "$COMPAREMSG" > $COMPAREFILE
-		checkdiff $COMPAREFILE $RESULTFILE
+		checkdiff $COMPAREFILE $RESULTFILE || true
 		msgfail
 	fi
 }
