@@ -1,6 +1,11 @@
 #!/bin/bash4 -X # no runnable script, just for editors
 # set -eu is assumed.
 
+# Under set -x, don't mess the trace with other commands' output (possibly
+# redirected), rather send it directly to the global stderr.
+exec 5>&2
+BASH_XTRACEFD=5
+
 EXIT_CODE=0
 
 # During the most lifetime of the script (until the exiting traps), this var is
