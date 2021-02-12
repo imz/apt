@@ -5,6 +5,7 @@
 # redirected), rather send it directly to the global stderr.
 exec 5>&2
 BASH_XTRACEFD=5
+set -x
 
 EXIT_CODE=0
 
