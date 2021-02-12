@@ -737,7 +737,7 @@ generaterepository() {
 	mkdir -p "${TMPWORKINGDIRECTORY}/cache"
 
 	for dir in ${arch} noarch ; do
-		genbasedir \
+		/bin/sh -eux "$(which genbasedir)" \
 			--cachedir="${TMPWORKINGDIRECTORY}/cache" \
 			--architecture="$dir" \
 			--architectures="$dir" \
