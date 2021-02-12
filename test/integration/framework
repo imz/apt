@@ -62,16 +62,15 @@ msgninfo() { printf "${CINFO}I: $1${CNORMAL}"; }
 msgndebug() { printf "${CDEBUG}D: $1${CNORMAL}"; }
 msgtest() {
 	while [ $# -gt 0 ]; do
-		printf "${CINFO}$1${CCMD} "
+		printf "${CINFO}%s${CCMD} %s${CNORMAL} " "$1" "$(sed -e 's#^apt\([cgfs]\)#apt-\1#' <<<"${2-}")"
 		shift
 		if [ $# -gt 0 ]; then
-			printf -- "$(echo "$1" | sed -e 's#^apt\([cgfs]\)#apt-\1#')${CINFO} "
 			shift
 		else
 			break
 		fi
 	done
-	printf "…${CNORMAL} "
+	printf "${CINFO}…${CNORMAL} "
 }
 msgpass() { printf "${CPASS}PASS${CNORMAL}\n"; }
 msgskip() { printf "${CWARNING}SKIP${CNORMAL}\n" >&2; }
