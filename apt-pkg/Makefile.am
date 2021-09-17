@@ -39,6 +39,7 @@ libapt_pkg_la_SOURCES = \
 	contrib/strutl.cc \
 	contrib/strutl.h \
 	contrib/system.h \
+	contrib/validate.h \
 	rpm/raptheader.cc \
 	rpm/raptheader.h \
 	rpm/rapttypes.h \

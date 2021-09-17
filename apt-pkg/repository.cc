@@ -18,6 +18,7 @@
 #include <apt-pkg/configuration.h>
 #include <apt-pkg/strutl.h>
 #include <apt-pkg/tagfile.h>
+#include <apt-pkg/validate.h>
 #include <apt-pkg/acquire-item.h>
 
 #include <apti18n.h>
@@ -65,19 +66,26 @@ bool pkgRepository::ParseRelease(const string File)
    const char *C = Files.c_str();
    while (*C != 0)
    {
-      string Hash = "";
-      string Size = "";
-      string Path = "";
-
-      if (ParseQuoteWord(C,Hash) == false || Hash.empty() == true ||
-	  ParseQuoteWord(C,Size) == false || atoll(Size.c_str()) < 0 ||
-	  ParseQuoteWord(C,Path) == false || Path.empty() == true)
+      const auto Hash =
+         mbind(NonEmpty,
+               ParseQuoteWord_(C));
+      // Parse the size and append the directory
+      const auto Size =
+         Hash // otherwise (if already failed) skip
+         ? mbind(NonNegative<std::make_signed_t<decltype(Checksum::Size)>>,
+                 mbind(strtoll_,
+                       ParseQuoteWord_(C)))
+         : std::nullopt;
+      const auto Path =
+         Size // otherwise (if already failed) skip
+         ? mbind(NonEmpty,
+                 ParseQuoteWord_(C))
+         : std::nullopt;
+      if (! Path)
 	 return _error->Error(_("Error parsing %s hash record on Release file '%s'"),
 			      CheckMethod.c_str(), File.c_str());
-
-      // Parse the size and append the directory
-      IndexChecksums[Path].Size = atoll(Size.c_str());
-      IndexChecksums[Path].Hash = Hash;
+      IndexChecksums[*Path].Size = *Size;
+      IndexChecksums[*Path].Hash = *Hash;
    }
 
    return true;
