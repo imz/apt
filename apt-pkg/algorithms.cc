@@ -1065,7 +1065,7 @@ void pkgProblemResolver::MakeScores()
    RPMPackageData *rpmdata = new RPMPackageData();
    for (pkgCache::PkgIterator I = Cache.PkgBegin(); I.end() == false; I++)
    {
-      if ((Flags[I->ID] & Protected) != 0)
+      if ((Flags[I->ID] & Flags::Protected) != 0)
 	 Scores[I->ID] += 10000;
       if ((I->Flags & pkgCache::Flag::Essential) == pkgCache::Flag::Essential)
 	 Scores[I->ID] += 5000;
@@ -1095,12 +1095,12 @@ void pkgProblemResolver::MakeScores()
    installable */
 bool pkgProblemResolver::DoUpgrade(pkgCache::PkgIterator Pkg)
 {
-   if ((Flags[Pkg->ID] & Upgradable) == 0 || Cache[Pkg].Upgradable() == false)
+   if ((Flags[Pkg->ID] & Flags::Upgradable) == 0 || Cache[Pkg].Upgradable() == false)
       return false;
-   if ((Flags[Pkg->ID] & Protected) == Protected)
+   if ((Flags[Pkg->ID] & Flags::Protected) == Flags::Protected)
       return false;
 
-   Flags[Pkg->ID] &= ~Upgradable;
+   Flags[Pkg->ID] &= ~Flags::Upgradable;
 
    bool WasKept = Cache[Pkg].Keep();
    Cache.MarkInstall(Pkg,pkgDepCache::AutoMarkFlag::DontChange,false);
@@ -1139,7 +1139,7 @@ bool pkgProblemResolver::DoUpgrade(pkgCache::PkgIterator Pkg)
 
 	 // Do not change protected packages
 	 PkgIterator P = Start.SmartTargetPkg();
-	 if ((Flags[P->ID] & Protected) == Protected)
+	 if ((Flags[P->ID] & Flags::Protected) == Flags::Protected)
 	 {
 	    if (Debug == true)
 	       clog << "    Reinst Failed because of protected " << P.Name() << endl;
@@ -1225,7 +1225,7 @@ bool pkgProblemResolver::Resolve(bool BrokenFix)
       for (pkgCache::PkgIterator I = Cache.PkgBegin(); I.end() == false; I++)
       {
 	 if (Cache[I].Install() == true)
-	    Flags[I->ID] |= PreInstalled;
+	    Flags[I->ID] |= Flags::PreInstalled;
 	 else
 	 {
 	    if (Cache[I].InstBroken() == true && BrokenFix == true)
@@ -1235,9 +1235,9 @@ bool pkgProblemResolver::Resolve(bool BrokenFix)
 		  Again = true;
 	    }
 
-	    Flags[I->ID] &= ~PreInstalled;
+	    Flags[I->ID] &= ~Flags::PreInstalled;
 	 }
-	 Flags[I->ID] |= Upgradable;
+	 Flags[I->ID] |= Flags::Upgradable;
       }
    }
    while (Again == true);
@@ -1286,15 +1286,15 @@ bool pkgProblemResolver::Resolve(bool BrokenFix)
 	    this takes care of some strange cases */
 	 if (Cache[I].CandidateVer != Cache[I].InstallVer &&
 	     I->CurrentVer != 0 && Cache[I].InstallVer != 0 &&
-	     (Flags[I->ID] & PreInstalled) != 0 &&
-	     (Flags[I->ID] & Protected) == 0 &&
-	     (Flags[I->ID] & ReInstateTried) == 0)
+	     (Flags[I->ID] & Flags::PreInstalled) != 0 &&
+	     (Flags[I->ID] & Flags::Protected) == 0 &&
+	     (Flags[I->ID] & Flags::ReInstateTried) == 0)
 	 {
 	    if (Debug == true)
 	       clog << " Try to Re-Instate " << I.Name() << endl;
 	    unsigned long OldBreaks = Cache.BrokenCount();
 	    pkgCache::Version *OldVer = Cache[I].InstallVer;
-	    Flags[I->ID] &= ReInstateTried;
+	    Flags[I->ID] &= Flags::ReInstateTried;
 
 	    Cache.MarkInstall(I,pkgDepCache::AutoMarkFlag::DontChange,false);
 	    if (Cache[I].InstBroken() == true ||
@@ -1336,7 +1336,7 @@ bool pkgProblemResolver::Resolve(bool BrokenFix)
 	       {
 		  if (OldEnd == LEnd && OrOp == OrRemove)
 		  {
-		     if ((Flags[I->ID] & Protected) != Protected)
+		     if ((Flags[I->ID] & Flags::Protected) != Flags::Protected)
 		     {
 			if (Debug == true)
 			   clog << "  Or group remove for " << I.Name() << endl;
@@ -1385,7 +1385,7 @@ bool pkgProblemResolver::Resolve(bool BrokenFix)
 	       targets then we keep the package and bail. This is necessary
 	       if a package has a dep on another package that cant be found */
 	    const SPtrArray<pkgCache::Version * const> VList(Start.AllTargets());
-	    if (VList[0] == nullptr && (Flags[I->ID] & Protected) != Protected &&
+	    if (VList[0] == nullptr && (Flags[I->ID] & Flags::Protected) != Flags::Protected &&
 		Start->Type != pkgCache::Dep::Conflicts &&
 		Start->Type != pkgCache::Dep::Obsoletes &&
 		Cache[I].NowBroken() == false)
@@ -1420,7 +1420,7 @@ bool pkgProblemResolver::Resolve(bool BrokenFix)
 		    End->Type != pkgCache::Dep::Obsoletes))
 	       {
 		  // Try a little harder to fix protected packages..
-		  if ((Flags[I->ID] & Protected) == Protected)
+		  if ((Flags[I->ID] & Flags::Protected) == Flags::Protected)
 		  {
 		     if (DoUpgrade(Pkg) == true)
 		     {
@@ -1484,7 +1484,7 @@ bool pkgProblemResolver::Resolve(bool BrokenFix)
 		     continue;
 
 		  // Skip adding to the kill list if it is protected
-		  if ((Flags[Pkg->ID] & Protected) != 0)
+		  if ((Flags[Pkg->ID] & Flags::Protected) != 0)
 		     continue;
 
 		  // CNC:2003-03-22
@@ -1524,7 +1524,7 @@ bool pkgProblemResolver::Resolve(bool BrokenFix)
 	    if (VList[0] == 0 &&
 		Start->Type != pkgCache::Dep::Conflicts &&
 		Start->Type != pkgCache::Dep::Obsoletes &&
-		(Flags[I->ID] & Protected) != Protected)
+		(Flags[I->ID] & Flags::Protected) != Flags::Protected)
 	    {
 	       bool Installed = Cache[I].Install();
 	       Cache.MarkKeep(I);
@@ -1605,7 +1605,7 @@ bool pkgProblemResolver::Resolve(bool BrokenFix)
       {
 	 if (Cache[I].InstBroken() == false)
 	    continue;
-	 if ((Flags[I->ID] & Protected) != Protected)
+	 if ((Flags[I->ID] & Flags::Protected) != Flags::Protected)
 	    return _error->Error(_("Error, pkgProblemResolver::Resolve generated breaks, this may be caused by held packages."));
       }
       return _error->Error(_("Unable to correct problems, you have held broken packages."));
@@ -1650,7 +1650,7 @@ bool pkgProblemResolver::ResolveByKeep()
 
       /* Keep the package. If this works then great, otherwise we have
 	 to be significantly more agressive and manipulate its dependencies */
-      if ((Flags[I->ID] & Protected) == 0)
+      if ((Flags[I->ID] & Flags::Protected) == 0)
       {
 	 if (Debug == true)
 	    clog << "Keeping package " << I.Name() << endl;
@@ -1699,7 +1699,7 @@ bool pkgProblemResolver::ResolveByKeep()
 		  continue;
 
 	       // CNC:2002-08-05
-	       if ((Flags[Pkg->ID] & Protected) == 0)
+	       if ((Flags[Pkg->ID] & Flags::Protected) == 0)
 	       {
 		  if (Debug == true)
 		     clog << "  Keeping Package " << Pkg.Name() << " due to dep" << endl;
@@ -1742,9 +1742,9 @@ void pkgProblemResolver::InstallProtect()
 {
    for (pkgCache::PkgIterator I = Cache.PkgBegin(); I.end() == false; I++)
    {
-      if ((Flags[I->ID] & Protected) == Protected)
+      if ((Flags[I->ID] & Flags::Protected) == Flags::Protected)
       {
-	 if ((Flags[I->ID] & ToRemove) == ToRemove)
+	 if ((Flags[I->ID] & Flags::ToRemove) == Flags::ToRemove)
 	    Cache.MarkDelete(I);
 	 else
 	    Cache.MarkInstall(I,pkgDepCache::AutoMarkFlag::DontChange,false);
@@ -1780,7 +1780,7 @@ bool pkgProblemResolver::RemoveDepends()
 	    pkgCache::PkgIterator DPkg = D.TargetPkg();
 	    if (DPkg->CurrentVer == 0 || Cache[DPkg].Delete() == true)
 	       continue;
-	    if ((Flags[DPkg->ID] & Protected) == Protected)
+	    if ((Flags[DPkg->ID] & Flags::Protected) == Flags::Protected)
 	       continue;
 
 	    bool Remove = true;

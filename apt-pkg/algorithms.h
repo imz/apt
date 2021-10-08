@@ -87,9 +87,11 @@ class pkgProblemResolver
    typedef pkgCache::Version Version;
    typedef pkgCache::Package Package;
 
-   enum Flags {Protected = (1 << 0), PreInstalled = (1 << 1),
-               Upgradable = (1 << 2), ReInstateTried = (1 << 3),
-               ToRemove = (1 << 4)};
+   enum struct Flags : unsigned char {
+      Protected = (1 << 0), PreInstalled = (1 << 1),
+      Upgradable = (1 << 2), ReInstateTried = (1 << 3),
+      ToRemove = (1 << 4)
+   };
    signed short *Scores;
    unsigned char *Flags;
    bool Debug;
@@ -107,9 +109,9 @@ class pkgProblemResolver
 
    public:
 
-   inline void Protect(pkgCache::PkgIterator Pkg) {Flags[Pkg->ID] |= Protected;}
-   inline void Remove(pkgCache::PkgIterator Pkg) {Flags[Pkg->ID] |= ToRemove;}
-   inline void Clear(pkgCache::PkgIterator Pkg) {Flags[Pkg->ID] &= ~(Protected | ToRemove);}
+   inline void Protect(pkgCache::PkgIterator Pkg) {Flags[Pkg->ID] |= Flags::Protected;}
+   inline void Remove(pkgCache::PkgIterator Pkg) {Flags[Pkg->ID] |= Flags::ToRemove;}
+   inline void Clear(pkgCache::PkgIterator Pkg) {Flags[Pkg->ID] &= ~(Flags::Protected | Flags::ToRemove);}
 
    // Try to intelligently resolve problems by installing and removing packages
    bool Resolve(bool BrokenFix = false);
