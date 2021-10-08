@@ -72,9 +72,8 @@ bool pkgRepository::ParseRelease(const string File)
       // Parse the size and append the directory
       const auto Size =
          Hash // otherwise (if already failed) skip
-         ? mbind(NonNegative<std::make_signed_t<decltype(Checksum::Size)>>,
-                 mbind(strtoll_,
-                       ParseQuoteWord_(C)))
+         ? mbind(from_chars_<decltype(Checksum::Size)>,
+                 ParseQuoteWord_(C))
          : std::nullopt;
       const auto Path =
          Size // otherwise (if already failed) skip
