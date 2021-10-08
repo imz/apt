@@ -7,6 +7,7 @@
 
 AC_DEFUN([apt_WARN_LANG_FLAGS], [dnl
 gl_WARN_ADD([-Wall])
+gl_WARN_ADD([-Wconversion])
 # Prohibit implicit copy assignment operators or constructors
 # if some special resource management is possibly needed:
 gl_WARN_ADD([-Wdeprecated-copy])
