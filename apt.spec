@@ -411,7 +411,7 @@ export APT_TEST_GPGPUBKEY
 
 # Everything has been tested by now.
 
-%package heavyload-checkinstall
+%package xxtra-heavy-load-checkinstall
 Summary: Immediately test %name when installing this package (many times under heavy load)
 Group: Other
 BuildArch: noarch
@@ -419,16 +419,16 @@ Requires(pre): %name-tests
 Requires(pre): %complete_reqs_of_tests
 Requires(pre): gpg-keygen
 
-%description heavyload-checkinstall
+%description xxtra-heavy-load-checkinstall
 Immediately test %name when installing this package.
 
 The tests are run many times and under simulated heavy load (namely,
 in parallel) in order to possibly detect races
 (to make sure no tests are randomly succeeding).
 
-%files heavyload-checkinstall
+%files xxtra-heavy-load-checkinstall
 
-%pre heavyload-checkinstall -p %_sbindir/sh-safely
+%pre xxtra-heavy-load-checkinstall -p %_sbindir/sh-safely
 set -o pipefail
 pushd %_datadir/%name/tests/
 
