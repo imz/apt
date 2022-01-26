@@ -470,6 +470,81 @@ fi
 seq 0 $((TRIES-1)) | xargs -I'{}' ${NPROCS:+-P$NPROCS --process-slot-var=PARALLEL_SLOT} \
 	-- sh -efuo pipefail -c '%runtests '${NPROCS:+'|& sed --unbuffered -e "s/^/[$PARALLEL_SLOT {}] /"'}
 
+%package under-pkdirect-checkinstall
+Summary: Immediately test %name+PK when installing this package (via packagekit-direct)
+Group: Other
+BuildArch: noarch
+Requires(pre): packagekit
+
+%description under-pkdirect-checkinstall
+Immediately test PackageKit (which is supposed to use %name as the backend)
+when installing this package.
+
+The testing is done via %_libexecdir/packagekit-direct (which works
+without relying on any daemons, DBus, etc.)
+
+Some of the bugs (from the past) which are being tested for by these
+tests could only be seen with APT indices that were big and/or
+acquired from "external" sources (like the real Sisyphus repo). So,
+having just the "internal" system RPM db diminishes the potential
+of these few tests to find interesting bugs. One should set up
+"external" sources for APT (in a real system or in hasher with network).
+
+%files under-pkdirect-checkinstall
+
+%pre under-pkdirect-checkinstall
+set -eux
+set -o pipefail
+
+# One should better prepare the environment, so that the tests will be run
+# with big real repos (like Sisyphus) in the sources.list. In the past,
+# some crashes only appeared this way.
+
+# Optional preparation. A chance to see that apt works.
+apt-get \
+    -o Acquire::Verbose=yes \
+    -o Debug::pkgAcquire::Auth=yes \
+    update
+
+# Test whether there is a crash during an action ("search-detail"):
+
+stat /var/cache/apt/*.bin # Check the setup is OK before a test.
+/usr/lib/packagekit-direct search-detail packagekit
+
+# Test whether the "refresh" action forces a rebuild of the caches & saves them:
+
+stat /var/cache/apt/*.bin # Check the setup is OK before a test.
+# Run it (and make sure "refresh" doesn't crash or fail).
+/usr/lib/packagekit-direct refresh
+# Now, there are two ways to test whether it has actually rebuilt the caches.
+#
+# 1. The quick way is to see whether the caches appeared after "refresh" as they
+# should. (Also, they must be new files, because "refresh" unconditionally
+# removes them first. This test doesn't check this formally.)
+stat /var/cache/apt/*.bin
+
+# 2. Another way is to see how much work a subsequent command does to build
+# cache: should be little work if "refresh" works correctly. Contrarily,
+# the "refresh" command (see before) should at its final stage provoke much work
+# because it must build a new fresh cache; if its final stage is quick,
+# then it works incorrectly and doesn't really rebuild and save a fresh cache.
+# (This test doesn't formally check the amount of work. Just see with your eyes
+# that--if correct--the printed percentages in the final stage of "refresh"
+# change slowly, and in the initial stage of the next command change fast.)
+/usr/lib/packagekit-direct search-detail packagekit
+
+# * * *
+#
+# Note that git-bisect(1) expects an "exit with a code between 1 and
+# 127 (inclusive), except 125, if the current source code is bad".
+# Therefore, I suggest to use this test script (or the wrapper
+# ./test-pk-in-hsh.sh) like this:
+#
+#   cd apt
+#   git bisect start --no-checkout PK-BAD PK-GOOD
+#   git bisect run /bin/sh -exc './gear-build-pair-in-hsh.sh . BISECT_HEAD ../packagekit/ revert-apt-API ~/hasher/; hsh-install ~/hasher/ apt-under-pkdirect-checkinstall || { echo BAD: $?; exit 1; }'
+
+
 %files -f %name.lang
 %_bindir/apt-*
 %_libdir/%name
