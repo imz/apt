@@ -3,7 +3,7 @@
 
 Name: apt
 Version: 0.5.15lorg2
-Release: alt74
+Release: alt75
 
 Summary: Debian's Advanced Packaging Tool with RPM support
 Summary(ru_RU.UTF-8): Debian APT - Усовершенствованное средство управления пакетами с поддержкой RPM
@@ -597,6 +597,10 @@ timeout -k 300 240 \
 %_datadir/%name/tests/
 
 %changelog
+* Sat Jan 27 2022 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt75
+- Added apt-under-pkdirect-checkinstall subpackage and
+  added a test for FileList() API via packagekit.
+
 * Sat Dec 04 2021 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt74
 - Implemented generic callback system for packagekit, allowing to show progress
   during offline-update to user. (Thx Oleg Solovyov mcpain@)
