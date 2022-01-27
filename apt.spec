@@ -533,6 +533,13 @@ stat /var/cache/apt/*.bin
 # change slowly, and in the initial stage of the next command change fast.)
 /usr/lib/packagekit-direct search-detail packagekit
 
+# Test whether searching by file works.
+
+timeout -k 300 240 \
+	/usr/lib/packagekit-direct search-file /etc/apt/vendors.list
+/usr/lib/packagekit-direct search-file /etc/apt/vendors.list |
+    fgrep apt-conf
+
 # * * *
 #
 # Note that git-bisect(1) expects an "exit with a code between 1 and
