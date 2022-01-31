@@ -157,7 +157,7 @@ class RPMFileHandler : public RPMHdrHandler
    virtual string BLAKE2b() const override {return GetSTag(CRPMTAG_BLAKE2B);}
 
    RPMFileHandler(FileFd *File);
-   RPMFileHandler(const string &File);
+   RPMFileHandler(string File);
    virtual ~RPMFileHandler();
 };
 
@@ -180,7 +180,7 @@ class RPMSingleFileHandler : public RPMFileHandler
    virtual string BLAKE2b() const override;
    virtual bool ProvideFileName() const override {return true;}
 
-   RPMSingleFileHandler(const string &File) : RPMFileHandler(File), sFilePath(File) {}
+   RPMSingleFileHandler(string File) : RPMFileHandler(File), sFilePath(File) {}
    virtual ~RPMSingleFileHandler() {}
 };
 
@@ -242,7 +242,7 @@ class RPMDirHandler : public RPMHdrHandler
    virtual string MD5Sum() const override;
    virtual string BLAKE2b() const override;
 
-   RPMDirHandler(const string &DirName);
+   RPMDirHandler(string DirName);
    virtual ~RPMDirHandler();
 };
 
