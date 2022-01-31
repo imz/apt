@@ -419,6 +419,18 @@ bool pkgSourceList::GetIndexes(pkgAcquire *Owner) const
    return true;
 }
 									/*}}}*/
+// CNC:2002-07-04's extension by ALT
+// SourceList::IvalidateReleases - Mark all releases to be re-fetched	/*{{{*/
+// ---------------------------------------------------------------------
+/* */
+bool pkgSourceList::InvalidateReleases() const
+{
+   for (const_iterator I = SrcList.begin(); I != SrcList.end(); I++)
+      if ((*I)->InvalidateReleases() == false)
+	 return false;
+   return true;
+}
+									/*}}}*/
 // CNC:2002-07-04
 // SourceList::GetReleases - Load release files into the downloader	/*{{{*/
 // ---------------------------------------------------------------------

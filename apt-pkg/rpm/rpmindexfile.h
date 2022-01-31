@@ -45,6 +45,7 @@ class rpmDatabaseIndex : public rpmIndexFile
    virtual string Describe(bool Short) const override {return "RPM Database";}
 
    /* nothing to download in the case of the DB */
+   virtual bool InvalidateReleases() const override { return true; }
    virtual bool GetReleases(pkgAcquire *Owner) const override { return true; }
 
    // Interface for the Cache Generator
@@ -83,6 +84,7 @@ class rpmListIndex : public rpmIndexFile
 
    public:
 
+   virtual bool InvalidateReleases() const override;
    virtual bool GetReleases(pkgAcquire *Owner) const override;
 
    // Interface for the Cache Generator
@@ -183,6 +185,7 @@ class rpmPkgDirIndex : public rpmPkgListIndex
 
    public:
 
+   virtual bool InvalidateReleases() const override { return true; }
    virtual bool GetReleases(pkgAcquire *Owner) const override { return true; }
    virtual bool GetIndexes(pkgAcquire *Owner) const override { return true; }
 
@@ -210,6 +213,7 @@ class rpmSrcDirIndex : public rpmSrcListIndex
 
    public:
 
+   virtual bool InvalidateReleases() const override { return true; }
    virtual bool GetReleases(pkgAcquire *Owner) const override { return true; }
    virtual bool GetIndexes(pkgAcquire *Owner) const override { return true; }
 
@@ -239,6 +243,7 @@ class rpmSinglePkgIndex : public rpmPkgListIndex
 
    public:
 
+   virtual bool InvalidateReleases() const override { return true; }
    virtual bool GetReleases(pkgAcquire *Owner) const override { return true; }
    virtual bool GetIndexes(pkgAcquire *Owner) const override { return true; }
 
@@ -265,6 +270,7 @@ class rpmSingleSrcIndex : public rpmSrcListIndex
 
    public:
 
+   virtual bool InvalidateReleases() const override { return true; }
    virtual bool GetReleases(pkgAcquire *Owner) const override { return true; }
    virtual bool GetIndexes(pkgAcquire *Owner) const override { return true; }
 

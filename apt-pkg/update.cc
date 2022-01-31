@@ -61,7 +61,7 @@ bool ListUpdate(pkgAcquireStatus &Stat,
    bool Res = true;
 
    // Populate it with release file URIs
-   if (!List.GetReleases(&Fetcher))
+   if (! (List.InvalidateReleases() && List.GetReleases(&Fetcher)) )
       return false;
 
    res = Fetcher.Run();

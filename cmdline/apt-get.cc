@@ -1139,7 +1139,9 @@ bool DoUpdate(CommandLine &CmdL)
       pkgAcquire Fetcher(&Stat);
 
       // Populate it with release file URIs
-      if (!List.GetReleases(&Fetcher))
+      // InvalidateReleases() isn't really necessary, since apt-get is
+      // a one-shot process. It's here for consistency (with other utilities).
+      if (! (List.InvalidateReleases() && List.GetReleases(&Fetcher)) )
          return false;
 
       // Populate it with the source selection

@@ -1,9 +1,6 @@
 #!/bin/bash
 set -eu
 
-# Until the bug is fixed.
-APT_TEST_XFAIL=yes
-
 # Test that on the second "update" in the same process (apt-shell,
 # or potentially PackageKit), the repo metainfo that is cached in-memory
 # doesn't stay old. https://bugzilla.altlinux.org/41816

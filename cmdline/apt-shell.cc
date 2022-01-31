@@ -1067,7 +1067,7 @@ bool DoUpdate(CommandLine &CmdL)
       pkgAcquire Fetcher(&Stat);
 
       // Populate it with release file URIs
-      if (!List.GetReleases(&Fetcher))
+      if (! (List.InvalidateReleases() && List.GetReleases(&Fetcher)) )
          return false;
 
       // Populate it with the source selection

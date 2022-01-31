@@ -89,6 +89,16 @@ string rpmListIndex::ReleaseInfo(const string Type) const
    return Info;
 }
 									/*}}}*/
+// rpmListIndex::InvalidateReleases - Mark the index files for refetching	/*{{{*/
+// ---------------------------------------------------------------------
+/* */
+bool rpmListIndex::InvalidateReleases() const
+{
+   if (Repository) // FIXME: GetReleases() did no such check. Who's right?
+      Repository->Acquire = true;
+   return true;
+}
+									/*}}}*/
 // rpmListIndex::GetReleases - Fetch the index files			/*{{{*/
 // ---------------------------------------------------------------------
 /* */

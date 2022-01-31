@@ -106,6 +106,7 @@ class pkgSourceList
    bool GetIndexes(pkgAcquire *Owner) const;
 
    // CNC:2002-07-04
+   bool InvalidateReleases() const; // ALT's extension
    bool GetReleases(pkgAcquire *Owner) const;
 
    pkgSourceList();

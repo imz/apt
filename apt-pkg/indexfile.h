@@ -64,6 +64,10 @@ class pkgIndexFile
    virtual bool GetIndexes(pkgAcquire *Owner) const;
 
    // CNC:2002-07-04
+   // The API has been extended in ALT for updating the in-memory cache
+   // (namely, the contents of the pkgRepository objects stored in RepList
+   // in rpmindexfile.cc; see https://bugzilla.altlinux.org/41816 ).
+   virtual bool InvalidateReleases() const = 0; // the extension made in ALT
    virtual bool GetReleases(pkgAcquire *Owner) const = 0;
 
    // Interface for the record parsers
