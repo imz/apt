@@ -29,7 +29,6 @@ class rpmIndexFile : public pkgIndexFile
    public:
 
    virtual RPMHandler *CreateHandler() const = 0;
-   virtual bool HasPackages() const override {return false;}
 
 };
 
@@ -44,6 +43,9 @@ class rpmDatabaseIndex : public rpmIndexFile
 
    // Interface for acquire
    virtual string Describe(bool Short) const override {return "RPM Database";}
+
+   /* nothing to download in the case of the DB */
+   virtual bool GetReleases(pkgAcquire *Owner) const override { return true; }
 
    // Interface for the Cache Generator
    virtual bool Exists() const override {return true;}
@@ -153,6 +155,13 @@ class rpmSrcListIndex : public rpmListIndex
 
    // Interface for acquire
    virtual bool GetIndexes(pkgAcquire *Owner) const override;
+
+   // Interface for the Cache Generator
+   virtual bool HasPackages() const override {return false;}
+   virtual bool Merge(pkgCacheGenerator &Gen,OpProgress &Prog) const override {return false;}
+   virtual bool MergeFileProvides(pkgCacheGenerator &/*Gen*/,
+				  OpProgress &/*Prog*/)
+      const override {return true;} /* N/A for srpms */
 
    // Interface for the record parsers
    virtual pkgSrcRecords::Parser *CreateSrcParser() const override;

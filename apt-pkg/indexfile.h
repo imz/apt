@@ -64,7 +64,7 @@ class pkgIndexFile
    virtual bool GetIndexes(pkgAcquire *Owner) const;
 
    // CNC:2002-07-04
-   virtual bool GetReleases(pkgAcquire *Owner) const {return true;}
+   virtual bool GetReleases(pkgAcquire *Owner) const = 0;
 
    // Interface for the record parsers
    virtual pkgSrcRecords::Parser *CreateSrcParser() const {return 0;}
@@ -73,8 +73,8 @@ class pkgIndexFile
    virtual bool Exists() const = 0;
    virtual bool HasPackages() const = 0;
    virtual unsigned long Size() const = 0;
-   virtual bool Merge(pkgCacheGenerator &/*Gen*/,OpProgress &/*Prog*/) const {return false;}
-   virtual bool MergeFileProvides(pkgCacheGenerator &/*Gen*/,OpProgress &/*Prog*/) const {return true;}
+   virtual bool Merge(pkgCacheGenerator &/*Gen*/,OpProgress &/*Prog*/) const = 0;
+   virtual bool MergeFileProvides(pkgCacheGenerator &/*Gen*/,OpProgress &/*Prog*/) const = 0;
    virtual pkgCache::PkgFileIterator FindInCache(pkgCache &Cache) const;
 
    virtual ~pkgIndexFile() {}
