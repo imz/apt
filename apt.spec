@@ -565,6 +565,9 @@ exec 1>&2
 
 %changelog
 * Sat Jan 27 2022 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt75
+- Invalidate the in-memory cache of repositories when doing "update" or
+  ListUpdate() to be able to detect updates without exiting the process,
+  e.g., PackageKit or apt-shell (ALT#41816).
 - Added apt-under-pkdirect-checkinstall subpackage
   and added a test for FileList() API via packagekit.
 
