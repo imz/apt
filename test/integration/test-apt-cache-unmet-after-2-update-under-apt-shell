@@ -52,7 +52,10 @@ aptmark() { aptmark_in_bg_apt_shell "$@"; }
 
 testsuccess aptget update
 
-testempty aptcache unmet
+# FIXME: "empty" is not able to read empty output followed by an unfinished line
+# (the prompt without a newline). But fortunately that's not essential
+# for our testcase to make sense.
+#testempty aptcache unmet
 
 buildpackage 'missing-dependency'
 
