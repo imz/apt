@@ -136,6 +136,8 @@ BuildArch: noarch
 Requires: %name = %EVR
 Requires: rpm-build
 Requires: /usr/bin/genbasedir
+# FIXME: "empty" should require /dev/pts to work in hasher; like dejagnu does.
+Requires: /dev/pts
 # optional
 %global complete_reqs_of_tests %name-https /usr/sbin/nginx /usr/bin/openssl
 %global reqs_of_tests_to_filter_out \\(%name-https\\|/usr/sbin/nginx\\|nginx\\|/usr/bin/openssl\\|openssl\\)

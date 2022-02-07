@@ -760,3 +760,86 @@ set_regex_quote_str() {
 		printf -v "$regex_var" ''
 	fi
 }
+
+############################################################
+# Helpers for a background apt-shell process.
+# The process will be used to run commands.
+
+# Output/effects:
+# * global vars with the paths used to control the bg process (via "empty")
+#   (convenient for use in other scripts):
+#   BG_APTSHELL_{PIDFILE,IN,OUT,LOG}
+bg_aptshell_setup() {
+	mkdir -p $TMPWORKINGDIRECTORY/bg_aptshell
+	BG_APTSHELL_PIDFILE=$TMPWORKINGDIRECTORY/bg_aptshell/bg_aptshell.pid
+	# The pipes
+	BG_APTSHELL_IN=$TMPWORKINGDIRECTORY/bg_aptshell/bg_aptshell.in
+	BG_APTSHELL_OUT=$TMPWORKINGDIRECTORY/bg_aptshell/bg_aptshell.out
+	BG_APTSHELL_LOG=$TMPWORKINGDIRECTORY/bg_aptshell/bg_aptshell.log
+}
+
+# Read until the prompt; drop the prompt.
+# The read output is output to the standard output (due to "empty -v").
+bg_aptshell_read_response() {
+	{
+		# $BG_APTSHELL_IN won't be used really,
+		# because we don't send anything to the process.
+		# Note: -i and -o aren't from the point of view of that process,
+		# but rather from ours (-i is for us to "watch", i.e., read).
+		empty -w -i "$BG_APTSHELL_OUT" -o "$BG_APTSHELL_IN" \
+		         -v 'apt> ' &&
+			return 1 ||
+			# there must be 1 match
+			[ $? -eq 1 ]
+	} |
+	# Drop the last line if it's exactly the prompt.
+	# Otherwise, we've matched something strange; leave it as is.
+	sed -Ee '$ { /^apt> $/ d }'
+}
+
+bg_aptshell_restart() {
+	! [ -s "$BG_APTSHELL_PIDFILE" ] || {
+		echo 'Stopping the bg apt-shell (under "empty") with a signal (before a restart).'
+		empty -k "$(cat "$BG_APTSHELL_PIDFILE")"
+	} &>>"$BG_APTSHELL_LOG"
+	rm -f "$BG_APTSHELL_PIDFILE"
+
+	# Use the runapt() wrapper for APT_CONFIG (and the debug messages).
+	# (NB: runapt() should have not yet been redefined to send commands
+	# to the bg apt-shell!)
+        runapt empty -f -p "$BG_APTSHELL_PIDFILE" \
+	                -i "$BG_APTSHELL_IN" \
+	                -o "$BG_APTSHELL_OUT" \
+	                -L "$BG_APTSHELL_LOG" \
+	          apt-shell &&
+		local -r BG_APTSHELL_PID="$(cat "$BG_APTSHELL_PIDFILE" 2>>"$BG_APTSHELL_LOG")" &&
+		[ -n "$BG_APTSHELL_PID" ] ||
+			{ { echo BG_APTSHELL_LOG:; cat "$BG_APTSHELL_LOG"; echo; } >&2 ||:
+			  msgdie 'the bg apt-shell failed to start normally'
+			}
+
+	addtrap 'prefix' \
+			'empty -k %q ||:; [ "$EXIT_CODE" = 0 ] || if [ -e %q ]; then echo BG_APTSHELL_LOG:; cat %q ||:; echo; fi >&2;' \
+			"$BG_APTSHELL_PID" \
+			"$BG_APTSHELL_LOG" \
+			"$BG_APTSHELL_LOG"
+
+	bg_aptshell_read_response >/dev/null
+}
+
+runaptcmd_in_bg_apt_shell() {
+	msgdebug "CWD: $PWD"
+	local CMD="$1"
+	shift
+	msgdebug "Executing in bg apt-shell (normally $CMD): ${CCMD}$*${CDEBUG} "
+	# Note: -i and -o aren't from the point of view of that process,
+	# but rather from ours (-o is for us to "send", i.e., write).
+	empty -s -o "$BG_APTSHELL_IN" "$*\n"
+	bg_aptshell_read_response
+	# TODO: try to detect the status (success/error) based on the output
+}
+# The commands of apt-config are not available in apt-shell.
+#aptconfig_in_bg_apt_shell() { runaptcmd_in_bg_apt_shell apt-config "$@"; }
+aptcache_in_bg_apt_shell() { runaptcmd_in_bg_apt_shell apt-cache "$@"; }
+aptget_in_bg_apt_shell() { runaptcmd_in_bg_apt_shell apt-get "$@"; }
+aptmark_in_bg_apt_shell() { runaptcmd_in_bg_apt_shell apt-mark "$@"; }

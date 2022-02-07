@@ -1,6 +1,31 @@
 #!/bin/bash
 set -eu
 
+# Until the bug is fixed.
+APT_TEST_XFAIL=yes
+
+# Test that on the second "update" in the same process (apt-shell,
+# or potentially PackageKit), the repo metainfo that is cached in-memory
+# doesn't stay old. https://bugzilla.altlinux.org/41816
+#
+# (PackageKit is the main reason to pay attention to this aspect of behavior:
+# its daemon needs to detect new updates in the source repos during the whole
+# lifetime of its process and report the available updates to the user.)
+#
+# Per the nature of the tested behavior (the effect of "update" action
+# in the *same process* where we need to see the new info), we can't test it
+# by means of the simple packagekit-direct command-line utility
+# (neither--by means of other "one-shot" utilities like apt-get).
+# Running a full-blown PackageKit daemon seems to be too complex
+# for an automated test. Fortunately, apt-shell fits the purpose well.
+
+case "$APT_TEST_METHOD" in
+	cdrom*)
+		echo 'SKIP (it is impossible to get different indices from the same cdrom URL)' >&2
+		exit 0
+		;;
+esac
+
 TESTDIR=$(readlink -f $(dirname $0))
 . $TESTDIR/framework
 
@@ -17,23 +42,23 @@ buildpackage 'simple-package-update' # overwrites the previous built package
 
 generaterepository_and_switch_sources "$TMPWORKINGDIRECTORY/usr/src/RPM/RPMS"
 
+bg_aptshell_setup
+bg_aptshell_restart
+# With the current implementations of the previous functions,
+# these redefinitions can be activated anywhere.
+aptcache() { aptcache_in_bg_apt_shell "$@"; }
+aptget() { aptget_in_bg_apt_shell "$@"; }
+aptmark() { aptmark_in_bg_apt_shell "$@"; }
+
 testsuccess aptget update
 
 testempty aptcache unmet
 
 buildpackage 'missing-dependency'
 
-case "$APT_TEST_METHOD" in
-	cdrom*)
-		# we have to run apt-cdrom add, and hence modify apt's sources, too
-		generaterepository_and_switch_sources "$TMPWORKINGDIRECTORY/usr/src/RPM/RPMS" "$(date +%s --date='now +1 day')"
-		;;
-	*)
-		# a simpler way, without modifying apt's sources
-		# REPO_STORAGE is set by the previous invocation of generaterepository_and_switch_sources
-		generaterepository "$TMPWORKINGDIRECTORY/usr/src/RPM/RPMS" "$REPO_STORAGE" "$(date +%s --date='now +1 day')"
-		;;
-esac
+# change the repo indices, without modifying apt's sources
+# REPO_STORAGE is set by the previous invocation of generaterepository_and_switch_sources
+generaterepository "$TMPWORKINGDIRECTORY/usr/src/RPM/RPMS" "$REPO_STORAGE" "$(date +%s --date='now +1 day')"
 
 testsuccess aptget update
 
