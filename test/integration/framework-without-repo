@@ -859,6 +859,15 @@ runaptcmd_in_bg_apt_shell() {
 	# Note: -i and -o aren't from the point of view of that process,
 	# but rather from ours (-o is for us to "send", i.e., write).
 	empty -s -o "$BG_APTSHELL_IN" "$*\n"
+
+	# FIXME: It's a kind of bug that if we start reading with "empty -w"
+	# too early, it doesn't get the output, and after the timeout decides
+	# that the stream is empty. This case here (right after "empty -s")
+	# looks just the same as the one after "empty -f" above. However,
+	# the fine solution with wait_for_file() is not available here,
+	# since the log is not empty as a precondition.
+	sleep 2
+
 	bg_aptshell_read_response
 	# TODO: try to detect the status (success/error) based on the output
 }
