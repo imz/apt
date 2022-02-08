@@ -787,14 +787,11 @@ bg_aptshell_read_response() {
 		# Note: -i and -o aren't from the point of view of that process,
 		# but rather from ours (-i is for us to "watch", i.e., read).
 		empty -w -i "$BG_APTSHELL_OUT" -o "$BG_APTSHELL_IN" \
-		         -v 'apt> ' &&
+		         -v $'\napt> ' &&
 			return 1 ||
 			# there must be 1 match
 			[ $? -eq 1 ]
-	} |
-	# Drop the last line if it's exactly the prompt.
-	# Otherwise, we've matched something strange; leave it as is.
-	sed -Ee '$ { /^apt> $/ d }'
+	} | head -n-1
 }
 
 bg_aptshell_restart() {
