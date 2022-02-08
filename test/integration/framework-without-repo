@@ -832,6 +832,22 @@ bg_aptshell_restart() {
 			"$BG_APTSHELL_LOG" \
 			"$BG_APTSHELL_LOG"
 
+	# FIXME: It's a kind of bug that if we start reading with "empty -w"
+	# too early, it doesn't get the output, and after the timeout decides
+	# that the stream is empty. (Just waiting no matter how much longer
+	# doesn't solve the problem if the "empty -w" invocation is done
+	# immediately after "empty -f" -- and as little as "sleep 1" inbetween
+	# is enough usually. So, this bug in "empty" looks like reading from
+	# a logically wrong stream.)
+	#
+	# Since we know that apt-shell outputs something initially, we can simply
+	# wait for the output to appear in the log. (But on a second start,
+	# this trick won't work, because the log is not empty at the restart.)
+	#
+	# FIXME: another bug is that "empty" doesn't close the additional FDs
+	# for the forked and exec'd process. (Can be seen in /proc/.)
+	wait_for_file "$BG_APTSHELL_LOG"
+
 	bg_aptshell_read_response >/dev/null
 }
 
