@@ -772,6 +772,34 @@ wait_for_file() {
 		done
 }
 
+# Check whether there is something after the end of the Nth line.
+# The lines are counted from 1, as in sed.
+# I.e., if the file is not empty, there is something after line 0.
+file_has_smth_after_nth_line() {
+	# A missing arg will be detected due to set -u even under || etc.
+	local -r F="$1"
+	local -r N="$2"
+
+	[ -s "$F" ] && {
+		[ 0 -eq $N ] ||
+		# It looks like sed starts with the counter already set to 1; so it's
+		# impossible to detect whether something has appeared in the 1st line.
+		# It would be wrong to use sed like this if $N could be 0 here.
+		sed -n -e "$((N+1)) q" -e '$ q 1' <"$F"
+	}
+}
+
+wait_for_smth_after_nth_line() {
+	# The message 'Waiting...' is intentionally printed regardless of $MSGLEVEL;
+	# otherwise it would be difficult to see why the process is hanging;
+	# it can appear only in extra-ordinary situations (under heavy load).
+	file_has_smth_after_nth_line "$@" ||
+		printf >&2 'Waiting for smth after line %s in %s\n' "$2" "$1" &&
+		while ! file_has_smth_after_nth_line "$@"; do
+			sleep 0.5
+		done
+}
+
 ############################################################
 # Helpers for a background apt-shell process.
 # The process will be used to run commands.
@@ -787,6 +815,15 @@ bg_aptshell_setup() {
 	BG_APTSHELL_IN=$TMPWORKINGDIRECTORY/bg_aptshell/bg_aptshell.in
 	BG_APTSHELL_OUT=$TMPWORKINGDIRECTORY/bg_aptshell/bg_aptshell.out
 	BG_APTSHELL_LOG=$TMPWORKINGDIRECTORY/bg_aptshell/bg_aptshell.log
+}
+
+# Useful for a workaround of a bug in "empty".
+bg_aptshell_log_linecount() {
+	{
+		[ -s "$BG_APTSHELL_LOG" ] &&
+		cat "$BG_APTSHELL_LOG" ||
+		:
+	} | wc -l
 }
 
 # Read until the prompt; drop the prompt.
@@ -811,6 +848,10 @@ bg_aptshell_restart() {
 		empty -k "$(cat "$BG_APTSHELL_PIDFILE")"
 	} &>>"$BG_APTSHELL_LOG"
 	rm -f "$BG_APTSHELL_PIDFILE"
+
+	local old_log_lines
+	old_log_lines="$(bg_aptshell_log_linecount)"
+	local -r old_log_lines
 
 	# Use the runapt() wrapper for APT_CONFIG (and the debug messages).
 	# (NB: runapt() should have not yet been redefined to send commands
@@ -841,12 +882,11 @@ bg_aptshell_restart() {
 	# a logically wrong stream.)
 	#
 	# Since we know that apt-shell outputs something initially, we can simply
-	# wait for the output to appear in the log. (But on a second start,
-	# this trick won't work, because the log is not empty at the restart.)
+	# wait for the output to appear in the log.
 	#
 	# FIXME: another bug is that "empty" doesn't close the additional FDs
 	# for the forked and exec'd process. (Can be seen in /proc/.)
-	wait_for_file "$BG_APTSHELL_LOG"
+	wait_for_smth_after_nth_line "$BG_APTSHELL_LOG" "$old_log_lines"
 
 	bg_aptshell_read_response >/dev/null
 }
@@ -856,6 +896,9 @@ runaptcmd_in_bg_apt_shell() {
 	local CMD="$1"
 	shift
 	msgdebug "Executing in bg apt-shell (normally $CMD): ${CCMD}$*${CDEBUG} "
+	local old_log_lines
+	old_log_lines="$(bg_aptshell_log_linecount)"
+	local -r old_log_lines
 	# Note: -i and -o aren't from the point of view of that process,
 	# but rather from ours (-o is for us to "send", i.e., write).
 	empty -s -o "$BG_APTSHELL_IN" "$*\n"
@@ -863,10 +906,9 @@ runaptcmd_in_bg_apt_shell() {
 	# FIXME: It's a kind of bug that if we start reading with "empty -w"
 	# too early, it doesn't get the output, and after the timeout decides
 	# that the stream is empty. This case here (right after "empty -s")
-	# looks just the same as the one after "empty -f" above. However,
-	# the fine solution with wait_for_file() is not available here,
-	# since the log is not empty as a precondition.
-	sleep 2
+	# looks just the same as the one after "empty -f" above.
+	# (The command we have sent increases $old_log_lines by one.)
+	wait_for_smth_after_nth_line "$BG_APTSHELL_LOG" "$((old_log_lines+1))"
 
 	bg_aptshell_read_response
 	# TODO: try to detect the status (success/error) based on the output
