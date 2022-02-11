@@ -3,7 +3,7 @@
 
 Name: apt
 Version: 0.5.15lorg2
-Release: alt75
+Release: alt76
 
 Summary: Debian's Advanced Packaging Tool with RPM support
 Summary(ru_RU.UTF-8): Debian APT - Усовершенствованное средство управления пакетами с поддержкой RPM
@@ -562,6 +562,10 @@ exec 1>&2
 %_datadir/%name/tests/
 
 %changelog
+* Fri Feb 11 2022 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt76
+- Exposed pkgRecords::Parser::FileList() API. (A complete list of owned files
+  is known for installed pkgs, but not from the usual non-bloated repo indices.)
+
 * Sat Jan 27 2022 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt75
 - Invalidate the in-memory cache of repositories when doing "update" or
   ListUpdate() to be able to detect updates without exiting the process,
