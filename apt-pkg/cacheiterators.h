@@ -30,6 +30,8 @@
 #ifndef PKGLIB_CACHEITERATORS_H
 #define PKGLIB_CACHEITERATORS_H
 
+#include <memory>
+
 // Package Iterator
 class pkgCache::PkgIterator
 {
@@ -194,7 +196,7 @@ class pkgCache::DepIterator
 			}
 		}
    void GlobOr(DepIterator &Start,DepIterator &End);
-   Version **AllTargets();
+   std::unique_ptr<pkgCache::Version *[]> AllTargets();
    bool SmartTargetPkg(PkgIterator &Result);
    inline const char *CompType() {return Owner->CompType(Dep->CompareOp);}
    inline const char *DepType() {return Owner->DepType(Dep->Type);}

@@ -377,9 +377,8 @@ bool pkgCache::DepIterator::SmartTargetPkg(PkgIterator &Result)
 // ---------------------------------------------------------------------
 /* This is a more useful version of TargetPkg() that follows versioned
    provides. It includes every possible package-version that could satisfy
-   the dependency. The last item in the list has a 0. The resulting pointer
-   must be delete [] 'd */
-pkgCache::Version **pkgCache::DepIterator::AllTargets()
+   the dependency. The last item in the list has a 0. */
+std::unique_ptr<pkgCache::Version *[]> pkgCache::DepIterator::AllTargets()
 {
    Version *Res[1024];
    unsigned int Size = 0;
@@ -427,7 +426,7 @@ pkgCache::Version **pkgCache::DepIterator::AllTargets()
 
    Version ** const Ret = new Version *[Size+1];
    *std::copy(&Res[0], &Res[Size], Ret) = nullptr;
-   return Ret;
+   return std::unique_ptr<pkgCache::Version *[]>(Ret);
 }
 									/*}}}*/
 // DepIterator::GlobOr - Compute an OR group				/*{{{*/

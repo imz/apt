@@ -2580,14 +2580,11 @@ bool UnMet(CommandLine &CmdL)
 	    do
 	    {
 	       // See if this dep is Ok
-	       pkgCache::Version * const * const VList = Start.AllTargets();
-	       if (*VList != 0)
+	       if (Start.AllTargets()[0] != nullptr)
 	       {
 		  OK = true;
-		  delete [] VList;
 		  break;
 	       }
-	       delete [] VList;
 
 	       if (Start == End)
 		  break;
