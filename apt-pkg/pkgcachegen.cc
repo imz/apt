@@ -243,12 +243,11 @@ bool pkgCacheGenerator::MergeList(ListParser &List,
       }
 
       // Add a new version
-      const auto verindex = NewVersion(Ver,Version,*Last);
-      if (!verindex)
+      if (auto const verindex = NewVersion(Ver,Version,*Last))
+         *Last = *verindex;
+      else
          return _error->Error(_("Error occurred while processing %s (NewVersion%d)"),
                               PackageName.c_str(), 0);
-
-      *Last = *verindex;
 
       Ver->ParentPkg = Pkg.Index();
       Ver->Hash = Hash;
