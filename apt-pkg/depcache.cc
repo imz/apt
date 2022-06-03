@@ -922,10 +922,12 @@ void pkgDepCache::MarkInstallRec(const PkgIterator &Pkg,
 	 for (; *Cur != 0 && (*Cur)->ParentPkg == P.Index(); Cur++)
 	 {
 	    PkgIterator const TrgPkg(*Cache,Cache->PkgP + (*Cur)->ParentPkg);
-	    if (PkgState[TrgPkg->ID].CandidateVer != *Cur)
-	       continue;
-	    InstPkg = TrgPkg;
-	    break;
+	    if (PkgState[TrgPkg->ID].CandidateVer == *Cur)
+            {
+               // Transform the found result and pass it (out of the loop).
+               InstPkg = TrgPkg;
+               break;
+            }
 	 }
 
 	 // Select the highest priority providing package
@@ -936,12 +938,15 @@ void pkgDepCache::MarkInstallRec(const PkgIterator &Pkg,
 	    for (; *Cur != 0; Cur++)
 	    {
 	       PkgIterator const TrgPkg(*Cache,Cache->PkgP + (*Cur)->ParentPkg);
-	       if (PkgState[TrgPkg->ID].CandidateVer != *Cur)
-		  continue;
-	       if (CanSelect++ == 0)
-		  InstPkg = TrgPkg;
-	       else
-		  break;
+	       if (PkgState[TrgPkg->ID].CandidateVer == *Cur)
+               {
+                  // Transform the found result and pass it (out of the loop).
+                  // We'll be looking for at least two results.
+                  if (CanSelect++ == 0)
+                     InstPkg = TrgPkg;
+                  else
+                     break;
+               }
 	    }
 	    // In restricted mode, skip ambiguous dependencies.
 	    if (Restricted && CanSelect > 1) {
