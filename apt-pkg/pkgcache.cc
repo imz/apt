@@ -426,7 +426,7 @@ pkgCache::Version **pkgCache::DepIterator::AllTargets()
    }
 
    Version ** const Ret = new Version *[Size+1];
-   *std::copy(&Res[0], &Res[Size], Ret) = 0;
+   *std::copy(&Res[0], &Res[Size], Ret) = nullptr;
    return Ret;
 }
 									/*}}}*/
