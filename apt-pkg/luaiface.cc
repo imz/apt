@@ -1086,7 +1086,7 @@ static int AptLua_verdeplist(lua_State *L)
       lua_settable(L, -3);
       lua_pushstring(L, "verlist");
       lua_newtable(L);
-      pkgCache::Version **VerList = DepI.AllTargets();
+      pkgCache::Version * const * const VerList = DepI.AllTargets();
       for (int j = 0; VerList[j]; j++) {
 	 pushudata(pkgCache::Version*, VerList[j]);
 	 lua_rawseti(L, -2, j+1);

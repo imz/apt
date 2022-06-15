@@ -481,8 +481,8 @@ bool pkgOrderList::VisitRProvides(DepFunc F,VerIterator Ver)
 /* This routine calls visit on all providing packages. */
 bool pkgOrderList::VisitProvides(DepIterator D,bool Critical)
 {
-   const SPtrArray<Version *> List(D.AllTargets());
-   for (Version **I = List.get(); *I != 0; I++)
+   const SPtrArray<Version * const> List(D.AllTargets());
+   for (Version * const *I = List.get(); *I != 0; I++)
    {
       VerIterator Ver(Cache,*I);
       PkgIterator Pkg = Ver.ParentPkg();
@@ -926,9 +926,9 @@ void pkgOrderList::WipeFlags(unsigned long F)
    this fails to produce a suitable result. */
 bool pkgOrderList::CheckDep(DepIterator D)
 {
-   const SPtrArray<Version *> List(D.AllTargets());
+   const SPtrArray<Version * const> List(D.AllTargets());
    bool Hit = false;
-   for (Version **I = List.get(); *I != 0; I++)
+   for (Version * const *I = List.get(); *I != 0; I++)
    {
       VerIterator Ver(Cache,*I);
       PkgIterator Pkg = Ver.ParentPkg();

@@ -322,8 +322,8 @@ bool pkgPackageManager::DepAdd(pkgOrderList &OList,PkgIterator Pkg,int Depth)
 	 if (Bad == false)
 	    continue;
 
-	 const SPtrArray<Version *> VList(D.AllTargets());
-	 for (Version **I = VList.get(); *I != 0 && Bad == true; I++)
+	 const SPtrArray<Version * const> VList(D.AllTargets());
+	 for (Version * const *I = VList.get(); *I != 0 && Bad == true; I++)
 	 {
 	    VerIterator Ver(Cache,*I);
 	    PkgIterator Pkg = Ver.ParentPkg();
@@ -466,7 +466,7 @@ bool pkgPackageManager::SmartUnPack(PkgIterator Pkg)
       while (End->Type == pkgCache::Dep::PreDepends)
       {
 	 // Look for possible ok targets.
-	 const SPtrArray<Version *> VList(Start.AllTargets());
+	 const SPtrArray<Version * const> VList(Start.AllTargets());
 	 bool Bad = true;
 	 for (Version **I = VList.get(); *I != 0 && Bad == true; I++)
 	 {
@@ -524,7 +524,7 @@ bool pkgPackageManager::SmartUnPack(PkgIterator Pkg)
       {
 	 /* Look for conflicts. Two packages that are both in the install
 	    state cannot conflict so we don't check.. */
-	 const SPtrArray<Version *> VList(End.AllTargets());
+	 const SPtrArray<Version * const> VList(End.AllTargets());
 	 for (Version **I = VList.get(); *I != 0; I++)
 	 {
 	    VerIterator Ver(Cache,*I);

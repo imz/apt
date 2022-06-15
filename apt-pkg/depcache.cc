@@ -960,8 +960,8 @@ void pkgDepCache::MarkInstallRec(PkgIterator const &Pkg,
          Conflicts may not have or groups */
       else if (Start->Type == Dep::Conflicts || Start->Type == Dep::Obsoletes)
       {
-         const SPtrArray<Version *> List(Start.AllTargets());
-	 for (Version **I = List.get(); *I != 0; I++)
+         const SPtrArray<Version * const> List(Start.AllTargets());
+	 for (Version * const *I = List.get(); *I != 0; I++)
 	 {
 	    VerIterator Ver(*this,*I);
 	    PkgIterator Pkg = Ver.ParentPkg();

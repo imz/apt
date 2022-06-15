@@ -2214,7 +2214,7 @@ bool Depends(CommandLine &CmdL)
 	    // Display all solutions
 	    const SPtrArray<pkgCache::Version *> List(D.AllTargets());
 	    pkgPrioSortList(Cache,List.get());
-	    for (pkgCache::Version **I = List.get(); *I != 0; I++)
+	    for (pkgCache::Version * const *I = List.get(); *I != 0; I++)
 	    {
 	       pkgCache::VerIterator V(Cache,*I);
 	       if (V != Cache.VerP + V.ParentPkg()->VersionList ||
@@ -2307,7 +2307,7 @@ bool RDepends(CommandLine &CmdL)
 	    // Display all solutions
 	    const SPtrArray<pkgCache::Version *> List(D.AllTargets());
 	    pkgPrioSortList(Cache,List.get());
-	    for (pkgCache::Version **I = List.get(); *I != 0; I++)
+	    for (pkgCache::Version * const *I = List.get(); *I != 0; I++)
 	    {
 	       pkgCache::VerIterator V(Cache,*I);
 	       if (V != Cache.VerP + V.ParentPkg()->VersionList ||
@@ -2443,7 +2443,7 @@ bool WhatDepends(CommandLine &CmdL)
 	       // Display all solutions
 	       const SPtrArray<pkgCache::Version *> List(D.AllTargets());
 	       pkgPrioSortList(Cache,List.get());
-	       for (pkgCache::Version **I = List.get(); *I != 0; I++)
+	       for (pkgCache::Version * const *I = List.get(); *I != 0; I++)
 	       {
 		  pkgCache::VerIterator V(Cache,*I);
 		  if (V != Cache.VerP + V.ParentPkg()->VersionList ||
@@ -2516,7 +2516,7 @@ bool WhatDepends(CommandLine &CmdL)
 		  // Display all solutions
 		  const SPtrArray<pkgCache::Version *> List(D.AllTargets());
 		  pkgPrioSortList(Cache,List.get());
-		  for (pkgCache::Version **I = List.get(); *I != 0; I++)
+		  for (pkgCache::Version * const *I = List.get(); *I != 0; I++)
 		  {
 		     pkgCache::VerIterator V(Cache,*I);
 		     if (V != Cache.VerP + V.ParentPkg()->VersionList ||
@@ -2580,7 +2580,7 @@ bool UnMet(CommandLine &CmdL)
 	    do
 	    {
 	       // See if this dep is Ok
-	       pkgCache::Version **VList = Start.AllTargets();
+	       pkgCache::Version * const * const VList = Start.AllTargets();
 	       if (*VList != 0)
 	       {
 		  OK = true;

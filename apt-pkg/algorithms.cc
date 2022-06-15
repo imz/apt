@@ -1384,7 +1384,7 @@ bool pkgProblemResolver::Resolve(bool BrokenFix)
 	    /* Look across the version list. If there are no possible
 	       targets then we keep the package and bail. This is necessary
 	       if a package has a dep on another package that cant be found */
-	    const SPtrArray<pkgCache::Version *> VList(Start.AllTargets());
+	    const SPtrArray<pkgCache::Version * const> VList(Start.AllTargets());
 	    if (VList[0] == nullptr && (Flags[I->ID] & Protected) != Protected &&
 		Start->Type != pkgCache::Dep::Conflicts &&
 		Start->Type != pkgCache::Dep::Obsoletes &&
@@ -1403,7 +1403,7 @@ bool pkgProblemResolver::Resolve(bool BrokenFix)
 	    }
 
 	    bool Done = false;
-	    for (pkgCache::Version **V = VList.get(); *V != nullptr; V++)
+	    for (pkgCache::Version * const *V = VList.get(); *V != nullptr; V++)
 	    {
 	       pkgCache::VerIterator Ver(Cache,*V);
 	       pkgCache::PkgIterator Pkg = Ver.ParentPkg();
@@ -1687,8 +1687,8 @@ bool pkgProblemResolver::ResolveByKeep()
 	       clog << "Package " << I.Name() << " has broken dep on " << Start.TargetPkg().Name() << endl;
 
 	    // Look at all the possible provides on this package
-	    const SPtrArray<pkgCache::Version *> VList(Start.AllTargets());
-	    for (pkgCache::Version **V = VList.get(); *V != nullptr; V++)
+	    const SPtrArray<pkgCache::Version * const> VList(Start.AllTargets());
+	    for (pkgCache::Version * const *V = VList.get(); *V != nullptr; V++)
 	    {
 	       pkgCache::VerIterator Ver(Cache,*V);
 	       pkgCache::PkgIterator Pkg = Ver.ParentPkg();
