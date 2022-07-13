@@ -623,7 +623,7 @@ bool Depends(CommandLine &CmdL)
 	    for (pkgCache::Version * const *I = List.get(); *I != 0; I++)
 	    {
 	       pkgCache::VerIterator V(Cache,*I);
-	       if (V != Cache.VerP + V.ParentPkg()->VersionList ||
+	       if (V.operator const pkgCache::Version *() != Cache.VerP + V.ParentPkg()->VersionList ||
 		   V->ParentPkg == D->Package)
 		  continue;
 	       // CNC:2003-03-03
@@ -713,7 +713,7 @@ bool RDepends(CommandLine &CmdL)
 	    for (pkgCache::Version * const *I = List.get(); *I != 0; I++)
 	    {
 	       pkgCache::VerIterator V(Cache,*I);
-	       if (V != Cache.VerP + V.ParentPkg()->VersionList ||
+	       if (V.operator const pkgCache::Version *() != Cache.VerP + V.ParentPkg()->VersionList ||
 		   V->ParentPkg == D->Package)
 		  continue;
 	       cout << "    " << V.ParentPkg().Name() << endl;
@@ -846,7 +846,7 @@ bool WhatDepends(CommandLine &CmdL)
 	       for (pkgCache::Version * const *I = List.get(); *I != 0; I++)
 	       {
 		  pkgCache::VerIterator V(Cache,*I);
-		  if (V != Cache.VerP + V.ParentPkg()->VersionList ||
+		  if (V.operator const pkgCache::Version *() != Cache.VerP + V.ParentPkg()->VersionList ||
 		      V->ParentPkg == D->Package)
 		     continue;
 		  cout << "      " << V.ParentPkg().Name()
@@ -918,7 +918,7 @@ bool WhatDepends(CommandLine &CmdL)
 		  for (pkgCache::Version * const *I = List.get(); *I != 0; I++)
 		  {
 		     pkgCache::VerIterator V(Cache,*I);
-		     if (V != Cache.VerP + V.ParentPkg()->VersionList ||
+		     if (V.operator const pkgCache::Version *() != Cache.VerP + V.ParentPkg()->VersionList ||
 			 V->ParentPkg == D->Package)
 			continue;
 		     cout << "      " << V.ParentPkg().Name()

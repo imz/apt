@@ -937,7 +937,7 @@ static int AptLua_pkgverinst(lua_State *L)
    if (PkgI == nullptr)
       return 0;
    pkgCache::Version *InstVer = (*DepCache)[(*PkgI)].InstallVer;
-   pkgCache::Version *CurVer = (*PkgI).CurrentVer();
+   auto const CurVer = (*PkgI).CurrentVer().operator const pkgCache::Version *();
    if (InstVer == CurVer)
       InstVer = NULL;
    return AptAux_PushVersion(L, InstVer);
@@ -952,7 +952,7 @@ static int AptLua_pkgvercand(lua_State *L)
    if (PkgI == nullptr)
       return 0;
    pkgCache::Version *CandVer = (*DepCache)[(*PkgI)].CandidateVer;
-   pkgCache::Version *CurVer = (*PkgI).CurrentVer();
+   auto const CurVer = (*PkgI).CurrentVer().operator const pkgCache::Version *();
    if (CandVer == CurVer)
       CandVer = NULL;
    return AptAux_PushVersion(L, CandVer);

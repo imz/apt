@@ -962,7 +962,7 @@ bool TryToChangeVer(pkgCache::PkgIterator &Pkg,pkgDepCache &Cache,
 	 already = 2;
 	 break;
       }
-      if (Cache[V.ParentPkg()].InstallVer == V)
+      if (Cache[V.ParentPkg()].InstallVer == V.operator const pkgCache::Version *())
       {
 	 Ver = V;
 	 already = 1;

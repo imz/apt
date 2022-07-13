@@ -1478,7 +1478,7 @@ bool pkgProblemResolver::Resolve(bool BrokenFix)
 		     at is not the currently selected version of the
 		     package, which means it is not necessary to
 		     remove/keep */
-		  if (Cache[Pkg].InstallVer != Ver &&
+		  if (Cache[Pkg].InstallVer != Ver.operator const pkgCache::Version *() &&
 		      (Start->Type == pkgCache::Dep::Conflicts ||
 		       Start->Type == pkgCache::Dep::Obsoletes))
 		     continue;

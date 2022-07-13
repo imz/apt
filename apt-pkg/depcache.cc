@@ -96,8 +96,8 @@ bool pkgDepCache::Init(OpProgress * const Prog)
       }
 
       // Figure out the install version
-      State.CandidateVer = GetCandidateVer(I);
-      State.InstallVer = I.CurrentVer();
+      State.CandidateVer = GetCandidateVer(I).operator pkgCache::Version *();
+      State.InstallVer = I.CurrentVer().operator pkgCache::Version *();
       State.Mode = ModeKeep;
 
       State.Update(I,*this);
@@ -714,7 +714,7 @@ void pkgDepCache::MarkKeep(const PkgIterator &Pkg,bool const Soft)
    if (Pkg->CurrentVer == 0)
       P.InstallVer = 0;
    else
-      P.InstallVer = Pkg.CurrentVer();
+      P.InstallVer = Pkg.CurrentVer().operator pkgCache::Version *();
 
    MarkAuto(Pkg, getMarkAuto(Pkg));
 
