@@ -396,7 +396,7 @@ std::unique_ptr<pkgCache::Version *[]> pkgCache::DepIterator::AllTargets()
 	     ParentPkg() == I.ParentPkg())
 	    continue;
 
-	 Version * const v = I;
+	 auto const v = I.operator Version *();
          if (std::find(&Res[0], &Res[Size], v) != &Res[Size])
             continue;
 
@@ -415,7 +415,7 @@ std::unique_ptr<pkgCache::Version *[]> pkgCache::DepIterator::AllTargets()
 	     ParentPkg() == I.OwnerPkg())
 	    continue;
 
-	 Version * const v = I.OwnerVer();
+	 auto const v = I.OwnerVer().operator Version *();
          if (std::find(&Res[0], &Res[Size], v) != &Res[Size])
             continue;
 
