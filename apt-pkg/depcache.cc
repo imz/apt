@@ -977,27 +977,6 @@ void pkgDepCache::MarkInstallRec(PkgIterator const &Pkg,
       MarkAgain.insert(Pkg);
 }
 
-void pkgDepCache::MarkInstall1(PkgIterator const &Pkg,
-      std::set<PkgIterator> &MarkAgain)
-{
-   bool Debug = _config->FindB("Debug::pkgMarkInstall", false);
-   const char *DebugA = Debug ? "MI1a" : NULL;
-   const char *DebugB = Debug ? "MI1b" : NULL;
-   std::set<PkgIterator> MA;
-   std::set<PkgIterator>::iterator I;
-   MarkInstallRec(Pkg, true, MA, 0, DebugA);
-   while (1) {
-      std::set<PkgIterator> MAA;
-      for (I = MA.begin(); I != MA.end(); ++I)
-	 MarkInstallRec(*I, true, MAA, 0, DebugB);
-      if (MA == MAA)
-	 break;
-      MA = MAA;
-   }
-   for (I = MA.begin(); I != MA.end(); ++I)
-      MarkAgain.insert(*I);
-}
-
 void pkgDepCache::MarkInstall2(PkgIterator const &Pkg)
 {
    bool Debug = _config->FindB("Debug::pkgMarkInstall", false);

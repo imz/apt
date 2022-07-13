@@ -207,8 +207,6 @@ class pkgDepCache : protected pkgCache::Namespace
 
    // shallow mark; ret: -1 err, 0 already marked, 1 just marked
    int MarkInstall0(PkgIterator const &Pkg);
-   // non-ambiguous recursive mark; MarkAgain should be marked again
-   void MarkInstall1(PkgIterator const &Pkg, std::set<PkgIterator> &MarkAgain);
    // full wavefront recursive mark
    void MarkInstall2(PkgIterator const &Pkg);
    // compat
