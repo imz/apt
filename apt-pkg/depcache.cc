@@ -815,9 +815,9 @@ int pkgDepCache::MarkInstall0(PkgIterator const &Pkg)
    StateCache &P = PkgState[Pkg->ID];
    P.iFlags &= ~AutoKept;
    if (P.InstBroken() == false && (P.Mode == ModeInstall ||
-	P.CandidateVer == (Version *)Pkg.CurrentVer()))
+	P.CandidateVer == Pkg.CurrentVer().operator const pkgCache::Version *()))
    {
-      if (P.CandidateVer == (Version *)Pkg.CurrentVer() && P.InstallVer == 0)
+      if (P.CandidateVer == Pkg.CurrentVer().operator const pkgCache::Version *() && P.InstallVer == 0)
 	 MarkKeep(Pkg);
       return 0;
    }
@@ -839,7 +839,7 @@ int pkgDepCache::MarkInstall0(PkgIterator const &Pkg)
    MarkAuto(Pkg, getMarkAuto(Pkg));
    P.Mode = ModeInstall;
    P.InstallVer = P.CandidateVer;
-   if (P.CandidateVer == (Version *)Pkg.CurrentVer())
+   if (P.CandidateVer == Pkg.CurrentVer().operator const pkgCache::Version *())
       P.Mode = ModeKeep;
 
    AddStates(Pkg);
