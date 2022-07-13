@@ -37,7 +37,7 @@
 // DepCache::pkgDepCache - Constructors					/*{{{*/
 // ---------------------------------------------------------------------
 /* */
-pkgDepCache::pkgDepCache(pkgCache *pCache,Policy *Plcy) :
+pkgDepCache::pkgDepCache(pkgCache * const pCache,Policy * const Plcy) :
                 Cache(pCache), PkgState(0), DepState(0)
 {
    delLocalPolicy = 0;
@@ -59,7 +59,7 @@ pkgDepCache::~pkgDepCache()
 // DepCache::Init - Generate the initial extra structures.		/*{{{*/
 // ---------------------------------------------------------------------
 /* This allocats the extension buffers and initializes them. */
-bool pkgDepCache::Init(OpProgress *Prog)
+bool pkgDepCache::Init(OpProgress * const Prog)
 {
    delete [] PkgState;
    delete [] DepState;
@@ -131,7 +131,7 @@ bool pkgDepCache::Init(OpProgress *Prog)
    then walks along the package provides list and checks if each provides
    will be installed then checks the provides against the dep. Res will be
    set to the package which was used to satisfy the dep. */
-bool pkgDepCache::CheckDep(DepIterator Dep,int Type,PkgIterator &Res)
+bool pkgDepCache::CheckDep(DepIterator Dep,int const Type,PkgIterator &Res)
 {
 // CNC:2003-02-17 - This function is the main path when checking
 //                  dependencies, so we must avoid as much overhead
@@ -146,7 +146,7 @@ bool pkgDepCache::CheckDep(DepIterator Dep,int Type,PkgIterator &Res)
    if (Dep.TargetPkg() != Dep.ParentPkg() ||
        (Dep->Type != Dep::Conflicts && Dep->Type != Dep::Obsoletes))
    {
-      PkgIterator Pkg = Dep.TargetPkg();
+      PkgIterator const Pkg = Dep.TargetPkg();
       // Check the base package
       if (Type == NowVersion && Pkg->CurrentVer != 0)
 	 // CNC:2002-07-10 - RPM must check the dependency type to properly
@@ -170,7 +170,7 @@ bool pkgDepCache::CheckDep(DepIterator Dep,int Type,PkgIterator &Res)
 
    // Check the providing packages
    PrvIterator P = Dep.TargetPkg().ProvidesList();
-   PkgIterator Pkg = Dep.ParentPkg();
+   PkgIterator const Pkg = Dep.ParentPkg();
    for (; P.end() != true; P++)
    {
       /* Provides may never be applied against the same package if it is
@@ -223,8 +223,8 @@ bool pkgDepCache::CheckDep(DepIterator Dep,int Type,PkgIterator &Res)
    //		       returning anyway), assign a new Dep.TargetPkg()
    //		       to Dep_TargetPkg instead of using Res.
    //
-   PkgIterator &Dep_TargetPkg = Res;
-   PkgIterator Dep_ParentPkg = Dep.ParentPkg();
+   const PkgIterator &Dep_TargetPkg = Res;
+   PkgIterator const Dep_ParentPkg = Dep.ParentPkg();
    pkgVersioningSystem &VS = this->VS();
 
    static const char *lastV;
@@ -245,7 +245,7 @@ bool pkgDepCache::CheckDep(DepIterator Dep,int Type,PkgIterator &Res)
    if (Dep_TargetPkg != Dep_ParentPkg ||
        (Dep->Type != Dep::Conflicts && Dep->Type != Dep::Obsoletes))
    {
-      PkgIterator &Pkg = Dep_TargetPkg;
+      const PkgIterator &Pkg = Dep_TargetPkg;
 
       // Check the base package
       switch (Type)
@@ -282,10 +282,10 @@ bool pkgDepCache::CheckDep(DepIterator Dep,int Type,PkgIterator &Res)
 
    // Check the providing packages
    PrvIterator P = Dep_TargetPkg.ProvidesList();
-   PkgIterator &Pkg = Dep_ParentPkg;
+   const PkgIterator &Pkg = Dep_ParentPkg;
    for (; P.end() != true; P++)
    {
-      PkgIterator P_OwnerPkg = P.OwnerPkg();
+      PkgIterator const P_OwnerPkg = P.OwnerPkg();
 
       /* Provides may never be applied against the same package if it is
          a conflicts. See the comment above. */
@@ -310,7 +310,7 @@ bool pkgDepCache::CheckDep(DepIterator Dep,int Type,PkgIterator &Res)
 	    }
 	 case CandidateVersion:
 	    {
-	       StateCache &State = PkgState[P_OwnerPkg->ID];
+	       const StateCache &State = PkgState[P_OwnerPkg->ID];
 	       if (State.CandidateVer != (Version *)P.OwnerVer())
 		  continue;
 	       break;
@@ -339,7 +339,7 @@ bool pkgDepCache::CheckDep(DepIterator Dep,int Type,PkgIterator &Res)
 // DepCache::AddSizes - Add the packages sizes to the counters		/*{{{*/
 // ---------------------------------------------------------------------
 /* Call with Mult = -1 to preform the inverse opration */
-void pkgDepCache::AddSizes(const PkgIterator &Pkg,signed long Mult)
+void pkgDepCache::AddSizes(const PkgIterator &Pkg,signed long const Mult)
 {
    StateCache &P = PkgState[Pkg->ID];
 
@@ -393,9 +393,9 @@ void pkgDepCache::AddSizes(const PkgIterator &Pkg,signed long Mult)
    calld Remove/Add itself. Remember, dependencies can be circular so
    while processing a dep for Pkg it is possible that Add/Remove
    will be called on Pkg */
-void pkgDepCache::AddStates(const PkgIterator &Pkg,int Add)
+void pkgDepCache::AddStates(const PkgIterator &Pkg,int const Add)
 {
-   StateCache &State = PkgState[Pkg->ID];
+   const StateCache &State = PkgState[Pkg->ID];
 
    // The Package is broken
    if ((State.DepState & DepInstMin) != DepInstMin)
@@ -475,16 +475,17 @@ void pkgDepCache::BuildGroupOrs(VerIterator const &V)
    state of the list, filtering it through both a Min check and a Policy
    check. The return result will have SetMin/SetPolicy low if a check
    fails. It uses the DepState cache for it's computations. */
-unsigned char pkgDepCache::VersionState(DepIterator D,unsigned char Check,
-				       unsigned char SetMin,
-				       unsigned char SetPolicy)
+unsigned char pkgDepCache::VersionState(DepIterator D,
+                                        unsigned char const Check,
+                                        unsigned char const SetMin,
+                                        unsigned char const SetPolicy)
 {
    unsigned char Dep = 0xFF;
 
    while (D.end() != true)
    {
       // Compute a single dependency element (glob or)
-      DepIterator Start = D;
+      DepIterator const Start = D;
       unsigned char State = 0;
       for (bool LastOR = true; D.end() == false && LastOR == true; D++)
       {
@@ -541,7 +542,7 @@ unsigned char pkgDepCache::DependencyState(DepIterator &D)
 /* This determines the combined dependency representation of a package
    for its two states now and install. This is done by using the pre-generated
    dependency information. */
-void pkgDepCache::UpdateVerState(PkgIterator Pkg)
+void pkgDepCache::UpdateVerState(PkgIterator const Pkg)
 {
    // Empty deps are always true
    StateCache &State = PkgState[Pkg->ID];
@@ -550,7 +551,7 @@ void pkgDepCache::UpdateVerState(PkgIterator Pkg)
    // Check the Current state
    if (Pkg->CurrentVer != 0)
    {
-      DepIterator D = Pkg.CurrentVer().DependsList();
+      DepIterator const D = Pkg.CurrentVer().DependsList();
       State.DepState &= VersionState(D,DepNow,DepNowMin,DepNowPolicy);
    }
 
@@ -559,14 +560,14 @@ void pkgDepCache::UpdateVerState(PkgIterator Pkg)
       install states */
    if (State.CandidateVer != 0)
    {
-      DepIterator D = State.CandidateVerIter(*this).DependsList();
+      DepIterator const D = State.CandidateVerIter(*this).DependsList();
       State.DepState &= VersionState(D,DepInstall,DepCandMin,DepCandPolicy);
    }
 
    // Check target state which can only be current or installed
    if (State.InstallVer != 0)
    {
-      DepIterator D = State.InstVerIter(*this).DependsList();
+      DepIterator const D = State.InstVerIter(*this).DependsList();
       State.DepState &= VersionState(D,DepInstall,DepInstMin,DepInstPolicy);
    }
 }
@@ -575,7 +576,7 @@ void pkgDepCache::UpdateVerState(PkgIterator Pkg)
 // ---------------------------------------------------------------------
 /* This will figure out the state of all the packages and all the
    dependencies based on the current policy. */
-void pkgDepCache::Update(OpProgress *Prog)
+void pkgDepCache::Update(OpProgress * const Prog)
 {
    iUsrSize = 0;
    iDownloadSize = 0;
@@ -678,7 +679,7 @@ void pkgDepCache::Update(PkgIterator const &Pkg)
 // DepCache::MarkKeep - Put the package in the keep state		/*{{{*/
 // ---------------------------------------------------------------------
 /* */
-void pkgDepCache::MarkKeep(PkgIterator const &Pkg,bool Soft)
+void pkgDepCache::MarkKeep(const PkgIterator &Pkg,bool const Soft)
 {
    // Simplifies other routines.
    if (Pkg.end() == true)
@@ -727,7 +728,7 @@ void pkgDepCache::MarkKeep(PkgIterator const &Pkg,bool Soft)
 // DepCache::MarkDelete - Put the package in the delete state		/*{{{*/
 // ---------------------------------------------------------------------
 /* */
-void pkgDepCache::MarkDelete(PkgIterator const &Pkg, bool rPurge)
+void pkgDepCache::MarkDelete(const PkgIterator &Pkg, bool const rPurge)
 {
    // Simplifies other routines.
    if (Pkg.end() == true)
@@ -763,7 +764,8 @@ void pkgDepCache::MarkDelete(PkgIterator const &Pkg, bool rPurge)
    AddSizes(Pkg);
 }
 
-void pkgDepCache::MarkAuto(const PkgIterator &Pkg, pkgDepCache::AutoMarkFlag AutoFlag)
+void pkgDepCache::MarkAuto(const PkgIterator &Pkg,
+                           pkgDepCache::AutoMarkFlag const AutoFlag)
 {
    StateCache &state = PkgState[Pkg->ID];
 
@@ -783,7 +785,10 @@ void pkgDepCache::MarkAuto(const PkgIterator &Pkg, pkgDepCache::AutoMarkFlag Aut
    }
 }
 
-pkgDepCache::AutoMarkFlag pkgDepCache::getMarkAuto(const PkgIterator &Pkg, bool installing_behaves_as_installed, pkgDepCache::AutoMarkFlag value_if_package_not_installed) const
+pkgDepCache::AutoMarkFlag pkgDepCache::getMarkAuto(const PkgIterator &Pkg,
+                                                   bool const installing_behaves_as_installed,
+                                                   pkgDepCache::AutoMarkFlag const value_if_package_not_installed)
+   const
 {
    if ((!installing_behaves_as_installed) || (PkgState[Pkg->ID].Mode != pkgDepCache::ModeInstall))
    {
@@ -844,9 +849,9 @@ int pkgDepCache::MarkInstall0(PkgIterator const &Pkg)
    return 1;
 }
 
-void pkgDepCache::MarkInstallRec(PkgIterator const &Pkg,
-      bool Restricted, std::set<PkgIterator> &MarkAgain,
-      int const Depth, const char *DebugStr)
+void pkgDepCache::MarkInstallRec(const PkgIterator &Pkg,
+      bool const Restricted, std::set<PkgIterator> &MarkAgain,
+      int const Depth, const char * const DebugStr)
 {
    if (Depth > 100)
       return;
@@ -909,7 +914,7 @@ void pkgDepCache::MarkInstallRec(PkgIterator const &Pkg,
          const SPtrArray<Version *> List(Start.AllTargets());
 	 // Right, find the best version to install..
 	 Version **Cur = List.get();
-	 PkgIterator P = Start.TargetPkg();
+	 PkgIterator const P = Start.TargetPkg();
 	 PkgIterator InstPkg(*Cache,0);
 
 	 // See if there are direct matches (at the start of the list)
@@ -963,8 +968,8 @@ void pkgDepCache::MarkInstallRec(PkgIterator const &Pkg,
          const SPtrArray<Version * const> List(Start.AllTargets());
 	 for (Version * const *I = List.get(); *I != 0; I++)
 	 {
-	    VerIterator Ver(*this,*I);
-	    PkgIterator Pkg = Ver.ParentPkg();
+	    VerIterator const Ver(*this,*I);
+	    PkgIterator const Pkg = Ver.ParentPkg();
 	    DEBUG_NEXT("delete %s", Pkg.Name());
 	    MarkDelete(Pkg);
 	    MarkAuto(Pkg, getMarkAuto(Pkg));
@@ -979,26 +984,27 @@ void pkgDepCache::MarkInstallRec(PkgIterator const &Pkg,
 
 void pkgDepCache::MarkInstall2(PkgIterator const &Pkg)
 {
-   bool Debug = _config->FindB("Debug::pkgMarkInstall", false);
-   const char *DebugA = Debug ? "MI2a" : NULL;
-   const char *DebugB = Debug ? "MI2b" : NULL;
-   const char *DebugC = Debug ? "MI2c" : NULL;
+   bool const Debug = _config->FindB("Debug::pkgMarkInstall", false);
+   const char * const DebugA = Debug ? "MI2a" : NULL;
+   const char * const DebugB = Debug ? "MI2b" : NULL;
+   const char * const DebugC = Debug ? "MI2c" : NULL;
    std::set<PkgIterator> MA;
-   std::set<PkgIterator>::iterator I;
    MarkInstallRec(Pkg, true, MA, 0, DebugA);
    while (1) {
       std::set<PkgIterator> MAA;
-      for (I = MA.begin(); I != MA.end(); ++I)
-	 MarkInstallRec(*I, true, MAA, 0, DebugB);
-      for (I = MA.begin(); I != MA.end(); ++I)
-	 MarkInstallRec(*I, false, MAA, 0, DebugC);
+      for (auto I = MA.cbegin(); I != MA.cend(); ++I)
+	 MarkInstallRec(*I, /*Restricted*/true, MAA, 0, DebugB);
+      for (auto I = MA.cbegin(); I != MA.cend(); ++I)
+	 MarkInstallRec(*I, /*Restricted*/false, MAA, 0, DebugC);
       if (MA == MAA)
 	 break;
       MA = MAA;
    }
 }
 
-void pkgDepCache::MarkInstall(PkgIterator const &Pkg, pkgDepCache::AutoMarkFlag AutoFlag, bool AutoInst)
+void pkgDepCache::MarkInstall(const PkgIterator &Pkg,
+                              pkgDepCache::AutoMarkFlag const AutoFlag,
+                              bool const AutoInst)
 {
    if (AutoInst == false)
       MarkInstall0(Pkg);
@@ -1014,7 +1020,7 @@ void pkgDepCache::MarkInstall(PkgIterator const &Pkg, pkgDepCache::AutoMarkFlag 
 // DepCache::SetReInstall - Set the reinstallation flag			/*{{{*/
 // ---------------------------------------------------------------------
 /* */
-void pkgDepCache::SetReInstall(PkgIterator const &Pkg,bool To)
+void pkgDepCache::SetReInstall(const PkgIterator &Pkg,bool const To)
 {
    RemoveSizes(Pkg);
    RemoveStates(Pkg);
