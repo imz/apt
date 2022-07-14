@@ -956,8 +956,6 @@ void pkgDepCache::MarkInstallRec(const PkgIterator &Pkg,
 	    // Recursion is always restricted
 	    MarkInstallRec(InstPkg,/*Restricted*/true,MarkAgain,Depth+1,DebugStr);
 	 }
-
-	 continue;
       }
 
       /* For conflicts we just de-install the package and mark as auto,
@@ -973,7 +971,6 @@ void pkgDepCache::MarkInstallRec(const PkgIterator &Pkg,
 	    MarkDelete(Pkg);
 	    MarkAuto(Pkg, getMarkAuto(Pkg));
 	 }
-	 continue;
       }
    }
 
