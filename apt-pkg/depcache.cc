@@ -943,19 +943,23 @@ void pkgDepCache::MarkInstallRec(const PkgIterator &Pkg,
 	    }
 	    // In restricted mode, skip ambiguous dependencies.
 	    if (Restricted && CanSelect > 1) {
-	       DEBUG_NEXT("target %s AMB", P.Name());
+	       DEBUG_NEXT("target %s AMBI", P.Name());
 	       AddMarkAgain = true;
-	       continue;
+	       // For now, skipping resolving this unsatisfied dep.
+	       continue; // to the next dep that might need satisfying
 	    }
 	 }
 
-	 DEBUG_NEXT("target %s", P.Name());
-
-	 if (InstPkg.end() == false)
+	 if (InstPkg.end() == true)
 	 {
-	    // Recursion is always restricted
-	    MarkInstallRec(InstPkg,/*Restricted*/true,MarkAgain,Depth+1,DebugStr);
+            DEBUG_NEXT("target %s NONE", P.Name());
+            // Skipping resolving this unsatisfied dep.
+            continue; // to the next dep that might need satisfying
 	 }
+
+	 DEBUG_NEXT("target %s SELECTED", P.Name());
+         // Recursion is always restricted
+         MarkInstallRec(InstPkg,/*Restricted*/true,MarkAgain,Depth+1,DebugStr);
       }
 
       /* For conflicts we just de-install the package and mark as auto,
