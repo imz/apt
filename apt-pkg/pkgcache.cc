@@ -215,7 +215,7 @@ pkgCache::Package *pkgCache::FindPackage(const char *Name)
 const char *pkgCache::CompTypeDeb(unsigned char Comp)
 {
    const char *Ops[] = {"","<=",">=","<<",">>","=","!="};
-   if ((unsigned)(Comp & 0xF) < 7)
+   if ((unsigned)(Comp & 0xF) < _count(Ops))
       return Ops[Comp & 0xF];
    return "";
 }
@@ -227,7 +227,7 @@ const char *pkgCache::CompTypeDeb(unsigned char Comp)
 const char *pkgCache::CompType(unsigned char Comp)
 {
    const char *Ops[] = {"","<=",">=","<",">","=","!="};
-   if ((unsigned)(Comp & 0xF) < 7)
+   if ((unsigned)(Comp & 0xF) < _count(Ops))
       return Ops[Comp & 0xF];
    return "";
 }
@@ -240,7 +240,7 @@ const char *pkgCache::DepType(unsigned char Type)
    const char *Types[] = {"",_("Depends"),_("PreDepends"),_("Suggests"),
                           _("Recommends"),_("Conflicts"),_("Replaces"),
                           _("Obsoletes")};
-   if (Type < 8)
+   if (Type < _count(Types))
       return Types[Type];
    return "";
 }
