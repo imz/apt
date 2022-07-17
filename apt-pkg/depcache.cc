@@ -846,7 +846,7 @@ int pkgDepCache::MarkInstall0(PkgIterator const &Pkg)
 
 void pkgDepCache::MarkInstallRec(PkgIterator const &Pkg,
       bool Restricted, std::set<PkgIterator> &MarkAgain,
-      unsigned long Depth, const char *DebugStr)
+      int const Depth, const char *DebugStr)
 {
    if (Depth > 100)
       return;
@@ -854,7 +854,7 @@ void pkgDepCache::MarkInstallRec(PkgIterator const &Pkg,
       return;
 
 #define DEBUG_MI(n, fmt, ...) if (DebugStr) \
-   fprintf(stderr, "%s:%*s " fmt "\n", DebugStr, (int)Depth*2+n, "", __VA_ARGS__)
+   fprintf(stderr, "%s:%*s " fmt "\n", DebugStr, Depth*2+n, "", __VA_ARGS__)
 #define DEBUG_THIS(fmt, ...) DEBUG_MI(0, fmt, __VA_ARGS__)
 #define DEBUG_NEXT(fmt, ...) DEBUG_MI(1, fmt, __VA_ARGS__)
 
