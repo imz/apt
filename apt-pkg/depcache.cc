@@ -861,6 +861,8 @@ pkgDepCache::AutoMarkFlag pkgDepCache::getMarkAuto(const PkgIterator &Pkg,
 int pkgDepCache::MarkInstall0(PkgIterator const &Pkg,
                               const DbgLogger &DBG)
 {
+   DBG.traceFuncCall("to mark for install (shallow): " + ToDbgStr(Pkg));
+
    if (Pkg.end() == true)
       return -1;
 
@@ -907,8 +909,13 @@ void pkgDepCache::MarkInstallRec(const PkgIterator &Pkg,
       bool const Restricted, std::set<PkgIterator> &MarkAgain,
       int const Depth, const DbgLogger &DBG)
 {
+   DBG.traceFuncCall("to mark for install (recursively): " + ToDbgStr(Pkg));
+
    if (Depth > 100)
+   {
+      DBG.traceTraversal(0, "Too deep (" + std::to_string(Depth) + ")!");
       return;
+   }
    if (MarkInstall0(Pkg, DBG.deeper()) <= 0)
       return;
 
