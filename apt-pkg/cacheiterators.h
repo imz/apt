@@ -197,6 +197,23 @@ class pkgCache::DepIterator
 		}
    void GlobOr(DepIterator &Start,DepIterator &End);
    std::unique_ptr<pkgCache::Version *[]> AllTargets();
+   // A helper for iterating over AllTargets()
+   /* TODO: replace AllTargets() and this with a special container and iterator.
+      Not sure how much similar to a standard iterator it should be.
+      But the idea is that AllTargets() consists of the following two intervals,
+      and it's irrelevant which container is used internally.
+
+      begin -- IsTargetDirect(begin) == true
+      ...   -- IsTargetDirect(_) == true
+      end_of_direct_targets, same as
+      begin_of_providing_targets -- IsTargetDirect(_) == false
+      ...  -- IsTargetDirect(_) == false
+      end, where now *end == nullptr -- IsTargetDirect(_) == false
+    */
+   bool IsTargetDirect(const pkgCache::Version * const * const I)
+   {
+      return *I != nullptr && (*I)->ParentPkg == TargetPkg().Index();
+   }
    bool SmartTargetPkg(PkgIterator &Result);
    const char *CompType() const {return Owner->CompType(Dep->CompareOp);}
    const char *DepType() const {return Owner->DepType(Dep->Type);}

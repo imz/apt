@@ -915,11 +915,10 @@ void pkgDepCache::MarkInstallRec(const PkgIterator &Pkg,
          const SPtrArray<Version *> List(Start.AllTargets());
 	 // Right, find the best version to install..
 	 Version **Cur = List.get();
-	 PkgIterator const P = Start.TargetPkg();
 	 PkgIterator InstPkg(*Cache,0);
 
 	 // See if there are direct matches (at the start of the list)
-	 for (; *Cur != 0 && (*Cur)->ParentPkg == P.Index(); Cur++)
+	 for (; Start.IsTargetDirect(Cur); Cur++)
 	 {
 	    PkgIterator const TrgPkg(*Cache,Cache->PkgP + (*Cur)->ParentPkg);
 	    if (PkgState[TrgPkg->ID].CandidateVer == *Cur)
@@ -931,7 +930,7 @@ void pkgDepCache::MarkInstallRec(const PkgIterator &Pkg,
 	 }
 
 	 // Select the highest priority providing package
-	 if (InstPkg.end() == true)
+	 if (InstPkg.end() == true) // iff (Start.IsTargetDirect(Cur) == false)
 	 {
 	    int CanSelect = 0;
 	    pkgPrioSortList(*Cache,Cur);
