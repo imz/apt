@@ -914,35 +914,37 @@ void pkgDepCache::MarkInstallRec(const PkgIterator &Pkg,
       {
          const SPtrArray<Version *> List(Start.AllTargets());
 	 // Right, find the best version to install..
+         VerIterator InstVer(*Cache,nullptr); // END as the initial value
 	 Version **Cur = List.get();
-	 PkgIterator InstPkg(*Cache,0);
 
 	 // See if there are direct matches (at the start of the list)
 	 for (; Start.IsTargetDirect(Cur); Cur++)
 	 {
+            VerIterator const TrgVer(*Cache,*Cur);
 	    PkgIterator const TrgPkg(*Cache,Cache->PkgP + (*Cur)->ParentPkg);
 	    if (PkgState[TrgPkg->ID].CandidateVer == *Cur)
             {
                // Transform the found result and pass it (out of the loop).
-               InstPkg = TrgPkg;
+               InstVer = TrgVer;
                break;
             }
 	 }
 
 	 // Select the highest priority providing package
-	 if (InstPkg.end() == true) // iff (Start.IsTargetDirect(Cur) == false)
+	 if (InstVer.end() == true) // iff (Start.IsTargetDirect(Cur) == false)
 	 {
 	    int CanSelect = 0;
 	    pkgPrioSortList(*Cache,Cur);
 	    for (; *Cur != 0; Cur++)
 	    {
+               VerIterator const TrgVer(*Cache,*Cur);
 	       PkgIterator const TrgPkg(*Cache,Cache->PkgP + (*Cur)->ParentPkg);
 	       if (PkgState[TrgPkg->ID].CandidateVer == *Cur)
                {
                   // Transform the found result and pass it (out of the loop).
                   // We'll be looking for at least two results.
                   if (CanSelect++ == 0)
-                     InstPkg = TrgPkg;
+                     InstVer = TrgVer;
                   else
                      break;
                }
@@ -956,7 +958,7 @@ void pkgDepCache::MarkInstallRec(const PkgIterator &Pkg,
 	    }
 	 }
 
-	 if (InstPkg.end() == true)
+	 if (InstVer.end() == true)
 	 {
             DEBUG_NEXT("target %s", "NONE");
             // Skipping resolving this unsatisfied dep.
@@ -964,6 +966,7 @@ void pkgDepCache::MarkInstallRec(const PkgIterator &Pkg,
 	 }
 
 	 DEBUG_NEXT("target %s", "SELECTED");
+         PkgIterator const InstPkg = InstVer.ParentPkg();
          // Recursion is always restricted
          MarkInstallRec(InstPkg,/*Restricted*/true,MarkAgain,Depth+1,DebugStr);
       }
