@@ -921,7 +921,7 @@ void pkgDepCache::MarkInstallRec(const PkgIterator &Pkg,
 	 for (; Start.IsTargetDirect(Cur); Cur++)
 	 {
             VerIterator const TrgVer(*Cache,*Cur);
-	    PkgIterator const TrgPkg(*Cache,Cache->PkgP + (*Cur)->ParentPkg);
+	    PkgIterator const TrgPkg = TrgVer.ParentPkg();
 	    if (PkgState[TrgPkg->ID].CandidateVer == *Cur)
             {
                // Transform the found result and pass it (out of the loop).
@@ -938,7 +938,7 @@ void pkgDepCache::MarkInstallRec(const PkgIterator &Pkg,
 	    for (; *Cur != 0; Cur++)
 	    {
                VerIterator const TrgVer(*Cache,*Cur);
-	       PkgIterator const TrgPkg(*Cache,Cache->PkgP + (*Cur)->ParentPkg);
+	       PkgIterator const TrgPkg = TrgVer.ParentPkg();
 	       if (PkgState[TrgPkg->ID].CandidateVer == *Cur)
                {
                   // Transform the found result and pass it (out of the loop).
