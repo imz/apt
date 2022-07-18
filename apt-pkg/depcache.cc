@@ -859,9 +859,10 @@ void pkgDepCache::MarkInstallRec(const PkgIterator &Pkg,
       return;
 
 #define DEBUG_MI(n, fmt, ...) if (DebugStr) \
-   fprintf(stderr, "%s:%*s " fmt "\n", DebugStr, Depth*2+n, "", __VA_ARGS__)
+   fprintf(stderr, "%s:%*s " fmt "\n", DebugStr, Depth*3+n, "", __VA_ARGS__)
 #define DEBUG_THIS(fmt, ...) DEBUG_MI(0, fmt, __VA_ARGS__)
 #define DEBUG_NEXT(fmt, ...) DEBUG_MI(1, fmt, __VA_ARGS__)
+#define DEBUG_NEXT2(fmt, ...) DEBUG_MI(2, fmt, __VA_ARGS__)
 
    DEBUG_THIS("marked for install (shallow): %s", ToDbgStr(Pkg).c_str());
 
