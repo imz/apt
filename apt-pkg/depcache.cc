@@ -965,7 +965,7 @@ void pkgDepCache::MarkInstallRec(const PkgIterator &Pkg,
             continue; // to the next dep that might need satisfying
 	 }
 
-	 DEBUG_NEXT("target %s", "SELECTED");
+	 DEBUG_NEXT("target SELECTED: %s", ToDbgStr(InstVer).c_str());
          PkgIterator const InstPkg = InstVer.ParentPkg();
          // Recursion is always restricted
          MarkInstallRec(InstPkg,/*Restricted*/true,MarkAgain,Depth+1,DebugStr);
@@ -979,8 +979,8 @@ void pkgDepCache::MarkInstallRec(const PkgIterator &Pkg,
 	 for (Version * const *I = List.get(); *I != 0; I++)
 	 {
 	    VerIterator const TrgVer(*Cache,*I);
+            DEBUG_NEXT("target to delete: %s", ToDbgStr(TrgVer).c_str());
 	    PkgIterator const TrgPkg = TrgVer.ParentPkg();
-	    DEBUG_NEXT("delete %s", ToDbgStr(TrgPkg).c_str());
 	    MarkDelete(TrgPkg);
 	    MarkAuto(TrgPkg, getMarkAuto(TrgPkg));
 	 }
