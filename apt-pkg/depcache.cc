@@ -863,7 +863,7 @@ void pkgDepCache::MarkInstallRec(const PkgIterator &Pkg,
 #define DEBUG_THIS(fmt, ...) DEBUG_MI(0, fmt, __VA_ARGS__)
 #define DEBUG_NEXT(fmt, ...) DEBUG_MI(1, fmt, __VA_ARGS__)
 
-   DEBUG_THIS("mark %s", ToDbgStr(Pkg).c_str());
+   DEBUG_THIS("marked for install (shallow): %s", ToDbgStr(Pkg).c_str());
 
    StateCache &P = PkgState[Pkg->ID];
    bool AddMarkAgain = false;
@@ -906,6 +906,8 @@ void pkgDepCache::MarkInstallRec(const PkgIterator &Pkg,
       for (; Ors > 1 && (DepState[Start->ID] & DepCVer) != DepCVer; Ors--)
 	 Start++;
 
+      DEBUG_NEXT("satisfying %s", ToDbgStr(Start).c_str());
+
       /* This bit is for processing the possibilty of an install/upgrade
          fixing the problem */
       if ((DepState[Start->ID] & DepCVer) == DepCVer)
@@ -943,7 +945,7 @@ void pkgDepCache::MarkInstallRec(const PkgIterator &Pkg,
 	    }
 	    // In restricted mode, skip ambiguous dependencies.
 	    if (Restricted && CanSelect > 1) {
-	       DEBUG_NEXT("target %s AMBI", ToDbgStr(P).c_str());
+	       DEBUG_NEXT("target %s", "AMBI");
 	       AddMarkAgain = true;
 	       // For now, skipping resolving this unsatisfied dep.
 	       continue; // to the next dep that might need satisfying
@@ -952,12 +954,12 @@ void pkgDepCache::MarkInstallRec(const PkgIterator &Pkg,
 
 	 if (InstPkg.end() == true)
 	 {
-            DEBUG_NEXT("target %s NONE", ToDbgStr(P).c_str());
+            DEBUG_NEXT("target %s", "NONE");
             // Skipping resolving this unsatisfied dep.
             continue; // to the next dep that might need satisfying
 	 }
 
-	 DEBUG_NEXT("target %s SELECTED", ToDbgStr(P).c_str());
+	 DEBUG_NEXT("target %s", "SELECTED");
          // Recursion is always restricted
          MarkInstallRec(InstPkg,/*Restricted*/true,MarkAgain,Depth+1,DebugStr);
       }
