@@ -1150,7 +1150,9 @@ void pkgDepCache::MarkInstallRec(const PkgIterator &Pkg,
       else if (Start->Type == Dep::Conflicts || Start->Type == Dep::Obsoletes)
       {
          const SPtrArray<Version * const> List(Start.AllTargets());
-	 for (Version * const *I = List.get(); *I != 0; I++)
+	 for (Version * const *I = List.get();
+              Start->Type == Dep::Obsoletes ? Start.IsTargetDirect(I) : *I != nullptr;
+              I++)
 	 {
 	    VerIterator const TrgVer(*Cache,*I);
             DBG.traceTraversal(2, "must not be installed (a target):", TrgVer);
