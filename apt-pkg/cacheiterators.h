@@ -175,7 +175,7 @@ class pkgCache::DepIterator
    inline pkgCache *Cache() {return Owner;}
 
    const char *TargetVer() const {return Dep->Version == 0?0:Owner->StrP + Dep->Version;}
-   inline PkgIterator TargetPkg() {return PkgIterator(*Owner,Owner->PkgP + Dep->Package);}
+   PkgIterator TargetPkg() const {return PkgIterator(*Owner,Owner->PkgP + Dep->Package);}
    inline PkgIterator SmartTargetPkg() {PkgIterator R(*Owner,0);SmartTargetPkg(R);return R;}
    inline VerIterator ParentVer() {return VerIterator(*Owner,Owner->VerP + Dep->ParentVer);}
    inline PkgIterator ParentPkg() {return PkgIterator(*Owner,Owner->PkgP + Owner->VerP[Dep->ParentVer].ParentPkg);}
