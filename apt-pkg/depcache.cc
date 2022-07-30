@@ -863,7 +863,7 @@ void pkgDepCache::MarkInstallRec(const PkgIterator &Pkg,
 #define DEBUG_THIS(fmt, ...) DEBUG_MI(0, fmt, __VA_ARGS__)
 #define DEBUG_NEXT(fmt, ...) DEBUG_MI(1, fmt, __VA_ARGS__)
 
-   DEBUG_THIS("mark %s", Pkg.Name());
+   DEBUG_THIS("mark %s", ToDbgStr(Pkg).c_str());
 
    StateCache &P = PkgState[Pkg->ID];
    bool AddMarkAgain = false;
@@ -943,7 +943,7 @@ void pkgDepCache::MarkInstallRec(const PkgIterator &Pkg,
 	    }
 	    // In restricted mode, skip ambiguous dependencies.
 	    if (Restricted && CanSelect > 1) {
-	       DEBUG_NEXT("target %s AMBI", P.Name());
+	       DEBUG_NEXT("target %s AMBI", ToDbgStr(P).c_str());
 	       AddMarkAgain = true;
 	       // For now, skipping resolving this unsatisfied dep.
 	       continue; // to the next dep that might need satisfying
@@ -952,12 +952,12 @@ void pkgDepCache::MarkInstallRec(const PkgIterator &Pkg,
 
 	 if (InstPkg.end() == true)
 	 {
-            DEBUG_NEXT("target %s NONE", P.Name());
+            DEBUG_NEXT("target %s NONE", ToDbgStr(P).c_str());
             // Skipping resolving this unsatisfied dep.
             continue; // to the next dep that might need satisfying
 	 }
 
-	 DEBUG_NEXT("target %s SELECTED", P.Name());
+	 DEBUG_NEXT("target %s SELECTED", ToDbgStr(P).c_str());
          // Recursion is always restricted
          MarkInstallRec(InstPkg,/*Restricted*/true,MarkAgain,Depth+1,DebugStr);
       }
@@ -971,7 +971,7 @@ void pkgDepCache::MarkInstallRec(const PkgIterator &Pkg,
 	 {
 	    VerIterator const Ver(*this,*I);
 	    PkgIterator const Pkg = Ver.ParentPkg();
-	    DEBUG_NEXT("delete %s", Pkg.Name());
+	    DEBUG_NEXT("delete %s", ToDbgStr(Pkg).c_str());
 	    MarkDelete(Pkg);
 	    MarkAuto(Pkg, getMarkAuto(Pkg));
 	 }
