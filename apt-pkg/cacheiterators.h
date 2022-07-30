@@ -174,7 +174,7 @@ class pkgCache::DepIterator
    inline operator Dependency const *() const {return Dep == Owner->DepP?0:Dep;}
    inline pkgCache *Cache() {return Owner;}
 
-   inline const char *TargetVer() const {return Dep->Version == 0?0:Owner->StrP + Dep->Version;}
+   const char *TargetVer() const {return Dep->Version == 0?0:Owner->StrP + Dep->Version;}
    inline PkgIterator TargetPkg() {return PkgIterator(*Owner,Owner->PkgP + Dep->Package);}
    inline PkgIterator SmartTargetPkg() {PkgIterator R(*Owner,0);SmartTargetPkg(R);return R;}
    inline VerIterator ParentVer() {return VerIterator(*Owner,Owner->VerP + Dep->ParentVer);}
@@ -198,8 +198,8 @@ class pkgCache::DepIterator
    void GlobOr(DepIterator &Start,DepIterator &End);
    std::unique_ptr<pkgCache::Version *[]> AllTargets();
    bool SmartTargetPkg(PkgIterator &Result);
-   inline const char *CompType() {return Owner->CompType(Dep->CompareOp);}
-   inline const char *DepType() {return Owner->DepType(Dep->Type);}
+   const char *CompType() const {return Owner->CompType(Dep->CompareOp);}
+   const char *DepType() const {return Owner->DepType(Dep->Type);}
 
    inline DepIterator(pkgCache &Owner,Dependency *Trg,Version * = 0) :
           Dep(Trg), Type(DepVer), Owner(&Owner)
