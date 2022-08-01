@@ -213,8 +213,7 @@ class pkgDepCache : protected pkgCache::Namespace
    // Used internally during recursion in Mark*() for the debugging output.
    class DbgLogger;
    // shallow mark; ret: -1 err, 0 already marked, 1 just marked
-   int MarkInstall0(PkgIterator const &Pkg,
-                    const DbgLogger &DBG);
+   int MarkInstall0(PkgIterator const &Pkg, const DbgLogger &DBG);
    // full wavefront recursive mark
    void MarkInstall2(PkgIterator const &Pkg,
                      const DbgLogger &DBG);
@@ -222,6 +221,8 @@ class pkgDepCache : protected pkgCache::Namespace
    void MarkInstallRec(PkgIterator const &Pkg,
       bool Restricted, std::set<PkgIterator> &MarkAgain,
       int Depth, const DbgLogger &DBG);
+   void MarkKeep0(const PkgIterator &Pkg, bool Soft, const DbgLogger &DBG);
+   void MarkDelete0(const PkgIterator &Pkg, bool Purge, const DbgLogger &DBG);
 
    public:
    void SetReInstall(PkgIterator const &Pkg,bool To);
