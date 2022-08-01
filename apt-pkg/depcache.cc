@@ -787,7 +787,10 @@ void pkgDepCache::MarkKeep0(const PkgIterator &Pkg,bool const Soft,const DbgLogg
       must be upgraded */
    if (Pkg.State() == PkgIterator::NeedsUnpack &&
        Pkg.CurrentVer().Downloadable() == false)
+   {
+      DBG.traceShallow("shouldn't keep a pkg that needs unpack, but is not downloadable");
       return;
+   }
 
    /* We changed the soft state all the time so the UI is a bit nicer
       to use */
@@ -799,20 +802,32 @@ void pkgDepCache::MarkKeep0(const PkgIterator &Pkg,bool const Soft,const DbgLogg
 
    // Check that it is not already kept
    if (P.Mode == ModeKeep)
+   {
+      DBG.traceShallow("already kept");
       return;
+   }
 
    // We dont even try to keep virtual packages..
    if (Pkg->VersionList == 0)
+   {
+      DBG.traceShallow("can't keep a virtual pkg");
       return;
+   }
 
    RemoveSizes(Pkg);
    RemoveStates(Pkg);
 
    P.Mode = ModeKeep;
    if (Pkg->CurrentVer == 0)
+   {
+      DBG.traceShallow("switched to keeping it to-be-not-installed (as currently):", Pkg.CurrentVer());
       P.InstallVer = 0;
+   }
    else
+   {
+      DBG.traceShallow("switched to keeping the current version as the to-be-installed one:", Pkg.CurrentVer());
       P.InstallVer = Pkg.CurrentVer().operator pkgCache::Version *();
+   }
 
    MarkAuto(Pkg, getMarkAuto(Pkg));
 
