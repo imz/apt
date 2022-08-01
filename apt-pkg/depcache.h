@@ -205,17 +205,21 @@ class pkgDepCache : protected pkgCache::Namespace
 
    AutoMarkFlag getMarkAuto(const PkgIterator &Pkg, bool installing_behaves_as_installed = true, AutoMarkFlag value_if_package_not_installed = AutoMarkFlag::Auto) const;
 
+   // compat
+   // either full wavefront recursive mark (MarkInstall2)
+   // or shallow mark (MarkInstall0)
+   void MarkInstall(PkgIterator const &Pkg, AutoMarkFlag AutoFlag, bool AutoInst = true);
+   protected:
    // shallow mark; ret: -1 err, 0 already marked, 1 just marked
    int MarkInstall0(PkgIterator const &Pkg);
    // full wavefront recursive mark
    void MarkInstall2(PkgIterator const &Pkg);
-   // compat
-   void MarkInstall(PkgIterator const &Pkg, AutoMarkFlag AutoFlag, bool AutoInst = true);
    // implementation
    void MarkInstallRec(PkgIterator const &Pkg,
       bool Restricted, std::set<PkgIterator> &MarkAgain,
       unsigned long Depth, const char *DebugStr);
 
+   public:
    void SetReInstall(PkgIterator const &Pkg,bool To);
    void SetCandidateVersion(VerIterator TargetVer);
 
