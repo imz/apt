@@ -921,8 +921,8 @@ void pkgDepCache::MarkInstallRec(const PkgIterator &Pkg,
 	 for (; Start.IsTargetDirect(Cur); Cur++)
 	 {
             VerIterator const TrgVer(*Cache,*Cur);
-	    PkgIterator const TrgPkg = TrgVer.ParentPkg();
-	    if (PkgState[TrgPkg->ID].CandidateVer == *Cur)
+            const StateCache &TrgP = PkgState[TrgVer.ParentPkg()->ID];
+            if (*Cur == TrgP.CandidateVer)
             {
                // Transform the found result and pass it (out of the loop).
                InstVer = TrgVer;
@@ -938,8 +938,8 @@ void pkgDepCache::MarkInstallRec(const PkgIterator &Pkg,
 	    for (; *Cur != 0; Cur++)
 	    {
                VerIterator const TrgVer(*Cache,*Cur);
-	       PkgIterator const TrgPkg = TrgVer.ParentPkg();
-	       if (PkgState[TrgPkg->ID].CandidateVer == *Cur)
+               const StateCache &TrgP = PkgState[TrgVer.ParentPkg()->ID];
+               if (*Cur == TrgP.CandidateVer)
                {
                   // Transform the found result and pass it (out of the loop).
                   // We'll be looking for at least two results.
