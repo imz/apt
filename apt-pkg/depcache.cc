@@ -862,26 +862,42 @@ void pkgDepCache::MarkDelete0(const PkgIterator &Pkg, bool const rPurge, const D
 
    // Check that it is not already marked for delete
    StateCache &P = PkgState[Pkg->ID];
+   DBG.traceShallow("clearing flags not compatible with delete");
    P.iFlags &= ~(AutoKept | Purge);
    if (rPurge == true)
       P.iFlags |= Purge;
 
    if ((P.Mode == ModeDelete || P.InstallVer == 0) &&
        (Pkg.Purge() == true || rPurge == false))
+   {
+      DBG.traceShallow("nothing to do: already marked for delete or is to-be-not-installed");
       return;
+   }
 
    // We dont even try to delete virtual packages..
    if (Pkg->VersionList == 0)
+   {
+      DBG.traceShallow("can't delete a virtual pkg");
       return;
+   }
 
    RemoveSizes(Pkg);
    RemoveStates(Pkg);
 
    if (Pkg->CurrentVer == 0 && (Pkg.Purge() == true || rPurge == false))
+   {
       P.Mode = ModeKeep;
+      DBG.traceShallow("set the pkg's mark to 'keep', as now there is no current version:",
+                         Pkg.CurrentVer());
+   }
    else
+   {
       P.Mode = ModeDelete;
+      DBG.traceShallow("set the pkg's mark to 'delete', whereas the current version is:",
+                         Pkg.CurrentVer());
+   }
    P.InstallVer = 0;
+   DBG.traceShallow("set it to-be-not-installed");
    P.Flags &= Flag::Auto;
    MarkAuto(Pkg, getMarkAuto(Pkg));
 
