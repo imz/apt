@@ -1166,6 +1166,28 @@ void pkgDepCache::MarkInstallRec(const PkgIterator &Pkg,
 
             // resolving this conflict
 	    PkgIterator const TrgPkg = TrgVer.ParentPkg();
+            /* Let's think about all the possibilities to avoid the conflict
+               (given that Pkg is unalterably marked for install).
+
+               Obviously, any solution has to change TrgP.InstallVer.
+               It can be changed to:
+
+               1. the current ver (see MarkKeep0: TrgPkg.CurrentVer());
+               2. the candidate ver (see MarkInstall0: TrgP.CandidateVer);
+               3. 0 (see MarkDelete0).
+
+               Solutions 1 and 2 require a check that the other version
+               is not also conflicting with Dep.
+
+               As with resolving a Requires above, in case of "ambiguity"
+               between the solutions, the decision should be postponed to
+               a second pass (see AddMarkAgain effect)--in the hope that
+               one of the solutions will then be already chosen as an effect
+               of other goals.
+
+               TODO: consider 3 solutions instead of 1 currently.
+            */
+
             DBG.traceTraversal(2, "requesting to delete", TrgPkg);
 	    MarkDelete0(TrgPkg, false, DBG.deeper());
 	    MarkAuto(TrgPkg, getMarkAuto(TrgPkg));
