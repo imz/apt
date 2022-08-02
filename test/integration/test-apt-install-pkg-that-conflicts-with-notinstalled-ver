@@ -3,8 +3,6 @@ set -eu
 
 # for some peculiarities of MarkInstallRec()
 
-APT_TEST_XFAIL=yes
-
 TESTDIR=$(readlink -f $(dirname $0))
 . $TESTDIR/framework
 
