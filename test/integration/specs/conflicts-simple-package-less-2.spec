@@ -6,6 +6,8 @@ License:   LGPLv2+
 Group:     Other
 
 Conflicts: simple-package < 2
+# just an arbitrary package in order to invoke MarkInstallRec()
+Requires: simple-package-noarch
 
 %description
 Dummy description

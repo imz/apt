@@ -11,6 +11,11 @@ setupenvironment
 buildpackage 'simple-package' # version: 1
 buildpackage 'simple-package-update' # version: 2
 buildpackage 'conflicts-simple-package-less-2'
+# Just a pkg required by the previous one;
+# the dep on an unistalled pkg is a way to trigger
+# the invocation of MarkInstallRec():
+# since a shallow MarkInstall() is not enough then.
+buildpackage 'simple-package-noarch'
 
 aptgetinstallpackage 'simple-package-update'
 testpkginstalled 'simple-package'
@@ -22,6 +27,7 @@ generaterepository_and_switch_sources "$TMPWORKINGDIRECTORY/usr/src/RPM/RPMS"
 testsuccess aptget update
 
 testpkgnotinstalled 'conflicts-simple-package-less-2'
+testpkgnotinstalled 'simple-package-noarch'
 testsuccess aptget \
 	    -o Debug::pkgProblemResolver=yes \
 	    -o Debug::pkgMarkInstall=yes \
