@@ -679,6 +679,9 @@ testsuccess() {
 
 	if [ $RESULT -eq 0 ]; then
 		msgpass
+		if [ $MSGLEVEL -gt 3 ]; then # info
+			cat >&2 $OUTPUT
+		fi
 	else
 		msgfail
 		cat >&2 $OUTPUT
