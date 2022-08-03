@@ -1,0 +1,45 @@
+#!/bin/bash
+set -eu
+
+# for peculiarities MarkInstallRec()
+
+TESTDIR=$(readlink -f $(dirname $0))
+. $TESTDIR/framework
+
+setupenvironment
+
+buildpackage 'simple-package' # version: 1
+buildpackage 'simple-package-update' # version: 2
+buildpackage 'conflicts-simple-package-less-2'
+# Just a pkg required by the previous one;
+# the dep on an unistalled pkg is a way to trigger
+# the invocation of MarkInstallRec():
+# since a shallow MarkInstall() is not enough then.
+buildpackage 'simple-package-noarch'
+# Another pkg to trigger the processing of the Conflicts dep
+# in MarkInstallRec(): the dep gets broken, and thus needs dealing with.
+buildpackage 'provides-simple-package'
+
+aptgetinstallpackage 'simple-package-update'
+aptgetinstallpackage 'provides-simple-package'
+testpkginstalled 'simple-package'
+testpkginstalled 'provides-simple-package'
+
+testequal '2-alt1' getpackageversion 'simple-package'
+
+generaterepository_and_switch_sources "$TMPWORKINGDIRECTORY/usr/src/RPM/RPMS"
+
+testsuccess aptget update
+
+testpkgnotinstalled 'conflicts-simple-package-less-2'
+testpkgnotinstalled 'simple-package-noarch'
+testsuccess aptget \
+	    -o Debug::pkgProblemResolver=yes \
+	    -o Debug::pkgMarkInstall=yes \
+	    -o Debug::pkgMarkShallow=yes \
+	    -o Debug::pkgMarkAllCalls=yes \
+	    install -y conflicts-simple-package-less-2
+testpkginstalled 'conflicts-simple-package-less-2'
+
+testpkginstalled 'simple-package'
+testpkgnotinstalled 'provides-simple-package'
