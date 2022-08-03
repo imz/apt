@@ -564,6 +564,10 @@ exec 1>&2
 
 %changelog
 * Wed Aug 03 2022 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt81
+- Fixed bad behavior when satisfying "Conflicts" or "Obsoletes" dependencies
+  (discovered in ALT#42415), namely:
+  + "Obsoletes" causing the deletion of its "virtual" targets (i.e.,
+    providing packages) whereas this behavior is expected for Conflicts only;
 - Enriched the output of Debug::pkgMarkInstall with the versions of
   the dependency targets and the targets being considered during the search.
 - Complemented it with a new option (Debug::pkgMarkAllCalls) -- to understand
