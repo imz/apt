@@ -564,6 +564,8 @@ exec 1>&2
 
 %changelog
 * Wed Aug 03 2022 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt81
+- Enriched the output of Debug::pkgMarkInstall with the versions of
+  the dependency targets and the targets being considered during the search.
 
 * Thu Jun 02 2022 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt80
 - Fixed the new compilation warnings by simplifying the ALT-specific code
