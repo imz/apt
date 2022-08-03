@@ -568,6 +568,8 @@ exec 1>&2
   (discovered in ALT#42415), namely:
   + "Obsoletes" causing the deletion of its "virtual" targets (i.e.,
     providing packages) whereas this behavior is expected for Conflicts only;
+  + versioned "Conflicts" (or "Obsoletes") causing the deletion of packages
+    with non-matching version.
 - Enriched the output of Debug::pkgMarkInstall with the versions of
   the dependency targets and the targets being considered during the search.
 - Complemented it with a new option (Debug::pkgMarkAllCalls) -- to understand
