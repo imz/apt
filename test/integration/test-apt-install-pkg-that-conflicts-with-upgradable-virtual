@@ -18,14 +18,11 @@ buildpackage 'conflicts-simple-package-less-2'
 buildpackage 'simple-package-noarch'
 # Another pkg to trigger the processing of the Conflicts dep
 # in MarkInstallRec(): the dep gets broken, and thus needs dealing with.
-buildpackage 'provides-simple-package'
+buildpackage 'provides-simple-package' # version: 0
+buildpackage 'provides-simple-package-update' # version: 2
 
-aptgetinstallpackage 'simple-package-update'
 aptgetinstallpackage 'provides-simple-package'
-testpkginstalled 'simple-package'
 testpkginstalled 'provides-simple-package'
-
-testequal '2-alt1' getpackageversion 'simple-package'
 
 generaterepository_and_switch_sources "$TMPWORKINGDIRECTORY/usr/src/RPM/RPMS"
 
@@ -41,5 +38,4 @@ testsuccess aptget \
 	    install -y conflicts-simple-package-less-2
 testpkginstalled 'conflicts-simple-package-less-2'
 
-testpkginstalled 'simple-package'
-testpkgnotinstalled 'provides-simple-package'
+testpkginstalled 'provides-simple-package'
