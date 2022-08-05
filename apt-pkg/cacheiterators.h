@@ -116,8 +116,8 @@ class pkgCache::VerIterator
    inline Version const *operator ->() const {return Ver;}
    inline Version &operator *() {return *Ver;}
    inline Version const &operator *() const {return *Ver;}
-   explicit operator Version *() {return Ver == Owner->VerP?0:Ver;}
-   explicit operator Version const *() const {return Ver == Owner->VerP?0:Ver;}
+   inline operator Version *() {return Ver == Owner->VerP?0:Ver;}
+   inline operator Version const *() const {return Ver == Owner->VerP?0:Ver;}
    inline pkgCache *Cache() {return Owner;}
 
    inline const char *VerStr() const {return Ver->VerStr == 0?0:Owner->StrP + Ver->VerStr;}
