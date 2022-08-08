@@ -210,8 +210,7 @@ class pkgDepCache : protected pkgCache::Namespace
    // full wavefront recursive mark
    void MarkInstall2(PkgIterator const &Pkg);
    // compat
-   void MarkInstall(PkgIterator const &Pkg, AutoMarkFlag AutoFlag, bool AutoInst = true,
-		    unsigned long Depth = 0);
+   void MarkInstall(PkgIterator const &Pkg, AutoMarkFlag AutoFlag, bool AutoInst = true);
    // implementation
    void MarkInstallRec(PkgIterator const &Pkg,
       bool Restricted, std::set<PkgIterator> &MarkAgain,
