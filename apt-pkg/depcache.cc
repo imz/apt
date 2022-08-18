@@ -926,7 +926,7 @@ void pkgDepCache::MarkInstallRec(const PkgIterator &Pkg,
             if (*Cur == TrgP.CandidateVer)
             {
                // Transform the found result and pass it (out of the loop).
-               DEBUG_NEXT2("found a direct target: %s", ToDbgStr(TrgVer).c_str());
+               DEBUG_NEXT2("can be installed (a direct target): %s", ToDbgStr(TrgVer).c_str());
                InstVer = TrgVer;
                break;
             }
@@ -947,12 +947,12 @@ void pkgDepCache::MarkInstallRec(const PkgIterator &Pkg,
                   // We'll be looking for at least two results.
                   if (CanSelect++ == 0)
                   {
-                     DEBUG_NEXT2("found a providing target: %s", ToDbgStr(TrgVer).c_str());
+                     DEBUG_NEXT2("can be installed (a providing target): %s", ToDbgStr(TrgVer).c_str());
                      InstVer = TrgVer;
                   }
                   else
                   {
-                     DEBUG_NEXT2("found another providing target: %s", ToDbgStr(TrgVer).c_str());
+                     DEBUG_NEXT2("can be installed (another providing target): %s", ToDbgStr(TrgVer).c_str());
                      break;
                   }
                }
@@ -975,6 +975,7 @@ void pkgDepCache::MarkInstallRec(const PkgIterator &Pkg,
 
 	 DEBUG_NEXT("target SELECTED: %s", ToDbgStr(InstVer).c_str());
          PkgIterator const InstPkg = InstVer.ParentPkg();
+         DEBUG_NEXT("requesting to install %s", ToDbgStr(InstPkg).c_str());
          // Recursion is always restricted
          MarkInstallRec(InstPkg,/*Restricted*/true,MarkAgain,Depth+1,DebugStr);
       }
@@ -987,8 +988,9 @@ void pkgDepCache::MarkInstallRec(const PkgIterator &Pkg,
 	 for (Version * const *I = List.get(); *I != 0; I++)
 	 {
 	    VerIterator const TrgVer(*Cache,*I);
-            DEBUG_NEXT2("target to delete: %s", ToDbgStr(TrgVer).c_str());
+            DEBUG_NEXT2("must not be installed (a target): %s", ToDbgStr(TrgVer).c_str());
 	    PkgIterator const TrgPkg = TrgVer.ParentPkg();
+            DEBUG_NEXT2("requesting to delete %s", ToDbgStr(TrgPkg).c_str());
 	    MarkDelete(TrgPkg);
 	    MarkAuto(TrgPkg, getMarkAuto(TrgPkg));
 	 }
