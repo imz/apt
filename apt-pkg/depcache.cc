@@ -41,6 +41,7 @@ class pkgDepCache::DbgLogger
    int Depth;
 
    bool DbgTraversal;
+   bool DbgShallow;
    bool DbgFuncCalls;
 
    void printMsg(unsigned int const nesting, const std::string &msg) const
@@ -59,6 +60,12 @@ class pkgDepCache::DbgLogger
          printMsg(nesting, msg);
    }
 
+   void traceShallow(const std::string &msg) const
+   {
+      if (DbgShallow)
+         printMsg(0, msg);
+   }
+
    void traceFuncCall(const std::string &msg) const
    {
       if (DbgFuncCalls)
@@ -72,6 +79,13 @@ class pkgDepCache::DbgLogger
                        const char * const msg, const T &arg) const
    {
       traceTraversal(nesting, std::string(msg) + " " + ToDbgStr(arg));
+      // append() or a special format with two %s would be faster
+   }
+
+   template<typename T>
+   void traceShallow(const char * const msg, const T &arg) const
+   {
+      traceShallow(std::string(msg) + " " + ToDbgStr(arg));
       // append() or a special format with two %s would be faster
    }
 
@@ -100,6 +114,7 @@ class pkgDepCache::DbgLogger
       Prefix(nullptr),
       Depth(0),
       DbgTraversal(_config->FindB("Debug::pkgMarkInstall", false)),
+      DbgShallow(_config->FindB("Debug::pkgMarkShallow", false)),
       DbgFuncCalls(_config->FindB("Debug::pkgMarkAllCalls", false))
    {}
 };
