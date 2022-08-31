@@ -318,11 +318,11 @@ buildpackage() {
 	fi
 
 	msgmsg "Building package: ${NAME}"
-	HOME="$TMPWORKINGDIRECTORY" rpmbuild \
+	HOME=/var/empty rpmbuild \
 		--define 'EVR %{?epoch:%epoch:}%{version}-%{release}' \
 		--define 'packager test@example.net' \
-		--define="_usr $TMPWORKINGDIRECTORY/usr" \
-		--root="$TMPWORKINGDIRECTORY" \
+		--define="_tmppath $TMPWORKINGDIRECTORY/tmp" \
+		--define="_topdir $TMPWORKINGDIRECTORY/usr/src/RPM" \
 		$target_opt \
 		-ba "${TESTDIRECTORY}/specs/${NAME}.spec" \
 		1>/dev/null
