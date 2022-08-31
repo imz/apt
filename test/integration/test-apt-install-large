@@ -1,0 +1,20 @@
+#!/bin/bash
+set -eu
+
+TESTDIR=$(readlink -f $(dirname $0))
+. $TESTDIR/framework
+
+setupenvironment
+
+buildpackage 'simple-package'
+# not used in this testscript, but in another one which re-uses this one
+# (namely, test-apt-method-https-verifies-pinned-cert)
+buildpackage 'conflicting-package-one'
+
+generaterepository_and_switch_sources "$TMPWORKINGDIRECTORY/usr/src/RPM/RPMS"
+
+testsuccess aptget update
+
+testpkgnotinstalled 'simple-package'
+testsuccess aptget install simple-package
+testpkginstalled 'simple-package'
