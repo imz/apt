@@ -6,15 +6,12 @@ TESTDIR=$(readlink -f $(dirname $0))
 
 setupenvironment
 
-buildpackage 'simple-package'
-# not used in this testscript, but in another one which re-uses this one
-# (namely, test-apt-method-https-verifies-pinned-cert)
-buildpackage 'conflicting-package-one'
+buildpackage 'large-package'
 
 generaterepository_and_switch_sources "$TMPWORKINGDIRECTORY/usr/src/RPM/RPMS"
 
 testsuccess aptget update
 
-testpkgnotinstalled 'simple-package'
-testsuccess aptget install simple-package
-testpkginstalled 'simple-package'
+testpkgnotinstalled 'large-package'
+testsuccess aptget install large-package
+testpkginstalled 'large-package'
