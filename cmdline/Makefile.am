@@ -7,8 +7,7 @@ libexecapt_PROGRAMS = apt-get
 bin_PROGRAMS = apt-cache apt-cdrom apt-config apt-mark
 
 if COMPILE_APTSHELL
-bin_PROGRAMS += apt-pipe
-libexecapt_PROGRAMS = apt-shell
+bin_PROGRAMS += apt-shell apt-pipe
 endif
 if COMPILE_STATIC
 bin_PROGRAMS += apt-get-static apt-cache-static apt-cdrom-static
