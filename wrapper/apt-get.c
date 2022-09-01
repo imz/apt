@@ -11,7 +11,6 @@
 #define _GNU_SOURCE
 #include <err.h>
 #include <errno.h>
-#include <fcntl.h>
 #include <signal.h>
 #include <stdio.h>
 #include <sys/prctl.h>
@@ -28,18 +27,12 @@ static void set_signals(const sighandler_t handler)
 	signal(SIGTTOU, handler);
 }
 
-/* Return 1 if we are under systemd. */
-static int sd_booted()
-{
-	return !faccessat(AT_FDCWD, "/run/systemd/system/", F_OK, AT_SYMLINK_NOFOLLOW);
-}
-
 int main(int argc, char **argv)
 {
 	if (!argc)
 		errx(1, "argv is empty");
 
-	/* Introduced in Linux v3.4 in 2012 by Lennart Poettering. */
+	/* Introduced in Linux v3.4 in 2012 by Lennart Poettering. */ 
 	if (prctl(PR_SET_CHILD_SUBREAPER, 1) == -1)
 		warn("prctl");
 
@@ -61,11 +54,7 @@ int main(int argc, char **argv)
 	/* Wrap a particular binary. */
 	argv[0] = WRAP;
 #endif
-	/*
-	 * If there is no systemd the reaper will never return if any service is
-	 * restarted, thus abandon reaping and fall-back to a simple exec.
-	 */
-	const pid_t pid = sd_booted() ? fork() : 0;
+	const pid_t pid = fork();
 	if (pid == -1)
 		err(1, "fork");
 	if (!pid) {
