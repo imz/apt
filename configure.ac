@@ -166,6 +166,5 @@ AC_OUTPUT([
 	  apt-pkg/Makefile
 	  methods/Makefile
 	  cmdline/Makefile
-	  wrapper/Makefile
 	  doc/Makefile
 	  ])
