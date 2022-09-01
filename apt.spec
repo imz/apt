@@ -3,7 +3,7 @@
 
 Name: apt
 Version: 0.5.15lorg2
-Release: alt82
+Release: alt81.p10
 
 Summary: Debian's Advanced Packaging Tool with RPM support
 Summary(ru_RU.UTF-8): Debian APT - Усовершенствованное средство управления пакетами с поддержкой RPM
@@ -580,6 +580,11 @@ exec 1>&2
 %_datadir/%name/tests/
 
 %changelog
+* Fri Sep 02 2022 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt81.p10
+- For p10, reverted the wrappers from 0.5.15lorg2-alt75..0.5.15lorg2-alt79,
+  because rpm in p10 hasn't yet learned this POST_UPDATE_SCRIPT API,
+  so these wrappers would be an extra complexity with no use in p10.
+
 * Fri Sep 02 2022 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt82
 - tests:
   + Enhanced to be able to work with test packages containing some files.
