@@ -1,10 +1,7 @@
 
-libexecaptdir=$(prefix)/lib/apt
-
 EXTRA_DIST = indexcopy.cc indexcopy.h
 
-libexecapt_PROGRAMS = apt-get
-bin_PROGRAMS = apt-cache apt-cdrom apt-config apt-mark
+bin_PROGRAMS = apt-get apt-cache apt-cdrom apt-config apt-mark
 
 if COMPILE_APTSHELL
 bin_PROGRAMS += apt-shell apt-pipe
