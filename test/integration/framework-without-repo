@@ -216,6 +216,7 @@ setupenvironment() {
 		echo "Dir \"${TMPWORKINGDIRECTORY}/rootdir\";"
 		echo 'Debug::NoLocking "true";'
 		echo "Dir::Etc::sourcelist \"${TMPWORKINGDIRECTORY}/rootdir/etc/apt/sources.list\";"
+		echo 'RPM::Options { "--justdb"; };'
 
 		if [ -n "$METHODSDIR" ] ; then
 			echo "Dir::Bin::methods \"$METHODSDIR\";"
@@ -371,6 +372,7 @@ installpackage() {
 
 	msgmsg "Installing package via rpm: $(basename "$PKGFILE")"
 	rpm --dbpath="$TMPWORKINGDIRECTORY/var/lib/rpm" \
+		--justdb \
 		--nodeps \
 		-i "$PKGFILE" \
 		1>/dev/null
