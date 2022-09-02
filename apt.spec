@@ -3,7 +3,7 @@
 
 Name: apt
 Version: 0.5.15lorg2
-Release: alt81
+Release: alt82
 
 Summary: Debian's Advanced Packaging Tool with RPM support
 Summary(ru_RU.UTF-8): Debian APT - Усовершенствованное средство управления пакетами с поддержкой RPM
@@ -563,6 +563,11 @@ exec 1>&2
 %_datadir/%name/tests/
 
 %changelog
+* Fri Sep 02 2022 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt82
+- tests:
+  + Enhanced to be able to work with test packages containing some files.
+    (This will be useful for testing the work with large RPM archives.)
+
 * Wed Aug 03 2022 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt81
 - Fixed bad behavior when satisfying "Conflicts" or "Obsoletes" dependencies
   (discovered in ALT#42415), namely:
