@@ -470,8 +470,21 @@ if [ $TRIES -lt ${NPROCS:-0} ]; then
 	TRIES=$NPROCS
 fi
 
-seq 0 $((TRIES-1)) | xargs -I'{}' ${NPROCS:+-P$NPROCS --process-slot-var=PARALLEL_SLOT} \
-	-- sh -efuo pipefail -c '%runtests '${NPROCS:+'|& sed --unbuffered -e "s/^/[$PARALLEL_SLOT {}] /"'}
+for (( try = 0; try < TRIES; )); do
+    # all methods (you might want to update the list if there are new ones)
+    for method in file cdrom http https; do
+	# do the same method several times in parallel (to provoke races)
+	for (( repeat = 0; repeat < 2; ++repeat )); do
+	    echo "$((try++)):$method"
+	done
+    done
+done |
+    xargs -d'\n' -I'{}' ${NPROCS:+-P$NPROCS --process-slot-var=PARALLEL_SLOT} \
+	  -- sh -efuo pipefail \
+	  -c 'APT_TEST_METHODS={}
+              APT_TEST_METHODS="${APT_TEST_METHODS#*:}"
+              export APT_TEST_METHODS
+              %runtests '${NPROCS:+'|& sed --unbuffered -e "s/^/[$PARALLEL_SLOT {}] /"'}
 
 %package under-pkdirect-checkinstall
 Summary: Immediately test %name+PK when installing this package (via packagekit-direct)
