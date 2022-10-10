@@ -585,6 +585,7 @@ exec 1>&2
 - tests:
   + Enhanced to be able to work with test packages containing some files.
     (This will be useful for testing the work with large RPM archives.)
+  + Shortened the run time of apt-xxtra-heavy-load-checkinstall.
 
 * Wed Aug 03 2022 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt81
 - Fixed bad behavior when satisfying "Conflicts" or "Obsoletes" dependencies
