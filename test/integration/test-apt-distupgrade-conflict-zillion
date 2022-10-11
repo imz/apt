@@ -33,7 +33,7 @@ build_P()
 }
 
 for (( I=2; I <= N; ++I )); do
-    build_P "$I"
+    (build_P "$I"); [ 0 -eq $? ] # bash3 workaround
 done
 
 buildpackage 'conflicting-package-one'
