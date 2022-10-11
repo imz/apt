@@ -14,6 +14,7 @@ F="${F%.spec}"
 readonly F
 addtrap 'rm -f %q.{spec,metainfo}' "$F"
 for (( i=2; i <= N; ++i )); do
+    # Instead of editing the spec-file, we could perhaps use rpmbuild --define.
     sed -E \
 	-e 's/^Version:[[:space:]]* 2$/'"Version: $i/" \
 	-e 's/ 2-alt1$/'" $i-alt1/" \
