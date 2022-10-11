@@ -7,13 +7,18 @@ TESTDIR=$(readlink -f $(dirname $0))
 setupenvironment
 
 buildpackage 'simple-package'
+
 readonly P=simple-package-update
 readonly N=$(( 3 * 1024 ))
 F="$(mktemp "${TESTDIRECTORY}/specs/$P-XXXX.spec")"
 F="${F%.spec}"
 readonly F
 addtrap 'rm -f %q.{spec,metainfo}' "$F"
-for (( i=2; i <= N; ++i )); do
+
+build_P()
+{
+    local -r i="$1"; shift
+
     # Instead of editing the spec-file, we could perhaps use rpmbuild --define.
     sed -E \
 	-e 's/^Version:[[:space:]]* 2$/'"Version: $i/" \
@@ -25,7 +30,12 @@ for (( i=2; i <= N; ++i )); do
 	<"${TESTDIRECTORY}/specs/$P.metainfo" \
 	>|"$F.metainfo"
     buildpackage "${F##*/}"
+}
+
+for (( I=2; I <= N; ++I )); do
+    build_P "$I"
 done
+
 buildpackage 'conflicting-package-one'
 buildpackage 'conflicting-package-distupgrade'
 
