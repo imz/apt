@@ -10,14 +10,14 @@ buildpackage 'simple-package'
 
 readonly P=simple-package-update
 readonly N=$(( 3 * 1024 ))
-F="$(mktemp "${TESTDIRECTORY}/specs/$P-XXXX.spec")"
-F="${F%.spec}"
-readonly F
-addtrap 'rm -f %q.{spec,metainfo}' "$F"
-
 build_P()
 {
     local -r i="$1"; shift
+
+    local F="$(mktemp "${TESTDIRECTORY}/specs/$P-XXXX.spec")"
+    F="${F%.spec}"
+    local -r F
+    addtrap 'rm -f %q.{spec,metainfo}' "$F"
 
     # Instead of editing the spec-file, we could perhaps use rpmbuild --define.
     sed -E \
@@ -33,7 +33,7 @@ build_P()
 }
 
 for (( I=2; I <= N; ++I )); do
-    (build_P "$I"); [ 0 -eq $? ] # bash3 workaround
+    (CURRENTTRAP=; build_P "$I"); [ 0 -eq $? ] # bash3 workaround
 done
 
 buildpackage 'conflicting-package-one'
