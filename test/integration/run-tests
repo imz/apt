@@ -20,7 +20,7 @@ DIR=$(readlink -f $(dirname $0))
 # and must be set before running the tests and using the framework:
 
 # For multiple instances to be run in parallel under xargs:
-export PARALLEL_SLOT="${PARALLEL_SLOT:-0}"
+# PARALLEL_SLOT (unset if not run in parallel under xargs)
 
 # If non-empty, test failures won't count as failures
 # (rather as expected failures due to known bugs).
