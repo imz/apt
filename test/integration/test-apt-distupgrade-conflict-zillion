@@ -32,9 +32,26 @@ build_P()
     buildpackage "${F##*/}"
 }
 
-for (( I=2; I <= N; ++I )); do
-    (CURRENTTRAP=; build_P "$I"); [ 0 -eq $? ] # bash3 workaround
-done
+if [ -z "${PARALLEL_SLOT-}" ]; then
+    # We are not run in parallel under xargs,
+    # so we can use parallelism for a speed-up here.
+    NPROC="$(nproc)"
+    readonly NPROC
+    busy=0
+    for (( I=2; I <= N; ++I )); do
+	if (( ++busy > NPROC )); then
+	    wait -n
+	    (( --busy )) ||:
+	fi
+	{ CURRENTTRAP=; build_P "$I"; } &
+    done
+else
+    # Do not use parallelism inside parallelism,
+    # otherwise fork would become unavailable.
+    for (( I=2; I <= N; ++I )); do
+	(CURRENTTRAP=; build_P "$I"); [ 0 -eq $? ] # bash3 workaround
+    done
+fi
 
 buildpackage 'conflicting-package-one'
 buildpackage 'conflicting-package-distupgrade'
@@ -49,6 +66,7 @@ testpkginstalled 'conflicting-package-one'
 testequal '1-alt1' getpackageversion 'simple-package'
 testequal '1-alt1' getpackageversion 'conflicting-package-one'
 
+wait # we don't care much whether a few of the build_P's failed
 generaterepository_and_switch_sources "$TMPWORKINGDIRECTORY/usr/src/RPM/RPMS"
 
 testsuccess aptget update
