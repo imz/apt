@@ -255,18 +255,15 @@ END
 	# Not using the common tmppath helps to avoid conflicts
 	# (among other things: a race in rpmioMkpath)
 	echo "%_tmppath $TMPWORKINGDIRECTORY/rootdir/tmp" >>"$HOME"/.rpmmacros
+	echo "%_dbpath $TMPWORKINGDIRECTORY/rootdir/var/lib/rpm" >>"$HOME"/.rpmmacros
 
 	# Initialize rpmdb
-	rpmdb --dbpath="$TMPWORKINGDIRECTORY/var/lib/rpm" --initdb
+	rpmdb --initdb
 
 	# Include a special kind of pkg in the db to see how APT processes it
 	if [ -n "$APT_TEST_GPGPUBKEY" ]; then
-		rpm --dbpath="$TMPWORKINGDIRECTORY/var/lib/rpm" --import "$APT_TEST_GPGPUBKEY"
+		rpm --import "$APT_TEST_GPGPUBKEY"
 	fi
-
-	# setup rpm dbpath
-	echo "RPM::DBPath \"$TMPWORKINGDIRECTORY/var/lib/rpm\";" \
-		 > rootdir/etc/apt/apt.conf.d/99rpmdbpath.conf
 
 	# setup lua stuff
 	mkdir -p $TMPWORKINGDIRECTORY/lua/scripts
@@ -388,7 +385,7 @@ installpackage() {
 	local PKGFILE="$(builtpackagefile "$NAME")"
 
 	msgmsg "Installing package via rpm: $(basename "$PKGFILE")"
-	rpm --dbpath="$TMPWORKINGDIRECTORY/var/lib/rpm" \
+	rpm \
 		--justdb \
 		--nodeps \
 		-i "$PKGFILE" \
@@ -654,16 +651,16 @@ testnopackage() {
 testpkginstalled() {
 	msgtest 'Test that package(s) are installed with' "rpm -q $*"
 
-	testsuccess --nomsg rpm --dbpath="$TMPWORKINGDIRECTORY/var/lib/rpm" -q "$@"
+	testsuccess --nomsg rpm -q "$@"
 }
 
 getpackageversion() {
 	local result=
 
 	set +e
-	result=$(rpm --dbpath="$TMPWORKINGDIRECTORY/var/lib/rpm" \
-				 -q --qf '%{EVR}\n' "$@" \
-				 2>/dev/null)
+	result=$(rpm \
+		 -q --qf '%{EVR}\n' "$@" \
+		 2>/dev/null)
 	set -e
 
 	echo $result
@@ -672,7 +669,7 @@ getpackageversion() {
 testpkgnotinstalled() {
 	msgtest 'Test that package(s) are not installed with' "rpm -q $*"
 
-	testfailure --nomsg rpm --dbpath="$TMPWORKINGDIRECTORY/var/lib/rpm" -q "$@"
+	testfailure --nomsg rpm -q "$@"
 }
 
 # If no args, don't run a command, but examine global vars OUTPUT, RESULT

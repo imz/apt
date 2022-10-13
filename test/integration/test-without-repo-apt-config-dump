@@ -52,7 +52,6 @@ Acquire::CDROM::Copy-All "true";' \
     'Debug "";
 Debug::NoLocking "true";' \
     'RPM "";' \
-    'RPM::DBPath "[^"]*";' \
     'RPM::Options "";
 RPM::Options:: "--justdb";' \
     -- aptconfig dump
