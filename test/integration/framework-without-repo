@@ -283,6 +283,8 @@ END
 			   )
 
 	msgdone 'info'
+	msgdebug "$(rpm --eval '_dbpath: %_dbpath')"
+	msgdebug "$(rpm --eval '_tmppath: %_tmppath')"
 }
 
 # The arch (the machine arch) as detected by rpm or apt
