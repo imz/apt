@@ -417,7 +417,7 @@ wait_for_file() {
 	# otherwise it would be difficult to see why the process is hanging;
 	# it can appear only in extra-ordinary situations (under heavy load).
 	[ -s "$1" ] ||
-		printf >&2 'Waiting for %s\n' "$1" &&
+		printf >&6 'Waiting for %s\n' "$1" &&
 		while ! [ -s "$1" ]; do
 			sleep 0.5
 		done
@@ -443,12 +443,12 @@ nginxrestart() {
 		wait_for_file "$NGINX_PIDFILE" &&
 		local -r NGINXPID="$(cat "$NGINX_PIDFILE" 2>>"$NGINXLOG")" &&
 		[ -n "$NGINXPID" ] ||
-			{ { echo NGINXLOG:; cat "$NGINXLOG"; } >&2 ||:
+			{ { echo NGINXLOG:; cat "$NGINXLOG"; } >&6 ||:
 			  msgdie 'nginx failed to start normally'
 			}
 
 	addtrap 'prefix' \
-			'kill -TERM %q ||:; [ "$EXIT_CODE" = 0 ] || if [ -e %q ]; then echo NGINXLOG:; cat %q ||:; fi >&2;' \
+			'kill -TERM %q ||:; [ "$EXIT_CODE" = 0 ] || if [ -e %q ]; then echo NGINXLOG:; cat %q ||:; fi >&6;' \
 			"$NGINXPID" \
 			"$NGINXLOG" \
 			"$NGINXLOG"
@@ -492,7 +492,7 @@ edit_repo_noarch_release() {
 	if [ $MSGLEVEL -gt 3 ]; then # info
 		echo "Edited $repo_noarch_release:"
 		diff -u --text "$repo_noarch_release"{.orig,} && echo '(no diff)' ||:
-	fi >&2
+	fi >&6
 
 	touch -r "$repo_noarch_release".orig -- "$repo_noarch_release"
 	rm -- "$repo_noarch_release".orig
@@ -521,7 +521,7 @@ fake_repo_noarch_pkglist() {
 	if [ $MSGLEVEL -gt 3 ]; then # info
 		echo "Edited $repo_noarch_pkglist:"
 		diff --report-identical-files --brief "$repo_noarch_pkglist"{.orig,} ||:
-	fi >&2
+	fi >&6
 
 	touch -r "$repo_noarch_pkglist".orig -- "$repo_noarch_pkglist"
 
@@ -638,7 +638,7 @@ fake_repo_noarch_rpm() {
 	if [ $MSGLEVEL -gt 3 ]; then # info
 		echo "Edited $repo_noarch_pkgfile:"
 		diff --report-identical-files --brief "$repo_noarch_pkgfile"{.orig,} ||:
-	fi >&2
+	fi >&6
 
 	touch -r "$repo_noarch_pkgfile".orig -- "$repo_noarch_pkgfile"
 
@@ -686,7 +686,7 @@ fake_repo_rpm_cksum() {
 	if [ $MSGLEVEL -gt 3 ]; then # info
 		echo "Edited *.$cache_ext"
 		diff -u --text -Nr "$TMPWORKINGDIRECTORY"/cache{.orig,} && echo '(no diff)' ||:
-	fi >&2
+	fi >&6
 	rm -r -- "$TMPWORKINGDIRECTORY"/cache.orig
 
 	# re-generate using the same rpms, but a cache with fake cksums

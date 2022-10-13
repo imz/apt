@@ -53,19 +53,23 @@ if [ "$MSGCOLOR" != 'NO' ]; then
 	CCMD="\033[1;35m" # pink
 fi
 
-msgdie() { printf "${CERROR}E: $1${CNORMAL}\n" >&2; exit 1; }
-msgwarn() { printf "${CWARNING}W: $1${CNORMAL}\n" >&2; }
-msgmsg() { printf "${CMSG}$1${CNORMAL}\n" >&2; }
-msginfo() { printf "${CINFO}I: $1${CNORMAL}\n" >&2; }
-msgdebug() { printf "${CDEBUG}D: $1${CNORMAL}\n" >&2; }
-msgdone() { printf "${CDONE}DONE${CNORMAL}\n" >&2; }
-msgnwarn() { printf "${CWARNING}W: $1${CNORMAL}" >&2; }
-msgnmsg() { printf "${CMSG}$1${CNORMAL}" >&2; }
-msgninfo() { printf "${CINFO}I: $1${CNORMAL}" >&2; }
-msgndebug() { printf "${CDEBUG}D: $1${CNORMAL}" >&2; }
+# Our messages shouldn't be messed up with commands' stdout and stderr,
+# therefore we use a special FD for them.
+exec 6>&2
+
+msgdie() { printf "${CERROR}E: $1${CNORMAL}\n" >&6; exit 1; }
+msgwarn() { printf "${CWARNING}W: $1${CNORMAL}\n" >&6; }
+msgmsg() { printf "${CMSG}$1${CNORMAL}\n" >&6; }
+msginfo() { printf "${CINFO}I: $1${CNORMAL}\n" >&6; }
+msgdebug() { printf "${CDEBUG}D: $1${CNORMAL}\n" >&6; }
+msgdone() { printf "${CDONE}DONE${CNORMAL}\n" >&6; }
+msgnwarn() { printf "${CWARNING}W: $1${CNORMAL}" >&6; }
+msgnmsg() { printf "${CMSG}$1${CNORMAL}" >&6; }
+msgninfo() { printf "${CINFO}I: $1${CNORMAL}" >&6; }
+msgndebug() { printf "${CDEBUG}D: $1${CNORMAL}" >&6; }
 msgtest() {
 	while [ $# -gt 0 ]; do
-		printf "${CINFO}%s${CCMD} %s${CNORMAL} " "$1" "$(sed -e 's#^apt\([cgfs]\)#apt-\1#' <<<"${2-}")" >&2
+		printf "${CINFO}%s${CCMD} %s${CNORMAL} " "$1" "$(sed -e 's#^apt\([cgfs]\)#apt-\1#' <<<"${2-}")" >&6
 		shift
 		if [ $# -gt 0 ]; then
 			shift
@@ -73,13 +77,13 @@ msgtest() {
 			break
 		fi
 	done
-	printf "${CINFO}…${CNORMAL} " >&2
+	printf "${CINFO}…${CNORMAL} " >&6
 }
-msgpass() { printf "${CPASS}PASS${CNORMAL}\n" >&2; }
-msgskip() { printf "${CWARNING}SKIP${CNORMAL}\n" >&2; }
+msgpass() { printf "${CPASS}PASS${CNORMAL}\n" >&6; }
+msgskip() { printf "${CWARNING}SKIP${CNORMAL}\n" >&6; }
 msgfail() {
-	if [ $# -gt 0 ]; then printf "${CFAIL}FAIL: $*${CNORMAL}\n" >&2;
-	else printf "${CFAIL}FAIL${CNORMAL}\n" >&2; fi
+	if [ $# -gt 0 ]; then printf "${CFAIL}FAIL: $*${CNORMAL}\n" >&6;
+	else printf "${CFAIL}FAIL${CNORMAL}\n" >&6; fi
 	one_more_failure
 }
 
@@ -97,12 +101,12 @@ if [ $MSGLEVEL -le 2 ]; then
 	msgmsg() { true; }
 	msgnmsg() { true; }
 	msgtest() { true; }
-	msgpass() { printf " ${CPASS}P${CNORMAL}" >&2; }
-	msgskip() { printf " ${CWARNING}S${CNORMAL}" >&2; }
+	msgpass() { printf " ${CPASS}P${CNORMAL}" >&6; }
+	msgskip() { printf " ${CWARNING}S${CNORMAL}" >&6; }
 	if [ -n "$CFAIL" ]; then
-		msgfail() { printf " ${CFAIL}FAIL${CNORMAL}" >&2; one_more_failure; }
+		msgfail() { printf " ${CFAIL}FAIL${CNORMAL}" >&6; one_more_failure; }
 	else
-		msgfail() { printf ' ###FAILED###' >&2; one_more_failure; }
+		msgfail() { printf ' ###FAILED###' >&6; one_more_failure; }
 	fi
 fi
 if [ $MSGLEVEL -le 3 ]; then
@@ -121,7 +125,7 @@ msgdone() {
 	   [ "$1" = 'die' -a $MSGLEVEL -le 0 ]; then
 		true;
 	else
-		printf "${CDONE}DONE${CNORMAL}\n" >&2;
+		printf "${CDONE}DONE${CNORMAL}\n" >&6;
 	fi
 }
 getaptconfig() {
@@ -157,7 +161,7 @@ exitwithstatus() {
 shellsetedetector() {
 	local exit_status=$?
 	if [ "$exit_status" != '0' ]; then
-		printf >&2 "${CERROR}E: Looks like the testcases ended prematurely with exitcode: ${exit_status}${CNORMAL}\n"
+		printf >&6 "${CERROR}E: Looks like the testcases ended prematurely with exitcode: ${exit_status}${CNORMAL}\n"
 		if [ "$EXIT_CODE" = '0' ]; then
 			EXIT_CODE="$exit_status"
 		fi
@@ -410,7 +414,7 @@ testfileequal() {
 		    && msgpass \
 		    || {
 			msgfail
-			echo >&2 "$DIFFTEXT"
+			echo >&6 "$DIFFTEXT"
 		    }
 	}
 
@@ -423,7 +427,7 @@ testempty() {
 		msgpass
 	else
 		msgfail
-		cat >&2 $COMPAREFILE
+		cat >&6 $COMPAREFILE
 	fi
 }
 
@@ -446,7 +450,7 @@ testequal() {
 		    && msgpass \
 		    || {
 			msgfail
-			echo >&2 "$DIFFTEXT"
+			echo >&6 "$DIFFTEXT"
 		    }
 	}
 }
@@ -501,7 +505,7 @@ testregexmatch() {
 		local COMPAREFILE="${TMPWORKINGDIRECTORY}/rootdir/tmp/testregexmatch.comparefile"
 		echo "$COMPAREMSG" > $COMPAREFILE
 		checkdiff $COMPAREFILE $OUTPUT || true
-		echo >&2 "$DIFFTEXT"
+		echo >&6 "$DIFFTEXT"
 	fi
 }
 
@@ -592,10 +596,10 @@ testequalor2() {
 		msgfail
 		echo "${CINFO}Diff against OR 1${CNORMAL}"
 		checkdiff $COMPAREFILE1 $COMPAREAGAINST || true
-		echo >&2 "$DIFFTEXT"
+		echo >&6 "$DIFFTEXT"
 		echo "${CINFO}Diff against OR 2${CNORMAL}"
 		checkdiff $COMPAREFILE2 $COMPAREAGAINST || true
-		echo >&2 "$DIFFTEXT"
+		echo >&6 "$DIFFTEXT"
 	fi
 }
 
@@ -618,7 +622,7 @@ N: No packages found"
 		    && msgpass \
 		    || {
 			msgfail
-			echo >&2 "$DIFFTEXT"
+			echo >&6 "$DIFFTEXT"
 		    }
 	}
 }
@@ -628,7 +632,7 @@ testnopackage() {
 	local SHOWPKG="$(aptcache show "$@" 2>&1 | grep '^Package: ')"
 	if [ -n "$SHOWPKG" ]; then
 		msgfail
-		echo >&2 "$SHOWPKG"
+		echo >&6 "$SHOWPKG"
 	else
 		msgpass
 	fi
@@ -682,11 +686,11 @@ testsuccess() {
 	if [ $RESULT -eq 0 ]; then
 		msgpass
 		if [ $MSGLEVEL -gt 3 ]; then # info
-			cat >&2 $OUTPUT
+			cat >&6 $OUTPUT
 		fi
 	else
 		msgfail
-		cat >&2 $OUTPUT
+		cat >&6 $OUTPUT
 	fi
 }
 
@@ -713,11 +717,11 @@ testfailure() {
 
 	if [ $RESULT -eq 0 ]; then
 		msgfail
-		cat >&2 $OUTPUT
+		cat >&6 $OUTPUT
 	else
 		msgpass
 		if [ $MSGLEVEL -gt 3 ]; then # info
-			cat >&2 $OUTPUT
+			cat >&6 $OUTPUT
 		fi
 	fi
 }
@@ -800,7 +804,7 @@ bg_aptshell_exit_helper() {
 
 	[ -z "$old_input_fd" ] || echo exit >&"$old_input_fd" ||:
 	[ -z "$old_pid" ] || {
-	    echo >&2 "Exiting the bg apt-shell (pid $old_pid) (ignoring its status)."
+	    echo >&6 "Exiting the bg apt-shell (pid $old_pid) (ignoring its status)."
 	    # Not to hang on waiting, we start a parallell subshell which
 	    # will kill it after a timeout (sleep). (Or which would just sleep,
 	    # and we'd wait -n on either processes, then kill it in the main
@@ -832,12 +836,12 @@ bg_aptshell_restart() {
 	}
 
 	[ -n "${BG_APTSHELL_PID-}" ] ||
-		{ { echo BG_APTSHELL_LOG:; cat "$BG_APTSHELL_LOG"; echo; } >&2 ||:
+		{ { echo BG_APTSHELL_LOG:; cat "$BG_APTSHELL_LOG"; echo; } >&6 ||:
 		  msgdie 'the bg apt-shell failed to start normally'
 		}
 
 	addtrap 'prefix' \
-		'bg_aptshell_exit_helper %q %q &>%q||:; [ "$EXIT_CODE" = 0 ] || if [ -e %q ]; then echo BG_APTSHELL_LOG:; cat %q ||:; echo; fi >&2;' \
+		'bg_aptshell_exit_helper %q %q &>%q||:; [ "$EXIT_CODE" = 0 ] || if [ -e %q ]; then echo BG_APTSHELL_LOG:; cat %q ||:; echo; fi >&6;' \
 		"${BG_APTSHELL[1]}" \
 		"$BG_APTSHELL_PID" \
 		"$BG_APTSHELL_LOG" \
