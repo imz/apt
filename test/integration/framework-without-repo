@@ -248,6 +248,14 @@ END
 	unset LANGUAGE APT_CONFIG
 	unset GREP_OPTIONS
 
+	# The configuration for rpm (install)
+	mkdir -p $TMPWORKINGDIRECTORY/home_rooter
+	export HOME=$TMPWORKINGDIRECTORY/home_rooter
+	echo >"$HOME"/.rpmmacros
+	# Not using the common tmppath helps to avoid conflicts
+	# (among other things: a race in rpmioMkpath)
+	echo "%_tmppath $TMPWORKINGDIRECTORY/rootdir/tmp" >>"$HOME"/.rpmmacros
+
 	# Initialize rpmdb
 	rpmdb --dbpath="$TMPWORKINGDIRECTORY/var/lib/rpm" --initdb
 
