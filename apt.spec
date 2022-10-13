@@ -470,14 +470,19 @@ if [ $TRIES -lt ${NPROCS:-0} ]; then
 	TRIES=$NPROCS
 fi
 
+already_once=0
 for (( try = 0; try < TRIES; )); do
     # all methods (you might want to update the list if there are new ones)
     for method in file cdrom http https; do
 	# do the same method several times in parallel (to provoke races)
 	for (( repeat = 0; repeat < 2; ++repeat )); do
 	    echo "$((try++)):$method"
+	    if (( already_once && (try >= TRIES) )); then
+		break 2
+	    fi
 	done
     done
+    already_once=1
 done |
     xargs -d'\n' -I'{}' ${NPROCS:+-P$NPROCS --process-slot-var=PARALLEL_SLOT} \
 	  -- sh -efuo pipefail \
