@@ -56,8 +56,8 @@ fi
 msgdie() { printf "${CERROR}E: $1${CNORMAL}\n" >&2; exit 1; }
 msgwarn() { printf "${CWARNING}W: $1${CNORMAL}\n" >&2; }
 msgmsg() { printf "${CMSG}$1${CNORMAL}\n" >&2; }
-msginfo() { printf "${CINFO}I: $1${CNORMAL}\n"; }
-msgdebug() { printf "${CDEBUG}D: $1${CNORMAL}\n"; }
+msginfo() { printf "${CINFO}I: $1${CNORMAL}\n" >&2; }
+msgdebug() { printf "${CDEBUG}D: $1${CNORMAL}\n" >&2; }
 msgdone() { printf "${CDONE}DONE${CNORMAL}\n" >&2; }
 msgnwarn() { printf "${CWARNING}W: $1${CNORMAL}" >&2; }
 msgnmsg() { printf "${CMSG}$1${CNORMAL}" >&2; }
