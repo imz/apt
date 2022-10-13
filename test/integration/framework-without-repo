@@ -269,6 +269,9 @@ END
 	mkdir -p $TMPWORKINGDIRECTORY/bash/scripts
 	mkdir -p $TMPWORKINGDIRECTORY/bash/results
 
+	# for rpmbuild
+	mkdir -p $TMPWORKINGDIRECTORY/tmp
+
 	# emulate CDROM (without affecting the config)
 	MOCKUP_CDROM_STORAGE="$TMPWORKINGDIRECTORY/usr/src/RPM/DISK"
 	CDROM_OPTS=(-o Acquire::CDROM::Mount="$MOCKUP_CDROM_STORAGE"
