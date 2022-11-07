@@ -114,33 +114,33 @@ runtest() {
 	else
 		printf >&2 "${CTEST}Run Testcase ($(($ALL+1))/${TOTAL}) ${CHIGH}$testcase${CRESET}\n"
 	fi
+	local testresult=0
         APT_TEST_METHOD="${method:-}" \
-		./${testscript} && PASS=$((PASS+1)) || {
-			local -r testresult=$?
-			if [ "$testresult" -eq 255 ]; then
-				XFAIL=$((XFAIL+1))
-				XFAILED_TESTS="$XFAILED_TESTS $testcase"
-				echo >&2 "$testcase ... XFAIL"
-			elif [ "$testresult" -eq 254 ]; then
-				XPASS=$((XPASS+1))
-				XPASSED_TESTS="$XPASSED_TESTS $testcase"
-				echo >&2 "$testcase ... XPASS"
-			else
-				FAIL=$((FAIL+1))
-				FAILED_TESTS="$FAILED_TESTS $testcase"
-				echo >&2 "$testcase ... FAIL"
-			fi
-	}
-	ALL=$((ALL+1))
+		./${testscript} || testresult=$?
+	local testresultmsg
+	if [ "$testresult" -eq 0 ]; then
+	    testresultmsg=PASS
+	elif [ "$testresult" -eq 255 ]; then
+	    testresultmsg=XFAIL
+	elif [ "$testresult" -eq 254 ]; then
+	    testresultmsg=XPASS
+	else
+	    testresultmsg=FAIL
+	fi
 	if [ "$MSGLEVEL" -le 2 ]; then
 		echo >&2
 	fi
+	echo >&2 "$testcase ... $testresultmsg"
+	echo "$testcase ... $testresultmsg"
+	ALL=$((ALL+1))
 }
 
 readonly -a TESTSCRIPTS_WITHOUT_REPO=($(ls $DIR | grep -Ee '^test-without-repo-'))
 readonly -a TESTSCRIPTS_WITH_REPO=($(ls $DIR | grep -Ee '^test-' | grep -v -Ee '^test-without-repo-'))
 readonly TOTAL=$(( ${#TESTSCRIPTS_WITHOUT_REPO[@]}
 		   + ${#TESTSCRIPTS_WITH_REPO[@]} * ${#APT_TEST_METHODS[@]} ))
+
+{
 
 for testscript in "${TESTSCRIPTS_WITHOUT_REPO[@]}"; do
 	runtest "$testscript"
@@ -150,6 +150,34 @@ for method in "${APT_TEST_METHODS[@]}"; do
 for testscript in "${TESTSCRIPTS_WITH_REPO[@]}"; do
 	runtest "$testscript" "$method"
 done
+done
+
+} |
+{
+
+while read -r testcase testresultmsg; do
+    case "$testresultmsg" in
+	('... PASS')
+	    PASS=$((PASS+1))
+	    ;;
+	('... XFAIL')
+	    XFAIL=$((XFAIL+1))
+	    XFAILED_TESTS="$XFAILED_TESTS $testcase"
+	    ;;
+	('... XPASS')
+	    XPASS=$((XPASS+1))
+	    XPASSED_TESTS="$XPASSED_TESTS $testcase"
+	    ;;
+	('... FAIL')
+	    FAIL=$((FAIL+1))
+	    FAILED_TESTS="$FAILED_TESTS $testcase"
+	    ;;
+	(*)
+	    printf >&2 'Malformed result msg in the pipe after test %d: %s\n' "$ALL" "$testcase $testresultmsg"
+	    exit 1
+	    ;;
+    esac
+    ALL=$((ALL+1))
 done
 
 echo >&2 "Statistics: $ALL tests were run: $PASS successfully and $FAIL failed and $XFAIL xfailed and $XPASS xpassed"
@@ -179,3 +207,5 @@ if [ "$FAIL" -gt 0 ]; then
 elif [ "$XPASS" -gt 0 ]; then
 	exit $((XPASS <= 255 ? XPASS : 255))
 fi
+
+}
