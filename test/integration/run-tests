@@ -1,5 +1,6 @@
 #!/bin/bash
 set -e
+set -o pipefail
 
 # Some tests are "multiplied" by the method for accessing the repo (the one
 # specified in sources.list). The user may override them with this parameter.
