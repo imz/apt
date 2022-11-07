@@ -132,7 +132,7 @@ runtest() {
 	}
 	ALL=$((ALL+1))
 	if [ "$MSGLEVEL" -le 2 ]; then
-		echo
+		echo >&2
 	fi
 }
 
