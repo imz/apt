@@ -364,6 +364,7 @@ class pkgDepCache::DbgLogger
 
    bool DbgTraversal;
    bool DbgShallow;
+   bool DbgResolver;
    bool DbgFuncCalls;
 
    void printMsg(unsigned int nesting, const std::string &msg) const;
@@ -372,6 +373,7 @@ class pkgDepCache::DbgLogger
 
    void traceTraversal(unsigned int nesting, const std::string &msg) const;
    void traceShallow(const std::string &msg) const;
+   void traceSolver(unsigned int nesting, const std::string &msg) const;
    void traceFuncCall(const std::string &msg) const;
 
    // A little help to invoke us in a simpler way. (Not universal though...)
@@ -388,6 +390,14 @@ class pkgDepCache::DbgLogger
    void traceShallow(const char * const msg, const T &arg) const
    {
       traceShallow(std::string(msg) + " " + ToDbgStr(arg));
+      // append() or a special format with two %s would be faster
+   }
+
+   template<typename T>
+   void traceSolver(unsigned int const nesting,
+                      const char * const msg, const T &arg) const
+   {
+      traceSolver(nesting, std::string(msg) + " " + ToDbgStr(arg));
       // append() or a special format with two %s would be faster
    }
 

@@ -54,6 +54,12 @@ void pkgDepCache::DbgLogger::traceShallow(const std::string &msg) const
       printMsg(0, msg);
 }
 
+void pkgDepCache::DbgLogger::traceSolver(unsigned int const nesting, const std::string &msg) const
+{
+   if (DbgResolver)
+      printMsg(nesting, msg);
+}
+
 void pkgDepCache::DbgLogger::traceFuncCall(const std::string &msg) const
 {
    if (DbgFuncCalls)
@@ -79,6 +85,7 @@ pkgDepCache::DbgLogger::DbgLogger():
    Depth(0),
    DbgTraversal(_config->FindB("Debug::pkgMarkInstall", false)),
    DbgShallow(_config->FindB("Debug::pkgMark-shallow", false)),
+   DbgResolver(_config->FindB("Debug::pkgProblemResolver", false)),
    DbgFuncCalls(_config->FindB("Debug::pkgMark-allcalls", false))
 {}
 
