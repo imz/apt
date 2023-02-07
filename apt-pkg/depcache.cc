@@ -34,90 +34,53 @@
 
 									/*}}}*/
 
-// For Mark*() functions (to debug and trace)
-class pkgDepCache::DbgLogger
+void pkgDepCache::DbgLogger::printMsg(unsigned int const nesting, const std::string &msg) const
 {
-   const char *Prefix;
-   int Depth;
+   if (Prefix)
+      ioprintf(std::clog, "%s:%*s %s\n", Prefix, Depth*3+nesting, "", msg.c_str());
+   else
+      ioprintf(std::clog, "%*s%s\n", Depth*3+nesting, "", msg.c_str());
+}
 
-   bool DbgTraversal;
-   bool DbgShallow;
-   bool DbgFuncCalls;
+void pkgDepCache::DbgLogger::traceTraversal(unsigned int const nesting, const std::string &msg) const
+{
+   if (DbgTraversal)
+      printMsg(nesting, msg);
+}
 
-   void printMsg(unsigned int const nesting, const std::string &msg) const
-   {
-      if (Prefix)
-         ioprintf(std::clog, "%s:%*s %s\n", Prefix, Depth*3+nesting, "", msg.c_str());
-      else
-         ioprintf(std::clog, "%*s%s\n", Depth*3+nesting, "", msg.c_str());
-   }
+void pkgDepCache::DbgLogger::traceShallow(const std::string &msg) const
+{
+   if (DbgShallow)
+      printMsg(0, msg);
+}
 
-   public:
+void pkgDepCache::DbgLogger::traceFuncCall(const std::string &msg) const
+{
+   if (DbgFuncCalls)
+      printMsg(0, msg);
+}
 
-   void traceTraversal(unsigned int const nesting, const std::string &msg) const
-   {
-      if (DbgTraversal)
-         printMsg(nesting, msg);
-   }
+pkgDepCache::DbgLogger pkgDepCache::DbgLogger::nested(const char * const NewPrefix) const
+{
+   DbgLogger offspring(*this); // copy this parent
 
-   void traceShallow(const std::string &msg) const
-   {
-      if (DbgShallow)
-         printMsg(0, msg);
-   }
+   if (!NewPrefix)
+      ++offspring.Depth;
+   else
+      offspring.Prefix = NewPrefix;
+   // Well, in our particular use cases, we don't need to increase Depth
+   // when we add a prefix.
 
-   void traceFuncCall(const std::string &msg) const
-   {
-      if (DbgFuncCalls)
-         printMsg(0, msg);
-   }
+   return offspring;
+}
 
-   // A little help to invoke us in a simpler way. (Not universal though...)
-
-   template<typename T>
-   void traceTraversal(unsigned int const nesting,
-                       const char * const msg, const T &arg) const
-   {
-      traceTraversal(nesting, std::string(msg) + " " + ToDbgStr(arg));
-      // append() or a special format with two %s would be faster
-   }
-
-   template<typename T>
-   void traceShallow(const char * const msg, const T &arg) const
-   {
-      traceShallow(std::string(msg) + " " + ToDbgStr(arg));
-      // append() or a special format with two %s would be faster
-   }
-
-   template<typename T>
-   void traceFuncCall(const char * const msg, const T &arg) const
-   {
-      traceFuncCall(std::string(msg) + " " + ToDbgStr(arg));
-      // append() or a special format with two %s would be faster
-   }
-
-   DbgLogger nested(const char * const NewPrefix = nullptr) const
-   {
-      DbgLogger offspring(*this); // copy this parent
-
-      if (!NewPrefix)
-         ++offspring.Depth;
-      else
-         offspring.Prefix = NewPrefix;
-      // Well, in our particular use cases, we don't need to increase Depth
-      // when we add a prefix.
-
-      return offspring;
-   }
-
-   DbgLogger():
-      Prefix(nullptr),
-      Depth(0),
-      DbgTraversal(_config->FindB("Debug::pkgMarkInstall", false)),
-      DbgShallow(_config->FindB("Debug::pkgMark-shallow", false)),
-      DbgFuncCalls(_config->FindB("Debug::pkgMark-allcalls", false))
-   {}
-};
+pkgDepCache::DbgLogger::DbgLogger():
+   Prefix(nullptr),
+   Depth(0),
+   DbgTraversal(_config->FindB("Debug::pkgMarkInstall", false)),
+   DbgShallow(_config->FindB("Debug::pkgMark-shallow", false)),
+   DbgFuncCalls(_config->FindB("Debug::pkgMark-allcalls", false))
+{}
 
 // DepCache::pkgDepCache - Constructors					/*{{{*/
 // ---------------------------------------------------------------------
