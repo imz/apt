@@ -129,7 +129,7 @@ class pkgCache
    inline unsigned long Hash(const char *S) const;
    inline unsigned long Hash(const string & S) const {return Hash(S.c_str());}
 
-   // Usefull transformation things
+   // Useful transformation things
    const char *Priority(unsigned char Priority);
 
    // Accessors
