@@ -242,7 +242,7 @@ const char *pkgCache::DepType(unsigned char const Type)
 									/*}}}*/
 const char *pkgCache::DepTypeC(unsigned char const Type)
 {
-   static const char * const Types[] = {"",N_("Depends"),N_("PreDepends"),N_("Suggests"),
+   static constexpr const char * const Types[] = {"",N_("Depends"),N_("PreDepends"),N_("Suggests"),
                           N_("Recommends"),N_("Conflicts"),N_("Replaces"),
                           N_("Obsoletes")};
    if (Type < _count(Types))
