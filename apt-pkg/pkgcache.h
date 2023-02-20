@@ -131,6 +131,8 @@ class pkgCache
 
    // Useful transformation things
    static const char *Priority(unsigned char Priority);
+   // untranslated value ("C" locale, for debugging messages)
+   static const char *PriorityC(unsigned char Priority);
 
    // Accessors
    PkgIterator FindPkg(const string & Name);
@@ -149,6 +151,8 @@ class pkgCache
    static const char *CompTypeDeb(unsigned char Comp);
    static const char *CompType(unsigned char Comp);
    static const char *DepType(unsigned char Dep);
+   // untranslated value ("C" locale, for debugging messages)
+   static const char *DepTypeC(unsigned char Dep);
 
    pkgCache(MMap &Map,bool DoMap = true);
    virtual ~pkgCache() {}

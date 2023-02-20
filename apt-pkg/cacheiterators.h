@@ -217,6 +217,7 @@ class pkgCache::DepIterator
    bool SmartTargetPkg(PkgIterator &Result);
    const char *CompType() const {return Owner->CompType(Dep->CompareOp);}
    const char *DepType() const {return Owner->DepType(Dep->Type);}
+   const char *DepTypeC() const {return Owner->DepTypeC(Dep->Type);}
 
    inline DepIterator(pkgCache &Owner,Dependency *Trg,Version * = 0) :
           Dep(Trg), Type(DepVer), Owner(&Owner)
