@@ -130,7 +130,7 @@ class pkgCache
    inline unsigned long Hash(const string & S) const {return Hash(S.c_str());}
 
    // Useful transformation things
-   const char *Priority(unsigned char Priority);
+   static const char *Priority(unsigned char Priority);
 
    // Accessors
    PkgIterator FindPkg(const string & Name);
