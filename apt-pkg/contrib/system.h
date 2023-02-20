@@ -54,4 +54,8 @@
 #define CLRFLAG(v,f)	((v) &=~FLAG(f))
 #define	CHKFLAG(v,f)	((v) &  FLAG(f) ? true : false)
 
+/* To mark strings that need translations, but are introduced
+   as untranslated values. */
+#define N_(x) x
+
 #endif
