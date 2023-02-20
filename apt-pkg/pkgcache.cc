@@ -235,28 +235,38 @@ const char *pkgCache::CompType(unsigned char Comp)
 // Cache::DepType - Return a string describing the dep type		/*{{{*/
 // ---------------------------------------------------------------------
 /* */
-const char *pkgCache::DepType(unsigned char Type)
+const char *pkgCache::DepType(unsigned char const Type)
+{
+   return DepTypeC(Type);
+}
+									/*}}}*/
+const char *pkgCache::DepTypeC(unsigned char const Type)
 {
    static const char * const Types[] = {"",N_("Depends"),N_("PreDepends"),N_("Suggests"),
                           N_("Recommends"),N_("Conflicts"),N_("Replaces"),
                           N_("Obsoletes")};
    if (Type < _count(Types))
-      return _(Types[Type]);
+      return Types[Type];
    return "";
 }
-									/*}}}*/
+
 // Cache::Priority - Convert a priority value to a string		/*{{{*/
 // ---------------------------------------------------------------------
 /* */
-const char *pkgCache::Priority(unsigned char Prio)
+const char *pkgCache::Priority(unsigned char const Prio)
+{
+   return PriorityC(Prio);
+}
+									/*}}}*/
+const char *pkgCache::PriorityC(unsigned char const Prio)
 {
    static const char * const Mapping[] = {0,N_("important"),N_("required"),N_("standard"),
                             N_("optional"),N_("extra")};
    if (Prio < _count(Mapping))
-      return _(Mapping[Prio]);
+      return Mapping[Prio];
    return 0;
 }
-									/*}}}*/
+
 
 // Bases for iterator classes						/*{{{*/
 void pkgCache::VerIterator::_dummy() {}
