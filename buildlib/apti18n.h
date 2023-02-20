@@ -6,4 +6,6 @@
 #include <gettext.h>
 #define _(x) gettext(x)
 
+#define N_(x) gettext_noop(x)
+
 #endif /* APTI18N_H */

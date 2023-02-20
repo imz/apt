@@ -214,7 +214,7 @@ pkgCache::Package *pkgCache::FindPackage(const char *Name)
    type in the weird debian style.. */
 const char *pkgCache::CompTypeDeb(unsigned char Comp)
 {
-   const char *Ops[] = {"","<=",">=","<<",">>","=","!="};
+   static const char * const Ops[] = {"","<=",">=","<<",">>","=","!="};
    if ((unsigned)(Comp & 0xF) < _count(Ops))
       return Ops[Comp & 0xF];
    return "";
@@ -226,7 +226,7 @@ const char *pkgCache::CompTypeDeb(unsigned char Comp)
    type */
 const char *pkgCache::CompType(unsigned char Comp)
 {
-   const char *Ops[] = {"","<=",">=","<",">","=","!="};
+   static const char * const Ops[] = {"","<=",">=","<",">","=","!="};
    if ((unsigned)(Comp & 0xF) < _count(Ops))
       return Ops[Comp & 0xF];
    return "";
@@ -237,11 +237,11 @@ const char *pkgCache::CompType(unsigned char Comp)
 /* */
 const char *pkgCache::DepType(unsigned char Type)
 {
-   const char *Types[] = {"",_("Depends"),_("PreDepends"),_("Suggests"),
-                          _("Recommends"),_("Conflicts"),_("Replaces"),
-                          _("Obsoletes")};
+   static const char * const Types[] = {"",N_("Depends"),N_("PreDepends"),N_("Suggests"),
+                          N_("Recommends"),N_("Conflicts"),N_("Replaces"),
+                          N_("Obsoletes")};
    if (Type < _count(Types))
-      return Types[Type];
+      return _(Types[Type]);
    return "";
 }
 									/*}}}*/
@@ -250,10 +250,10 @@ const char *pkgCache::DepType(unsigned char Type)
 /* */
 const char *pkgCache::Priority(unsigned char Prio)
 {
-   const char *Mapping[] = {0,_("important"),_("required"),_("standard"),
-                            _("optional"),_("extra")};
+   static const char * const Mapping[] = {0,N_("important"),N_("required"),N_("standard"),
+                            N_("optional"),N_("extra")};
    if (Prio < _count(Mapping))
-      return Mapping[Prio];
+      return _(Mapping[Prio]);
    return 0;
 }
 									/*}}}*/
