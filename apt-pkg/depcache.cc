@@ -1091,7 +1091,7 @@ void pkgDepCache::MarkInstallRec(const PkgIterator &Pkg,
             if (*Cur == TrgP.CandidateVer)
             {
                // Transform the found result and pass it (out of the loop).
-	       DBG.traceTraversal(2, "can be installed (a direct target):", TrgVer);
+	       DBG.traceTraversal(2, "maybe install (a direct target):", TrgVer);
                InstVer = TrgVer;
                break;
             }
@@ -1112,12 +1112,12 @@ void pkgDepCache::MarkInstallRec(const PkgIterator &Pkg,
                   // We'll be looking for at least two results.
                   if (CanSelect++ == 0)
                   {
-                     DBG.traceTraversal(2, "can be installed (a providing target):", TrgVer);
+                     DBG.traceTraversal(2, "maybe install (a providing target):", TrgVer);
                      InstVer = TrgVer;
                   }
                   else
                   {
-                     DBG.traceTraversal(2, "can be installed (another providing target):", TrgVer);
+                     DBG.traceTraversal(2, "maybe install (another providing target):", TrgVer);
                      break;
                   }
                }
@@ -1140,7 +1140,7 @@ void pkgDepCache::MarkInstallRec(const PkgIterator &Pkg,
 
 	 DBG.traceTraversal(1, "target SELECTED:", InstVer);
          PkgIterator const InstPkg = InstVer.ParentPkg();
-	 DBG.traceTraversal(1, "requesting to install", InstPkg);
+	 DBG.traceTraversal(1, "requesting to install (unspecified ver)", InstPkg);
          // Recursion is always restricted
          MarkInstallRec(InstPkg,/*Restricted*/true,MarkAgain,Depth+1,DBG.deeper());
       }
@@ -1155,7 +1155,7 @@ void pkgDepCache::MarkInstallRec(const PkgIterator &Pkg,
 	    VerIterator const TrgVer(*Cache,*I);
             DBG.traceTraversal(2, "must not be installed (a target):", TrgVer);
 	    PkgIterator const TrgPkg = TrgVer.ParentPkg();
-            DBG.traceTraversal(2, "requesting to delete", TrgPkg);
+            DBG.traceTraversal(2, "requesting to delete (unspecified ver)", TrgPkg);
 	    MarkDelete0(TrgPkg, false, DBG.deeper());
 	    MarkAuto(TrgPkg, getMarkAuto(TrgPkg));
 	 }
