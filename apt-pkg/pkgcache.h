@@ -63,6 +63,15 @@ class pkgCache
 	 Greater=0x4,Equals=0x5,NotEquals=0x6};
    };
 
+   // untranslated value ("C" locale, for debugging messages)
+   static constexpr const char * DepTypeC(unsigned char const Type)
+   {
+      static constexpr const char * const Types[] = {"",N_("Depends"),N_("PreDepends"),N_("Suggests"),
+                                           N_("Recommends"),N_("Conflicts"),N_("Replaces"),
+                                           N_("Obsoletes")};
+      return (Type < _count(Types)) ? Types[Type] : "";
+   }
+
    struct State
    {
       enum VerPriority {Important=1,Required=2,Standard=3,Optional=4,Extra=5};
@@ -151,8 +160,6 @@ class pkgCache
    static const char *CompTypeDeb(unsigned char Comp);
    static const char *CompType(unsigned char Comp);
    static const char *DepType(unsigned char Dep);
-   // untranslated value ("C" locale, for debugging messages)
-   static const char *DepTypeC(unsigned char Dep);
 
    pkgCache(MMap &Map,bool DoMap = true);
    virtual ~pkgCache() {}

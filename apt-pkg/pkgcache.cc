@@ -240,16 +240,6 @@ const char *pkgCache::DepType(unsigned char const Type)
    return DepTypeC(Type);
 }
 									/*}}}*/
-const char *pkgCache::DepTypeC(unsigned char const Type)
-{
-   static const char * const Types[] = {"",N_("Depends"),N_("PreDepends"),N_("Suggests"),
-                          N_("Recommends"),N_("Conflicts"),N_("Replaces"),
-                          N_("Obsoletes")};
-   if (Type < _count(Types))
-      return Types[Type];
-   return "";
-}
-
 // Cache::Priority - Convert a priority value to a string		/*{{{*/
 // ---------------------------------------------------------------------
 /* */
