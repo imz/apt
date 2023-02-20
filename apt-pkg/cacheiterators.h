@@ -410,7 +410,7 @@ inline std::string ToDbgStr(const pkgCache::DepIterator &D)
    if (D.end())
       return "(END)";
    return
-      std::string(D.DepType())
+      std::string(D.DepTypeC())
       + ": "
       + ToDbgStr(D.TargetPkg())
       + " "
