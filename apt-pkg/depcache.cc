@@ -1140,7 +1140,9 @@ void pkgDepCache::MarkInstallRec(const PkgIterator &Pkg,
 
 	 DBG.traceTraversal(1, "target SELECTED:", InstVer);
          PkgIterator const InstPkg = InstVer.ParentPkg();
-	 DBG.traceTraversal(1, "requesting to install (unspecified ver)", InstPkg);
+	 DBG.traceTraversal(1, "requesting to install "
+                            + ToDbgStr(InstPkg)
+                            + " (unspec'd ver; inspect with Debug::pkgMark-shallow)");
          // Recursion is always restricted
          MarkInstallRec(InstPkg,/*Restricted*/true,MarkAgain,Depth+1,DBG.nested());
       }
@@ -1188,7 +1190,9 @@ void pkgDepCache::MarkInstallRec(const PkgIterator &Pkg,
                TODO: consider 3 solutions instead of 1 currently.
             */
 
-            DBG.traceTraversal(2, "requesting to delete (unspecified ver)", TrgPkg);
+            DBG.traceTraversal(2, "requesting to delete "
+                               + ToDbgStr(TrgPkg)
+                               + " (unspec'd ver; inspect with Debug::pkgMark-shallow)");
 	    MarkDelete0(TrgPkg, false, DBG.nested());
 	    MarkAuto(TrgPkg, getMarkAuto(TrgPkg));
 	 }
