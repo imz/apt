@@ -92,7 +92,6 @@ class pkgProblemResolver
                ToRemove = (1 << 4)};
    signed short *Scores;
    unsigned char *Flags;
-   bool Debug;
 
    // Sort stuff
    static pkgProblemResolver *This;
@@ -103,7 +102,7 @@ class pkgProblemResolver
       DepIterator Dep;
    };
 
-   bool DoUpgrade(pkgCache::PkgIterator Pkg);
+   bool DoUpgrade(pkgCache::PkgIterator Pkg, const pkgDepCache::DbgLogger &DBG);
 
    public:
 

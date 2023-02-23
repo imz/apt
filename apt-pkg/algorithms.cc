@@ -945,9 +945,6 @@ pkgProblemResolver::pkgProblemResolver(pkgDepCache *pCache) : Cache(*pCache)
    Scores = new signed short[Size];
    // allocate and zero memory
    Flags = new unsigned char[Size]();
-
-   // Set debug to true to see its decision logic
-   Debug = _config->FindB("Debug::pkgProblemResolver",false);
 }
 									/*}}}*/
 // ProblemResolver::~pkgProblemResolver - Destructor			/*{{{*/
@@ -981,6 +978,9 @@ int pkgProblemResolver::ScoreSort(const void *a,const void *b)
 
 void pkgProblemResolver::MakeScores()
 {
+   pkgDepCache::DbgLogger const DBG;
+   DBG.traceFuncCall(__func__);
+
    unsigned long Size = Cache.Head().PackageCount;
    memset(Scores,0,sizeof(*Scores)*Size);
 
@@ -1093,8 +1093,11 @@ void pkgProblemResolver::MakeScores()
 // ---------------------------------------------------------------------
 /* This goes through and tries to reinstall packages to make this package
    installable */
-bool pkgProblemResolver::DoUpgrade(pkgCache::PkgIterator Pkg)
+bool pkgProblemResolver::DoUpgrade(pkgCache::PkgIterator Pkg,
+                                   const pkgDepCache::DbgLogger &DBG)
 {
+   DBG.traceFuncCall(__func__, Pkg);
+
    if ((Flags[Pkg->ID] & Upgradable) == 0 || Cache[Pkg].Upgradable() == false)
       return false;
    if ((Flags[Pkg->ID] & Protected) == Protected)
@@ -1103,7 +1106,7 @@ bool pkgProblemResolver::DoUpgrade(pkgCache::PkgIterator Pkg)
    Flags[Pkg->ID] &= ~Upgradable;
 
    bool WasKept = Cache[Pkg].Keep();
-   Cache.MarkInstall(Pkg,pkgDepCache::AutoMarkFlag::DontChange,false);
+   Cache.MarkInstall0(Pkg, DBG.nested());
 
    // This must be a virtual package or something like that.
    if (Cache[Pkg].InstVerIter(Cache).end() == true)
@@ -1141,8 +1144,7 @@ bool pkgProblemResolver::DoUpgrade(pkgCache::PkgIterator Pkg)
 	 PkgIterator P = Start.SmartTargetPkg();
 	 if ((Flags[P->ID] & Protected) == Protected)
 	 {
-	    if (Debug == true)
-	       clog << "    Reinst Failed because of protected " << P.Name() << endl;
+            DBG.traceSolver(2, "Reinst Failed because of protected", P);
 	    Fail = true;
 	 }
 	 else
@@ -1150,10 +1152,9 @@ bool pkgProblemResolver::DoUpgrade(pkgCache::PkgIterator Pkg)
 	    // Upgrade the package if the candidate version will fix the problem.
 	    if ((Cache[Start] & pkgDepCache::DepCVer) == pkgDepCache::DepCVer)
 	    {
-	       if (DoUpgrade(P) == false)
+	       if (DoUpgrade(P, DBG.nested()) == false)
 	       {
-		  if (Debug == true)
-		     clog << "    Reinst Failed because of " << P.Name() << endl;
+                  DBG.traceSolver(2, "Reinst Failed because of", P);
 		  Fail = true;
 	       }
 	       else
@@ -1170,8 +1171,7 @@ bool pkgProblemResolver::DoUpgrade(pkgCache::PkgIterator Pkg)
 		   Start->Type == pkgCache::Dep::Obsoletes)
 		   break;
 
-	       if (Debug == true)
-		  clog << "    Reinst Failed early because of " << Start.TargetPkg().Name() << endl;
+               DBG.traceSolver(2, "Reinst Failed early because of", Start.TargetPkg());
 	       Fail = true;
 	    }
 	 }
@@ -1188,14 +1188,13 @@ bool pkgProblemResolver::DoUpgrade(pkgCache::PkgIterator Pkg)
    if (Fail == true)
    {
       if (WasKept == true)
-	 Cache.MarkKeep(Pkg);
+	 Cache.MarkKeep0(Pkg, false, DBG.nested());
       else
-	 Cache.MarkDelete(Pkg);
+	 Cache.MarkDelete0(Pkg, false, DBG.nested());
       return false;
    }
 
-   if (Debug == true)
-      clog << "  Re-Instated " << Pkg.Name() << endl;
+   DBG.traceSolver(1, "Re-Instated", Pkg);
    return true;
 }
 									/*}}}*/
@@ -1215,6 +1214,9 @@ bool pkgProblemResolver::DoUpgrade(pkgCache::PkgIterator Pkg)
    upgrade packages to advoid problems. */
 bool pkgProblemResolver::Resolve(bool BrokenFix)
 {
+   pkgDepCache::DbgLogger const DBG;
+   DBG.traceFuncCall(std::string(__func__) + ": BrokenFix=" + (BrokenFix ? "true" : "false"));
+
    unsigned long Size = Cache.Head().PackageCount;
 
    // Record which packages are marked for install
@@ -1230,7 +1232,7 @@ bool pkgProblemResolver::Resolve(bool BrokenFix)
 	 {
 	    if (Cache[I].InstBroken() == true && BrokenFix == true)
 	    {
-	       Cache.MarkInstall(I,pkgDepCache::AutoMarkFlag::DontChange,false);
+	       Cache.MarkInstall0(I, DBG.nested());
 	       if (Cache[I].Install() == true)
 		  Again = true;
 	    }
@@ -1242,8 +1244,7 @@ bool pkgProblemResolver::Resolve(bool BrokenFix)
    }
    while (Again == true);
 
-   if (Debug == true)
-      clog << "Starting" << endl;
+   DBG.traceSolver(0, "Starting");
 
    MakeScores();
 
@@ -1267,8 +1268,7 @@ bool pkgProblemResolver::Resolve(bool BrokenFix)
 	    Cache[Pkg].InstallVer << ' ' << Cache[Pkg].CandidateVer << endl;
       } */
 
-   if (Debug == true)
-      clog << "Starting 2" << endl;
+   DBG.traceSolver(0, "Starting 2");
 
    /* Now consider all broken packages. For each broken package we either
       remove the package or fix it's problem. We do this once, it should
@@ -1290,31 +1290,31 @@ bool pkgProblemResolver::Resolve(bool BrokenFix)
 	     (Flags[I->ID] & Protected) == 0 &&
 	     (Flags[I->ID] & ReInstateTried) == 0)
 	 {
-	    if (Debug == true)
-	       clog << " Try to Re-Instate " << I.Name() << endl;
+	    DBG.traceSolver(1, "Try to Re-Instate", I);
 	    unsigned long OldBreaks = Cache.BrokenCount();
 	    pkgCache::Version *OldVer = Cache[I].InstallVer;
 	    Flags[I->ID] &= ReInstateTried;
 
-	    Cache.MarkInstall(I,pkgDepCache::AutoMarkFlag::DontChange,false);
+	    Cache.MarkInstall0(I, DBG.nested());
 	    if (Cache[I].InstBroken() == true ||
 		OldBreaks < Cache.BrokenCount())
 	    {
 	       if (OldVer == 0)
-		  Cache.MarkDelete(I);
+		  Cache.MarkDelete0(I,false,DBG.nested());
 	       else
-		  Cache.MarkKeep(I);
+		  Cache.MarkKeep0(I,false,DBG.nested());
 	    }
 	    else
-	       if (Debug == true)
-		  clog << "Re-Instated " << I.Name() << " (" << OldBreaks << " vs " << Cache.BrokenCount() << ')' << endl;
+	       DBG.traceSolver(0, std::string("Re-Instated ") + ToDbgStr(I)
+                               + " (" + ToDbgStr(OldBreaks)
+                               + " vs " + ToDbgStr(Cache.BrokenCount())
+                               + ")"); // FIXME: printf-style
 	 }
 
 	 if (Cache[I].InstallVer == 0 || Cache[I].InstBroken() == false)
 	    continue;
 
-	 if (Debug == true)
-	    cout << "Investigating " << I.Name() << endl;
+	 DBG.traceSolver(0, "Investigating", I);
 
 	 // Isolate the problem dependency
 	 PackageKill KillList[100];
@@ -1338,17 +1338,15 @@ bool pkgProblemResolver::Resolve(bool BrokenFix)
 		  {
 		     if ((Flags[I->ID] & Protected) != Protected)
 		     {
-			if (Debug == true)
-			   clog << "  Or group remove for " << I.Name() << endl;
-			Cache.MarkDelete(I);
+			DBG.traceSolver(2, "Or group remove for", I);
+			Cache.MarkDelete0(I,false,DBG.nested());
 			Change = true;
 		     }
 		  }
 		  if (OldEnd == LEnd && OrOp == OrKeep)
 		  {
-		     if (Debug == true)
-			clog << "  Or group keep for " << I.Name() << endl;
-		     Cache.MarkKeep(I);
+		     DBG.traceSolver(2, "Or group keep for", I);
+		     Cache.MarkKeep0(I,false,DBG.nested());
 		     Change = true;
 		  }
 	       }
@@ -1378,8 +1376,8 @@ bool pkgProblemResolver::Resolve(bool BrokenFix)
 	       continue;
 	    }
 
-	    if (Debug == true)
-	       clog << "Package " << I.Name() << " has broken dep on " << Start.TargetPkg().Name() << endl;
+	    DBG.traceSolver(1, std::string("Package ") + ToDbgStr(I)
+                            + " has broken dep on " + ToDbgStr(Start.TargetPkg()));
 
 	    /* Look across the version list. If there are no possible
 	       targets then we keep the package and bail. This is necessary
@@ -1398,7 +1396,7 @@ bool pkgProblemResolver::Resolve(bool BrokenFix)
 	       }
 
 	       Change = true;
-	       Cache.MarkKeep(I);
+	       Cache.MarkKeep0(I,false,DBG.nested());
 	       break;
 	    }
 
@@ -1408,9 +1406,10 @@ bool pkgProblemResolver::Resolve(bool BrokenFix)
 	       pkgCache::VerIterator Ver(Cache,*V);
 	       pkgCache::PkgIterator Pkg = Ver.ParentPkg();
 
-	       if (Debug == true)
-		  clog << "  Considering " << Pkg.Name() << ' ' << (int)Scores[Pkg->ID] <<
-		  " as a solution to " << I.Name() << ' ' << (int)Scores[I->ID] << endl;
+	       DBG.traceSolver(2, std::string("Considering ") + ToDbgStr(Pkg)
+                               + " " + ToDbgStr(static_cast<int>(Scores[Pkg->ID]))
+                               + " as a solution to " + ToDbgStr(I)
+                               + " " + ToDbgStr(static_cast<int>(Scores[I->ID])));
 
 	       /* Try to fix the package under consideration rather than
 	          fiddle with the VList package */
@@ -1422,7 +1421,7 @@ bool pkgProblemResolver::Resolve(bool BrokenFix)
 		  // Try a little harder to fix protected packages..
 		  if ((Flags[I->ID] & Protected) == Protected)
 		  {
-		     if (DoUpgrade(Pkg) == true)
+		     if (DoUpgrade(Pkg,DBG.nested()) == true)
 		     {
 			if (Scores[Pkg->ID] > Scores[I->ID])
 			   Scores[Pkg->ID] = Scores[I->ID];
@@ -1435,7 +1434,7 @@ bool pkgProblemResolver::Resolve(bool BrokenFix)
 		  /* See if a keep will do, unless the package is protected,
 		     then installing it will be necessary */
 		  bool Installed = Cache[I].Install();
-		  Cache.MarkKeep(I);
+		  Cache.MarkKeep0(I,false,DBG.nested());
 		  if (Cache[I].InstBroken() == false)
 		  {
 		     // Unwind operation will be keep now
@@ -1444,21 +1443,21 @@ bool pkgProblemResolver::Resolve(bool BrokenFix)
 
 		     // Restore
 		     if (InOr == true && Installed == true)
-			Cache.MarkInstall(I,pkgDepCache::AutoMarkFlag::DontChange,false);
+			Cache.MarkInstall0(I,DBG.nested());
 
-		     if (Debug == true)
-			clog << "  Holding Back " << I.Name() << " rather than change " << Start.TargetPkg().Name() << endl;
+		     DBG.traceSolver(2, std::string("Holding Back ") + ToDbgStr(I)
+                                     + " rather than change " + ToDbgStr(Start.TargetPkg()));
 		  }
 		  else
 		  {
-		     if (BrokenFix == false || DoUpgrade(I) == false)
+		     if (BrokenFix == false || DoUpgrade(I,DBG.nested()) == false)
 		     {
 			// Consider other options
 			if (InOr == false)
 			{
-			   if (Debug == true)
-			      clog << "  Removing " << I.Name() << " rather than change " << Start.TargetPkg().Name() << endl;
-			   Cache.MarkDelete(I);
+			   DBG.traceSolver(2, std::string("Removing ") + ToDbgStr(I)
+                                           + " rather than change " + ToDbgStr(Start.TargetPkg()));
+			   Cache.MarkDelete0(I,false,DBG.nested());
 			   if (Counter > 1)
 			   {
 			      if (Scores[Pkg->ID] > Scores[I->ID])
@@ -1489,13 +1488,12 @@ bool pkgProblemResolver::Resolve(bool BrokenFix)
 
 		  // CNC:2003-03-22
 		  pkgDepCache::State State(&Cache);
-		  if (BrokenFix == true && DoUpgrade(Pkg) == true)
+		  if (BrokenFix == true && DoUpgrade(Pkg,DBG.nested()) == true)
 		  {
 		     if (Cache[I].InstBroken() == false &&
 			 State.BrokenCount() >= Cache.BrokenCount())
 		     {
-			if (Debug == true)
-			   clog << "  Installing " << Pkg.Name() << endl;
+		        DBG.traceSolver(2, "Installing", Pkg);
 			Change = true;
 			break;
 		     }
@@ -1503,8 +1501,7 @@ bool pkgProblemResolver::Resolve(bool BrokenFix)
 			State.Restore();
 		  }
 
-		  if (Debug == true)
-		     clog << "  Added " << Pkg.Name() << " to the remove list" << endl;
+		  DBG.traceSolver(2, std::string("Added ") + ToDbgStr(Pkg) + " to the remove list");
 
 		  // CNC:2002-07-09
 		  if (*(V+1) != 0) //XXX Look for other solutions?
@@ -1527,7 +1524,7 @@ bool pkgProblemResolver::Resolve(bool BrokenFix)
 		(Flags[I->ID] & Protected) != Protected)
 	    {
 	       bool Installed = Cache[I].Install();
-	       Cache.MarkKeep(I);
+	       Cache.MarkKeep0(I,false,DBG.nested());
 	       if (Cache[I].InstBroken() == false)
 	       {
 		  // Unwind operation will be keep now
@@ -1536,17 +1533,17 @@ bool pkgProblemResolver::Resolve(bool BrokenFix)
 
 		  // Restore
 		  if (InOr == true && Installed == true)
-		     Cache.MarkInstall(I,pkgDepCache::AutoMarkFlag::DontChange,false);
+		     Cache.MarkInstall0(I,DBG.nested());
 
-		  if (Debug == true)
-		     clog << "  Holding Back " << I.Name() << " because I can't find " << Start.TargetPkg().Name() << endl;
+		  DBG.traceSolver(2, std::string("Holding Back ") + ToDbgStr(I)
+                                  + " because I can't find " + ToDbgStr(Start.TargetPkg()));
 	       }
 	       else
 	       {
-		  if (Debug == true)
-		     clog << "  Removing " << I.Name() << " because I can't find " << Start.TargetPkg().Name() << endl;
+		  DBG.traceSolver(2, std::string("Removing ") + ToDbgStr(I)
+                                  + " because I can't find " + ToDbgStr(Start.TargetPkg()));
 		  if (InOr == false)
-		     Cache.MarkDelete(I);
+		     Cache.MarkDelete0(I,false,DBG.nested());
 	       }
 
 	       Change = true;
@@ -1572,16 +1569,16 @@ bool pkgProblemResolver::Resolve(bool BrokenFix)
 		  if (J->Dep->Type == pkgCache::Dep::Conflicts ||
 		      J->Dep->Type == pkgCache::Dep::Obsoletes)
 		  {
-		     if (Debug == true)
-			clog << "  Fixing " << I.Name() << " via remove of " << J->Pkg.Name() << endl;
-		     Cache.MarkDelete(J->Pkg);
+		     DBG.traceSolver(2, std::string("Fixing ") + ToDbgStr(I)
+                                     + " via remove of " + ToDbgStr(J->Pkg));
+		     Cache.MarkDelete0(J->Pkg,false,DBG.nested());
 		  }
 	       }
 	       else
 	       {
-		  if (Debug == true)
-		     clog << "  Fixing " << I.Name() << " via keep of " << J->Pkg.Name() << endl;
-		  Cache.MarkKeep(J->Pkg);
+		  DBG.traceSolver(2, std::string("Fixing ") + ToDbgStr(I)
+                                  + " via keep of " + ToDbgStr(J->Pkg));
+		  Cache.MarkKeep0(J->Pkg,false,DBG.nested());
 	       }
 
 	       if (Counter > 1)
@@ -1594,8 +1591,7 @@ bool pkgProblemResolver::Resolve(bool BrokenFix)
       }
    }
 
-   if (Debug == true)
-      clog << "Done" << endl;
+   DBG.traceSolver(0, "Done");
 
    if (Cache.BrokenCount() != 0)
    {
@@ -1621,10 +1617,12 @@ bool pkgProblemResolver::Resolve(bool BrokenFix)
    system was non-broken previously. */
 bool pkgProblemResolver::ResolveByKeep()
 {
+   pkgDepCache::DbgLogger const DBG;
+   DBG.traceFuncCall(__func__);
+
    unsigned long Size = Cache.Head().PackageCount;
 
-   if (Debug == true)
-      clog << "Entering ResolveByKeep" << endl;
+   DBG.traceSolver(0, "Entering ResolveByKeep");
 
    MakeScores();
 
@@ -1652,9 +1650,8 @@ bool pkgProblemResolver::ResolveByKeep()
 	 to be significantly more agressive and manipulate its dependencies */
       if ((Flags[I->ID] & Protected) == 0)
       {
-	 if (Debug == true)
-	    clog << "Keeping package " << I.Name() << endl;
-	 Cache.MarkKeep(I);
+	 DBG.traceSolver(0, "Keeping package ", I);
+	 Cache.MarkKeep0(I,false,DBG.nested());
 	 if (Cache[I].InstBroken() == false)
 	 {
 	    K = PList - 1;
@@ -1683,8 +1680,8 @@ bool pkgProblemResolver::ResolveByKeep()
 	    list of ors is in preference and keep till it starts to work. */
 	 while (true)
 	 {
-	    if (Debug == true)
-	       clog << "Package " << I.Name() << " has broken dep on " << Start.TargetPkg().Name() << endl;
+	    DBG.traceSolver(1, std::string("Package ") + ToDbgStr(I)
+                            + " has broken dep on " + ToDbgStr(Start.TargetPkg()));
 
 	    // Look at all the possible provides on this package
 	    const SPtrArray<pkgCache::Version * const> VList(Start.AllTargets());
@@ -1701,9 +1698,8 @@ bool pkgProblemResolver::ResolveByKeep()
 	       // CNC:2002-08-05
 	       if ((Flags[Pkg->ID] & Protected) == 0)
 	       {
-		  if (Debug == true)
-		     clog << "  Keeping Package " << Pkg.Name() << " due to dep" << endl;
-		  Cache.MarkKeep(Pkg);
+		  DBG.traceSolver(2, "Keeping Package (due to dep)", Pkg);
+		  Cache.MarkKeep0(Pkg,false,DBG.nested());
 	       }
 
 	       if (Cache[I].InstBroken() == false)
@@ -1740,14 +1736,17 @@ bool pkgProblemResolver::ResolveByKeep()
 /* This is used to make sure protected packages are installed */
 void pkgProblemResolver::InstallProtect()
 {
+   pkgDepCache::DbgLogger const DBG;
+   DBG.traceFuncCall(__func__);
+
    for (pkgCache::PkgIterator I = Cache.PkgBegin(); I.end() == false; I++)
    {
       if ((Flags[I->ID] & Protected) == Protected)
       {
 	 if ((Flags[I->ID] & ToRemove) == ToRemove)
-	    Cache.MarkDelete(I);
+	    Cache.MarkDelete0(I, false, DBG.nested());
 	 else
-	    Cache.MarkInstall(I,pkgDepCache::AutoMarkFlag::DontChange,false);
+	    Cache.MarkInstall0(I, DBG.nested());
       }
    }
 }
@@ -1760,6 +1759,9 @@ void pkgProblemResolver::InstallProtect()
 // task package, for example.
 bool pkgProblemResolver::RemoveDepends()
 {
+   pkgDepCache::DbgLogger const DBG;
+   DBG.traceFuncCall(__func__);
+
    bool Debug = _config->FindB("Debug::pkgRemoveDepends",false);
    bool MoreSteps = true;
    while (MoreSteps == true)
@@ -1848,7 +1850,7 @@ bool pkgProblemResolver::RemoveDepends()
 	    if (Debug == true)
 	       clog << "Marking " << DPkg.Name() << " as a removable dependency of " << Pkg.Name() << endl;
 
-	    Cache.MarkDelete(DPkg);
+	    Cache.MarkDelete0(DPkg, false, DBG.nested());
 
 	    // Do at least one more step, to ensure that packages which
 	    // were being hold because of this one also get removed.

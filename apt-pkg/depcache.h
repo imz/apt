@@ -224,6 +224,8 @@ class pkgDepCache : protected pkgCache::Namespace
    void MarkKeep0(const PkgIterator &Pkg, bool Soft, const DbgLogger &DBG);
    void MarkDelete0(const PkgIterator &Pkg, bool Purge, const DbgLogger &DBG);
 
+   friend class pkgProblemResolver;
+
    public:
    void SetReInstall(PkgIterator const &Pkg,bool To);
    void SetCandidateVersion(VerIterator TargetVer);
