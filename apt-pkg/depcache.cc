@@ -47,9 +47,9 @@ class pkgDepCache::DbgLogger
    void printMsg(unsigned int const nesting, const std::string &msg) const
    {
       if (Prefix)
-         fprintf(stderr, "%s:%*s %s\n", Prefix, Depth*3+nesting, "", msg.c_str());
+         ioprintf(std::clog, "%s:%*s %s\n", Prefix, Depth*3+nesting, "", msg.c_str());
       else
-         fprintf(stderr, "%*s%s\n", Depth*3+nesting, "", msg.c_str());
+         ioprintf(std::clog, "%*s%s\n", Depth*3+nesting, "", msg.c_str());
    }
 
    public:
