@@ -96,7 +96,7 @@ class pkgDepCache::DbgLogger
       // append() or a special format with two %s would be faster
    }
 
-   DbgLogger deeper(const char * const NewPrefix = nullptr) const
+   DbgLogger nested(const char * const NewPrefix = nullptr) const
    {
       DbgLogger offspring(*this); // copy this parent
 
@@ -971,7 +971,7 @@ int pkgDepCache::MarkInstall0(PkgIterator const &Pkg,
       if (P.CandidateVer == Pkg.CurrentVer().operator const pkgCache::Version *() && P.InstallVer == 0)
       {
          DBG.traceShallow("now it is to-be-not-installed, so requesting to keep:", Pkg);
-	 MarkKeep0(Pkg, false, DBG.deeper());
+	 MarkKeep0(Pkg, false, DBG.nested());
       }
       DBG.traceShallow("nothing more to do");
       return 0;
@@ -1026,7 +1026,7 @@ void pkgDepCache::MarkInstallRec(const PkgIterator &Pkg,
       DBG.traceTraversal(0, "Too deep (" + std::to_string(Depth) + ")!");
       return;
    }
-   if (MarkInstall0(Pkg, DBG.deeper()) <= 0)
+   if (MarkInstall0(Pkg, DBG.nested()) <= 0)
       return;
 
    DBG.traceTraversal(0, "marked for install (shallow):", Pkg);
@@ -1142,7 +1142,7 @@ void pkgDepCache::MarkInstallRec(const PkgIterator &Pkg,
          PkgIterator const InstPkg = InstVer.ParentPkg();
 	 DBG.traceTraversal(1, "requesting to install", InstPkg);
          // Recursion is always restricted
-         MarkInstallRec(InstPkg,/*Restricted*/true,MarkAgain,Depth+1,DBG.deeper());
+         MarkInstallRec(InstPkg,/*Restricted*/true,MarkAgain,Depth+1,DBG.nested());
       }
 
       /* For conflicts we just de-install the package and mark as auto,
@@ -1189,7 +1189,7 @@ void pkgDepCache::MarkInstallRec(const PkgIterator &Pkg,
             */
 
             DBG.traceTraversal(2, "requesting to delete", TrgPkg);
-	    MarkDelete0(TrgPkg, false, DBG.deeper());
+	    MarkDelete0(TrgPkg, false, DBG.nested());
 	    MarkAuto(TrgPkg, getMarkAuto(TrgPkg));
 	 }
       }
@@ -1203,13 +1203,13 @@ void pkgDepCache::MarkInstall2(PkgIterator const &Pkg, const DbgLogger &DBG)
 {
    DBG.traceFuncCall(__func__, Pkg);
    std::set<PkgIterator> MA;
-   MarkInstallRec(Pkg, true, MA, 0, DBG.deeper("MI2a"));
+   MarkInstallRec(Pkg, true, MA, 0, DBG.nested("MI2a"));
    while (1) {
       std::set<PkgIterator> MAA;
       for (auto I = MA.cbegin(); I != MA.cend(); ++I)
-	 MarkInstallRec(*I, /*Restricted*/true, MAA, 0, DBG.deeper("MI2b"));
+	 MarkInstallRec(*I, /*Restricted*/true, MAA, 0, DBG.nested("MI2b"));
       for (auto I = MA.cbegin(); I != MA.cend(); ++I)
-	 MarkInstallRec(*I, /*Restricted*/false, MAA, 0, DBG.deeper("MI2c"));
+	 MarkInstallRec(*I, /*Restricted*/false, MAA, 0, DBG.nested("MI2c"));
       if (MA == MAA)
 	 break;
       MA = MAA;
