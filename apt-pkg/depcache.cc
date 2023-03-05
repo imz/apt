@@ -114,8 +114,8 @@ class pkgDepCache::DbgLogger
       Prefix(nullptr),
       Depth(0),
       DbgTraversal(_config->FindB("Debug::pkgMarkInstall", false)),
-      DbgShallow(_config->FindB("Debug::pkgMarkShallow", false)),
-      DbgFuncCalls(_config->FindB("Debug::pkgMarkAllCalls", false))
+      DbgShallow(_config->FindB("Debug::pkgMark-shallow", false)),
+      DbgFuncCalls(_config->FindB("Debug::pkgMark-allcalls", false))
    {}
 };
 

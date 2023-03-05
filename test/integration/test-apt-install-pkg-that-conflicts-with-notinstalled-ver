@@ -36,8 +36,8 @@ testpkgnotinstalled 'simple-package-noarch'
 testsuccess aptget \
 	    -o Debug::pkgProblemResolver=yes \
 	    -o Debug::pkgMarkInstall=yes \
-	    -o Debug::pkgMarkShallow=yes \
-	    -o Debug::pkgMarkAllCalls=yes \
+	    -o Debug::pkgMark-shallow=yes \
+	    -o Debug::pkgMark-allcalls=yes \
 	    install -y conflicts-simple-package-less-2
 testpkginstalled 'conflicts-simple-package-less-2'
 
