@@ -770,7 +770,7 @@ void pkgDepCache::MarkKeep(const PkgIterator &Pkg,bool const Soft)
    DBG.traceFuncCall(std::string(__func__)
                      + " " + ToDbgStr(Pkg)
                      + " Soft=" + (Soft ? "true" : "false"));
-   MarkKeep0(Pkg, Soft, DBG);
+   MarkKeep0(Pkg, Soft, DBG.nested());
 }
 
 void pkgDepCache::MarkKeep0(const PkgIterator &Pkg,bool const Soft,const DbgLogger &DBG)
@@ -847,7 +847,7 @@ void pkgDepCache::MarkDelete(const PkgIterator &Pkg, bool const rPurge)
    DBG.traceFuncCall(std::string(__func__)
                      + " " + ToDbgStr(Pkg)
                      + " rPurge=" + (rPurge ? "true" : "false"));
-   MarkDelete0(Pkg, rPurge, DBG);
+   MarkDelete0(Pkg, rPurge, DBG.nested());
 }
 
 void pkgDepCache::MarkDelete0(const PkgIterator &Pkg, bool const rPurge, const DbgLogger &DBG)
@@ -1229,9 +1229,9 @@ void pkgDepCache::MarkInstall(const PkgIterator &Pkg,
                        + " " + ToDbgStr(Pkg)
                        + " AutoInst=" + (AutoInst ? "true" : "false"));
    if (AutoInst == false)
-      MarkInstall0(Pkg, DBG);
+      MarkInstall0(Pkg, DBG.nested());
    else
-      MarkInstall2(Pkg, DBG);
+      MarkInstall2(Pkg, DBG); // no indent, because MI2 has special prefixes
 
    if ((*this)[Pkg].Install())
    {
