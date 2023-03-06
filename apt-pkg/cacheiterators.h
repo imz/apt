@@ -419,4 +419,39 @@ inline std::string ToDbgStr(const pkgCache::DepIterator &D)
       + (D.TargetVer() ?: "(NULL)");
 }
 
+// A workaround for printing numbers,
+// not as convenient as printf-style would be.
+// Passing by ref seems to be a more precise way to match an overloaded
+// function by type.
+
+inline std::string ToDbgStr(const unsigned long &x)
+{
+   // This is more like an exercise with allocating the string;
+   // could be generalized to a function make_sprintf.
+   std::unique_ptr<const char[]> msg;
+   {
+      char * s;
+      if (asprintf(&s, "%lu", x) < 0)
+         msg.reset();
+      else
+         msg.reset(s);
+   }
+   return std::string(msg.get() ? : "(ERR)");
+}
+
+inline std::string ToDbgStr(const int &x)
+{
+   // This is more like an exercise with allocating the string;
+   // could be generalized to a function make_sprintf.
+   std::unique_ptr<const char[]> msg;
+   {
+      char * s;
+      if (asprintf(&s, "%d", x) < 0)
+         msg.reset();
+      else
+         msg.reset(s);
+   }
+   return std::string(msg.get() ? : "(ERR)");
+}
+
 #endif
