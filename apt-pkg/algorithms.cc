@@ -1153,13 +1153,13 @@ bool pkgProblemResolver::DoUpgrade(pkgCache::PkgIterator Pkg,
       if (End.IsCritical() != true)
 	 continue;
 
+      // Dep is ok now
+      if ((Cache[End] & pkgDepCache::DepGInstall) == pkgDepCache::DepGInstall)
+         continue; // not affecting Fail (which must be false at this point)
+
       // Iterate over all the members in the or group
       while (1)
       {
-	 // Dep is ok now
-	 if ((Cache[End] & pkgDepCache::DepGInstall) == pkgDepCache::DepGInstall)
-	    break;
-
 	 // Do not change protected packages
 	 PkgIterator P = Start.SmartTargetPkg();
 	 if ((Flags[P->ID] & Protected) == Protected)
@@ -1199,6 +1199,11 @@ bool pkgProblemResolver::DoUpgrade(pkgCache::PkgIterator Pkg,
 	 if (Start == End)
 	    break;
 	 Start++;
+
+	 // Dep is ok now
+	 if ((Cache[End] & pkgDepCache::DepGInstall) == pkgDepCache::DepGInstall)
+	    break;
+
       }
       if (Fail == true)
 	 break;
