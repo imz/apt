@@ -1089,6 +1089,75 @@ void pkgProblemResolver::MakeScores()
    This = this;
 }
 									/*}}}*/
+
+/* pkgProblemResolver::DoUpgrade_TreatSingleDep - A helper for DoUpgrade().
+
+   (Factored out to make the scopes where vars are used more clear,
+   and to make the nested loops and their "return" conditions more clear.)
+
+   Treat a single dep and report the result to DoUpgrade() (true is success).
+
+   The single dep is a single OR group represented by:
+   Start -- the first element of the OR group;
+   End -- the last element of the OR group.
+*/
+bool pkgProblemResolver::DoUpgrade_TreatSingleDep(pkgCache::DepIterator Start,
+                                                 pkgCache::DepIterator const End,
+                                                 const pkgDepCache::DbgLogger &DBG)
+{
+   //DBG.traceFuncCall(__func__, End); // omit Start (and other args) to simplify
+
+   // We only worry about critical deps.
+   if (End.IsCritical() != true)
+      return true;
+
+   // Dep is ok now
+   if ((Cache[End] & pkgDepCache::DepGInstall) == pkgDepCache::DepGInstall)
+      return true;
+
+   // Iterate over all the members in the or group
+   while (1)
+   {
+      // Do not change protected packages
+      PkgIterator P = Start.SmartTargetPkg();
+      if ((Flags[P->ID] & Protected) == Protected)
+      {
+         DBG.traceSolver(2, "Reinst Failed because of protected", P);
+      }
+      else
+      {
+         // Upgrade the package if the candidate version will fix the problem.
+         if ((Cache[Start] & pkgDepCache::DepCVer) == pkgDepCache::DepCVer)
+         {
+            if (DoUpgrade(P, DBG.nested()) == false)
+            {
+               DBG.traceSolver(2, "Reinst Failed because of", P);
+            }
+            else
+            {
+               return true;
+            }
+         }
+         else
+         {
+            /* We let the algorithm deal with conflicts on its next iteration,
+               it is much smarter than us */
+            if (Start->Type == pkgCache::Dep::Conflicts ||
+                Start->Type == pkgCache::Dep::Obsoletes)
+               return true;
+
+            DBG.traceSolver(2, "Reinst Failed early because of", Start.TargetPkg());
+         }
+      }
+
+      if (Start == End)
+         break;
+      Start++;
+   }
+
+   return false;
+}
+
 // ProblemResolver::DoUpgrade - Attempt to upgrade this package		/*{{{*/
 // ---------------------------------------------------------------------
 /* This goes through and tries to reinstall packages to make this package
@@ -1149,59 +1218,11 @@ bool pkgProblemResolver::DoUpgrade(pkgCache::PkgIterator Pkg,
          End -- the last element of the OR group.
       */
 
-      // We only worry about critical deps.
-      if (End.IsCritical() != true)
-	 continue;
-
-      // Dep is ok now
-      if ((Cache[End] & pkgDepCache::DepGInstall) == pkgDepCache::DepGInstall)
-         continue; // not affecting Fail (which must be false at this point)
-
-      // Iterate over all the members in the or group
-      while (1)
+      if (! DoUpgrade_TreatSingleDep(Start, End, DBG))
       {
-	 // Do not change protected packages
-	 PkgIterator P = Start.SmartTargetPkg();
-	 if ((Flags[P->ID] & Protected) == Protected)
-	 {
-            DBG.traceSolver(2, "Reinst Failed because of protected", P);
-	    Fail = true;
-	 }
-	 else
-	 {
-	    // Upgrade the package if the candidate version will fix the problem.
-	    if ((Cache[Start] & pkgDepCache::DepCVer) == pkgDepCache::DepCVer)
-	    {
-	       if (DoUpgrade(P, DBG.nested()) == false)
-	       {
-                  DBG.traceSolver(2, "Reinst Failed because of", P);
-		  Fail = true;
-	       }
-	       else
-	       {
-		  Fail = false;
-		  break;
-	       }
-	    }
-	    else
-	    {
-	       /* We let the algorithm deal with conflicts on its next iteration,
-		it is much smarter than us */
-	       if (Start->Type == pkgCache::Dep::Conflicts ||
-		   Start->Type == pkgCache::Dep::Obsoletes)
-		   break;
-
-               DBG.traceSolver(2, "Reinst Failed early because of", Start.TargetPkg());
-	       Fail = true;
-	    }
-	 }
-
-	 if (Start == End)
-	    break;
-	 Start++;
-      }
-      if (Fail == true)
+         Fail = true;
 	 break;
+      }
    }
 
    // Undo our operations - it might be smart to undo everything this did..

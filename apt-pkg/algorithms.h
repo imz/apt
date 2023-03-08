@@ -104,6 +104,10 @@ class pkgProblemResolver
    };
 
    bool DoUpgrade(pkgCache::PkgIterator Pkg, const pkgDepCache::DbgLogger &DBG);
+   // A helper for DoUpgrade().
+   bool DoUpgrade_TreatSingleDep(pkgCache::DepIterator Start,
+                                pkgCache::DepIterator End,
+                                const pkgDepCache::DbgLogger &DBG);
 
    public:
 
