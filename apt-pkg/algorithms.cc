@@ -1124,6 +1124,9 @@ bool pkgProblemResolver::DoUpgrade(pkgCache::PkgIterator Pkg,
    // Isolate the problem dependency
    bool Fail = false;
    for (pkgCache::DepIterator D = Cache[Pkg].InstVerIter(Cache).DependsList(); D.end() == false;)
+      /* Invariant condition between iterations:
+         D points to the next dep we shall treat.
+      */
    {
       // Compute a single dependency element (glob or)
       pkgCache::DepIterator Start = D;
@@ -1137,6 +1140,14 @@ bool pkgProblemResolver::DoUpgrade(pkgCache::PkgIterator Pkg,
 	 if (LastOR == true)
 	    End = D;
       }
+
+      /* Now D points to the next dep we shall continue with (on the next iter)
+         after treating the currently determined single OR group.
+
+         The currently determined single OR group is represented by:
+         Start -- the first element of the OR group;
+         End -- the last element of the OR group.
+      */
 
       // We only worry about critical deps.
       if (End.IsCritical() != true)
