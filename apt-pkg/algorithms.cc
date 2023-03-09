@@ -1198,17 +1198,8 @@ bool pkgProblemResolver::DoUpgrade(pkgCache::PkgIterator Pkg,
       */
    {
       // Compute a single dependency element (glob or)
-      pkgCache::DepIterator Start = D;
-      pkgCache::DepIterator End = D;
-      //unsigned char State = 0; // unused
-      for (bool LastOR = true; D.end() == false && LastOR == true;)
-      {
-	 //State |= Cache[D]; // unused
-	 LastOR = (D->CompareOp & pkgCache::Dep::Or) == pkgCache::Dep::Or;
-	 D++;
-	 if (LastOR == true)
-	    End = D;
-      }
+      pkgCache::DepIterator Start, End;
+      D.GlobOr(Start, End);
 
       /* Now D points to the next dep we shall continue with (on the next iter)
          after treating the currently determined single OR group.
