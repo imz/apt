@@ -944,7 +944,7 @@ unsigned long RegexChoice(RxChoiceList *Rxs,const char **ListBegin,
 void ioprintf(ostream &out,const char *format,...)
 {
    // sprintf the description
-   char S[400];
+   char S[1200];
 
    va_list args;
    va_start(args,format);
