@@ -1199,11 +1199,6 @@ bool pkgProblemResolver::DoUpgrade(pkgCache::PkgIterator Pkg,
 	 if (Start == End)
 	    break;
 	 Start++;
-
-	 // Dep is ok now
-	 if ((Cache[End] & pkgDepCache::DepGInstall) == pkgDepCache::DepGInstall)
-	    break;
-
       }
       if (Fail == true)
 	 break;
