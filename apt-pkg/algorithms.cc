@@ -1115,6 +1115,9 @@ bool pkgProblemResolver::DoUpgrade_TreatSingleDep(pkgCache::DepIterator Start,
    if ((Cache[End] & pkgDepCache::DepGInstall) == pkgDepCache::DepGInstall)
       return true;
 
+   DBG.traceSolver(1, std::string("Reinst (") + DBG.Info + ") "
+                   + "Need to fix this dep (or an alternative): " + ToDbgStr(Start));
+
    // Iterate over all the members in the or group
    while (1)
    {
@@ -1122,7 +1125,7 @@ bool pkgProblemResolver::DoUpgrade_TreatSingleDep(pkgCache::DepIterator Start,
       PkgIterator P = Start.SmartTargetPkg();
       if ((Flags[P->ID] & Protected) == Protected)
       {
-         DBG.traceSolver(2, "Reinst Failed because of protected", P);
+         DBG.traceSolver(2, "Reinst One of the alternatives failed because of protected", P);
       }
       else
       {
@@ -1131,7 +1134,7 @@ bool pkgProblemResolver::DoUpgrade_TreatSingleDep(pkgCache::DepIterator Start,
          {
             if (DoUpgrade(P, DBG.nested()) == false)
             {
-               DBG.traceSolver(2, "Reinst Failed because of", P);
+               DBG.traceSolver(2, "Reinst One of the alternatives failed because of", P);
             }
             else
             {
@@ -1146,7 +1149,7 @@ bool pkgProblemResolver::DoUpgrade_TreatSingleDep(pkgCache::DepIterator Start,
                 Start->Type == pkgCache::Dep::Obsoletes)
                return true;
 
-            DBG.traceSolver(2, "Reinst Failed early because of", Start.TargetPkg());
+            DBG.traceSolver(2, "Reinst One of the alternatives failed early:", Start);
          }
       }
 
@@ -1155,6 +1158,8 @@ bool pkgProblemResolver::DoUpgrade_TreatSingleDep(pkgCache::DepIterator Start,
       Start++;
    }
 
+   DBG.traceSolver(1, std::string("Reinst (") + DBG.Info + ") "
+                   + "All alternatives failed. So the whole current Reinst fails");
    return false;
 }
 
