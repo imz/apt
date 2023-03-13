@@ -1112,14 +1112,7 @@ bool pkgProblemResolver::DoUpgrade_TreatAllDeps(pkgCache::DepIterator D,
       End -- the last element of the OR group.
    */
 
-   if (! DoUpgrade_TreatSingleDep(Start, End, DBG))
-   {
-      // this is a failure of the whole current Reinst (i.e., DoUpgrade)
-      return false;
-   }
-   else
-      return DoUpgrade_TreatAllDeps(D, DBG);
-
+   return DoUpgrade_TreatSingleDep(Start, End, DBG, D);
 }
 
 /* pkgProblemResolver::DoUpgrade_TreatSingleDep - A helper for DoUpgrade().
@@ -1135,17 +1128,18 @@ bool pkgProblemResolver::DoUpgrade_TreatAllDeps(pkgCache::DepIterator D,
 */
 bool pkgProblemResolver::DoUpgrade_TreatSingleDep(pkgCache::DepIterator Start,
                                                  pkgCache::DepIterator const End,
-                                                 const pkgDepCache::DbgLogger &DBG)
+                                                 const pkgDepCache::DbgLogger &DBG,
+                                                 pkgCache::DepIterator const NextDepsOfReinstdPkg)
 {
    //DBG.traceFuncCall(__func__, End); // omit Start (and other args) to simplify
 
    // We only worry about critical deps.
    if (End.IsCritical() != true)
-      return true;
+      return DoUpgrade_TreatAllDeps(NextDepsOfReinstdPkg, DBG);
 
    // Dep is ok now
    if ((Cache[End] & pkgDepCache::DepGInstall) == pkgDepCache::DepGInstall)
-      return true;
+      return DoUpgrade_TreatAllDeps(NextDepsOfReinstdPkg, DBG);
 
    DBG.traceSolver(1, std::string("Reinst (") + DBG.Info + ") "
                    + "Need to fix this dep (or an alternative): " + ToDbgStr(Start));
@@ -1170,7 +1164,7 @@ bool pkgProblemResolver::DoUpgrade_TreatSingleDep(pkgCache::DepIterator Start,
             }
             else
             {
-               return true;
+               return DoUpgrade_TreatAllDeps(NextDepsOfReinstdPkg, DBG);
             }
          }
          else
@@ -1179,7 +1173,7 @@ bool pkgProblemResolver::DoUpgrade_TreatSingleDep(pkgCache::DepIterator Start,
                it is much smarter than us */
             if (Start->Type == pkgCache::Dep::Conflicts ||
                 Start->Type == pkgCache::Dep::Obsoletes)
-               return true;
+               return DoUpgrade_TreatAllDeps(NextDepsOfReinstdPkg, DBG);
 
             DBG.traceSolver(2, "Reinst One of the alternatives failed early:", Start);
          }

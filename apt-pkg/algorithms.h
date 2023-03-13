@@ -109,7 +109,8 @@ class pkgProblemResolver
                               const pkgDepCache::DbgLogger &DBG);
    bool DoUpgrade_TreatSingleDep(pkgCache::DepIterator Start,
                                 pkgCache::DepIterator End,
-                                const pkgDepCache::DbgLogger &DBG);
+                                const pkgDepCache::DbgLogger &DBG,
+                                pkgCache::DepIterator NextDepsOfReinstdPkg);
 
    public:
 
