@@ -1377,7 +1377,7 @@ bool pkgProblemResolver::Resolve(bool BrokenFix)
 	    }
 
 	    DBG.traceSolver(1, std::string("Package ") + ToDbgStr(I)
-                            + " has broken dep on " + ToDbgStr(Start.TargetPkg()));
+                            + " has a broken " + ToDbgStr(Start));
 
 	    /* Look across the version list. If there are no possible
 	       targets then we keep the package and bail. This is necessary
@@ -1681,7 +1681,7 @@ bool pkgProblemResolver::ResolveByKeep()
 	 while (true)
 	 {
 	    DBG.traceSolver(1, std::string("Package ") + ToDbgStr(I)
-                            + " has broken dep on " + ToDbgStr(Start.TargetPkg()));
+                            + " has a broken " + ToDbgStr(Start));
 
 	    // Look at all the possible provides on this package
 	    const SPtrArray<pkgCache::Version * const> VList(Start.AllTargets());
