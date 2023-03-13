@@ -1090,6 +1090,38 @@ void pkgProblemResolver::MakeScores()
 }
 									/*}}}*/
 
+bool pkgProblemResolver::DoUpgrade_TreatAllDeps(pkgCache::DepIterator D,
+                                               const pkgDepCache::DbgLogger &DBG)
+{
+   /* Invariant condition between iterations/calls:
+      D points to the next dep we shall treat.
+   */
+
+   if (D.end())
+      return true;
+
+   // Compute a single dependency element (glob or)
+   pkgCache::DepIterator Start, End;
+   D.GlobOr(Start, End);
+
+   /* Now D points to the next dep we shall continue with (on the next iter)
+      after treating the currently determined single OR group.
+
+      The currently determined single OR group is represented by:
+      Start -- the first element of the OR group;
+      End -- the last element of the OR group.
+   */
+
+   if (! DoUpgrade_TreatSingleDep(Start, End, DBG))
+   {
+      // this is a failure of the whole current Reinst (i.e., DoUpgrade)
+      return false;
+   }
+   else
+      return DoUpgrade_TreatAllDeps(D, DBG);
+
+}
+
 /* pkgProblemResolver::DoUpgrade_TreatSingleDep - A helper for DoUpgrade().
 
    (Factored out to make the scopes where vars are used more clear,
@@ -1201,34 +1233,9 @@ bool pkgProblemResolver::DoUpgrade(pkgCache::PkgIterator Pkg,
    }
 
    // Isolate the problem dependency
-   bool Fail = false;
-   for (pkgCache::DepIterator D = Cache[Pkg].InstVerIter(Cache).DependsList(); D.end() == false;)
-      /* Invariant condition between iterations:
-         D points to the next dep we shall treat.
-      */
+   if (! DoUpgrade_TreatAllDeps(Cache[Pkg].InstVerIter(Cache).DependsList(), DBG))
    {
-      // Compute a single dependency element (glob or)
-      pkgCache::DepIterator Start, End;
-      D.GlobOr(Start, End);
-
-      /* Now D points to the next dep we shall continue with (on the next iter)
-         after treating the currently determined single OR group.
-
-         The currently determined single OR group is represented by:
-         Start -- the first element of the OR group;
-         End -- the last element of the OR group.
-      */
-
-      if (! DoUpgrade_TreatSingleDep(Start, End, DBG))
-      {
-         Fail = true;
-	 break;
-      }
-   }
-
-   // Undo our operations - it might be smart to undo everything this did..
-   if (Fail == true)
-   {
+      // Undo our operations - it might be smart to undo everything this did..
       if (WasKept == true)
 	 Cache.MarkKeep0(Pkg, false, DBG.nested());
       else
