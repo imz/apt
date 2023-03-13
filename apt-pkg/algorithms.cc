@@ -1090,15 +1090,95 @@ void pkgProblemResolver::MakeScores()
 }
 									/*}}}*/
 
-bool pkgProblemResolver::DoUpgrade_TreatAllDeps(pkgCache::DepIterator D,
-                                               const pkgDepCache::DbgLogger &DBG)
+/* Status of a complete computation. A wrapper that would help
+   the programmer to distiguish it from normal values/not to return bool
+   or other normal types by mistake.
+
+   And shall not be contructible in other ways but via the functions that
+   apply continuations (i.e., control the computation)--in order to force
+   all correct necessary things at the time of this application.
+*/
+class pkgProblemResolver::complete
+{
+   bool Status;
+
+   complete(bool const v):
+      Status(v)
+   {}
+
+   friend class pkgProblemResolver::DoUpgrade_continuation;
+
+   public:
+
+   operator bool() const
+   {
+      return Status;
+   }
+};
+
+class pkgProblemResolver::DoUpgrade_continuation
+{
+   bool * AssignValue;
+
+   std::optional<DoUpgrade_TreatAllDeps_args> OnSuccess;
+
+   public:
+
+   /* Fail - to be used where "return false" would be used in the code of
+      DoUpgrade() without passing continuations. This case is not just like
+      returning a value and continuing the computation, because the whole
+      computation fails then (according to the specifics of our task).
+   */
+   complete Fail() const
+   {
+      if (AssignValue)
+         *AssignValue = false;
+
+      // It'd be nice to always print a debugging msg here, but we don't
+      // have the DBG from context.
+      return complete(false);
+   }
+
+   /* SucceedAndContinue - to be used where "return true" would be used in
+      the code of DoUpgrade() without passing continuations. Actually, there
+      are no other meaningful values to be returned when the computation
+      can continue (according to the specifics of our task).
+   */
+   complete SucceedAndContinue(pkgProblemResolver &Context) const
+   {
+      if (AssignValue)
+         *AssignValue = true;
+
+      if (! OnSuccess)
+         return complete(true);
+      else
+         return Context.DoUpgrade_TreatAllDeps(OnSuccess->D,
+                                               OnSuccess->DBG,
+                                               *OnSuccess->Cont);
+   }
+
+   DoUpgrade_continuation(bool * const a,
+                          const DoUpgrade_TreatAllDeps_args &s):
+      AssignValue(a),
+      OnSuccess(s)
+   {}
+
+   DoUpgrade_continuation() = default;
+};
+
+pkgProblemResolver::complete pkgProblemResolver::DoUpgrade_TreatAllDeps(pkgCache::DepIterator D,
+                                               const pkgDepCache::DbgLogger &DBG,
+                                               const DoUpgrade_continuation &Cont)
 {
    /* Invariant condition between iterations/calls:
       D points to the next dep we shall treat.
    */
 
    if (D.end())
-      return true;
+   {
+      DBG.traceSolver(1, "Re-Instated", DBG.Info); // Pkg
+      return Cont.SucceedAndContinue(*this);
+   }
 
    // Compute a single dependency element (glob or)
    pkgCache::DepIterator Start, End;
@@ -1119,14 +1199,35 @@ bool pkgProblemResolver::DoUpgrade_TreatAllDeps(pkgCache::DepIterator D,
 
    // We only worry about critical deps.
    if (End.IsCritical() != true)
-      return DoUpgrade_TreatAllDeps(D, DBG);
+      return DoUpgrade_TreatAllDeps(D, DBG, Cont);
 
    // Dep is ok now
    if ((Cache[End] & pkgDepCache::DepGInstall) == pkgDepCache::DepGInstall)
-      return DoUpgrade_TreatAllDeps(D, DBG);
+      return DoUpgrade_TreatAllDeps(D, DBG, Cont);
 
+   // DoneCompletely - the status of the complete computation, which we are
+   // going to return. The initialization code here also sets the result value
+   // of the current DoUpgrade(Pkg) invocation initially to "failure" (via
+   // Cont.Fail()); the corresponding DoneCompletely status is "failure", too.
+   //
+   // But be certain that the result value of the current DoUpgrade(Pkg)
+   // invocation will be reset in every case when appropriate:
+   //
+   // * (a special case) If we decide to skip this dep (as above), then
+   // the current DoUpgrade(Pkg) invocation will go on with the treatment of
+   // all Pkg's deps (DoUpgrade_TreatAllDeps) and will reset the result value
+   // when it reaches the end of the deps successfully.
+   // * (the normal case) If we find an alternative (in the loop below) that
+   // makes this dep ok and the corresponding nested DoUpgrade() succeeds, then
+   // the continuation of that nested DoUpgrade() will finish the current
+   // DoUpgrade(Pkg) invocation and its result value will be reset (again
+   // at the end of DoUpgrade_TreatAllDeps).
+   // * In other cases, when no alternative works out, the result value shall
+   // be set (remain) "false" and the returned DoneCompletely status shall be
+   // "failure".
    DBG.traceSolver(1, std::string("Reinst (") + DBG.Info + ") "
                    + "Need to fix this dep (or an alternative): " + ToDbgStr(Start));
+   complete DoneCompletely = Cont.Fail();
 
    // Iterate over all the members in the or group
    while (1)
@@ -1142,13 +1243,33 @@ bool pkgProblemResolver::DoUpgrade_TreatAllDeps(pkgCache::DepIterator D,
          // Upgrade the package if the candidate version will fix the problem.
          if ((Cache[Start] & pkgDepCache::DepCVer) == pkgDepCache::DepCVer)
          {
-            if (DoUpgrade(P, DBG.nested()) == false)
+            bool DonePWithDeps = false;
+            DoneCompletely = DoUpgrade(P, DBG.nested(),
+                                       DoUpgrade_continuation(&DonePWithDeps,
+                                                              { .D = D,
+                                                                .DBG = DBG,
+                                                                .Cont = &Cont
+                                                              }));
+            if (DonePWithDeps == false)
             {
                DBG.traceSolver(2, "Reinst One of the alternatives failed because of", P);
+               // continue trying other alternatives
             }
             else
             {
-               return DoUpgrade_TreatAllDeps(D, DBG);
+               if (! DoneCompletely
+                   // try harder to find a complete solution? (FIXME: configurable)
+                   && false)
+               {
+                  DBG.traceSolver(2, "Trying other alternatives; no complete solution even after successful", P);
+                  DBG.traceSolver(2, "(This extra search is configurable with APT::pkgProblemResolver::TryAltHarder.)");
+                  // continue trying other alternatives
+               }
+               else
+                  // the old behavior: do not try harder if the recursive
+                  // DoUpgrade succeeded, i.e., do not come back to these
+                  // alternatives
+                  return DoneCompletely;
             }
          }
          else
@@ -1157,7 +1278,7 @@ bool pkgProblemResolver::DoUpgrade_TreatAllDeps(pkgCache::DepIterator D,
                it is much smarter than us */
             if (Start->Type == pkgCache::Dep::Conflicts ||
                 Start->Type == pkgCache::Dep::Obsoletes)
-               return DoUpgrade_TreatAllDeps(D, DBG);
+               return DoUpgrade_TreatAllDeps(D, DBG, Cont);
 
             DBG.traceSolver(2, "Reinst One of the alternatives failed early:", Start);
          }
@@ -1168,17 +1289,37 @@ bool pkgProblemResolver::DoUpgrade_TreatAllDeps(pkgCache::DepIterator D,
       Start++;
    }
 
+   // No alternative found that would succeed. Think about when
+   // the DoneCompletely status and the result value of the current
+   // DoUpgrade(Pkg) invocation were set the last time:
+   //
+   // * If no alternatives were tried with a nested recursive DoUpgrade call,
+   // then--at the time of initialization (to the initial "failure" values).
+   //
+   // * Otherwise, if the result value of the last nested DoUpgrade call was
+   // "false", then the DoneCompletely status comes from there and the result
+   // value of the current DoUpgrade(Pkg) invocation has not been reset (!!).
+   // (It's not correct if there was a nested DoUpgrade() call with a "true"
+   // result value before this--possible if the "try-harder" option is enabled.)
+   //
+   // * Otherwise, the only possible case is that the last nested DoUpgrade()'s
+   // result value was "true", but the DoneCompletely status was "failure", and
+   // we didn't immediately return it because of the "try-harder" option enabled.
+   // Then, the result value of the current DoUpgrade(Pkg) invocation has been
+   // set to "true" (in the continuation of the successful nested DoUpgrade()
+   // call).
    DBG.traceSolver(1, std::string("Reinst (") + DBG.Info + ") "
                    + "All alternatives failed. So the whole current Reinst fails");
-   return false;
+   return DoneCompletely;
 }
 
 // ProblemResolver::DoUpgrade - Attempt to upgrade this package		/*{{{*/
 // ---------------------------------------------------------------------
 /* This goes through and tries to reinstall packages to make this package
    installable */
-bool pkgProblemResolver::DoUpgrade(pkgCache::PkgIterator Pkg,
-                                   pkgDepCache::DbgLogger DBGcopy)
+pkgProblemResolver::complete pkgProblemResolver::DoUpgrade(pkgCache::PkgIterator Pkg,
+                                   pkgDepCache::DbgLogger DBGcopy,
+                                   const DoUpgrade_continuation &Cont)
 {
    // Save the info about our argument to the var (so that helper funcs
    // can name it), but then the var shall be used read-only.
@@ -1190,12 +1331,12 @@ bool pkgProblemResolver::DoUpgrade(pkgCache::PkgIterator Pkg,
    if ((Flags[Pkg->ID] & Upgradable) == 0 || Cache[Pkg].Upgradable() == false)
    {
       DBG.traceSolver(1, "Reinst not done for non-upgradable", Pkg);
-      return false;
+      return Cont.Fail();
    }
    if ((Flags[Pkg->ID] & Protected) == Protected)
    {
       DBG.traceSolver(1, "Reinst not done for protected", Pkg);
-      return false;
+      return Cont.Fail();
    }
 
    Flags[Pkg->ID] &= ~Upgradable;
@@ -1207,22 +1348,23 @@ bool pkgProblemResolver::DoUpgrade(pkgCache::PkgIterator Pkg,
    if (Cache[Pkg].InstVerIter(Cache).end() == true)
    {
       DBG.traceSolver(1, "Reinst impossible for virtual (or alike)", Pkg);
-      return false;
+      return Cont.Fail();
    }
 
    // Isolate the problem dependency
-   if (! DoUpgrade_TreatAllDeps(Cache[Pkg].InstVerIter(Cache).DependsList(), DBG))
+   complete DoneCompletely = DoUpgrade_TreatAllDeps(Cache[Pkg].InstVerIter(Cache).DependsList(),
+                                                    DBG,
+                                                    Cont);
+   if (! DoneCompletely)
    {
       // Undo our operations - it might be smart to undo everything this did..
       if (WasKept == true)
 	 Cache.MarkKeep0(Pkg, false, DBG.nested());
       else
 	 Cache.MarkDelete0(Pkg, false, DBG.nested());
-      return false;
    }
 
-   DBG.traceSolver(1, "Re-Instated", Pkg);
-   return true;
+   return DoneCompletely;
 }
 									/*}}}*/
 // ProblemResolver::Resolve - Run the resolution pass			/*{{{*/
@@ -1451,7 +1593,7 @@ bool pkgProblemResolver::Resolve(bool BrokenFix)
 		  // Try a little harder to fix protected packages..
 		  if ((Flags[I->ID] & Protected) == Protected)
 		  {
-		     if (DoUpgrade(Pkg,DBG.nested()) == true)
+		     if (DoUpgrade(Pkg,DBG.nested(),DoUpgrade_continuation()) == true)
 		     {
 			if (Scores[Pkg->ID] > Scores[I->ID])
 			   Scores[Pkg->ID] = Scores[I->ID];
@@ -1485,7 +1627,7 @@ bool pkgProblemResolver::Resolve(bool BrokenFix)
 		  }
 		  else
 		  {
-		     if (BrokenFix == false || DoUpgrade(I,DBG.nested()) == false)
+		     if (BrokenFix == false || DoUpgrade(I,DBG.nested(),DoUpgrade_continuation()) == false)
 		     {
 			// Consider other options
 			if (InOr == false)
@@ -1528,7 +1670,7 @@ bool pkgProblemResolver::Resolve(bool BrokenFix)
 
 		  // CNC:2003-03-22
 		  pkgDepCache::State State(&Cache);
-		  if (BrokenFix == true && DoUpgrade(Pkg,DBG.nested()) == true)
+		  if (BrokenFix == true && DoUpgrade(Pkg,DBG.nested(),DoUpgrade_continuation()) == true)
 		  {
 		     if (Cache[I].InstBroken() == false &&
 			 State.BrokenCount() >= Cache.BrokenCount())

@@ -103,10 +103,20 @@ class pkgProblemResolver
       DepIterator Dep;
    };
 
-   bool DoUpgrade(pkgCache::PkgIterator Pkg, pkgDepCache::DbgLogger DBGcopy);
+   class DoUpgrade_continuation;
+   class complete;
+   complete DoUpgrade(pkgCache::PkgIterator Pkg, pkgDepCache::DbgLogger DBGcopy,
+                      const DoUpgrade_continuation &Cont);
    // a recursive helper for DoUpgrade() to iterate over the deps
-   bool DoUpgrade_TreatAllDeps(pkgCache::DepIterator D,
-                              const pkgDepCache::DbgLogger &DBG);
+   struct DoUpgrade_TreatAllDeps_args
+   {
+      pkgCache::DepIterator D;
+      pkgDepCache::DbgLogger const DBG;
+      const DoUpgrade_continuation * Cont;
+   };
+   complete DoUpgrade_TreatAllDeps(pkgCache::DepIterator D,
+                                   const pkgDepCache::DbgLogger &DBG,
+                                   const DoUpgrade_continuation &Cont);
 
    public:
 
