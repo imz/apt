@@ -1314,7 +1314,10 @@ bool pkgProblemResolver::Resolve(bool BrokenFix)
 	 if (Cache[I].InstallVer == 0 || Cache[I].InstBroken() == false)
 	    continue;
 
-	 DBG.traceSolver(0, "Investigating", I);
+         pkgCache::VerIterator const InstVer = Cache[I].InstVerIter(Cache);
+         // It might be useful also to give the status of InstVer here in
+         // the msg: kept (already installed) or to be installed ("upgraded")?
+         DBG.traceSolver(0, "Investigating", InstVer);
 
 	 // Isolate the problem dependency
 	 PackageKill KillList[100];
@@ -1325,7 +1328,7 @@ bool pkgProblemResolver::Resolve(bool BrokenFix)
 	 PackageKill *OldEnd = LEnd;
 
 	 enum {OrRemove,OrKeep} OrOp = OrRemove;
-	 for (pkgCache::DepIterator D = Cache[I].InstVerIter(Cache).DependsList();
+	 for (pkgCache::DepIterator D = InstVer.DependsList();
 	      D.end() == false || InOr == true;)
 	 {
 	    // Compute a single dependency element (glob or)
