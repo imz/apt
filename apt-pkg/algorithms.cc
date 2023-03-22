@@ -1448,8 +1448,13 @@ bool pkgProblemResolver::Resolve(bool BrokenFix)
 		     if (InOr == true && Installed == true)
 			Cache.MarkInstall0(I,DBG.nested());
 
+                     // Actually, DoUpgrade() could have successfully
+                     // treated the first broken dep (which is printed
+                     // here), but then failed due to one of the next deps.
 		     DBG.traceSolver(2, std::string("Holding Back ") + ToDbgStr(I)
-                                     + " rather than change " + ToDbgStr(Start.TargetPkg()));
+                                     + " rather than change one of its deps: perhaps "
+                                     + ToDbgStr(Start.TargetPkg())
+                                     + " or another one");
 		  }
 		  else
 		  {
@@ -1458,8 +1463,13 @@ bool pkgProblemResolver::Resolve(bool BrokenFix)
 			// Consider other options
 			if (InOr == false)
 			{
+                           // Actually, DoUpgrade() could have successfully
+                           // treated the first broken dep (which is printed
+                           // here), but then failed due to one of the next deps.
 			   DBG.traceSolver(2, std::string("Removing ") + ToDbgStr(I)
-                                           + " rather than change " + ToDbgStr(Start.TargetPkg()));
+                                           + " rather than change one of its deps: perhaps "
+                                           + ToDbgStr(Start.TargetPkg())
+                                           + " or another one");
 			   Cache.MarkDelete0(I,false,DBG.nested());
 			   if (Counter > 1)
 			   {
