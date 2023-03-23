@@ -1099,9 +1099,15 @@ bool pkgProblemResolver::DoUpgrade(pkgCache::PkgIterator Pkg,
    DBG.traceFuncCall(__func__, Pkg);
 
    if ((Flags[Pkg->ID] & Upgradable) == 0 || Cache[Pkg].Upgradable() == false)
+   {
+      DBG.traceSolver(1, "Reinst not done for non-upgradable", Pkg);
       return false;
+   }
    if ((Flags[Pkg->ID] & Protected) == Protected)
+   {
+      DBG.traceSolver(1, "Reinst not done for protected", Pkg);
       return false;
+   }
 
    Flags[Pkg->ID] &= ~Upgradable;
 
@@ -1110,7 +1116,10 @@ bool pkgProblemResolver::DoUpgrade(pkgCache::PkgIterator Pkg,
 
    // This must be a virtual package or something like that.
    if (Cache[Pkg].InstVerIter(Cache).end() == true)
+   {
+      DBG.traceSolver(1, "Reinst impossible for virtual (or alike)", Pkg);
       return false;
+   }
 
    // Isolate the problem dependency
    bool Fail = false;
