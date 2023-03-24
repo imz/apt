@@ -587,6 +587,8 @@ exec 1>&2
   the new options: Debug::pkgMark-shallow, Debug::pkgMark-allcalls.
 - Worked around the problem with printing long messages by making the buffer
   1200 bytes large. (ALT#44941)
+- Avoid installing extra packages in some cases when this is really not needed
+  to satisfy a request. (Correct cleanup in pkgProblemResolver::DoUpgrade.)
 
 * Fri Sep 02 2022 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt82
 - tests:
