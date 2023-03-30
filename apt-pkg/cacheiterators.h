@@ -387,6 +387,12 @@ inline pkgCache::VerFileIterator pkgCache::VerIterator::FileList() const
 // That's not convenient to do with a function: to return several strings.
 // Therefore we join them into a single std::string.
 
+// no-op for convenience
+inline std::string ToDbgStr(const std::string &x)
+{
+   return x;
+}
+
 inline std::string ToDbgStr(const pkgCache::PkgIterator &P)
 {
    if (P.end())
