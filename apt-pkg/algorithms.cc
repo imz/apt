@@ -1163,8 +1163,13 @@ bool pkgProblemResolver::DoUpgrade_TreatSingleDep(pkgCache::DepIterator Start,
 /* This goes through and tries to reinstall packages to make this package
    installable */
 bool pkgProblemResolver::DoUpgrade(pkgCache::PkgIterator Pkg,
-                                   const pkgDepCache::DbgLogger &DBG)
+                                   pkgDepCache::DbgLogger DBGcopy)
 {
+   // Save the info about our argument to the var (so that helper funcs
+   // can name it), but then the var shall be used read-only.
+   DBGcopy.Info = ToDbgStr(Pkg);
+   const pkgDepCache::DbgLogger &DBG = DBGcopy;
+
    DBG.traceFuncCall(__func__, Pkg);
 
    if ((Flags[Pkg->ID] & Upgradable) == 0 || Cache[Pkg].Upgradable() == false)
