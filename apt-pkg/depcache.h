@@ -371,6 +371,8 @@ class pkgDepCache::DbgLogger
 
    public:
 
+   std::string Info;
+
    void traceTraversal(unsigned int nesting, const std::string &msg) const;
    void traceShallow(const std::string &msg) const;
    void traceSolver(unsigned int nesting, const std::string &msg) const;
