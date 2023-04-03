@@ -945,6 +945,8 @@ pkgProblemResolver::pkgProblemResolver(pkgDepCache *pCache) : Cache(*pCache)
    Scores = new signed short[Size];
    // allocate and zero memory
    Flags = new unsigned char[Size]();
+
+   TryAltHarder = _config->FindB("APT::pkgProblemResolver::TryAltHarder", true);
 }
 									/*}}}*/
 // ProblemResolver::~pkgProblemResolver - Destructor			/*{{{*/
@@ -1261,8 +1263,7 @@ pkgProblemResolver::complete pkgProblemResolver::DoUpgrade_TreatAllDeps(pkgCache
             {
                if (! (Start == End) // another alternative can be tried?
                    && ! DoneCompletely
-                   // try harder to find a complete solution? (FIXME: configurable)
-                   && false)
+                   && TryAltHarder)
                   [[unlikely]] // that we have alternative deps (an OR group)
                {
                   DBG.traceSolver(2, "Trying other alternatives; no complete solution even after successful", P);
