@@ -585,6 +585,8 @@ exec 1>&2
 - Made a bit nicer and more informative the new Debug::pkgMarkInstall messages,
   which were introduced in 0.5.15lorg2-alt81; renamed and mentioned there
   the new options: Debug::pkgMark-shallow, Debug::pkgMark-allcalls.
+- Worked around the problem with printing long messages by making the buffer
+  1200 bytes large. (ALT#44941)
 
 * Fri Sep 02 2022 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt82
 - tests:
