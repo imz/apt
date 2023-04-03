@@ -1237,6 +1237,7 @@ pkgProblemResolver::complete pkgProblemResolver::DoUpgrade_TreatAllDeps(pkgCache
       if ((Flags[P->ID] & Protected) == Protected)
       {
          DBG.traceSolver(2, "Reinst One of the alternatives failed because of protected", P);
+         DoneCompletely = Cont.Fail();
       }
       else
       {
@@ -1253,6 +1254,7 @@ pkgProblemResolver::complete pkgProblemResolver::DoUpgrade_TreatAllDeps(pkgCache
             if (DonePWithDeps == false)
             {
                DBG.traceSolver(2, "Reinst One of the alternatives failed because of", P);
+               DoneCompletely = Cont.Fail();
                // continue trying other alternatives
             }
             else
@@ -1285,6 +1287,7 @@ pkgProblemResolver::complete pkgProblemResolver::DoUpgrade_TreatAllDeps(pkgCache
                return DoUpgrade_TreatAllDeps(D, DBG, Cont);
 
             DBG.traceSolver(2, "Reinst One of the alternatives failed early:", Start);
+            DoneCompletely = Cont.Fail();
          }
       }
 
@@ -1302,16 +1305,16 @@ pkgProblemResolver::complete pkgProblemResolver::DoUpgrade_TreatAllDeps(pkgCache
    //
    // * Otherwise, if the result value of the last nested DoUpgrade call was
    // "false", then the DoneCompletely status comes from there and the result
-   // value of the current DoUpgrade(Pkg) invocation has not been reset (!!).
-   // (It's not correct if there was a nested DoUpgrade() call with a "true"
+   // value of the current DoUpgrade(Pkg) invocation has been reset there.
+   // (To override the result set by a nested DoUpgrade() call with a "true"
    // result value before this--possible if the "try-harder" option is enabled.)
    //
-   // * Otherwise, the only possible case is that the last nested DoUpgrade()'s
-   // result value was "true", but the DoneCompletely status was "failure", and
-   // we didn't immediately return it because of the "try-harder" option enabled.
-   // Then, the result value of the current DoUpgrade(Pkg) invocation has been
+   // * In the case that a nested DoUpgrade()'s result value was "true", but
+   // the DoneCompletely status was "failure", and we didn't immediately return
+   // it because of the "try-harder" option enabled (and an alternative present).
+   // Then, the result value of the current DoUpgrade(Pkg) invocation was first
    // set to "true" (in the continuation of the successful nested DoUpgrade()
-   // call).
+   // call), but then correctly reset when treating the following alternative.
    DBG.traceSolver(1, std::string("Reinst (") + DBG.Info + ") "
                    + "All alternatives failed. So the whole current Reinst fails");
    return DoneCompletely;
