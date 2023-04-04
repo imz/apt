@@ -92,6 +92,7 @@ class pkgProblemResolver
                ToRemove = (1 << 4)};
    signed short *Scores;
    unsigned char *Flags;
+   bool _Placeholder_for_ABI;
 
    // Sort stuff
    static pkgProblemResolver *This;
