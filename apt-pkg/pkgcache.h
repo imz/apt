@@ -130,7 +130,7 @@ class pkgCache
    inline unsigned long Hash(const string & S) const {return Hash(S.c_str());}
 
    // Useful transformation things
-   static const char *Priority(unsigned char Priority);
+   const char *Priority(unsigned char Priority);
    // untranslated value ("C" locale, for debugging messages)
    static const char *PriorityC(unsigned char Priority);
 
