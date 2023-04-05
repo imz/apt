@@ -369,11 +369,13 @@ class pkgDepCache::DbgLogger
    bool DbgResolver;
    bool DbgFuncCalls;
 
-   void printMsg(unsigned int nesting, const std::string &msg) const;
-
    public:
 
    std::string Info;
+
+   // Normally, this function shouldn't be called directly except for a very
+   // important warning. It's the base for other normal functions here.
+   void printMsg(unsigned int nesting, const std::string &msg) const;
 
    void traceTraversal(unsigned int nesting, const std::string &msg) const;
    void traceShallow(const std::string &msg) const;
