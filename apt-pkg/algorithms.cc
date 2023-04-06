@@ -1227,7 +1227,7 @@ pkgProblemResolver::complete pkgProblemResolver::DoUpgrade_TreatAllDeps(pkgCache
    // * In other cases, when no alternative works out, the result value shall
    // be set (remain) "false" and the returned DoneCompletely status shall be
    // "failure".
-   DBG.traceSolver(1, std::string("Reinst (") + DBG.Info + ") "
+   DBG.traceSolver(1, std::string("Reinst(") + DBG.Info + ") "
                    + "Need to fix this dep (or an alternative): " + ToDbgStr(Start));
    complete DoneCompletely = Cont.Fail();
 
@@ -1316,7 +1316,7 @@ pkgProblemResolver::complete pkgProblemResolver::DoUpgrade_TreatAllDeps(pkgCache
    // Then, the result value of the current DoUpgrade(Pkg) invocation was first
    // set to "true" (in the continuation of the successful nested DoUpgrade()
    // call), but then correctly reset when treating the following alternative.
-   DBG.traceSolver(1, std::string("Reinst (") + DBG.Info + ") "
+   DBG.traceSolver(1, std::string("Reinst(") + DBG.Info + ") "
                    + "All alternatives failed. So the whole current Reinst fails");
    return DoneCompletely;
 }
