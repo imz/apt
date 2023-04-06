@@ -390,6 +390,15 @@ and some additional peculiarities are tested).
 
 %pre checkinstall -p %_sbindir/sh-safely
 set -o pipefail
+
+# prepare data for rpm --import
+APT_TEST_GPGPUBKEY="$PWD"/example-pubkey.asc
+gpg-keygen --passphrase '' \
+	--name-real 'Some One' --name-email someone@example.com \
+	/dev/null "$APT_TEST_GPGPUBKEY"
+
+export APT_TEST_GPGPUBKEY
+
 pushd %_datadir/%name/tests/
 
 # force the target arch for the tests
@@ -401,14 +410,6 @@ pushd %_datadir/%name/tests/
 # at least, on armh. So, we set the target by force to a value that must work.
 system_arch="$(rpm -q rpm --qf='%%{ARCH}')"
 export APT_TEST_TARGET="$system_arch"
-
-# prepare data for rpm --import
-APT_TEST_GPGPUBKEY="$PWD"/example-pubkey.asc
-gpg-keygen --passphrase '' \
-	--name-real 'Some One' --name-email someone@example.com \
-	/dev/null "$APT_TEST_GPGPUBKEY"
-
-export APT_TEST_GPGPUBKEY
 
 %runtests
 
