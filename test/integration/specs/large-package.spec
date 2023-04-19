@@ -14,8 +14,21 @@ AutoProv: no
 Dummy description
 
 %install
+set -efuC -o pipefail
+
 mkdir -p %buildroot%_datadir/%name
-echo a >%buildroot%_datadir/%name/large
+
+readonly BYTES_NEEDED=$(( 2 * 1024 * 1024 ))
+{
+    # Generate an uncompressible sequence of bytes,
+    # so that the resulting package is that large.
+    openssl enc -pbkdf2 -aes-256-ctr -nosalt \
+	    -pass pass:myseed < /dev/zero 2>/dev/null \
+	|| [ 1 -eq $? ] # ignore the error when the pipe is closed
+} | head -c "$BYTES_NEEDED" >%buildroot%_datadir/%name/large
+
+# make sure there are enough bytes for our test
+[ "$BYTES_NEEDED" -le "$(wc -c <%buildroot%_datadir/%name/large)" ]
 
 %files
 %_datadir/%name
