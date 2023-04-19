@@ -18,7 +18,7 @@ set -efuC -o pipefail
 
 mkdir -p %buildroot%_datadir/%name
 
-readonly BYTES_NEEDED=$(( 2 * 1024 * 1024 ))
+readonly BYTES_NEEDED=$(( 2 * 1024 * 1024 * 1024 ))
 {
     # Generate an uncompressible sequence of bytes,
     # so that the resulting package is that large.

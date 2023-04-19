@@ -4,6 +4,8 @@ set -eu
 TESTDIR=$(readlink -f $(dirname $0))
 . $TESTDIR/framework
 
+APT_TEST_XFAIL=yes
+
 setupenvironment
 
 buildpackage 'large-package'
