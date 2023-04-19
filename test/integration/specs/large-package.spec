@@ -27,9 +27,12 @@ readonly BYTES_NEEDED=$(( 2 * 1024 * 1024 * 1024 ))
 {
     # Generate an uncompressible sequence of bytes,
     # so that the resulting package is that large.
-    openssl enc -pbkdf2 -aes-256-ctr -nosalt \
-	    -pass pass:myseed < /dev/zero 2>/dev/null \
-	|| [ 1 -eq $? ] # ignore the error when the pipe is closed
+    NPROCS=`nproc`
+    for (( i = 0; i < NPROCS; ++i )); do
+        openssl enc -pbkdf2 -aes-256-ctr -nosalt \
+	        -pass pass:myseed"$i" < /dev/zero 2>/dev/null \
+	|| [ 1 -eq $? ] & # ignore the error when the pipe is closed
+    done
 } | head -c "$BYTES_NEEDED" >%buildroot%_datadir/%name/large
 
 # make sure there are enough bytes for our test
