@@ -25,7 +25,7 @@
 
 // For the compatibility DoneByWorker() inline implementation.
 // (Having it here as an inline function makes the complex idea
-// compatibility methods more clear.)
+// of the compatibility methods more clear.)
 #include <apt-pkg/strutl.h>
 
 // Item to acquire
@@ -46,6 +46,7 @@ class pkgAcquire::Item
    // of DoneByWorker() or of the analoguous deprecated Done()
    void BaseItem_Done(const string &Message,unsigned long Size,
                       const pkgAcquire::MethodConfig *Cnf /* unused for now */);
+
    // To be overridden for specialization of the action (by older subclasses).
    // Newer subclasses should override DoneByWorker() directly (which
    // corresponds to the new API of the worker given multiple types of cksums).
@@ -106,6 +107,7 @@ class pkgAcquire::Item
    // Action members invoked by the worker
    // (they are usually overridden in subclasses for specialization)
    virtual void Failed(string Message,pkgAcquire::MethodConfig *Cnf);
+
    // new API (with a new name) that is public and called by the worker;
    // the old Done() method can be left protected for compatibility
    // with some old subclasses that override it (not in the apt project)
