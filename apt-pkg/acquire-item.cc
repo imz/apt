@@ -1032,19 +1032,26 @@ void pkgAcqFile::DoneByWorker(const std::string &Message,
                               unsigned long const AcqSize,
                               pkgAcquire::MethodConfig * const Cnf)
 {
-   // Check the md5
-   string const MD5 = LookupTag(Message,"MD5-Hash");
-   if (ExpectMd5Hash.empty() == false && MD5.empty() == false)
+   // Check the cksum
    {
-      if (ExpectMd5Hash != MD5)
+      std::string const ChkType = CheckType();
+      std::string const ExpectHash = ExpectedHash();
+
+      std::string const AcqHash = LookupTag(Message,ChkType.c_str());
+
+      if (ExpectHash.empty() == false && AcqHash.empty() == false)
       {
-	if (_config->FindB("Debug::pkgAcquire::Auth", false)) {
-	    cerr << "Checksum mismatch: " << ExpectMd5Hash << "!=" << MD5 << endl;
-	}
-	 Rename(DestFile,DestFile + ".FAILED");
-	 Status = StatError;
-	 ErrorText = "Checksum mismatch";
-	 return;
+         if (ExpectHash != AcqHash)
+         {
+            if (_config->FindB("Debug::pkgAcquire::Auth", false))
+            {
+               std::cerr << ChkType << " mismatch: " << ExpectHash << "!=" << AcqHash << std::endl;
+            }
+            Rename(DestFile,DestFile + ".FAILED");
+            Status = StatError;
+            ErrorText = "Checksum mismatch";
+            return;
+         }
       }
    }
 
