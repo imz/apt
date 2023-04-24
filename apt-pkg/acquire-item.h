@@ -47,30 +47,6 @@ class pkgAcquire::Item
    void BaseItem_Done(const string &Message,unsigned long Size,
                       const pkgAcquire::MethodConfig *Cnf /* unused for now */);
 
-   // To be overridden for specialization of the action (by older subclasses).
-   // Newer subclasses should override DoneByWorker() directly (which
-   // corresponds to the new API of the worker given multiple types of cksums).
-   //
-   // It is also called by some older subclasses instead of calling
-   // BaseItem_Done() directly.
-   //
-   // I.e., this deprecated method is present here for 2 different
-   // compatibility reasons:
-   // 1. to be overridden to provide specialized behavior for
-   //    the DoneByWorker() action;
-   // 2. to be called for the base handling of the action.
-   virtual void Done(const string Message,
-                     const unsigned long Size,
-                     string /* Md5Hash unused in the base implementation */,
-                     pkgAcquire::MethodConfig * const Cnf)
-   { /* For compatibility with old subclasses whose implementations of Done()
-        still call the base class's Item::Done() for the common actions.
-        Newer subclasses should call BaseItem_Done() directly,
-        because it is a cleaner API (namely, some unused parameters deleted).
-     */
-      BaseItem_Done(Message, Size, Cnf);
-   }
-
    // For compatability: to be overridden by older subclasses who
    // do not know about ExpectedHash() and CheckType().
    //
@@ -109,17 +85,10 @@ class pkgAcquire::Item
    virtual void Failed(string Message,pkgAcquire::MethodConfig *Cnf);
 
    // new API (with a new name) that is public and called by the worker;
-   // the old Done() method can be left protected for compatibility
-   // with some old subclasses that override it (not in the apt project)
+   // instead of the old Done() method
    virtual void DoneByWorker(const string &Message,
-			     const unsigned long Size,
-                             pkgAcquire::MethodConfig * const Cnf)
-   { /* Older subclasses may have overridden Done() instead of this new method.
-	For compatibility with such classes, we call their Done().
-	Newer subclasses should override this method directly.
-     */
-      Done(Message,Size,LookupTag(Message,"MD5-Hash"),Cnf);
-   }
+			     unsigned long Size,
+                             pkgAcquire::MethodConfig * const Cnf) = 0;
    virtual void Start(string Message,unsigned long Size);
    virtual string Custom600Headers() {return string();}
    virtual string DescURI() = 0;
