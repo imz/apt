@@ -99,7 +99,7 @@ class pkgPackageManager : protected pkgCache::Namespace
    bool EarlyRemove(PkgIterator Pkg);
 
    // The Actual installation implementation
-   virtual bool Install(PkgIterator /*Pkg*/,const string &/*File*/) = 0;
+   virtual bool Install(PkgIterator /*Pkg*/,string /*File*/) = 0;
    virtual bool Configure(PkgIterator /*Pkg*/) = 0;
    virtual bool Remove(PkgIterator /*Pkg*/,bool /*Purge*/) = 0;
    virtual bool Go(PackageManagerCallback_t /*callback*/, void * /*callbackData*/) = 0;

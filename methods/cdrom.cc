@@ -38,12 +38,12 @@ class CDROMMethod : public pkgAcqMethod
    bool Mounted;
 
    virtual bool Fetch(FetchItem *Itm) override;
-   string GetID(const string &Name);
+   string GetID(const string Name);
    virtual void Exit() override;
    virtual string PreferredURI() override;
 
    // CNC:2002-10-18
-   bool Copy(const string &Src, const string &Dest);
+   bool Copy(const string Src, const string Dest);
 
    public:
 
@@ -105,7 +105,7 @@ void CDROMMethod::Exit()
 // CDROMMethod::GetID - Search the database for a matching string	/*{{{*/
 // ---------------------------------------------------------------------
 /* */
-string CDROMMethod::GetID(const string &Name)
+string CDROMMethod::GetID(const string Name)
 {
    // Search for an ID
    const Configuration::Item *Top = Database.Tree("CD");
@@ -123,7 +123,7 @@ string CDROMMethod::GetID(const string &Name)
 }
 									/*}}}*/
 // CNC:2002-10-18
-bool CDROMMethod::Copy(const string &Src, const string &Dest)
+bool CDROMMethod::Copy(const string Src, const string Dest)
 {
    // See if the file exists
    FileFd From(Src,FileFd::ReadOnly);

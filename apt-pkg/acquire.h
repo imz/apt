@@ -80,7 +80,7 @@ class pkgAcquire
 
    void Enqueue(ItemDesc &Item);
    void Dequeue(Item *Item);
-   string QueueName(const string &URI,MethodConfig const *&Config);
+   string QueueName(string URI,MethodConfig const *&Config);
 
    // FDSET managers for derived classes
    virtual void SetFds(int &Fd,fd_set *RSet,fd_set *WSet);
@@ -91,7 +91,7 @@ class pkgAcquire
 
    public:
 
-   MethodConfig *GetConfig(const string &Access);
+   MethodConfig *GetConfig(string Access);
 
    enum RunResult {Continue,Failed,Cancelled};
 
@@ -110,7 +110,7 @@ class pkgAcquire
    UriIterator UriEnd() const;
 
    // Cleans out the download dir
-   bool Clean(const string &Dir);
+   bool Clean(string Dir);
 
    // Returns the size of the total download set
    double TotalNeeded();
@@ -183,7 +183,7 @@ class pkgAcquire::Queue
    bool Cycle();
    void Bump();
 
-   Queue(const string &Name,pkgAcquire *Owner);
+   Queue(string Name,pkgAcquire *Owner);
    ~Queue();
 };
 
