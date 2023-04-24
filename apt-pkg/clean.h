@@ -19,7 +19,7 @@ class pkgArchiveCleaner
 
    public:
 
-   bool Go(const string &Dir,pkgCache &Cache);
+   bool Go(string Dir,pkgCache &Cache);
 };
 
 #endif

@@ -238,7 +238,7 @@ string RPMHdrHandler::Packager() const
    return string("");
 }
 
-RPMFileHandler::RPMFileHandler(const string &File)
+RPMFileHandler::RPMFileHandler(const string File)
 {
    ID = File;
    FD = Fopen(File.c_str(), "r");
@@ -368,7 +368,7 @@ string RPMSingleFileHandler::BLAKE2b() const
    return blake2b.Result();
 }
 
-RPMDirHandler::RPMDirHandler(const string &DirName)
+RPMDirHandler::RPMDirHandler(const string DirName)
    : sDirName(DirName)
 {
    ID = DirName;
