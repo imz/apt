@@ -1028,12 +1028,12 @@ pkgAcqFile::pkgAcqFile(pkgAcquire * const Owner,const string URI,const string MD
 // AcqFile::Done - Item downloaded OK					/*{{{*/
 // ---------------------------------------------------------------------
 /* */
-void pkgAcqFile::Done(const string Message,
-		      unsigned long const AcqSize,
-		      string const MD5,
-		      pkgAcquire::MethodConfig * const Cnf)
+void pkgAcqFile::DoneByWorker(const std::string &Message,
+                              unsigned long const AcqSize,
+                              pkgAcquire::MethodConfig * const Cnf)
 {
    // Check the md5
+   string const MD5 = LookupTag(Message,"MD5-Hash");
    if (ExpectMd5Hash.empty() == false && MD5.empty() == false)
    {
       if (ExpectMd5Hash != MD5)

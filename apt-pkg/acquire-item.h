@@ -251,8 +251,8 @@ class pkgAcqFile : public pkgAcquire::Item
 
    // Specialized action members
    virtual void Failed(string Message,pkgAcquire::MethodConfig *Cnf) override;
-   virtual void Done(string Message,unsigned long Size,string MD5,
-		     pkgAcquire::MethodConfig *Cnf) override;
+   virtual void DoneByWorker(const string &Message,unsigned long Size,
+                             pkgAcquire::MethodConfig *Cnf) override;
    virtual string MD5Sum() override {return ExpectMd5Hash;}
    virtual string DescURI() override {return Desc.URI;}
 
