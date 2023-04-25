@@ -27,6 +27,7 @@
 // (Having it here as an inline function makes the complex idea
 // of the compatibility methods more clear.)
 #include <apt-pkg/strutl.h>
+#include <apt-pkg/fileutl.h>
 
 // Item to acquire
 class pkgAcquire::Item
@@ -44,7 +45,7 @@ class pkgAcquire::Item
 
    // The common actions to be re-used in subclasses in the implementations
    // of DoneByWorker() or of the analoguous deprecated Done()
-   void BaseItem_Done(const string &Message,unsigned long Size,
+   void BaseItem_Done(const string &Message,filesize Size,
                       const pkgAcquire::MethodConfig *Cnf /* unused for now */);
 
    // For compatability: to be overridden by older subclasses who
@@ -63,9 +64,9 @@ class pkgAcquire::Item
    string ErrorText;
 
    /** \brief The size of the object to fetch. */
-   unsigned long long FileSize;
+   filesize FileSize;
 
-   unsigned long PartialSize;
+   filesize PartialSize;
    const char *Mode;
    unsigned long ID;
    bool Complete;
@@ -87,9 +88,9 @@ class pkgAcquire::Item
    // new API (with a new name) that is public and called by the worker;
    // instead of the old Done() method
    virtual void DoneByWorker(const string &Message,
-			     unsigned long Size,
+			     filesize Size,
                              pkgAcquire::MethodConfig * const Cnf) = 0;
-   virtual void Start(string Message,unsigned long Size);
+   virtual void Start(string Message,filesize Size);
    virtual string Custom600Headers() {return string();}
    virtual string DescURI() = 0;
    virtual void Finished() {}
@@ -130,7 +131,7 @@ class pkgAcqIndex : public pkgAcquire::Item
    public:
 
    // Specialized action members
-   virtual void DoneByWorker(const string &Message,unsigned long Size,
+   virtual void DoneByWorker(const string &Message,filesize Size,
                              pkgAcquire::MethodConfig *Cnf) override;
    virtual string Custom600Headers() override;
    virtual string DescURI() override {return RealURI;} // CNC:2003-02-14
@@ -164,7 +165,7 @@ class pkgAcqIndexRel : public pkgAcquire::Item
 
    // Specialized action members
    virtual void Failed(string Message,pkgAcquire::MethodConfig *Cnf) override;
-   virtual void DoneByWorker(const string &Message,unsigned long Size,
+   virtual void DoneByWorker(const string &Message,filesize Size,
                              pkgAcquire::MethodConfig *Cnf) override;
    virtual string Custom600Headers() override;
    virtual string DescURI() override {return RealURI;}
@@ -197,7 +198,7 @@ class pkgAcqArchive : public pkgAcquire::Item
 
    // Specialized action members
    virtual void Failed(string Message,pkgAcquire::MethodConfig *Cnf) override;
-   virtual void DoneByWorker(const string &Message,unsigned long Size,
+   virtual void DoneByWorker(const string &Message,filesize Size,
                              pkgAcquire::MethodConfig *Cnf) override;
    virtual string CheckType() const override {return ChkType;}
    virtual string ExpectedHash() override {return ExpectHash;}
@@ -220,12 +221,12 @@ class pkgAcqFile : public pkgAcquire::Item
 
    // Specialized action members
    virtual void Failed(string Message,pkgAcquire::MethodConfig *Cnf) override;
-   virtual void DoneByWorker(const string &Message,unsigned long Size,
+   virtual void DoneByWorker(const string &Message,filesize Size,
                              pkgAcquire::MethodConfig *Cnf) override;
    virtual string MD5Sum() override {return ExpectMd5Hash;}
    virtual string DescURI() override {return Desc.URI;}
 
-   pkgAcqFile(pkgAcquire *Owner,string URI,string MD5,unsigned long Size,
+   pkgAcqFile(pkgAcquire *Owner,string URI,string MD5,filesize Size,
 		  string Desc,string ShortDesc);
 };
 

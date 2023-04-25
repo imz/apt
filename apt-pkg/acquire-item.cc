@@ -79,9 +79,10 @@ static bool VerifyChecksums(const string &File,
 // Acquire::Item::Item - Constructor					/*{{{*/
 // ---------------------------------------------------------------------
 /* */
-pkgAcquire::Item::Item(pkgAcquire * const Owner) : Owner(Owner), FileSize(0),
-                       PartialSize(0), Mode(0), ID(0), Complete(false),
-                       Local(false), QueueCounter(0)
+pkgAcquire::Item::Item(pkgAcquire * const Owner) :
+   Owner{Owner}, FileSize{0},
+   PartialSize{0}, Mode{0}, ID{0}, Complete{false},
+   Local{false}, QueueCounter{0}
 {
    Owner->Add(this);
    Status = StatIdle;
@@ -125,17 +126,17 @@ void pkgAcquire::Item::Failed(const string Message,pkgAcquire::MethodConfig * co
 // ---------------------------------------------------------------------
 /* Stash status and the file size. Note that setting Complete means
    sub-phases of the acquire process such as decompresion are operating */
-void pkgAcquire::Item::Start(const string /*Message*/,const unsigned long Size)
+void pkgAcquire::Item::Start(const string /*Message*/,filesize const Size)
 {
    Status = StatFetching;
-   if (FileSize == 0 && Complete == false)
+   if (FileSize == filesize{0} && Complete == false)
       FileSize = Size;
 }
 									/*}}}*/
 // Acquire::Item::Done - Item downloaded OK				/*{{{*/
 // ---------------------------------------------------------------------
 /* */
-void pkgAcquire::Item::BaseItem_Done(const string &Message,const unsigned long Size,
+void pkgAcquire::Item::BaseItem_Done(const string &Message,filesize const Size,
                                      const pkgAcquire::MethodConfig * /* Cnf */)
 {
    // We just downloaded something..
@@ -146,7 +147,7 @@ void pkgAcquire::Item::BaseItem_Done(const string &Message,const unsigned long S
 	 Owner->Log->Fetched(Size,atoi(LookupTag(Message,"Resume-Point","0").c_str()));
    }
 
-   if (FileSize == 0)
+   if (FileSize == filesize{0})
       FileSize= Size;
 
    Status = StatDone;
@@ -261,7 +262,7 @@ string pkgAcqIndex::Custom600Headers()
    is copied into the partial directory. In all other cases the file
    is decompressed with a gzip uri. */
 void pkgAcqIndex::DoneByWorker(const string &Message,
-                               const unsigned long AcqSize,
+                               filesize const AcqSize,
                                pkgAcquire::MethodConfig * const Cfg)
 {
    BaseItem_Done(Message,AcqSize,Cfg);
@@ -472,7 +473,7 @@ string pkgAcqIndexRel::Custom600Headers()
    a copy URI is generated and it is copied there otherwise the file
    in the partial directory is moved into .. and the URI is finished. */
 void pkgAcqIndexRel::DoneByWorker(const string &Message,
-                                  const unsigned long AcqSize,
+                                  filesize const AcqSize,
                                   pkgAcquire::MethodConfig * const Cfg)
 {
    BaseItem_Done(Message,AcqSize,Cfg);
@@ -851,7 +852,7 @@ static void ScriptsAcquireDone(const char * const ConfKey,
 // ---------------------------------------------------------------------
 /* */
 void pkgAcqArchive::DoneByWorker(const string &Message,
-                                 const unsigned long AcqSize,
+                                 filesize const AcqSize,
                                  pkgAcquire::MethodConfig * const Cfg)
 {
    BaseItem_Done(Message,AcqSize,Cfg);
@@ -976,7 +977,7 @@ void pkgAcqArchive::Finished()
 // ---------------------------------------------------------------------
 /* The file is added to the queue */
 pkgAcqFile::pkgAcqFile(pkgAcquire * const Owner,const string URI,const string MD5,
-		       const unsigned long Size,const string Dsc,const string ShortDesc) :
+		       filesize const Size,const string Dsc,const string ShortDesc) :
                        Item(Owner), ExpectMd5Hash(MD5)
 {
    Retries = _config->FindI("Acquire::Retries",0);
@@ -1009,7 +1010,7 @@ pkgAcqFile::pkgAcqFile(pkgAcquire * const Owner,const string URI,const string MD
 // ---------------------------------------------------------------------
 /* */
 void pkgAcqFile::DoneByWorker(const std::string &Message,
-                              unsigned long const AcqSize,
+                              filesize const AcqSize,
                               pkgAcquire::MethodConfig * const Cnf)
 {
    // Check the cksum
