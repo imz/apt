@@ -758,11 +758,10 @@ bool pkgAcqArchive::QueueNext()
       // See if we already have the file. (Legacy filenames)
       FileSize = Version->Size;
       string FinalFile = _config->FindDir("Dir::Cache::Archives") + flNotDir(PkgFile);
-      struct stat Buf;
-      if (stat(FinalFile.c_str(),&Buf) == 0)
+      if (auto const FinalFileSz = GetFileSize(FinalFile))
       {
 	 // Make sure the size matches
-	 if ((unsigned)Buf.st_size == Version->Size)
+	 if (*FinalFileSz == Version->Size)
 	 {
 	    Complete = true;
 	    Local = true;
@@ -778,10 +777,10 @@ bool pkgAcqArchive::QueueNext()
 
       // Check it again using the new style output filenames
       FinalFile = _config->FindDir("Dir::Cache::Archives") + flNotDir(StoreFilename);
-      if (stat(FinalFile.c_str(),&Buf) == 0)
+      if (auto const FinalFileSz = GetFileSize(FinalFile))
       {
 	 // Make sure the size matches
-	 if ((unsigned)Buf.st_size == Version->Size)
+	 if (*FinalFileSz == Version->Size)
 	 {
 	    Complete = true;
 	    Local = true;
@@ -798,13 +797,13 @@ bool pkgAcqArchive::QueueNext()
       DestFile = _config->FindDir("Dir::Cache::Archives") + "partial/" + flNotDir(StoreFilename);
 
       // Check the destination file
-      if (stat(DestFile.c_str(),&Buf) == 0)
+      if (auto const DestFileSz = GetFileSize(DestFile))
       {
 	 // Hmm, the partial file is too big, erase it
-	 if ((unsigned)Buf.st_size > Version->Size)
+	 if (*DestFileSz > Version->Size)
 	    unlink(DestFile.c_str());
 	 else
-	    PartialSize = Buf.st_size;
+	    PartialSize = *DestFileSz;
       }
 
       // Create the item
@@ -994,14 +993,13 @@ pkgAcqFile::pkgAcqFile(pkgAcquire * const Owner,const string URI,const string MD
 
    // Get the transfer sizes
    FileSize = Size;
-   struct stat Buf;
-   if (stat(DestFile.c_str(),&Buf) == 0)
+   if (auto const DestFileSz = GetFileSize(DestFile))
    {
       // Hmm, the partial file is too big, erase it
-      if ((unsigned)Buf.st_size > Size)
+      if (*DestFileSz > Size)
 	 unlink(DestFile.c_str());
       else
-	 PartialSize = Buf.st_size;
+	 PartialSize = *DestFileSz;
    }
 
    QueueURI(Desc);
