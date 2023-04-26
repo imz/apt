@@ -32,6 +32,7 @@ libapt_pkg_la_SOURCES = \
 	contrib/error.h \
 	contrib/fileutl.cc \
 	contrib/fileutl.h \
+	contrib/fileutl_opt.h \
 	contrib/hashes.cc \
 	contrib/hashes.h \
 	contrib/md5.h \

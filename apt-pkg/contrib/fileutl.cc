@@ -17,6 +17,7 @@
 
 #include <apt-pkg/configuration.h>
 #include <apt-pkg/fileutl.h>
+#include <apt-pkg/fileutl_opt.h>
 #include <apt-pkg/error.h>
 #include <apt-pkg/sptr.h>
 #include <apt-pkg/arithutl.h>
@@ -438,6 +439,42 @@ string SafeGetCWD()
    S[Len] = '/';
    S[Len+1] = 0;
    return S;
+}
+									/*}}}*/
+
+// a helper for FileFd::Size()-like functions
+static constexpr filesize StSize(const struct stat &Buf)
+{
+   // the common safest way is to first cast to the same-width unsigned type
+   return filesize{NonnegAsU(Buf.st_size)};
+
+   /* Note that this form (filesize{...}) under -Werror=narrowing
+      would keep us from:
+      (1) initializing an unsigned type from a signed value;
+      (2) initializing from a wider type.
+
+      Good: (2) would keep us from loosing information, and (1) would make
+      us pay special attention to casting and zero-extending signed vars.
+      (I believe (1) is not a real concern here for a non-negative value,
+      but in general one should first cast to the same-width unsigned type.)
+
+      And if filesize is a scoped enum (enum class), this is the
+      only form of initializing it from an integer, so then we'd be
+      forced not to make this kind of narrowing errors (including
+      sign-extension) with other forms of initilization.
+   */
+}
+
+// GetFileSize - Return the size of the file				/*{{{*/
+// ---------------------------------------------------------------------
+/* */
+std::optional<filesize> GetFileSize(const string &File)
+{
+   struct stat Buf;
+   if (stat(File.c_str(),&Buf) != 0)
+      return std::nullopt;
+
+   return StSize(Buf);
 }
 									/*}}}*/
 // flNotDir - Strip the directory from the filename			/*{{{*/
@@ -894,24 +931,7 @@ filesize FileFd::Size()
       return filesize{0}; // FIXME (but what can we do?.. this is old behavior)
    }
 
-   // the common safest way is to first cast to the same-width unsigned type
-   return filesize{NonnegAsU(Buf.st_size)};
-
-   /* Note that this form (filesize{...}) under -Werror=narrowing
-      would keep us from:
-      (1) initializing an unsigned type from a signed value;
-      (2) initializing from a wider type.
-
-      Good: (2) would keep us from loosing information, and (1) would make
-      us pay special attention to casting and zero-extending signed vars.
-      (I believe (1) is not a real concern here for a non-negative value,
-      but in general one should first cast to the same-width unsigned type.)
-
-      And if filesize is a scoped enum (enum class), this is the
-      only form of initializing it from an integer, so then we'd be
-      forced not to make this kind of narrowing errors (including
-      sign-extension) with other forms of initilization.
-   */
+   return StSize(Buf);
 }
 									/*}}}*/
 // FileFd::Close - Close the file if the close flag is set		/*{{{*/
