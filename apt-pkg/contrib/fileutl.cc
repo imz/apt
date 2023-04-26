@@ -19,7 +19,6 @@
 #include <apt-pkg/fileutl.h>
 #include <apt-pkg/fileutl_opt.h>
 #include <apt-pkg/error.h>
-#include <apt-pkg/sptr.h>
 #include <apt-pkg/arithutl.h>
 
 #include <iostream>
@@ -35,6 +34,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <algorithm>
+#include <memory>
 
 // CNC:2003-02-14 - Ralf Corsepius told RH8 with GCC 3.2.1 fails
 //                  compiling without moving this header to here.
@@ -55,23 +55,29 @@ bool CopyFile(FileFd &From,FileFd &To)
 
    // Consuming the whole size of the file makes sense
    // if we start from the very beginning
-   if (! From.Seek(0))
+   if (! From.Seek(filesize{0}))
       return false;
-   unsigned long Size = From.Size();
+   filesize Size{From.Size()};
 
    // Buffered copy between fds
-   const SPtrArray<unsigned char> Buf(new unsigned char[64000]);
-   while (Size != 0)
+   constexpr std::size_t Buf_size{64000};
+   std::unique_ptr<unsigned char[]> const Buf(new unsigned char[Buf_size]);
+   if (! Buf)
+      return false;
+   while (Size != filesize{0})
    {
-      std::size_t ToRead = Size;
-      if (Size > 64000)
-	 ToRead = 64000;
+      std::size_t ToRead;
+      if (! SafeAssign_u(ToRead,Size) || ToRead > Buf_size)
+         ToRead = Buf_size;
 
       if (From.Read(Buf.get(),ToRead) == false ||
 	  To.Write(Buf.get(),ToRead) == false)
 	 return false;
 
-      Size -= ToRead;
+      // Considering reading+writing too much is a failure. Anyway, in such
+      // case, the condition of the loop won't stop us after a overflow.
+      if (! NonnegSubtract_u(Size, ToRead))
+         return false;
    }
 
    return true;
