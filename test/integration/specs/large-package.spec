@@ -9,6 +9,11 @@ BuildArch: noarch
 
 AutoReq: no
 AutoProv: no
+# to make faster -- try to turn off compression (I've tried:
+# * w0.gzdio, w.ufdio, w.fdio -- ok, but still slow
+# * w0.lzdio, w0T8.xzdio -- extremely slow! (why?..)
+# So, w.fdio must be the simplest and fastest I/O type.)
+%global _binary_payload w.fdio
 
 %description
 Dummy description
