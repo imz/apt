@@ -19,7 +19,7 @@
 #include <apt-pkg/sourcelist.h>
 #include <apt-pkg/error.h>
 #include <apt-pkg/strutl.h>
-#include <apt-pkg/fileutl.h>
+#include <apt-pkg/fileutl_opt.h>
 
 // CNC:2002-07-03
 #include <apt-pkg/repository.h>
@@ -41,16 +41,6 @@ using namespace std;
 
 using std::string;
 
-/*
- * Zero-extend a signed integer type to unsigned long long.
- */
-# define zero_extend_signed_to_ull(v) \
-	(sizeof(v) == sizeof(char) ? (unsigned long long) (unsigned char) (v) : \
-	 sizeof(v) == sizeof(short) ? (unsigned long long) (unsigned short) (v) : \
-	 sizeof(v) == sizeof(int) ? (unsigned long long) (unsigned int) (v) : \
-	 sizeof(v) == sizeof(long) ? (unsigned long long) (unsigned long) (v) : \
-	 (unsigned long long) (v))
-
 // CNC:2002-07-03
 // VerifyChecksums - Verify file checksum	   		/*{{{*/
 // ---------------------------------------------------------------------
@@ -60,12 +50,11 @@ static bool VerifyChecksums(const string &File,
                             filesize const ExpectSize,
                             const string &ExpectHash, const string &method)
 {
-   struct stat Buf;
-
-   if (stat(File.c_str(),&Buf) != 0)
+   if (! FileExists(File))
       return true;
 
-   if (zero_extend_signed_to_ull(Buf.st_size) != ExpectSize)
+   std::optional<filesize> const FSize = GetFileSize(File);
+   if (! FSize || *FSize != ExpectSize)
    {
       if (_config->FindB("Acquire::Verbose", false) == true)
 	 cout << "Size of "<<File<<" did not match what's in the checksum list and is to be redownloaded."<<endl;
