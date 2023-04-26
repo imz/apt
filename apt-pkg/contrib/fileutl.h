@@ -22,8 +22,26 @@
 
 #include <string>
 #include <vector>
+#include <type_traits>
+// for off_t
+#include <sys/types.h>
 
 using std::string;
+
+typedef std::make_unsigned<off_t>::type filesize;
+
+/* APT's code shall be mostly ready for whatever width of "filesize"
+   and its underlying type you choose: either 64-bit or 32-bit. (Except
+   for a few issues with inflexible parsing which will need to be fixed.)
+
+   But: all external libapt clients and internal compilation units
+   it consists of must have the same definition. To catch such errors (as
+   a forgotten "config.h" etc), we hardcode a check for one particular variant
+   (namely, the usual off64_t) so that any compilation unit that includes
+   this header is checked to get this type the same way (or it has to be fixed).
+*/
+static_assert(std::is_same<off_t,off64_t>::value, "Your unit has off_t "
+              "that is different from off64_t, which is usual for APT.");
 
 class FileFd
 {
@@ -44,7 +62,7 @@ class FileFd
    bool Skip(unsigned long To);
    bool Truncate(unsigned long To);
    unsigned long Tell();
-   unsigned long Size();
+   filesize Size();
    bool Open(const string &FileName,OpenMode Mode,unsigned long Perms = 0666);
    bool Close();
    bool Sync();

@@ -33,6 +33,8 @@
 #include <cstdlib>
 #include <cstring>
 #include <algorithm>
+#include <type_traits>
+#include <cassert>
 
 // CNC:2003-02-14 - Ralf Corsepius told RH8 with GCC 3.2.1 fails
 //                  compiling without moving this header to here.
@@ -884,12 +886,36 @@ unsigned long FileFd::Tell()
 // FileFd::Size - Return the size of the file				/*{{{*/
 // ---------------------------------------------------------------------
 /* */
-unsigned long FileFd::Size()
+filesize FileFd::Size()
 {
    struct stat Buf;
    if (fstat(iFd,&Buf) != 0)
-      return _error->Errno("fstat","Unable to determine the file size");
-   return Buf.st_size;
+   {
+      _error->Errno("fstat","Unable to determine the file size");
+      return filesize{0}; // FIXME (but what can we do?.. this is old behavior)
+   }
+
+   assert(Buf.st_size >= 0);
+   // the common safest way is to first cast to the same-width unsigned type
+   return filesize{
+      static_cast<std::make_unsigned_t<decltype(Buf.st_size)> >(Buf.st_size)
+         };
+
+   /* Note that this form (filesize{...}) under -Werror=narrowing
+      would keep us from:
+      (1) initializing an unsigned type from a signed value;
+      (2) initializing from a wider type.
+
+      Good: (2) would keep us from loosing information, and (1) would make
+      us pay special attention to casting and zero-extending signed vars.
+      (I believe (1) is not a real concern here for a non-negative value,
+      but in general one should first cast to the same-width unsigned type.)
+
+      And if filesize is a scoped enum (enum class), this is the
+      only form of initializing it from an integer, so then we'd be
+      forced not to make this kind of narrowing errors (including
+      sign-extension) with other forms of initilization.
+   */
 }
 									/*}}}*/
 // FileFd::Close - Close the file if the close flag is set		/*{{{*/
