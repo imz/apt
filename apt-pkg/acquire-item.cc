@@ -56,14 +56,15 @@ using std::string;
 /* Returns false only if the checksums fail (the file not existing is not
    a checksum mismatch) */
 static bool VerifyChecksums(const string &File,
-                            const unsigned long long Size, const string &ExpectHash, const string &method)
+                            unsigned long long const ExpectSize,
+                            const string &ExpectHash, const string &method)
 {
    struct stat Buf;
 
    if (stat(File.c_str(),&Buf) != 0)
       return true;
 
-   if (zero_extend_signed_to_ull(Buf.st_size) != Size)
+   if (zero_extend_signed_to_ull(Buf.st_size) != ExpectSize)
    {
       if (_config->FindB("Acquire::Verbose", false) == true)
 	 cout << "Size of "<<File<<" did not match what's in the checksum list and was redownloaded."<<endl;
@@ -205,13 +206,13 @@ pkgAcqIndex::pkgAcqIndex(pkgAcquire * const Owner,const pkgRepository * const Re
    // If we're verifying authentication, check whether the size and
    // checksums match, if not, delete the cached files and force redownload
    string ExpectHash;
-   unsigned long long Size;
+   unsigned long long ExpectSize;
 
    if (Repository != NULL)
    {
       if (Repository->HasRelease() == true)
       {
-	 if (Repository->FindChecksums(RealURI,Size,ExpectHash) == false)
+	 if (Repository->FindChecksums(RealURI,ExpectSize,ExpectHash) == false)
 	 {
 	    if (Repository->IsAuthenticated() == true)
 	    {
@@ -227,13 +228,13 @@ pkgAcqIndex::pkgAcqIndex(pkgAcquire * const Owner,const pkgRepository * const Re
 	 string FinalFile = _config->FindDir("Dir::State::lists");
 	 FinalFile += URItoFileName(RealURI);
 
-	 if (VerifyChecksums(FinalFile,Size,ExpectHash,Repository->GetCheckMethod()) == false)
+	 if (VerifyChecksums(FinalFile,ExpectSize,ExpectHash,Repository->GetCheckMethod()) == false)
 	 {
 	    unlink(FinalFile.c_str());
 	    unlink(DestFile.c_str());
 	 }
 
-	 if (Repository->FindChecksums(RealURI + ".xz", Size, ExpectHash) == true)
+	 if (Repository->FindChecksums(RealURI + ".xz", ExpectSize, ExpectHash) == true)
 	    Desc.URI = URI + ".xz";
       }
       else if (Repository->IsAuthenticated() == true)
@@ -278,19 +279,19 @@ void pkgAcqIndex::DoneByWorker(const string &Message,
    if (Decompression == true)
    {
       // CNC:2002-07-03
-      unsigned long long FSize;
+      unsigned long long ExpectSize;
       string ExpectHash;
 
       if (Repository != NULL && Repository->HasRelease() == true &&
-	  Repository->FindChecksums(RealURI,FSize,ExpectHash) == true)
+	  Repository->FindChecksums(RealURI,ExpectSize,ExpectHash) == true)
       {
 	 // We must always get here if the repository is authenticated
 
-	 if (FSize != Size)
+	 if (ExpectSize != Size)
 	 {
 	    if (_config->FindB("Acquire::Verbose",false) == true)
 	       _error->Warning("Size mismatch of index file %s: %lu was supposed to be %llu",
-			       RealURI.c_str(), Size, FSize);
+			       RealURI.c_str(), Size, ExpectSize);
 	    Rename(DestFile,DestFile + ".FAILED");
 	    Status = StatError;
 	    ErrorText = _("Size mismatch");
@@ -416,12 +417,12 @@ pkgAcqIndexRel::pkgAcqIndexRel(pkgAcquire * const Owner,pkgRepository * const Re
 
    // CNC:2002-07-09
    string ExpectHash;
-   unsigned long long Size;
+   unsigned long long ExpectSize;
    if (Master == false && Repository != NULL)
    {
       if (Repository->HasRelease() == true)
       {
-	 if (Repository->FindChecksums(RealURI,Size,ExpectHash) == false)
+	 if (Repository->FindChecksums(RealURI,ExpectSize,ExpectHash) == false)
 	 {
 	    if (Repository->IsAuthenticated() == true)
 	    {
@@ -437,7 +438,7 @@ pkgAcqIndexRel::pkgAcqIndexRel(pkgAcquire * const Owner,pkgRepository * const Re
 	 string FinalFile = _config->FindDir("Dir::State::lists");
 	 FinalFile += URItoFileName(RealURI);
 
-	 if (VerifyChecksums(FinalFile,Size,ExpectHash,Repository->GetCheckMethod()) == false)
+	 if (VerifyChecksums(FinalFile,ExpectSize,ExpectHash,Repository->GetCheckMethod()) == false)
 	 {
 	    unlink(FinalFile.c_str());
 	    unlink(DestFile.c_str()); // Necessary?
@@ -585,17 +586,17 @@ void pkgAcqIndexRel::DoneByWorker(const string &Message,
    }
 
    // CNC:2002-07-03
-   unsigned long long FSize;
+   unsigned long long ExpectSize;
    string ExpectHash;
    if (Master == false && Repository != NULL
        && Repository->HasRelease() == true
-       && Repository->FindChecksums(RealURI,FSize,ExpectHash) == true)
+       && Repository->FindChecksums(RealURI,ExpectSize,ExpectHash) == true)
    {
-      if (FSize != Size)
+      if (ExpectSize != Size)
       {
 	 if (_config->FindB("Acquire::Verbose",false) == true)
 	    _error->Warning("Size mismatch of index file %s: %lu was supposed to be %llu",
-			    RealURI.c_str(), Size, FSize);
+			    RealURI.c_str(), Size, ExpectSize);
 	 Rename(DestFile,DestFile + ".FAILED");
 	 Status = StatError;
 	 ErrorText = _("Size mismatch");
