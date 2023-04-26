@@ -38,8 +38,8 @@ class FileFd
    public:
    enum OpenMode {ReadOnly,WriteEmpty,WriteExists,WriteAny,WriteTemp};
 
-   bool Read(void *To,unsigned long Size,unsigned long *Actual = 0);
-   bool Write(const void *From,unsigned long Size);
+   bool Read(void *To,std::size_t Size,std::size_t *Actual = 0);
+   bool Write(const void *From,std::size_t Size);
    bool Seek(unsigned long To);
    bool Skip(unsigned long To);
    bool Truncate(unsigned long To);

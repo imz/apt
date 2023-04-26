@@ -61,7 +61,7 @@ bool CopyFile(FileFd &From,FileFd &To)
    const SPtrArray<unsigned char> Buf(new unsigned char[64000]);
    while (Size != 0)
    {
-      unsigned long ToRead = Size;
+      std::size_t ToRead = Size;
       if (Size > 64000)
 	 ToRead = 64000;
 
@@ -755,9 +755,9 @@ FileFd::~FileFd()
 // ---------------------------------------------------------------------
 /* We are carefull to handle interruption by a signal while reading
    gracefully. */
-bool FileFd::Read(void *To,unsigned long Size,unsigned long *Actual)
+bool FileFd::Read(void *To,std::size_t Size,std::size_t * const Actual)
 {
-   int Res;
+   ssize_t Res;
    errno = 0;
    if (Actual != 0)
       *Actual = 0;
@@ -773,7 +773,7 @@ bool FileFd::Read(void *To,unsigned long Size,unsigned long *Actual)
 	 return _error->Errno("read",_("Read error"));
       }
 
-      To = (char *)To + Res;
+      To = static_cast<char *>(To) + Res;
       Size -= Res;
       if (Actual != 0)
 	 *Actual += Res;
@@ -791,15 +791,15 @@ bool FileFd::Read(void *To,unsigned long Size,unsigned long *Actual)
    }
 
    Flags |= Fail;
-   return _error->Error(_("read, still have %lu to read but none left"),Size);
+   return _error->Error(_("read, still have %zu to read but none left"),Size);
 }
 									/*}}}*/
 // FileFd::Write - Write to the file					/*{{{*/
 // ---------------------------------------------------------------------
 /* */
-bool FileFd::Write(const void *From,unsigned long Size)
+bool FileFd::Write(const void *From,std::size_t Size)
 {
-   int Res;
+   ssize_t Res;
    errno = 0;
    do
    {
@@ -812,7 +812,7 @@ bool FileFd::Write(const void *From,unsigned long Size)
 	 return _error->Errno("write",_("Write error"));
       }
 
-      From = (char *)From + Res;
+      From = static_cast<const char *>(From) + Res;
       Size -= Res;
    }
    while (Res > 0 && Size > 0);
@@ -821,7 +821,7 @@ bool FileFd::Write(const void *From,unsigned long Size)
       return true;
 
    Flags |= Fail;
-   return _error->Error(_("write, still have %lu to write but couldn't"),Size);
+   return _error->Error(_("write, still have %zu to write but couldn't"),Size);
 }
 									/*}}}*/
 // FileFd::Seek - Seek in the file					/*{{{*/
