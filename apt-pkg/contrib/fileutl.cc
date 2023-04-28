@@ -774,11 +774,12 @@ bool FileFd::Read(void *To,std::size_t Size,std::size_t * const Actual)
       }
 
       To = static_cast<char *>(To) + Res;
-      Size -= Res;
       if (Actual != 0)
 	 *Actual += Res;
    }
-   while (Res > 0 && Size > 0);
+   while (Res > 0 // else there has been an error
+          && Size >= static_cast<std::size_t>(Res) // else it's unexpected and Size would overflow below
+          && (Size -= Res) > 0);
 
    if (Size == 0)
       return true;
@@ -791,6 +792,7 @@ bool FileFd::Read(void *To,std::size_t Size,std::size_t * const Actual)
    }
 
    Flags |= Fail;
+   // an overflow doesn't happen in practice and we don't report it differently
    return _error->Error(_("read, still have %zu to read but none left"),Size);
 }
 									/*}}}*/
@@ -813,14 +815,16 @@ bool FileFd::Write(const void *From,std::size_t Size)
       }
 
       From = static_cast<const char *>(From) + Res;
-      Size -= Res;
    }
-   while (Res > 0 && Size > 0);
+   while (Res > 0 // else there has been an error
+          && Size >= static_cast<std::size_t>(Res) // else it's unexpected and Size would overflow below
+          && (Size -= Res) > 0);
 
    if (Size == 0)
       return true;
 
    Flags |= Fail;
+   // an overflow doesn't happen in practice and we don't report it differently
    return _error->Error(_("write, still have %zu to write but couldn't"),Size);
 }
 									/*}}}*/
