@@ -19,6 +19,7 @@
 #include <apt-pkg/fileutl.h>
 #include <apt-pkg/error.h>
 #include <apt-pkg/sptr.h>
+#include <apt-pkg/arithutl.h>
 
 #include <iostream>
 #include <unistd.h>
@@ -33,8 +34,6 @@
 #include <cstdlib>
 #include <cstring>
 #include <algorithm>
-#include <type_traits>
-#include <cassert>
 
 // CNC:2003-02-14 - Ralf Corsepius told RH8 with GCC 3.2.1 fails
 //                  compiling without moving this header to here.
@@ -895,11 +894,8 @@ filesize FileFd::Size()
       return filesize{0}; // FIXME (but what can we do?.. this is old behavior)
    }
 
-   assert(Buf.st_size >= 0);
    // the common safest way is to first cast to the same-width unsigned type
-   return filesize{
-      static_cast<std::make_unsigned_t<decltype(Buf.st_size)> >(Buf.st_size)
-         };
+   return filesize{NonnegAsU(Buf.st_size)};
 
    /* Note that this form (filesize{...}) under -Werror=narrowing
       would keep us from:
