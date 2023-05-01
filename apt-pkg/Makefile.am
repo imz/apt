@@ -19,6 +19,7 @@ libapt_pkg_la_LIBADD += -llua
 endif
 
 libapt_pkg_la_SOURCES = \
+	contrib/arithutl.h \
 	contrib/cdromutl.cc \
 	contrib/cdromutl.h \
 	contrib/cmndline.cc \
