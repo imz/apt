@@ -114,7 +114,7 @@ bool MMap::Close(bool const DoSync)
    if (DoSync == true)
       Sync();
 
-   if (munmap((char *)Base,iSize) != 0)
+   if (munmap(Base,iSize) != 0)
       _error->Warning("Unable to munmap");
 
    iSize = 0;
@@ -133,7 +133,7 @@ bool MMap::Sync()
 
 #ifdef _POSIX_SYNCHRONIZED_IO
    if ((Flags & ReadOnly) != ReadOnly)
-      if (msync((char *)Base,iSize,MS_SYNC) != 0)
+      if (msync(Base,iSize,MS_SYNC) != 0)
 	 return _error->Errno("msync","Unable to write mmap");
 #endif
    return true;
@@ -150,7 +150,7 @@ bool MMap::Sync(unsigned long const Start,unsigned long const Stop)
 #ifdef _POSIX_SYNCHRONIZED_IO
    unsigned long PSize = sysconf(_SC_PAGESIZE);
    if ((Flags & ReadOnly) != ReadOnly)
-      if (msync((char *)Base+(int)(Start/PSize)*PSize,Stop - Start,MS_SYNC) != 0)
+      if (msync(static_cast<char *>(Base)+(int)(Start/PSize)*PSize,Stop - Start,MS_SYNC) != 0)
 	 return _error->Errno("msync","Unable to write mmap");
 #endif
    return true;
@@ -247,7 +247,7 @@ DynamicMMap::~DynamicMMap()
 {
    if (Fd == 0)
    {
-      delete [] (unsigned char *)Base;
+      delete [] static_cast<unsigned char *>(Base); // same type as was for new
       return;
    }
 
