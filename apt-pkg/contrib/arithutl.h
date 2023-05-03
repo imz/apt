@@ -56,4 +56,30 @@ constexpr bool SafeAssign_u(to_t &Var, const from_t &Value)
    return true;
 }
 
+/* NonnegSubtract_u - Subtract Value from Var if it won't go below 0.
+
+   _u is a reminder that this function has been implemented only for
+   unsigned arguments (Value) for simplicity.
+ */
+template<typename var_t, typename value_t>
+[[nodiscard]]
+constexpr bool NonnegSubtract_u(var_t &Var, const value_t &Value)
+{
+   // assumption to simplify things so that we don't need to check upper limits
+   static_assert(std::is_unsigned_v<value_t>,
+                 "we assume the arg is unsigned to avoid complications");
+
+   // avoid complications with sign-compare after ensuring Var is non-negative
+   if (Var < 0 || NonnegAsU(Var) < Value)
+      return false;
+
+   // After the check above, -Wconversion warnings here would be false
+   // (perhaps if Value happens to be wider than Var), therefore we use
+   // static_cast below to suppress them.
+
+   Var -= static_cast<var_t>(Value);
+
+   return true;
+}
+
 #endif
