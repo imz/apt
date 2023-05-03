@@ -822,8 +822,8 @@ bool FileFd::Read(void *To,std::size_t Size,std::size_t * const Actual)
 	 *Actual += Res;
    }
    while (Res > 0 // else there has been an error
-          && Size >= static_cast<std::size_t>(Res) // else it's unexpected and Size would overflow below
-          && (Size -= Res) > 0);
+          && NonnegSubtract_u(Size,static_cast<std::size_t>(Res)) // else it's unexpected
+          && Size > 0);
 
    if (Size == 0)
       return true;
@@ -861,8 +861,8 @@ bool FileFd::Write(const void *From,std::size_t Size)
       From = static_cast<const char *>(From) + Res;
    }
    while (Res > 0 // else there has been an error
-          && Size >= static_cast<std::size_t>(Res) // else it's unexpected and Size would overflow below
-          && (Size -= Res) > 0);
+          && NonnegSubtract_u(Size,static_cast<std::size_t>(Res)) // else it's unexpected
+          && Size > 0);
 
    if (Size == 0)
       return true;
