@@ -22,6 +22,8 @@
 #define PKGLIB_FILEUTL_OPT_H
 
 #include <apt-pkg/fileutl.h>
+// for operations on filesize (it also uses C++17 lib)
+#include <apt-pkg/arithutl.h>
 
 #include <optional>
 
