@@ -80,7 +80,7 @@ bool IndexCopy::CopyPackages(const string CDROM,const string Name,vector<string>
 	 FILE *tmp = tmpfile();
 	 if (tmp == 0)
 	    return _error->Errno("tmpfile","Unable to create a tmp file");
-	 Pkg.Fd(dup(fileno(tmp)));
+	 Pkg.Reset(dup(fileno(tmp)));
 	 fclose(tmp);
 
 	 // Fork gzip

@@ -35,7 +35,7 @@ bool ListUpdate(pkgAcquireStatus &Stat,
    FileFd Lock;
    if (!_config->FindB("Debug::NoLocking", false))
    {
-      Lock.Fd(GetLock(_config->FindDir("Dir::State::Lists") + "lock"));
+      Lock.Reset(GetLock(_config->FindDir("Dir::State::Lists") + "lock"));
 
       if (_error->PendingError())
          return _error->Error(_("Unable to lock the list directory"));

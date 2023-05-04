@@ -51,9 +51,6 @@ class FileFd
 
    // Simple manipulators
    inline int Fd() {return iFd;}
-   // FIXME: get rid of Fd(), which has bad semantics: if used when already
-   // owning an iFd, the old iFd is not closed (i.e., an open fd "leaks").
-   inline void Fd(int fd) {iFd = fd;}
    void Reset(int const fd) {
       // close the old owned fd
       Close();
