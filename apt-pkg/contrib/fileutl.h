@@ -28,7 +28,7 @@
 
 using std::string;
 
-typedef std::make_unsigned<off_t>::type filesize;
+enum class filesize: std::make_unsigned<off_t>::type;
 
 /* APT's code shall be mostly ready for whatever width of "filesize"
    and its underlying type you choose: either 64-bit or 32-bit. (Except

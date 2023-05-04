@@ -56,6 +56,38 @@ constexpr filesize StSize(const struct stat &Buf)
 
 std::optional<filesize> GetFileSize(const std::string &File);
 
+/* Overloads of the operations for filesize */
+
+template<typename to_t>
+[[nodiscard]]
+constexpr bool SafeAssign_u(to_t &Var, const filesize &Value)
+{
+   return
+      SafeAssign_u(Var,
+                   static_cast< std::underlying_type_t<filesize> >(Value));
+}
+
+template<typename value_t>
+[[nodiscard]]
+constexpr bool NonnegSubtract_u(filesize &Var, const value_t &Value)
+{
+   return
+      NonnegSubtract_u(reinterpret_cast< std::underlying_type_t<filesize>& >(Var),
+                     Value);
+}
+
+template<typename var_t>
+[[nodiscard]]
+constexpr bool SafeAssignDiffIfNonneg_u(var_t &Var,
+                                        const filesize &A,
+                                        const filesize &B)
+{
+   return
+      SafeAssignDiffIfNonneg_u(Var,
+                               static_cast< std::underlying_type_t<filesize> >(A),
+                               static_cast< std::underlying_type_t<filesize> >(B));
+}
+
 // Consume - Buffered feeding of data read from a file to a consumer	 *{{{*/
 // ---------------------------------------------------------------------
 /* Consumer is expected behave similarly to FileFd::Write(). Thanks to this
