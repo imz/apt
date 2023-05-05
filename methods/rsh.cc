@@ -301,7 +301,7 @@ bool RSHConn::Get(const char *Path,FileFd &To,unsigned long Resume,
 
    if (To.Truncate(Resume) == false)
       return false;
-   if (To.Seek(0) == false)
+   if (To.Seek(filesize{0}) == false)
       return false;
 
    if (Resume != 0) {

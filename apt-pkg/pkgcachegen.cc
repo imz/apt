@@ -1055,7 +1055,7 @@ std::unique_ptr<MMap> pkgMakeStatusCache(pkgSourceList &List,OpProgress &Progres
 
 	 // Write out the proper header
 	 Gen.GetCache().HeaderP->Dirty = false;
-	 if (SCacheF.Seek(0) == false ||
+	 if (SCacheF.Seek(filesize{0}) == false ||
 	     SCacheF.Write(Map->Data(),sizeof(*Gen.GetCache().HeaderP)) == false)
          {
             _error->Error(_("IO Error saving source cache"));

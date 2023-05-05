@@ -123,7 +123,7 @@ bool RPMIndexCopy::CopyPackages(const string CDROM,const string Name,vector<stri
 	 if (ExecWait(Process,_config->Find("Dir::Bin::bzip2","bzip2").c_str(),false) == false)
 	    return _error->Error("bzip2 failed, perhaps the disk is full.");
 
-	 Pkg.Seek(0);
+	 Pkg.Seek(filesize{0});
       }
       if (_error->PendingError() == true)
 	 return false;

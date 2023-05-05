@@ -109,7 +109,7 @@ bool IndexCopy::CopyPackages(const string CDROM,const string Name,vector<string>
 	 if (ExecWait(Process,_config->Find("Dir::bin::gzip","gzip").c_str(),false) == false)
 	    return _error->Error("gzip failed, perhaps the disk is full.");
 
-	 Pkg.Seek(0);
+	 Pkg.Seek(filesize{0});
       }
       pkgTagFile Parser(&Pkg);
       if (_error->PendingError() == true)

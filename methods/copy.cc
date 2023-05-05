@@ -71,7 +71,7 @@ bool CopyMethod::Fetch(FetchItem *Itm)
       return false;
    }
    Hashes hash;
-   To.Seek(0);
+   To.Seek(filesize{0});
    hash.AddFD(To.Fd(), Buf.st_size);
    Res.TakeHashes(hash);
 
