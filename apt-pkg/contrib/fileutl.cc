@@ -911,12 +911,13 @@ bool FileFd::Truncate(unsigned long To)
 // FileFd::Tell - Current seek position					/*{{{*/
 // ---------------------------------------------------------------------
 /* */
-unsigned long FileFd::Tell()
+filesize FileFd::Tell()
 {
-   off_t Res = lseek(iFd,0,SEEK_CUR);
-   if (Res == (off_t)-1)
+   off_t const Res{lseek(iFd,0,SEEK_CUR)};
+   // the manpage shows it with a cast, perhaps because -1 is an int, but...
+   if (Res == static_cast<off_t>(-1)) // ..it shouldn't affect how it works here
       _error->Errno("lseek","Failed to determine the current file position");
-   return Res;
+   return filesize{NonnegAsU(Res)}; // some more comments in StSize()
 }
 									/*}}}*/
 // FileFd::Size - Return the size of the file				/*{{{*/

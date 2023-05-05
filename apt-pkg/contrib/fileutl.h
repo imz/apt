@@ -61,7 +61,7 @@ class FileFd
    bool Seek(unsigned long To);
    bool Skip(unsigned long To);
    bool Truncate(unsigned long To);
-   unsigned long Tell();
+   filesize Tell();
    filesize Size();
    bool Open(const string &FileName,OpenMode Mode,unsigned long Perms = 0666);
    bool Close();
