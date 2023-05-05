@@ -58,9 +58,9 @@ class FileFd
 
    bool Read(void *To,std::size_t Size,std::size_t *Actual = 0);
    bool Write(const void *From,std::size_t Size);
-   bool Seek(unsigned long To);
-   bool Skip(unsigned long To);
-   bool Truncate(unsigned long To);
+   bool Seek(filesize To);
+   bool Skip(filesize To);
+   bool Truncate(filesize To);
    filesize Tell();
    filesize Size();
    bool Open(const string &FileName,OpenMode Mode,unsigned long Perms = 0666);

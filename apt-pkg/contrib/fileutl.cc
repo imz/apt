@@ -31,6 +31,7 @@
 #include <signal.h>
 #include <errno.h>
 #include <dirent.h>
+#include <cstdint>
 #include <cstdlib>
 #include <cstring>
 #include <algorithm>
@@ -875,12 +876,15 @@ bool FileFd::Write(const void *From,std::size_t Size)
 // FileFd::Seek - Seek in the file					/*{{{*/
 // ---------------------------------------------------------------------
 /* */
-bool FileFd::Seek(unsigned long To)
+bool FileFd::Seek(filesize const To)
 {
-   if (lseek(iFd,To,SEEK_SET) != (signed)To)
+   off_t Tmp;
+   if (! SafeAssign_u(Tmp,To)
+       || lseek(iFd,Tmp,SEEK_SET) != Tmp)
    {
       Flags |= Fail;
-      return _error->Error("Unable to seek to %lu",To);
+      return _error->Error("Unable to seek to %ju",
+                           static_cast<std::uintmax_t>(To));
    }
 
    return true;
@@ -889,12 +893,15 @@ bool FileFd::Seek(unsigned long To)
 // FileFd::Skip - Seek in the file					/*{{{*/
 // ---------------------------------------------------------------------
 /* */
-bool FileFd::Skip(unsigned long Over)
+bool FileFd::Skip(filesize const Over)
 {
-   if (lseek(iFd,Over,SEEK_CUR) < 0)
+   off_t Tmp;
+   if (! SafeAssign_u(Tmp,Over)
+       || lseek(iFd,Tmp,SEEK_CUR) < 0)
    {
       Flags |= Fail;
-      return _error->Error("Unable to seek ahead %lu",Over);
+      return _error->Error("Unable to seek ahead %ju",
+                           static_cast<std::uintmax_t>(Over));
    }
 
    return true;
@@ -903,12 +910,15 @@ bool FileFd::Skip(unsigned long Over)
 // FileFd::Truncate - Truncate the file 				/*{{{*/
 // ---------------------------------------------------------------------
 /* */
-bool FileFd::Truncate(unsigned long To)
+bool FileFd::Truncate(filesize const To)
 {
-   if (ftruncate(iFd,To) != 0)
+   off_t Tmp;
+   if (! SafeAssign_u(Tmp,To)
+       || ftruncate(iFd,Tmp) != 0)
    {
       Flags |= Fail;
-      return _error->Error("Unable to truncate to %lu",To);
+      return _error->Error("Unable to truncate to %ju",
+                           static_cast<std::uintmax_t>(To));
    }
 
    return true;
