@@ -35,6 +35,7 @@
 #include <cstring>
 #include <type_traits>
 #include <cassert>
+#include <cstdint>
 									/*}}}*/
 
 // MMap::MMap - Constructor						/*{{{*/
