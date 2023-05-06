@@ -129,8 +129,7 @@ bool pkgTagFile::Jump(pkgTagSection &Tag,filesize const Offset)
    {
       // We are within a buffer space of the next hit..
       std::ptrdiff_t Dist;
-      if (Offset >= iOffset
-          && SafeAssign_u(Dist, Offset - iOffset)
+      if (SafeAssignDiffIfNonneg_u(Dist, Offset, iOffset)
           && (End - Start) > Dist)
       {
          Start += Dist;
