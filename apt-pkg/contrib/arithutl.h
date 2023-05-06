@@ -82,4 +82,20 @@ constexpr bool NonnegSubtract_u(var_t &Var, const value_t &Value)
    return true;
 }
 
+/* SafeAssignDiffIfNonneg_u
+
+   _u is a reminder that this function has been implemented only for
+   unsigned arguments (num_t) for simplicity.
+ */
+template<typename var_t, typename num_t>
+[[nodiscard]]
+constexpr bool SafeAssignDiffIfNonneg_u(var_t &Var, const num_t &A, const num_t &B)
+{
+   if (A > B)
+      // the type of (A - B) is num_t (asserted unsigned)
+      return SafeAssign_u(Var, A - B);
+   else
+      return false;
+}
+
 #endif
