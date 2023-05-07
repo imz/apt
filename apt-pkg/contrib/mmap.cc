@@ -25,6 +25,8 @@
 #define _DEFAULT_SOURCE
 #include <apt-pkg/mmap.h>
 #include <apt-pkg/error.h>
+// for operations with filesize (C++17, otherwise they could be in fileutl.h)
+#include <apt-pkg/fileutl_opt.h>
 
 #include <apti18n.h>
 
@@ -33,10 +35,29 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <cstring>
-#include <type_traits>
 #include <cassert>
 #include <cstdint>
 									/*}}}*/
+
+[[nodiscard]]
+static inline bool SizeCanBeMapped(FileFd &Fd, std::size_t * const SizeToMap)
+{
+   auto const EndOfFile = Fd.Size();
+   std::size_t Tmp;
+   if (! SafeAssign_u(Tmp,EndOfFile))
+   {
+      // Do not write "return _error->Error()" so that the compiler/LTO sees
+      // that it always returns false if it hasn't initialized the var.
+      _error->Error(_("File of %ju bytes is too large for mmap(2)"),
+                    static_cast<std::uintmax_t>(EndOfFile));
+      return false;
+   }
+
+   if (SizeToMap)
+      *SizeToMap = Tmp;
+
+   return true;
+}
 
 // MMap::MMap - Constructor						/*{{{*/
 // ---------------------------------------------------------------------
@@ -73,17 +94,10 @@ bool MMap::Map(FileFd &Fd)
    Base = nullptr;
    iSize = 0;
 
-   auto const EndOfFile = Fd.Size();
-
-   // Check that the file size is in the range of size_t.
-   static_assert(std::is_unsigned_v<decltype(EndOfFile)>,
-                 "we want to rely that Fd::Size() is unsigned");
-   if (EndOfFile > SIZE_MAX)
-      return _error->Error(_("File of %ju bytes is too large for mmap(2)"),
-                           static_cast<uintmax_t>(EndOfFile));
-   // After the check above, -Wconversion and -Wsign-conversion warnings here
-   // would be false, therefore we use static_cast below to suppress them.
-   if (EndOfFile == 0)
+   std::size_t SizeToMap;
+   if (! SizeCanBeMapped(Fd,&SizeToMap))
+      return false;
+   if (SizeToMap == 0)
       return _error->Error(_("Can't mmap an empty file"));
 
    // Set the permissions.
@@ -95,12 +109,12 @@ bool MMap::Map(FileFd &Fd)
       Map = MAP_PRIVATE;
 
    // Map it.
-   Base = mmap(0,static_cast<size_t>(EndOfFile),Prot,Map,Fd.Fd(),0);
+   Base = mmap(0,SizeToMap,Prot,Map,Fd.Fd(),0);
    if (Base == (void *)MAP_FAILED)
       return _error->Errno("mmap",_("Couldn't make mmap of %zu bytes"),
-                           static_cast<size_t>(EndOfFile));
+                           SizeToMap);
 
-   iSize = static_cast<size_t>(EndOfFile);
+   iSize = SizeToMap;
    return true;
 }
 									/*}}}*/
@@ -196,14 +210,16 @@ DynamicMMap::DynamicMMap(FileFd &F,
       and at least as big as RequestedWorkSpace.
    */
 
-   auto const EndOfFile = Fd->Size();
+   std::size_t Occupied;
+   if (! SizeCanBeMapped(F,&Occupied))
+      return;
 
    /* The backing file must be made at least as big as the requested workspace
       that we are going to use in the course of work.
    */
-   if (EndOfFile < RequestedWorkSpace)
+   if (Occupied < RequestedWorkSpace)
    {
-      if (!Fd->Truncate(RequestedWorkSpace))
+      if (!Fd->Truncate(filesize{RequestedWorkSpace}))
          return;
    }
 
@@ -217,14 +233,8 @@ DynamicMMap::DynamicMMap(FileFd &F,
    /* Now decrease iSize back to only the already allocated stuff
       (that which has been saved in the file before extension)
       -- to satisfy the expectations of DynamicMMap methods.
-
-      Note that at this moment Map(F) has ensured the file size fits size_t.
-      (This note applies to the current size of the extended file as well as
-      the initial size EndOfFile.)
    */
-   static_assert(std::is_unsigned_v<decltype(EndOfFile)>,
-                 "we want to rely that Fd::Size() is unsigned");
-   iSize = static_cast<size_t>(EndOfFile);
+   iSize = Occupied;
 }
 									/*}}}*/
 // DynamicMMap::DynamicMMap - Constructor for a non-file backed map	/*{{{*/
@@ -252,7 +262,7 @@ DynamicMMap::~DynamicMMap()
       return;
    }
 
-   size_t const EndOfFile = iSize;
+   auto const EndOfFile = iSize;
 
    /* Prepare for Close(): iSize determines the region to be munmap'ed and
       therefore needs to be set to the whole file-backed workspace.
@@ -264,7 +274,10 @@ DynamicMMap::~DynamicMMap()
    /* Finally, truncate the file to the region used for our actual allocations.
       (Not all of the initially mmap'ed workspace might have been used.)
     */
-   Fd->Truncate(EndOfFile);
+   if (! Fd->Truncate(filesize{EndOfFile}))
+   {
+      // there is nothing we can really do better here
+   }
 }
 									/*}}}*/
 // DynamicMMap::RawAllocate - Allocate a raw chunk of unaligned space	/*{{{*/
