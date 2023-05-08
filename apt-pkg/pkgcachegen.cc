@@ -445,6 +445,7 @@ bool pkgCacheGenerator::NewFileVer(pkgCache::VerIterator &Ver,
       return true;
 
    // Get a structure
+   // TODO: first fill in a VerFile struct, then allocate & assign
    const auto VerFile = AllocateInMap(sizeof(pkgCache::VerFile));
    if (!VerFile)
       return false;
@@ -452,18 +453,18 @@ bool pkgCacheGenerator::NewFileVer(pkgCache::VerIterator &Ver,
    pkgCache::VerFileIterator VF(Cache,Cache.VerFileP + *VerFile);
    VF->File = CurrentFile - Cache.PkgFileP;
 
-   // Link it to the end of the list
-   map_ptrloc *Last = &Ver->FileList;
-   for (pkgCache::VerFileIterator V = Ver.FileList(); V.end() == false; V++)
-      Last = &V->NextFile;
-   VF->NextFile = *Last;
-   *Last = VF.Index();
-
    VF->Offset = List.Offset();
    VF->Size = List.Size();
    if (Cache.HeaderP->MaxVerFileSize < VF->Size)
       Cache.HeaderP->MaxVerFileSize = VF->Size;
    Cache.HeaderP->VerFileCount++;
+
+   // Link it to the end of the list (when everything has been updated)
+   map_ptrloc *Last = &Ver->FileList;
+   for (pkgCache::VerFileIterator V = Ver.FileList(); V.end() == false; V++)
+      Last = &V->NextFile;
+   VF->NextFile = *Last;
+   *Last = VF.Index();
 
    return true;
 }
