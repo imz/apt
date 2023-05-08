@@ -2126,7 +2126,7 @@ int LocalityCompare(const void *a, const void *b)
       return -1;
 
    if (A->File == B->File)
-      return A->Offset - B->Offset;
+      return (A->Offset > B->Offset) ? 1 : ((A->Offset < B->Offset) ? -1 : 0);
    return A->File - B->File;
 }
 

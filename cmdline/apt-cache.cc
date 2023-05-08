@@ -66,7 +66,7 @@ int LocalityCompare(const void *a, const void *b)
       return -1;
 
    if (A->File == B->File)
-      return A->Offset - B->Offset;
+      return (A->Offset > B->Offset) ? 1 : ((A->Offset < B->Offset) ? -1 : 0);
    return A->File - B->File;
 }
 
@@ -492,7 +492,6 @@ bool DumpAvail(CommandLine &Cmd)
 	 file in read order. We apply 1 more optimization here, since often
 	 there will be < 1 byte gaps between records (for the \n) we read that
 	 into the next buffer and offset a bit.. */
-      unsigned long Pos = 0;
       for (; *J != 0; J++)
       {
 	 if ((*J)->File + Cache.PkgFileP != File)
@@ -500,14 +499,18 @@ bool DumpAvail(CommandLine &Cmd)
 
 	 const pkgCache::VerFile &VF = **J;
 
-	 // Read the record and then write it out again.
-	 unsigned long Jitter = VF.Offset - Pos;
-	 if (Jitter > 8)
-	 {
-	    if (PkgF.Seek(VF.Offset) == false)
-	       break;
-	    Jitter = 0;
-	 }
+         // Read the record and then write it out again.
+         size_t Jitter;
+         // TODO: optimize out Tell() by tracking the current Pos arithmetically
+         if (! SafeAssignDiffIfNonneg_u(Jitter,
+                                        UnpackFsz(VF.Offset),
+                                        PkgF.Tell())
+             || Jitter > 8)
+         {
+            if (PkgF.Seek(UnpackFsz(VF.Offset)) == false)
+               break;
+            Jitter = 0;
+         }
 
 	 if (PkgF.Read(Buffer,VF.Size + Jitter) == false)
 	    break;
@@ -532,8 +535,6 @@ bool DumpAvail(CommandLine &Cmd)
 	    if (fwrite(Buffer+Jitter,VF.Size+1,1,stdout) != 1)
 	       break;
 	 }
-
-	 Pos = VF.Offset + VF.Size;
       }
 
       fflush(stdout);
