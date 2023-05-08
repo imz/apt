@@ -22,6 +22,7 @@
 #include <apt-pkg/strutl.h>
 #include <apt-pkg/sptr.h>
 #include <apt-pkg/pkgsystem.h>
+#include <apt-pkg/fileutl_opt.h>
 
 #include <apti18n.h>
 
@@ -449,7 +450,8 @@ bool pkgCacheGenerator::NewFileVer(pkgCache::VerIterator &Ver,
 
    NewVerFile.File = CurrentFile - Cache.PkgFileP;
 
-   NewVerFile.Offset = List.Offset();
+   if (! PackFsz_u(NewVerFile.Offset, List.Offset()))
+      return false;
    NewVerFile.Size = List.Size();
    if (Cache.HeaderP->MaxVerFileSize < NewVerFile.Size)
       Cache.HeaderP->MaxVerFileSize = NewVerFile.Size;

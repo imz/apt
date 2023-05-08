@@ -56,8 +56,8 @@ class rpmListParser : public pkgCacheGenerator::ListParser
    virtual unsigned short VersionHash() override;
    virtual bool UsePackage(pkgCache::PkgIterator &Pkg,
 			   pkgCache::VerIterator &Ver) override;
-   virtual unsigned long Offset() override
-	{return Handler->Offset();}
+   virtual filesize Offset() override
+	{return filesize{NonnegAsU(Handler->Offset())};}
    virtual unsigned long Size() override;
    virtual unsigned long Flags() override;
 

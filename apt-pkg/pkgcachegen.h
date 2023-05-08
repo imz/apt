@@ -120,7 +120,7 @@ class pkgCacheGenerator::ListParser
    virtual unsigned short VersionHash() = 0;
    virtual bool UsePackage(pkgCache::PkgIterator &Pkg,
 			   pkgCache::VerIterator &Ver) = 0;
-   virtual unsigned long Offset() = 0;
+   virtual filesize Offset() = 0;
    virtual unsigned long Size() = 0;
    virtual unsigned long Flags() = 0;
 

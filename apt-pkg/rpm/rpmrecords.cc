@@ -20,6 +20,7 @@
 
 #include <apt-pkg/error.h>
 #include <apti18n.h>
+#include <apt-pkg/fileutl_opt.h>
 
 #include <cstring>
 
@@ -61,7 +62,8 @@ rpmRecordParser::~rpmRecordParser()
 /* */
 bool rpmRecordParser::Jump(pkgCache::VerFileIterator const &Ver)
 {
-   return Handler->Jump(Ver->Offset);
+   off_t Tmp;
+   return SafeAssign_u(Tmp,Ver.Offset()) && Handler->Jump(Tmp);
 }
 									/*}}}*/
 // RecordParser::FileName - Return the archive filename on the site	/*{{{*/

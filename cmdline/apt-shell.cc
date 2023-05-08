@@ -2728,7 +2728,7 @@ bool DisplayRecord(pkgCache::VerIterator V)
    // Read the record and then write it out again.
    unsigned char *Buffer = new unsigned char[GCache->HeaderP->MaxVerFileSize+1];
    Buffer[V.FileList()->Size] = '\n';
-   if (PkgF.Seek(V.FileList()->Offset) == false ||
+   if (PkgF.Seek(V.FileList().Offset()) == false ||
        PkgF.Read(Buffer,V.FileList()->Size) == false ||
        fwrite(Buffer,1,V.FileList()->Size+1,stdout) < V.FileList()->Size+1)
    {
