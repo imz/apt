@@ -361,6 +361,7 @@ class pkgCache::VerFileIterator
 
    inline PkgFileIterator File() const {return PkgFileIterator(*Owner,FileP->File + Owner->PkgFileP);}
    inline unsigned long Index() const {return FileP - Owner->VerFileP;}
+   filesize Offset() const {return UnpackFsz(FileP->Offset);}
 
    inline VerFileIterator() : Owner(0), FileP(0) {}
    inline VerFileIterator(pkgCache &Owner,VerFile *Trg) : Owner(&Owner), FileP(Trg) {}

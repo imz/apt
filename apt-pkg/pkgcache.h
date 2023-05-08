@@ -256,8 +256,8 @@ struct pkgCache::VerFile
 {
    map_ptrloc File;           // PackageFile
    map_ptrloc NextFile;       // PkgVerFile
-   map_ptrloc Offset;         // File offset
-   unsigned short Size;
+   map_filepos Offset;        // File offset
+   unsigned short Size;       // a buf size? (TODO: hide it under a special type)
 };
 
 struct pkgCache::Version

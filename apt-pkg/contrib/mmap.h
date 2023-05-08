@@ -29,6 +29,7 @@
 #include <optional>
 
 #include <apt-pkg/fileutl.h>
+#include <apt-pkg/arithutl.h>
 
 using std::string;
 
@@ -36,6 +37,21 @@ using std::string;
    types are too small. Where ever possible 'unsigned long' should be used
    instead of this internal type */
 typedef unsigned int map_ptrloc;
+
+/* A (short) storage type for file sizes/positions.
+   Convertible to filesize (without loss).
+*/
+typedef unsigned int map_filepos;
+constexpr filesize UnpackFsz(const map_filepos &X) {
+   return filesize{X};
+}
+// We use a special name for this op instead of SafeAssign_u, because we don't
+// want to mix ops with a special encapsulated type with general-purpose int ops
+// (_u is a reminder that it takes only unsigned values.)
+template<typename from_t>
+[[nodiscard]] constexpr bool PackFsz_u(map_filepos &Var, const from_t &Val) {
+   return SafeAssign_u(Var,Val);
+}
 
 class MMap
 {
