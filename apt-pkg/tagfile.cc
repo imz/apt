@@ -15,6 +15,7 @@
 #include <apt-pkg/tagfile.h>
 #include <apt-pkg/error.h>
 #include <apt-pkg/strutl.h>
+#include <apt-pkg/fileutl_opt.h>
 
 #include <apti18n.h>
 
@@ -28,21 +29,21 @@ using std::string;
 // TagFile::pkgTagFile - Constructor					/*{{{*/
 // ---------------------------------------------------------------------
 /* */
-pkgTagFile::pkgTagFile(FileFd *pFd,unsigned long Size) : Fd(*pFd), Size(Size)
+pkgTagFile::pkgTagFile(FileFd * const pFd,filesize const Size) : Fd(*pFd), Size(Size)
 {
    if (Fd.IsOpen() == false)
    {
       Buffer = 0;
       Start = End = Buffer = 0;
       Done = true;
-      iOffset = 0;
+      iOffset = filesize{0};
       return;
    }
 
    Buffer = new char[Size];
    Start = End = Buffer;
    Done = false;
-   iOffset = 0;
+   iOffset = filesize{0};
    Fill();
 }
 									/*}}}*/
@@ -123,15 +124,19 @@ bool pkgTagFile::Fill()
 // ---------------------------------------------------------------------
 /* This jumps to a pre-recorded file location and reads the record
    that is there */
-bool pkgTagFile::Jump(pkgTagSection &Tag,unsigned long Offset)
+bool pkgTagFile::Jump(pkgTagSection &Tag,filesize const Offset)
 {
-   // We are within a buffer space of the next hit..
-   if (Offset >= iOffset && iOffset + (End - Start) > Offset)
    {
-      unsigned long Dist = Offset - iOffset;
-      Start += Dist;
-      iOffset += Dist;
-      return Step(Tag);
+      // We are within a buffer space of the next hit..
+      std::ptrdiff_t Dist;
+      if (Offset >= iOffset
+          && SafeAssign_u(Dist, Offset - iOffset)
+          && (End - Start) > Dist)
+      {
+         Start += Dist;
+         iOffset = Offset;
+         return Step(Tag);
+      }
    }
 
    // Reposition and reload..

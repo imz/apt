@@ -69,18 +69,18 @@ class pkgTagFile
    char *Start;
    char *End;
    bool Done;
-   unsigned long iOffset;
-   unsigned long Size;
+   filesize iOffset;
+   filesize Size;
 
    bool Fill();
 
    public:
 
    bool Step(pkgTagSection &Section);
-   inline unsigned long Offset() {return iOffset;}
-   bool Jump(pkgTagSection &Tag,unsigned long Offset);
+   inline filesize Offset() {return iOffset;}
+   bool Jump(pkgTagSection &Tag,filesize Offset);
 
-   pkgTagFile(FileFd *F,unsigned long Size = 32*1024);
+   pkgTagFile(FileFd *F,filesize Size = filesize{32*1024});
    ~pkgTagFile();
 };
 
