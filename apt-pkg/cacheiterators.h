@@ -354,6 +354,7 @@ class pkgCache::VerFileIterator
    inline VerFile *operator ->() {return FileP;}
    inline VerFile const *operator ->() const {return FileP;}
    inline VerFile const &operator *() const {return *FileP;}
+   inline VerFile & operator *() {return *FileP;}
    inline operator VerFile *() {return FileP == Owner->VerFileP?0:FileP;}
    inline operator VerFile const *() const {return FileP == Owner->VerFileP?0:FileP;}
    inline pkgCache *Cache() {return Owner;}
