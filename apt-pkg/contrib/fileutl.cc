@@ -51,9 +51,14 @@ bool CopyFile(FileFd &From,FileFd &To)
    if (From.IsOpen() == false || To.IsOpen() == false)
       return false;
 
+   // Consuming the whole size of the file makes sense
+   // if we start from the very beginning
+   if (! From.Seek(0))
+      return false;
+   unsigned long Size = From.Size();
+
    // Buffered copy between fds
    const SPtrArray<unsigned char> Buf(new unsigned char[64000]);
-   unsigned long Size = From.Size();
    while (Size != 0)
    {
       unsigned long ToRead = Size;
