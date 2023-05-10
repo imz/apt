@@ -47,6 +47,19 @@ bool Hashes::AddFD(int Fd,unsigned long Size)
    return true;
 }
 									/*}}}*/
+// Hashes::AddF - Add a part of FileFd from the currpos to the checksum	/*{{{*/
+// ---------------------------------------------------------------------
+/* */
+bool Hashes::AddF(FileFd &F,filesize const Size)
+{
+   return Consume(F,
+                  [this](const void * const Buf, size_t const Count) -> bool
+                  {
+                     return Add(Buf,Count);
+                  },
+                  Size);
+}
+									/*}}}*/
 // Hashes::AddFile - Add content of a whole file into the checksum	/*{{{*/
 // ---------------------------------------------------------------------
 /* */
