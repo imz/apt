@@ -353,19 +353,13 @@ off_t RPMSingleFileHandler::FileSize() const
 string RPMSingleFileHandler::MD5Sum() const
 {
    MD5Summation MD5;
-   FileFd File(sFilePath, FileFd::ReadOnly);
-   MD5.AddFD(File.Fd(), File.Size());
-   File.Close();
-   return MD5.Result();
+   return MD5.AddFile(sFilePath) ? MD5.Result() : "";
 }
 
 string RPMSingleFileHandler::BLAKE2b() const
 {
    raptHash blake2b = raptHash("BLAKE2b");
-   FileFd File(sFilePath, FileFd::ReadOnly);
-   blake2b.AddFD(File.Fd(), File.Size());
-   File.Close();
-   return blake2b.Result();
+   return blake2b.AddFile(sFilePath) ? blake2b.Result() : "";
 }
 
 RPMDirHandler::RPMDirHandler(const string DirName)
@@ -487,10 +481,7 @@ string RPMDirHandler::MD5Sum() const
    if (Dir == NULL)
       return "";
    MD5Summation MD5;
-   FileFd File(sFilePath, FileFd::ReadOnly);
-   MD5.AddFD(File.Fd(), File.Size());
-   File.Close();
-   return MD5.Result();
+   return MD5.AddFile(sFilePath) ? MD5.Result() : "";
 }
 
 string RPMDirHandler::BLAKE2b() const
@@ -498,10 +489,7 @@ string RPMDirHandler::BLAKE2b() const
    if (Dir == NULL)
       return "";
    raptHash blake2b = raptHash("BLAKE2b");
-   FileFd File(sFilePath, FileFd::ReadOnly);
-   blake2b.AddFD(File.Fd(), File.Size());
-   File.Close();
-   return blake2b.Result();
+   return blake2b.AddFile(sFilePath) ? blake2b.Result() : "";
 }
 
 

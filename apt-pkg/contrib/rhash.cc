@@ -91,16 +91,20 @@ bool raptHash::Add(const void * const data,std::size_t const len)
    return (rc == 0);
 }
 									/*}}}*/
-// raptHash::AddFD - Add content of file into the checksum         /*{{{*/
+// raptHash::AddWholeFD - Add content of a whole file into the checksum	/*{{{*/
 // ---------------------------------------------------------------------
 /* */
-bool raptHash::AddFD(int Fd,unsigned long Size)
+bool raptHash::AddWholeFD(FileFd &F)
 {
+   if (! F.Seek(filesize{0}))
+      return false;
+   filesize Size{F.Size()};
+
    unsigned char Buf[64 * 64];
    int Res = 0;
    while (Size != 0)
    {
-      Res = read(Fd,Buf,std::min(Size,(unsigned long)sizeof(Buf)));
+      Res = read(F.Fd(),Buf,std::min(Size,(unsigned long)sizeof(Buf)));
       if (Res < 0 || (unsigned) Res != std::min(Size,(unsigned long)sizeof(Buf)))
 	 return false;
       Size -= Res;

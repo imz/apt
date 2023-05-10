@@ -8,6 +8,8 @@
 #ifndef APTPKG_RHASH_H
 #define APTPKG_RHASH_H
 
+#include <apt-pkg/fileutl.h>
+
 #include <string>
 #include <rpm/rpmpgp.h>
 
@@ -23,7 +25,12 @@ class raptHash
 
    bool Add(const void *inbuf,std::size_t inlen);
    bool Add(const char * const Data) {return Add(Data,strlen(Data));}
-   bool AddFD(int Fd,unsigned long Size);
+   [[nodiscard]] bool AddWholeFD(FileFd &F);
+   [[nodiscard]] bool AddFile(const std::string &File)
+   {
+      FileFd F(File, FileFd::ReadOnly);
+      return AddWholeFD(F);
+   }
    inline bool Add(const unsigned char *Beg,const unsigned char *End)
                   {return Add(Beg,End-Beg);}
    string Result();

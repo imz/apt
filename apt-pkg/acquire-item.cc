@@ -73,10 +73,9 @@ static bool VerifyChecksums(const string &File,
    if (ExpectHash.empty() == false)
    {
       raptHash hash = raptHash(method);
-      FileFd F(File, FileFd::ReadOnly);
-
-      hash.AddFD(F.Fd(), F.Size());
-      if (hash.Result() != ExpectHash) {
+      if (! hash.AddFile(File)
+          || hash.Result() != ExpectHash)
+      {
 	 if (_config->FindB("Acquire::Verbose", false) == true)
 	    cout << method << " of "<<File<<" did not match what's in the checksum list and was redownloaded."<<endl;
 	 return false;
