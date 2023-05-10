@@ -85,5 +85,19 @@ bool ConsumeWhole(FileFd &From,consumer_t Consumer)
    return Consume(From,Consumer,From.Size());
 }
 									/*}}}*/
+// ConsumeFile - Consume a whole file given by name			 *{{{*/
+// ---------------------------------------------------------------------
+/* Consumer is expected behave similarly to FileFd::Write(). Thanks to this
+   being a template, various function-like types of consumers are allowed.
+*/
+template<typename consumer_t>
+bool ConsumeFile(const std::string &File,consumer_t Consumer)
+{
+   FileFd From(File, FileFd::ReadOnly);
+   // Consuming the whole size of the file makes sense
+   // if we've just opened it and hence start from the beginning.
+   return Consume(From,Consumer,From.Size());
+}
+									/*}}}*/
 
 #endif
