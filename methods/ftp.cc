@@ -16,7 +16,7 @@
 // Include Files							/*{{{*/
 #include <config.h>
 
-#include <apt-pkg/fileutl.h>
+#include <apt-pkg/fileutl_opt.h>
 #include <apt-pkg/acquire-method.h>
 #include <apt-pkg/error.h>
 #include <apt-pkg/hashes.h>
@@ -29,6 +29,7 @@
 #include <stdio.h>
 #include <errno.h>
 #include <stdarg.h>
+#include <cstdint>
 #include <iostream>
 
 // Internet stuff
@@ -841,7 +842,7 @@ bool FTPConn::Finalize()
 // ---------------------------------------------------------------------
 /* This opens a data connection, sends REST and RETR and then
    transfers the file over. */
-bool FTPConn::Get(const char *Path,FileFd &To,unsigned long Resume,
+bool FTPConn::Get(const char *Path,FileFd &To,filesize Resume,
 		  Hashes &Hash,bool &Missing)
 {
    Missing = false;
@@ -850,12 +851,12 @@ bool FTPConn::Get(const char *Path,FileFd &To,unsigned long Resume,
 
    unsigned int Tag;
    string Msg;
-   if (Resume != 0)
+   if (Resume != filesize{0})
    {
-      if (WriteMsg(Tag,Msg,"REST %u",Resume) == false)
+      if (WriteMsg(Tag,Msg,"REST %ju",static_cast<std::uintmax_t>(Resume)) == false)
 	 return false;
       if (Tag >= 400)
-	 Resume = 0;
+	 Resume = filesize{0};
    }
 
    if (To.Truncate(Resume) == false)
@@ -864,9 +865,9 @@ bool FTPConn::Get(const char *Path,FileFd &To,unsigned long Resume,
    if (To.Seek(filesize{0}) == false)
       return false;
 
-   if (Resume != 0)
+   if (Resume != filesize{0})
    {
-      if (Hash.AddFD(To.Fd(),Resume) == false)
+      if (Hash.AddF(To,Resume) == false)
       {
 	 _error->Errno("read",_("Problem hashing file"));
 	 return false;
@@ -900,7 +901,7 @@ bool FTPConn::Get(const char *Path,FileFd &To,unsigned long Resume,
       }
 
       // Read the data..
-      int Res = read(DataFd,Buffer,sizeof(Buffer));
+      ssize_t const Res = read(DataFd,Buffer,sizeof(Buffer));
       if (Res == 0)
 	 break;
       if (Res < 0)
@@ -910,8 +911,8 @@ bool FTPConn::Get(const char *Path,FileFd &To,unsigned long Resume,
 	 break;
       }
 
-      Hash.Add(Buffer,Res);
-      if (To.Write(Buffer,Res) == false)
+      if (! To.Write(Buffer,NonnegAsU(Res))
+          || ! Hash.Add(Buffer,NonnegAsU(Res)))
       {
 	 Close();
 	 return false;
