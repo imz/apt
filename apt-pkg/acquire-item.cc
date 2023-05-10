@@ -67,7 +67,7 @@ static bool VerifyChecksums(const string &File,
    if (zero_extend_signed_to_ull(Buf.st_size) != ExpectSize)
    {
       if (_config->FindB("Acquire::Verbose", false) == true)
-	 cout << "Size of "<<File<<" did not match what's in the checksum list and was redownloaded."<<endl;
+	 cout << "Size of "<<File<<" did not match what's in the checksum list and is to be redownloaded."<<endl;
       return false;
    }
 
@@ -78,7 +78,7 @@ static bool VerifyChecksums(const string &File,
           || hash.Result() != ExpectHash)
       {
 	 if (_config->FindB("Acquire::Verbose", false) == true)
-	    cout << method << " of "<<File<<" did not match what's in the checksum list and was redownloaded."<<endl;
+	    cout << method << " of "<<File<<" did not match what's in the checksum list and is to be redownloaded."<<endl;
 	 return false;
       }
    }
