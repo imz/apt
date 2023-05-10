@@ -80,7 +80,7 @@ string raptHash::Result()
 // raptHash::Add - Adds content of buffer into the checksum        /*{{{*/
 // ---------------------------------------------------------------------
 /* May not be called after Result() is called */
-bool raptHash::Add(const unsigned char *data,unsigned long len)
+bool raptHash::Add(const void * const data,std::size_t const len)
 {
    int rc;
    if (HashCtx == NULL)

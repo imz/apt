@@ -23,8 +23,8 @@ class Hashes
 
    HashContainer HashSet;
 
-   bool Add(const unsigned char *Data,unsigned long Size);
-   inline bool Add(const char *Data) {return Add((unsigned char *)Data,strlen(Data));}
+   bool Add(const void *Data,std::size_t Size);
+   bool Add(const char * const Data) {return Add(Data,strlen(Data));}
    bool AddFD(int Fd,unsigned long Size);
    inline bool Add(const unsigned char *Beg,const unsigned char *End)
                   {return Add(Beg,End-Beg);}

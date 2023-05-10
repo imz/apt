@@ -17,7 +17,7 @@
 #include <unistd.h>
 #include <system.h>
 									/*}}}*/
-bool Hashes::Add(const unsigned char *Data,unsigned long Size)
+bool Hashes::Add(const void * const Data,std::size_t const Size)
 {
    HashContainer::iterator I;
    for (I = HashSet.begin(); I != HashSet.end(); I++) {

@@ -21,8 +21,8 @@ class raptHash
 
    public:
 
-   bool Add(const unsigned char *inbuf,unsigned long inlen);
-   inline bool Add(const char *Data) {return Add((unsigned char *)Data,strlen(Data));}
+   bool Add(const void *inbuf,std::size_t inlen);
+   bool Add(const char * const Data) {return Add(Data,strlen(Data));}
    bool AddFD(int Fd,unsigned long Size);
    inline bool Add(const unsigned char *Beg,const unsigned char *End)
                   {return Add(Beg,End-Beg);}
