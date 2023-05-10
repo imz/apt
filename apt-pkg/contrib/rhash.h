@@ -25,12 +25,7 @@ class raptHash
 
    bool Add(const void *inbuf,std::size_t inlen);
    bool Add(const char * const Data) {return Add(Data,strlen(Data));}
-   [[nodiscard]] bool AddWholeFD(FileFd &F);
-   [[nodiscard]] bool AddFile(const std::string &File)
-   {
-      FileFd F(File, FileFd::ReadOnly);
-      return AddWholeFD(F);
-   }
+   [[nodiscard]] bool AddFile(const std::string &File);
    inline bool Add(const unsigned char *Beg,const unsigned char *End)
                   {return Add(Beg,End-Beg);}
    string Result();

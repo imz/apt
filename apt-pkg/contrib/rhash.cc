@@ -92,15 +92,15 @@ bool raptHash::Add(const void * const data,std::size_t const len)
    return (rc == 0);
 }
 									/*}}}*/
-// raptHash::AddWholeFD - Add content of a whole file into the checksum	/*{{{*/
+// raptHash::AddFile - Add content of a whole file into the checksum	/*{{{*/
 // ---------------------------------------------------------------------
 /* */
-bool raptHash::AddWholeFD(FileFd &F)
+bool raptHash::AddFile(const std::string &File)
 {
-   return ConsumeWhole(F,
-                       [this](const void * const Buf, size_t const Count) -> bool
-                       {
-                          return Add(Buf,Count);
-                       });
+   return ConsumeFile(File,
+                      [this](const void * const Buf, size_t const Count) -> bool
+                      {
+                         return Add(Buf,Count);
+                      });
 }
 									/*}}}*/
