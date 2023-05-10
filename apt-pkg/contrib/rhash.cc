@@ -3,6 +3,7 @@
 
 #include <apt-pkg/rhash.h>
 #include <apt-pkg/strutl.h>
+#include <apt-pkg/fileutl_opt.h>
 
 #include <string.h>
 #include <unistd.h>
@@ -96,21 +97,10 @@ bool raptHash::Add(const void * const data,std::size_t const len)
 /* */
 bool raptHash::AddWholeFD(FileFd &F)
 {
-   if (! F.Seek(filesize{0}))
-      return false;
-   filesize Size{F.Size()};
-
-   unsigned char Buf[64 * 64];
-   int Res = 0;
-   while (Size != 0)
-   {
-      Res = read(F.Fd(),Buf,std::min(Size,(unsigned long)sizeof(Buf)));
-      if (Res < 0 || (unsigned) Res != std::min(Size,(unsigned long)sizeof(Buf)))
-	 return false;
-      Size -= Res;
-      if (! Add(Buf,Res))
-         return false;
-   }
-   return true;
+   return ConsumeWhole(F,
+                       [this](const void * const Buf, size_t const Count) -> bool
+                       {
+                          return Add(Buf,Count);
+                       });
 }
 									/*}}}*/
