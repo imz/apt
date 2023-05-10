@@ -53,18 +53,11 @@ bool CopyFile(FileFd &From,FileFd &To)
    if (To.IsOpen() == false)
       return false;
 
-   // Consuming the whole size of the file makes sense
-   // if we start from the very beginning
-   if (! From.Seek(filesize{0}))
-      return false;
-   filesize Size{From.Size()};
-
-   return Consume(From,
-                  [&To](const void * const Buf, size_t const Count) -> bool
-                  {
-                     return To.Write(Buf,Count);
-                  },
-                  Size);
+   return ConsumeWhole(From,
+                       [&To](const void * const Buf, size_t const Count) -> bool
+                       {
+                          return To.Write(Buf,Count);
+                       });
 }
 									/*}}}*/
 bool RemoveFileAt(const char * const Function, const int dirfd, const std::string &FileName)/*{{{*/

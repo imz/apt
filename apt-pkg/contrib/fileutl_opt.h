@@ -67,5 +67,23 @@ bool Consume(FileFd &From,consumer_t Consumer,filesize Size)
    return true;
 }
 									/*}}}*/
+// ConsumeWhole - Consume a whole file (from the beginning)		 *{{{*/
+// ---------------------------------------------------------------------
+/* Consumer is expected behave similarly to FileFd::Write(). Thanks to this
+   being a template, various function-like types of consumers are allowed.
+*/
+template<typename consumer_t>
+bool ConsumeWhole(FileFd &From,consumer_t Consumer)
+{
+   if (From.IsOpen() == false)
+      return false;
+
+   // Consuming the whole size of the file makes sense
+   // if we start from the very beginning
+   if (! From.Seek(filesize{0}))
+      return false;
+   return Consume(From,Consumer,From.Size());
+}
+									/*}}}*/
 
 #endif
