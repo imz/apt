@@ -10,7 +10,7 @@
 // Include Files							/*{{{*/
 #include <config.h>
 
-#include <apt-pkg/fileutl.h>
+#include <apt-pkg/fileutl_opt.h>
 #include <apt-pkg/acquire-method.h>
 #include <apt-pkg/error.h>
 #include <apt-pkg/hashes.h>
@@ -39,7 +39,7 @@ class CopyMethod : public pkgAcqMethod
 bool CopyMethod::Fetch(FetchItem *Itm)
 {
    URI Get = Itm->Uri;
-   string File = Get.Path;
+   std::string const File = Get.Path;
 
    // Stat the file and send a start message
    struct stat Buf;
@@ -48,14 +48,13 @@ bool CopyMethod::Fetch(FetchItem *Itm)
 
    // Forumulate a result and send a start message
    FetchResult Res;
-   Res.Size = Buf.st_size;
+   Res.Size = StSize(Buf);
    Res.Filename = Itm->DestFile;
    Res.LastModified = Buf.st_mtime;
    Res.IMSHit = false;
    URIStart(Res);
 
    // See if the file exists
-   FileFd From(File,FileFd::ReadOnly);
    FileFd To(Itm->DestFile,FileFd::WriteEmpty);
    To.EraseOnFailure();
    if (_error->PendingError() == true)
@@ -64,19 +63,21 @@ bool CopyMethod::Fetch(FetchItem *Itm)
       return false;
    }
 
-   // Copy the file
-   if (CopyFile(From,To) == false)
+   // Copy the file (and hash at the same time; simultaneous in-memory hashing
+   // is common to all download methods)
+   Hashes hash;
+   if (! ConsumeFile(File,
+                     [&To, &hash](const void * const Data, size_t const Count) -> bool
+                     {
+                        return To.Write(Data,Count)
+                           && hash.Add(Data,Count);
+                     }))
    {
       To.OpFail();
       return false;
    }
-   Hashes hash;
-   To.Seek(filesize{0});
-   hash.AddFD(To.Fd(), Buf.st_size);
-   Res.TakeHashes(hash);
-
-   From.Close();
    To.Close();
+   Res.TakeHashes(hash);
 
    // Transfer the modification times
    struct utimbuf TimeBuf;
