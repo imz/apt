@@ -27,6 +27,45 @@
 
 #include <optional>
 
+// for templates
+#include <memory>
+
 std::optional<filesize> GetFileSize(const std::string &File);
+
+// Consume - Buffered feeding of data read from a file to a consumer	 *{{{*/
+// ---------------------------------------------------------------------
+/* Consumer is expected behave similarly to FileFd::Write(). Thanks to this
+   being a template, various function-like types of consumers are allowed.
+*/
+template<typename consumer_t>
+bool Consume(FileFd &From,consumer_t Consumer,filesize Size)
+{
+   if (From.IsOpen() == false)
+      return false;
+
+   // Buffered copy
+   constexpr std::size_t Buf_size{64*1024};
+   std::unique_ptr<unsigned char[]> const Buf(new unsigned char[Buf_size]);
+   if (! Buf)
+      return false;
+   while (Size != filesize{0})
+   {
+      std::size_t ToRead;
+      if (! SafeAssign_u(ToRead,Size) || ToRead > Buf_size)
+         ToRead = Buf_size;
+
+      if (From.Read(Buf.get(),ToRead) == false ||
+	  Consumer(Buf.get(),ToRead) == false)
+	 return false;
+
+      // Considering reading+writing too much is a failure. Anyway, in such
+      // case, the condition of the loop won't stop us after a overflow.
+      if (! NonnegSubtract_u(Size, ToRead))
+         return false;
+   }
+
+   return true;
+}
+									/*}}}*/
 
 #endif

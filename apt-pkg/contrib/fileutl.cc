@@ -35,7 +35,6 @@
 #include <cstdlib>
 #include <cstring>
 #include <algorithm>
-#include <memory>
 
 // CNC:2003-02-14 - Ralf Corsepius told RH8 with GCC 3.2.1 fails
 //                  compiling without moving this header to here.
@@ -51,7 +50,7 @@ using std::endl;
 /* The caller is expected to set things so that failure causes erasure */
 bool CopyFile(FileFd &From,FileFd &To)
 {
-   if (From.IsOpen() == false || To.IsOpen() == false)
+   if (To.IsOpen() == false)
       return false;
 
    // Consuming the whole size of the file makes sense
@@ -60,28 +59,12 @@ bool CopyFile(FileFd &From,FileFd &To)
       return false;
    filesize Size{From.Size()};
 
-   // Buffered copy between fds
-   constexpr std::size_t Buf_size{64*1024};
-   std::unique_ptr<unsigned char[]> const Buf(new unsigned char[Buf_size]);
-   if (! Buf)
-      return false;
-   while (Size != filesize{0})
-   {
-      std::size_t ToRead;
-      if (! SafeAssign_u(ToRead,Size) || ToRead > Buf_size)
-         ToRead = Buf_size;
-
-      if (From.Read(Buf.get(),ToRead) == false ||
-	  To.Write(Buf.get(),ToRead) == false)
-	 return false;
-
-      // Considering reading+writing too much is a failure. Anyway, in such
-      // case, the condition of the loop won't stop us after a overflow.
-      if (! NonnegSubtract_u(Size, ToRead))
-         return false;
-   }
-
-   return true;
+   return Consume(From,
+                  [&To](const void * const Buf, size_t const Count) -> bool
+                  {
+                     return To.Write(Buf,Count);
+                  },
+                  Size);
 }
 									/*}}}*/
 bool RemoveFileAt(const char * const Function, const int dirfd, const std::string &FileName)/*{{{*/
