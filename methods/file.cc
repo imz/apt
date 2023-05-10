@@ -17,6 +17,7 @@
 #include <apt-pkg/acquire-method.h>
 #include <apt-pkg/error.h>
 #include <apt-pkg/hashes.h>
+#include <apt-pkg/fileutl_opt.h>
 
 #include <sys/stat.h>
 #include <unistd.h>
@@ -51,20 +52,16 @@ bool FileMethod::Fetch(FetchItem *Itm)
    struct stat Buf;
    if (stat(File.c_str(),&Buf) == 0)
    {
-      Res.Size = Buf.st_size;
+      Res.Size = StSize(Buf);
       Res.Filename = File;
       Res.LastModified = Buf.st_mtime;
       Res.IMSHit = false;
       if (Itm->LastModified == Buf.st_mtime && Itm->LastModified != 0)
 	 Res.IMSHit = true;
 
-      int fd = open(File.c_str(), O_RDONLY);
-      if (fd >= 0) {
-         Hashes hash;
-         hash.AddFD(fd, Buf.st_size);
-         Res.TakeHashes(hash);
-         close(fd);
-      }
+      Hashes hash;
+      hash.AddFile(File);
+      Res.TakeHashes(hash);
    }
 
    // CNC:2003-11-04
@@ -91,7 +88,7 @@ bool FileMethod::Fetch(FetchItem *Itm)
       if (stat(File.c_str(),&Buf) == 0)
       {
 	 FetchResult AltRes;
-	 AltRes.Size = Buf.st_size;
+	 AltRes.Size = StSize(Buf);
 	 AltRes.Filename = File;
 	 AltRes.LastModified = Buf.st_mtime;
 	 AltRes.IMSHit = false;

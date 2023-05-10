@@ -13,6 +13,7 @@
 #include <config.h>
 
 #include <apt-pkg/hashes.h>
+#include <apt-pkg/fileutl_opt.h>
 
 #include <unistd.h>
 #include <system.h>
@@ -44,6 +45,18 @@ bool Hashes::AddFD(int Fd,unsigned long Size)
          return false;
    }
    return true;
+}
+									/*}}}*/
+// Hashes::AddFile - Add content of a whole file into the checksum	/*{{{*/
+// ---------------------------------------------------------------------
+/* */
+bool Hashes::AddFile(const std::string &File)
+{
+   return ConsumeFile(File,
+                      [this](const void * const Buf, size_t const Count) -> bool
+                      {
+                         return Add(Buf,Count);
+                      });
 }
 									/*}}}*/
 Hashes::Hashes()

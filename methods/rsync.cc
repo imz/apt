@@ -13,6 +13,7 @@ RSYNC Aquire Method - This is the RSYNC aquire method for APT.
 #include <apt-pkg/acquire-method.h>
 #include <apt-pkg/error.h>
 #include <apt-pkg/hashes.h>
+#include <apt-pkg/fileutl_opt.h>
 
 #include <fcntl.h>
 #include <sys/stat.h>
@@ -544,16 +545,12 @@ bool RsyncMethod::Fetch(FetchItem *Itm)
 
    if ( server->Get(this,Res,File,Itm->DestFile.c_str()) ) {
 	  if ( stat(Itm->DestFile.c_str(), &st)==0 ) {
-		 Res.Size = st.st_size;
+		 Res.Size = StSize(st);
+                 // FIXME: also pass mtime etc.
 		 // Calculating checksum
-		 //
-		 int fd = open(Itm->DestFile.c_str(), O_RDONLY);
-		 if (fd>=0) {
-			Hashes Hash;
-			Hash.AddFD(fd,st.st_size);
-			Res.TakeHashes(Hash);
-			close(fd);
-		 }
+                 Hashes Hash;
+                 Hash.AddFile(Itm->DestFile);
+                 Res.TakeHashes(Hash);
 	  }
 	  URIDone(Res);
 	  return true;

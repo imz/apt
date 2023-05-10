@@ -26,6 +26,7 @@ class Hashes
    bool Add(const void *Data,std::size_t Size);
    bool Add(const char * const Data) {return Add(Data,strlen(Data));}
    bool AddFD(int Fd,unsigned long Size);
+   bool AddFile(const std::string &File);
    inline bool Add(const unsigned char *Beg,const unsigned char *End)
                   {return Add(Beg,End-Beg);}
 
