@@ -19,6 +19,7 @@
 #include <apt-pkg/strutl.h>
 #include <apt-pkg/tagfile.h>
 #include <apt-pkg/acquire-item.h>
+#include <apt-pkg/arithutl.h>
 
 #include <apti18n.h>
 
@@ -76,7 +77,7 @@ bool pkgRepository::ParseRelease(const string File)
 			      CheckMethod.c_str(), File.c_str());
 
       // Parse the size and append the directory
-      IndexChecksums[Path].Size = atoll(Size.c_str());
+      IndexChecksums[Path].Size = filesize{NonnegAsU(atoll(Size.c_str()))};
       IndexChecksums[Path].Hash = Hash;
    }
 

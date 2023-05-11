@@ -7,6 +7,8 @@
 #include <map>
 
 #include <apt-pkg/sourcelist.h>
+// just for the "filesize" type
+#include <apt-pkg/fileutl.h>
 
 using std::map;
 
@@ -16,7 +18,7 @@ class pkgRepository
 
 
    struct Checksum {
-      unsigned long long Size;
+      filesize Size;
       string Hash;
    };
 

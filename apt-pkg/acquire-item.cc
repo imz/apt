@@ -57,7 +57,7 @@ using std::string;
 /* Returns false only if the checksums fail (the file not existing is not
    a checksum mismatch) */
 static bool VerifyChecksums(const string &File,
-                            unsigned long long const ExpectSize,
+                            filesize const ExpectSize,
                             const string &ExpectHash, const string &method)
 {
    struct stat Buf;
@@ -207,7 +207,7 @@ pkgAcqIndex::pkgAcqIndex(pkgAcquire * const Owner,const pkgRepository * const Re
    // If we're verifying authentication, check whether the size and
    // checksums match, if not, delete the cached files and force redownload
    string ExpectHash;
-   unsigned long long ExpectSize;
+   filesize ExpectSize;
 
    if (Repository != NULL)
    {
@@ -280,7 +280,7 @@ void pkgAcqIndex::DoneByWorker(const string &Message,
    if (Decompression == true)
    {
       // CNC:2002-07-03
-      unsigned long long ExpectSize;
+      filesize ExpectSize;
       string ExpectHash;
 
       if (Repository != NULL && Repository->HasRelease() == true &&
@@ -420,7 +420,7 @@ pkgAcqIndexRel::pkgAcqIndexRel(pkgAcquire * const Owner,pkgRepository * const Re
 
    // CNC:2002-07-09
    string ExpectHash;
-   unsigned long long ExpectSize;
+   filesize ExpectSize;
    if (Master == false && Repository != NULL)
    {
       if (Repository->HasRelease() == true)
@@ -589,7 +589,7 @@ void pkgAcqIndexRel::DoneByWorker(const string &Message,
    }
 
    // CNC:2002-07-03
-   unsigned long long ExpectSize;
+   filesize ExpectSize;
    string ExpectHash;
    if (Master == false && Repository != NULL
        && Repository->HasRelease() == true
