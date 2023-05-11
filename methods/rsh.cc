@@ -14,6 +14,7 @@
 
 #include "rsh.h"
 #include <apt-pkg/error.h>
+#include <apt-pkg/fileutl_opt.h>
 
 #include <sys/stat.h>
 #include <sys/time.h>
@@ -23,6 +24,7 @@
 #include <stdio.h>
 #include <errno.h>
 #include <stdarg.h>
+#include <cstdint>
 
 // CNC:2003-02-20 - Moved header to fix compilation error when
 // 		    --disable-nls is used.
@@ -291,35 +293,47 @@ bool RSHConn::ModTime(const char *Path, time_t &Time)
 // RSHConn::Get - Get a file						/*{{{*/
 // ---------------------------------------------------------------------
 /* */
-bool RSHConn::Get(const char *Path,FileFd &To,unsigned long Resume,
-                  Hashes &Hash,bool &Missing, unsigned long Size)
+bool RSHConn::Get(const char *Path,FileFd &To,filesize Resume,
+                  Hashes &Hash,bool &Missing, filesize Size)
 {
    Missing = false;
 
    // Round to a 2048 byte block
-   Resume = Resume - (Resume % 2048);
+   {
+      bool const RoundingIsAlwaysNonnegHere =
+         NonnegSubtract_u(Resume, NonnegAsU(Resume) % 2048);
+      assert(RoundingIsAlwaysNonnegHere);
+   }
 
    if (To.Truncate(Resume) == false)
       return false;
    if (To.Seek(filesize{0}) == false)
       return false;
 
-   if (Resume != 0) {
-      if (Hash.AddFD(To.Fd(),Resume) == false) {
+   if (Resume != filesize{0}) {
+      if (Hash.AddF(To,Resume) == false) {
 	 _error->Errno("read",_("Problem hashing file"));
 	 return false;
       }
    }
 
    // FIXME: Detect file-not openable type errors.
-   string Jnk;
-   if (WriteMsg(Jnk,false,"dd if=%s bs=2048 skip=%u", Path, Resume / 2048) == false)
-      return false;
+   {
+      std::string Jnk;
+      if (WriteMsg(Jnk,false,"dd if=%s bs=2048 skip=%ju",
+                   Path,
+                   static_cast<std::uintmax_t>(Resume) / 2048)
+          == false)
+         return false;
+   }
+
+   if (! NonnegSubtract_u(Size,Resume))
+      // already too much... (and the caller will actualize result Size)
+      return true;
 
    // Copy loop
-   unsigned int MyLen = Resume;
    unsigned char Buffer[32 * 1024];
-   while (MyLen < Size)
+   while (Size > filesize{0})
    {
       // Wait for some data..
       if (WaitFd(ReadFd,false,TimeOut) == false)
@@ -329,7 +343,7 @@ bool RSHConn::Get(const char *Path,FileFd &To,unsigned long Resume,
       }
 
       // Read the data..
-      int Res = read(ReadFd,Buffer,sizeof(Buffer));
+      ssize_t const Res = read(ReadFd,Buffer,sizeof(Buffer));
       if (Res == 0)
       {
 	 Close();
@@ -340,12 +354,17 @@ bool RSHConn::Get(const char *Path,FileFd &To,unsigned long Resume,
       {
          if (errno == EAGAIN)
             continue;
+         // EOF reached prematurely; but the caller will actualize result Size
          break;
       }
-      MyLen += Res;
 
-      Hash.Add(Buffer,Res);
-      if (To.Write(Buffer,Res) == false)
+      if (! NonnegSubtract_u(Size,NonnegAsU(Res)))
+         // got too much... so, we'll write and stop
+         // (and the caller will actualize result Size)
+         Size = filesize{0};
+
+      if (! To.Write(Buffer,NonnegAsU(Res))
+          || ! Hash.Add(Buffer,NonnegAsU(Res)))
       {
          Close();
          return false;
