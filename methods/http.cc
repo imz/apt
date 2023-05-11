@@ -571,9 +571,8 @@ bool ServerState::HeaderLine(const string Line)
       if (StartPos != filesize{0})
 	 return true;
 
-      // FIXME: allow bigger numbers (long long/uintmax_t), possible in HTTP
-      unsigned long Sz;
-      if (sscanf(Val.c_str(),"%lu",&Sz) != 1)
+      unsigned long long Sz; // a big number is possible in HTTP
+      if (sscanf(Val.c_str(),"%qu",&Sz) != 1)
          return _error->Error(_("The http server sent an invalid Content-Length header"));
       SetRange(filesize{Sz});
       return true;
@@ -589,9 +588,8 @@ bool ServerState::HeaderLine(const string Line)
    {
       HaveContent = true;
 
-      // FIXME: allow bigger numbers (long long/uintmax_t), possible in HTTP
-      unsigned long Start, Sz;
-      if (sscanf(Val.c_str(),"bytes %lu-%*u/%lu",&Start,&Sz) != 2)
+      unsigned long long Start, Sz; // big numbers are possible in HTTP
+      if (sscanf(Val.c_str(),"bytes %qu-%*u/%qu",&Start,&Sz) != 2)
 	 return _error->Error(_("The http server sent an invalid Content-Range header"));
       if (! SetRange(filesize{Sz},filesize{Start}))
 	 return _error->Error(_("This http server has broken range support"));
