@@ -369,8 +369,7 @@ int ServerState::RunHeaders()
    Major = 0;
    Minor = 0;
    Result = 0;
-   Size = 0;
-   StartPos = 0;
+   SetRange(filesize{0});
    Encoding = Closes;
    HaveContent = false;
    time(&Date);
@@ -483,7 +482,7 @@ bool ServerState::RunData()
       if (Encoding == Closes)
 	 In.UnLimit();
       else
-	 In.Limit(Size - StartPos);
+	 In.Limit(RemainingSize);
 
       // Just transfer the whole block.
       do
@@ -569,11 +568,14 @@ bool ServerState::HeaderLine(const string Line)
       HaveContent = true;
 
       // The length is already set from the Content-Range header
-      if (StartPos != 0)
+      if (StartPos != filesize{0})
 	 return true;
 
-      if (sscanf(Val.c_str(),"%lu",&Size) != 1)
-	 return _error->Error(_("The http server sent an invalid Content-Length header"));
+      // FIXME: allow bigger numbers (long long/uintmax_t), possible in HTTP
+      unsigned long Sz;
+      if (sscanf(Val.c_str(),"%lu",&Sz) != 1)
+         return _error->Error(_("The http server sent an invalid Content-Length header"));
+      SetRange(filesize{Sz});
       return true;
    }
 
@@ -587,9 +589,11 @@ bool ServerState::HeaderLine(const string Line)
    {
       HaveContent = true;
 
-      if (sscanf(Val.c_str(),"bytes %lu-%*u/%lu",&StartPos,&Size) != 2)
+      // FIXME: allow bigger numbers (long long/uintmax_t), possible in HTTP
+      unsigned long Start, Sz;
+      if (sscanf(Val.c_str(),"bytes %lu-%*u/%lu",&Start,&Sz) != 2)
 	 return _error->Error(_("The http server sent an invalid Content-Range header"));
-      if ((unsigned)StartPos > Size)
+      if (! SetRange(filesize{Sz},filesize{Start}))
 	 return _error->Error(_("This http server has broken range support"));
       return true;
    }
@@ -1004,7 +1008,7 @@ int HttpMethod::DealWithHeaders(FetchResult &Res,ServerState *Srv)
 
    // This is some sort of 2xx 'data follows' reply
    Res.LastModified = Srv->Date;
-   Res.Size = Srv->Size;
+   Res.Size = Srv->TotalSize;
 
    // Open the file
    delete File;
@@ -1018,7 +1022,7 @@ int HttpMethod::DealWithHeaders(FetchResult &Res,ServerState *Srv)
    FailTime = Srv->Date;
 
    // Set the expected size
-   if (Srv->StartPos >= 0)
+   if (Srv->StartPos >= filesize{0})
    {
       Res.ResumePoint = Srv->StartPos;
       if (!File->Truncate(Srv->StartPos))
@@ -1032,7 +1036,7 @@ int HttpMethod::DealWithHeaders(FetchResult &Res,ServerState *Srv)
    Srv->In.Hash = new Hashes;
 
    // Fill the Hash if the file is non-empty (resume)
-   if (Srv->StartPos > 0)
+   if (Srv->StartPos > filesize{0})
    {
       lseek(File->Fd(),0,SEEK_SET);
       if (Srv->In.Hash->AddFD(File->Fd(),Srv->StartPos) == false)
@@ -1243,7 +1247,7 @@ int HttpMethod::Loop()
 
 	    /* If the server is sending back sizeless responses then fill in
 	       the size now */
-	    if (Res.Size == 0)
+	    if (Res.Size == filesize{0})
 	       Res.Size = File->Size();
 
 	    // Close the file, destroy the FD object and timestamp it

@@ -98,8 +98,9 @@ struct ServerState
    char Code[MAXLEN];
 
    // These are some statistics from the last parsed header lines
-   unsigned long Size;
-   signed long StartPos;
+   filesize TotalSize;
+   filesize RemainingSize;
+   filesize StartPos;
    time_t Date;
    bool HaveContent;
    enum {Chunked,Stream,Closes} Encoding;
@@ -120,7 +121,20 @@ struct ServerState
 
    bool HeaderLine(string Line);
    bool Comp(URI Other) {return Other.Host == ServerName.Host && Other.Port == ServerName.Port;}
-   void Reset() {Major = 0; Minor = 0; Result = 0; Size = 0; StartPos = 0;
+   void SetRange(filesize const Sz) {StartPos = 0; RemainingSize = TotalSize = Sz;}
+   [[nodiscard]] bool SetRange(filesize Sz, filesize const Start)
+   {
+      TotalSize = Sz;
+      if (! NonnegSubtract_u(Sz,Start))
+      {
+         SetRange(Sz); // a kind of workaround if the error is not dealt with
+         return false;
+      }
+      RemainingSize = Sz;
+      StartPos = Start;
+      return true;
+   }
+   void Reset() {Major = 0; Minor = 0; Result = 0; SetRange(filesize{0});
                  Encoding = Closes; time(&Date); ServerFd.reset();
                  Pipeline = true; }
    int RunHeaders();
