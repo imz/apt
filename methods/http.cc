@@ -1011,7 +1011,7 @@ int HttpMethod::DealWithHeaders(FetchResult &Res,ServerState *Srv)
       return 5;
 
    FailFile = Queue->DestFile;
-   FailFile.c_str();   // Make sure we dont do a malloc in the signal handler
+   static_cast<void>(FailFile.c_str());   // Make sure we dont do a malloc in the signal handler
    FailFd = File->Fd();
    FailTime = Srv->Date;
 

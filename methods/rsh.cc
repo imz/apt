@@ -475,7 +475,7 @@ bool RSHMethod::Fetch(FetchItem *Itm)
       URIStart(Res);
 
       FailFile = Itm->DestFile;
-      FailFile.c_str();   // Make sure we dont do a malloc in the signal handler
+      static_cast<void>(FailFile.c_str());   // Make sure we dont do a malloc in the signal handler
       FailFd = Fd.Fd();
 
       bool Missing;
