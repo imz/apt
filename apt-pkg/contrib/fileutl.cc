@@ -40,7 +40,8 @@
 									/*}}}*/
 
 
-using namespace std;
+using std::cerr;
+using std::endl;
 
 // CopyFile - Buffered copy of a file					/*{{{*/
 // ---------------------------------------------------------------------
