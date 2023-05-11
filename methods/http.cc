@@ -1036,7 +1036,7 @@ int HttpMethod::DealWithHeaders(FetchResult &Res,ServerState *Srv)
    if (Srv->StartPos > filesize{0})
    {
       lseek(File->Fd(),0,SEEK_SET);
-      if (Srv->In.Hash->AddFD(File->Fd(),Srv->StartPos) == false)
+      if (Srv->In.Hash->AddF(*File,Srv->StartPos) == false)
       {
 	 _error->Errno("read",_("Problem hashing file"));
 	 return 5;
