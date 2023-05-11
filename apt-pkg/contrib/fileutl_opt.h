@@ -31,6 +31,16 @@
 #include <sys/stat.h>
 #include <memory>
 
+// Return the remaining Size after StartPos unless it's negative.
+constexpr std::optional<filesize> FszNonnegDiff(filesize Size,
+                                                filesize const StartPos)
+{
+   if (NonnegSubtract_u(Size,StartPos))
+      return Size;
+   else
+      return std::nullopt;
+}
+
 // a helper for FileFd::Size()-like functions
 constexpr filesize StSize(const struct stat &Buf)
 {
