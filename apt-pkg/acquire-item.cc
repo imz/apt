@@ -34,6 +34,7 @@ using namespace std;
 #include <sys/stat.h>
 #include <unistd.h>
 #include <errno.h>
+#include <cstdint>
 #include <string>
 #include <stdio.h>
 									/*}}}*/
@@ -271,10 +272,10 @@ string pkgAcqIndex::Custom600Headers()
    is copied into the partial directory. In all other cases the file
    is decompressed with a gzip uri. */
 void pkgAcqIndex::DoneByWorker(const string &Message,
-                               const unsigned long Size,
+                               const unsigned long AcqSize,
                                pkgAcquire::MethodConfig * const Cfg)
 {
-   BaseItem_Done(Message,Size,Cfg);
+   BaseItem_Done(Message,AcqSize,Cfg);
 
    if (Decompression == true)
    {
@@ -287,11 +288,13 @@ void pkgAcqIndex::DoneByWorker(const string &Message,
       {
 	 // We must always get here if the repository is authenticated
 
-	 if (ExpectSize != Size)
+	 if (ExpectSize != AcqSize)
 	 {
 	    if (_config->FindB("Acquire::Verbose",false) == true)
-	       _error->Warning("Size mismatch of index file %s: %lu was supposed to be %llu",
-			       RealURI.c_str(), Size, ExpectSize);
+	       _error->Warning("Size mismatch of index file %s: %ju was supposed to be %ju",
+			       RealURI.c_str(),
+                               static_cast<std::uintmax_t>(AcqSize),
+                               static_cast<std::uintmax_t>(ExpectSize));
 	    Rename(DestFile,DestFile + ".FAILED");
 	    Status = StatError;
 	    ErrorText = _("Size mismatch");
@@ -480,10 +483,10 @@ string pkgAcqIndexRel::Custom600Headers()
    a copy URI is generated and it is copied there otherwise the file
    in the partial directory is moved into .. and the URI is finished. */
 void pkgAcqIndexRel::DoneByWorker(const string &Message,
-                                  const unsigned long Size,
+                                  const unsigned long AcqSize,
                                   pkgAcquire::MethodConfig * const Cfg)
 {
-   BaseItem_Done(Message,Size,Cfg);
+   BaseItem_Done(Message,AcqSize,Cfg);
 
    // CNC:2002-07-03
    if (Authentication == true)
@@ -592,11 +595,13 @@ void pkgAcqIndexRel::DoneByWorker(const string &Message,
        && Repository->HasRelease() == true
        && Repository->FindChecksums(RealURI,ExpectSize,ExpectHash) == true)
    {
-      if (ExpectSize != Size)
+      if (ExpectSize != AcqSize)
       {
 	 if (_config->FindB("Acquire::Verbose",false) == true)
-	    _error->Warning("Size mismatch of index file %s: %lu was supposed to be %llu",
-			    RealURI.c_str(), Size, ExpectSize);
+	    _error->Warning("Size mismatch of index file %s: %ju was supposed to be %ju",
+			    RealURI.c_str(),
+                            static_cast<std::uintmax_t>(AcqSize),
+                            static_cast<std::uintmax_t>(ExpectSize));
 	 Rename(DestFile,DestFile + ".FAILED");
 	 Status = StatError;
 	 ErrorText = _("Size mismatch");
@@ -858,13 +863,13 @@ static void ScriptsAcquireDone(const char * const ConfKey,
 // ---------------------------------------------------------------------
 /* */
 void pkgAcqArchive::DoneByWorker(const string &Message,
-                                 const unsigned long Size,
+                                 const unsigned long AcqSize,
                                  pkgAcquire::MethodConfig * const Cfg)
 {
-   BaseItem_Done(Message,Size,Cfg);
+   BaseItem_Done(Message,AcqSize,Cfg);
 
    // Check the size
-   if (Size != Version->Size)
+   if (AcqSize != Version->Size)
    {
       Status = StatError;
       ErrorText = _("Size mismatch");
@@ -1016,7 +1021,9 @@ pkgAcqFile::pkgAcqFile(pkgAcquire * const Owner,const string URI,const string MD
 // AcqFile::Done - Item downloaded OK					/*{{{*/
 // ---------------------------------------------------------------------
 /* */
-void pkgAcqFile::Done(const string Message,const unsigned long Size,const string MD5,
+void pkgAcqFile::Done(const string Message,
+		      unsigned long const AcqSize,
+		      string const MD5,
 		      pkgAcquire::MethodConfig * const Cnf)
 {
    // Check the md5
@@ -1034,7 +1041,7 @@ void pkgAcqFile::Done(const string Message,const unsigned long Size,const string
       }
    }
 
-   BaseItem_Done(Message,Size,Cnf);
+   BaseItem_Done(Message,AcqSize,Cnf);
 
    string FileName = LookupTag(Message,"Filename");
    if (FileName.empty() == true)
