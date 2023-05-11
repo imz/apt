@@ -39,6 +39,7 @@
 #include <stdio.h>
 #include <errno.h>
 #include <string.h>
+#include <cstdint>
 #include <iostream>
 #include <map>
 
@@ -685,7 +686,8 @@ void HttpMethod::SendReq(FetchItem *Itm,CircleBuf &Out)
    if (stat(Itm->DestFile.c_str(),&SBuf) >= 0 && SBuf.st_size > 0)
    {
       // In this case we send an if-range query with a range header
-      sprintf(Buf,"Range: bytes=%li-\r\nIf-Range: %s\r\n",(long)SBuf.st_size - 1,
+      sprintf(Buf,"Range: bytes=%ju-\r\nIf-Range: %s\r\n",
+              static_cast<std::uintmax_t>(NonnegAsU(SBuf.st_size)) - 1,
 	      TimeRFC1123(SBuf.st_mtime).c_str());
       Req += Buf;
    }
