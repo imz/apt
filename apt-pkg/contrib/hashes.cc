@@ -28,25 +28,6 @@ bool Hashes::Add(const void * const Data,std::size_t const Size)
    return (I == HashSet.end());
 }
 
-// Hashes::AddFD - Add the contents of the FD				/*{{{*/
-// ---------------------------------------------------------------------
-/* */
-bool Hashes::AddFD(int Fd,unsigned long Size)
-{
-   unsigned char Buf[64*64];
-   int Res = 0;
-   while (Size != 0)
-   {
-      Res = read(Fd,Buf,MIN(Size,sizeof(Buf)));
-      if (Res < 0 || (unsigned)Res != MIN(Size,sizeof(Buf)))
-	 return false;
-      Size -= Res;
-      if (! Add(Buf,Res))
-         return false;
-   }
-   return true;
-}
-									/*}}}*/
 // Hashes::AddF - Add a part of FileFd from the currpos to the checksum	/*{{{*/
 // ---------------------------------------------------------------------
 /* */
