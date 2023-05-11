@@ -1022,12 +1022,9 @@ int HttpMethod::DealWithHeaders(FetchResult &Res,ServerState *Srv)
    FailTime = Srv->Date;
 
    // Set the expected size
-   if (Srv->StartPos >= filesize{0})
-   {
-      Res.ResumePoint = Srv->StartPos;
-      if (!File->Truncate(Srv->StartPos))
-	 return 5;
-   }
+   Res.ResumePoint = Srv->StartPos;
+   if (!File->Truncate(Srv->StartPos))
+      return 5;
 
    // Set the start point
    lseek(File->Fd(),0,SEEK_END);
