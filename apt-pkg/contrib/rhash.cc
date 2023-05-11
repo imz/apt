@@ -1,4 +1,6 @@
 // Include Files
+#include "config.h"
+
 #include <apt-pkg/rhash.h>
 #include <apt-pkg/strutl.h>
 
