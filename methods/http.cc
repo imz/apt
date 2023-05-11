@@ -423,7 +423,7 @@ bool ServerState::RunData()
 	 // Grab the block size
 	 bool Last = true;
 	 string Data;
-	 In.Limit(-1);
+	 In.UnLimit();
 	 do
 	 {
 	    if (In.WriteTillEl(Data,true) == true)
@@ -438,7 +438,7 @@ bool ServerState::RunData()
 	 unsigned long Len = strtol(Data.c_str(),0,16);
 	 if (Len == 0)
 	 {
-	    In.Limit(-1);
+	    In.UnLimit();
 
 	    // We have to remove the entity trailer
 	    Last = true;
@@ -454,7 +454,7 @@ bool ServerState::RunData()
 	 }
 
 	 // Transfer the block
-	 In.Limit(Len);
+	 In.Limit(filesize{Len});
 	 while (Owner->Go(true,this) == true)
 	    if (In.IsLimit() == true)
 	       break;
@@ -464,7 +464,7 @@ bool ServerState::RunData()
 	    return false;
 
 	 // The server sends an extra new line before the next block specifier..
-	 In.Limit(-1);
+	 In.UnLimit();
 	 Last = true;
 	 do
 	 {
@@ -481,7 +481,7 @@ bool ServerState::RunData()
       /* Closes encoding is used when the server did not specify a size, the
          loss of the connection means we are done */
       if (Encoding == Closes)
-	 In.Limit(-1);
+	 In.UnLimit();
       else
 	 In.Limit(Size - StartPos);
 
@@ -491,7 +491,7 @@ bool ServerState::RunData()
 	 if (In.IsLimit() == false)
 	    continue;
 
-	 In.Limit(-1);
+	 In.UnLimit();
 	 return !_error->PendingError();
       }
       while (Owner->Go(true,this) == true);
@@ -871,7 +871,7 @@ bool HttpMethod::ServerDie(ServerState *Srv)
    }
    else
    {
-      Srv->In.Limit(-1);
+      Srv->In.UnLimit();
 
       // Nothing left in the buffer
       if (Srv->In.WriteSpace() == false)

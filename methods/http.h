@@ -12,7 +12,10 @@
 
 #define MAXLEN 360
 
+#include <apt-pkg/fileutl_opt.h>
+
 #include <iostream>
+#include <limits>
 
 using std::cout;
 using std::endl;
@@ -27,7 +30,7 @@ class CircleBuf
    unsigned long OutP;
    string OutQueue;
    unsigned long StrPos;
-   unsigned long MaxGet;
+   decltype(OutP) MaxGet;
    struct timeval Start;
 
    unsigned long LeftRead()
@@ -61,7 +64,16 @@ class CircleBuf
    bool WriteTillEl(string &Data,bool Single = false);
 
    // Control the write limit
-   void Limit(long Max) {if (Max == -1) MaxGet = 0-1; else MaxGet = OutP + Max;}
+   void UnLimit() {MaxGet = std::numeric_limits<decltype(OutP)>::max();}
+   void Limit(filesize const Max)
+   {
+      decltype(OutP) Incr;
+      if (SafeAssign_u(Incr,Max)
+          && Incr < std::numeric_limits<decltype(OutP)>::max() - OutP)
+         MaxGet = OutP + Incr;
+      else
+         UnLimit();
+   }
    bool IsLimit() {return MaxGet == OutP;}
    void Print() {cout << MaxGet << ',' << OutP << endl;}
 
