@@ -4,9 +4,15 @@ lib_LTLIBRARIES = libapt-pkg.la
 libapt_pkg_la_LIBADD = @RPMLIBS@
 libapt_pkg_la_LDFLAGS = $(AM_LDFLAGS) -version-info 14:0:1 -release @GLIBC_VER@-@LIBSTDCPP_VER@@FILE_OFFSET_BITS_SUFFIX@
 
+# We care about warnings during LTO. They are like g++ warnings. The flags have
+# to be prefixed with "-Wc," for libtool to pass them to g++ invoked for linking.
+# just some basic flags:
+WARN_LD_FLAGS = -Wc,-Werror -Wc,-Wall -Wc,-Wextra
+
 AM_CPPFLAGS = -DLIBDIR=\"$(libdir)\"
 AM_CFLAGS = $(WARN_CFLAGS)
 AM_CXXFLAGS = $(WARN_CXXFLAGS)
+AM_LDFLAGS = $(WARN_LD_FLAGS)
 
 if WITH_LUA
 libapt_pkg_la_LIBADD += -llua

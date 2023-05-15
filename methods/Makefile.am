@@ -2,8 +2,14 @@
 methodsdir=${libdir}/apt/methods
 methods_PROGRAMS = cdrom copy file ftp gpg gzip bzip2 http https rsh ssh rsync
 
+# We care about warnings during LTO. They are like g++ warnings. The flags have
+# to be prefixed with "-Wc," for libtool to pass them to g++ invoked for linking.
+# just some basic flags:
+WARN_LD_FLAGS = -Wc,-Werror -Wc,-Wall -Wc,-Wextra
+
 AM_CFLAGS = $(WARN_CFLAGS)
 AM_CXXFLAGS = $(WARN_CXXFLAGS)
+AM_LDFLAGS = $(WARN_LD_FLAGS)
 LDADD = ../apt-pkg/libapt-pkg.la
 
 cdrom_SOURCES = cdrom.cc
