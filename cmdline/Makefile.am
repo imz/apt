@@ -30,8 +30,8 @@ apt_cdrom_SOURCES = apt-cdrom.cc rpmindexcopy.cc rpmindexcopy.h
 apt_mark_SOURCES = apt-mark.cc
 
 apt_get_static_SOURCES = $(apt_get_SOURCES)
-apt_get_static_LDFLAGS = -all-static
+apt_get_static_LDFLAGS = $(AM_LDFLAGS) -all-static
 apt_cache_static_SOURCES = $(apt_cache_SOURCES)
-apt_cache_static_LDFLAGS = -all-static
+apt_cache_static_LDFLAGS = $(AM_LDFLAGS) -all-static
 apt_cdrom_static_SOURCES = $(apt_cdrom_SOURCES)
-apt_cdrom_static_LDFLAGS = -all-static
+apt_cdrom_static_LDFLAGS = $(AM_LDFLAGS) -all-static
