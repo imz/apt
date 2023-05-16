@@ -582,8 +582,7 @@ exec 1>&2
 
 %changelog
 * Sat May 13 2023 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt84
-- Avoid a compilation error with GCC 13 (in methods; thx Alexey Sheplyakov).
-  (ALT#46105)
+- Avoid compilation errors with GCC 13 (thx Alexey Sheplyakov). (ALT#46105)
 
 * Tue Feb 21 2023 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt83
 - Made a bit nicer and more informative the new Debug::pkgMarkInstall messages,
