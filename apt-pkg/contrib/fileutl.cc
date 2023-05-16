@@ -60,7 +60,7 @@ bool CopyFile(FileFd &From,FileFd &To)
    filesize Size{From.Size()};
 
    // Buffered copy between fds
-   constexpr std::size_t Buf_size{64000};
+   constexpr std::size_t Buf_size{64*1024};
    std::unique_ptr<unsigned char[]> const Buf(new unsigned char[Buf_size]);
    if (! Buf)
       return false;
