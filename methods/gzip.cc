@@ -10,7 +10,7 @@
 // Include Files							/*{{{*/
 #include <config.h>
 
-#include <apt-pkg/fileutl.h>
+#include <apt-pkg/fileutl_opt.h>
 #include <apt-pkg/error.h>
 #include <apt-pkg/acquire-method.h>
 #include <apt-pkg/strutl.h>
@@ -109,8 +109,8 @@ bool GzipMethod::Fetch(FetchItem *Itm)
       if (Count == 0)
 	 break;
 
-      Hash.Add(Buffer,Count);
-      if (To.Write(Buffer,Count) == false)
+      if (To.Write(Buffer,Count) == false
+         || Hash.Add(Buffer,Count) == false)
       {
 	 Failed = true;
 	 break;
@@ -145,7 +145,7 @@ bool GzipMethod::Fetch(FetchItem *Itm)
 
    // Return a Done response
    Res.LastModified = Buf.st_mtime;
-   Res.Size = Buf.st_size;
+   Res.Size = StSize(Buf);
    Res.TakeHashes(Hash);
 
    URIDone(Res);
