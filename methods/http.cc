@@ -202,7 +202,8 @@ bool CircleBuf::Write(const std::unique_ptr<MethodFd> &Fd)
       }
 
       if (Hash != 0)
-	 Hash->Add(Buf + (OutP%Size),Res);
+	 if (! Hash->Add(Buf + (OutP%Size),Res))
+            return false;
 
       OutP += Res;
    }
