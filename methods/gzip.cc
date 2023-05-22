@@ -92,10 +92,9 @@ bool GzipMethod::Fetch(FetchItem *Itm)
    // Read data from gzip, generate checksums and write
    Hashes Hash;
    bool Failed = false;
+   unsigned char Buffer[32 * 1024];
    while (1)
    {
-      unsigned char Buffer[4*1024];
-
       auto Count = read(GzOut[0],Buffer,sizeof(Buffer));
       if (Count < 0 && errno == EINTR)
 	 continue;

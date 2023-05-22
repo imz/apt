@@ -889,7 +889,7 @@ bool FTPConn::Get(const char *Path,FileFd &To,unsigned long Resume,
       return false;
 
    // Copy loop
-   unsigned char Buffer[4096];
+   unsigned char Buffer[32 * 1024];
    while (1)
    {
       // Wait for some data..
