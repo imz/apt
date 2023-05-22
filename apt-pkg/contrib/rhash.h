@@ -23,10 +23,10 @@ class raptHash
 
    public:
 
-   bool Add(const void *inbuf,std::size_t inlen);
+   [[nodiscard]] bool Add(const void *inbuf,std::size_t inlen);
    bool Add(const char * const Data) {return Add(Data,strlen(Data));}
    [[nodiscard]] bool AddFile(const std::string &File);
-   inline bool Add(const unsigned char *Beg,const unsigned char *End)
+   [[nodiscard]] bool Add(const unsigned char *Beg,const unsigned char *End)
                   {return Add(Beg,End-Beg);}
    string Result();
    string Type() {return HashType;};
