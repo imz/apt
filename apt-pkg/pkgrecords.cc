@@ -17,6 +17,7 @@
 
 #include <apti18n.h>
 #include <cstring>
+#include <cassert>
 									/*}}}*/
 
 // Records::pkgRecords - Constructor					/*{{{*/
@@ -62,7 +63,19 @@ pkgRecords::~pkgRecords()
 /* */
 pkgRecords::Parser &pkgRecords::Lookup(pkgCache::VerFileIterator const &Ver)
 {
-   Files[Ver.File()->ID]->Jump(Ver);
-   return *Files[Ver.File()->ID];
+   assert((static_cast<void>("it shouldn't be virtual or alike: "),
+           ! Ver.end()));
+   const pkgCache::PkgFileIterator PkgFile = Ver.File();
+   assert((static_cast<void>("it shouldn't be virtual or alike: "),
+           ! PkgFile.end()));
+   pkgCache::PackageFile const PackageFile = *PkgFile;
+   std::cerr << "PackageFile.ID: " << PackageFile.ID << std::endl;
+   assert(PackageFile.ID < Files.size());
+   Parser * const FoundParser = Files[PackageFile.ID];
+   assert(FoundParser != nullptr);
+   bool const FoundParserHasJumped = FoundParser->Jump(Ver);
+   assert((static_cast<void>("it shouldn't be virtual or alike, and "),
+           FoundParserHasJumped));
+   return *FoundParser;
 }
 									/*}}}*/

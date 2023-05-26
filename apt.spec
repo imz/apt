@@ -271,6 +271,7 @@ find -type f -'(' -name '*.cc' -or -name '*.h' -')' -print0 \
 # [[fallthrough]] attribute is not yet known to lcc:
 %add_optflags -Wno-error=attributes
 %endif
+%add_optflags -O0
 
 %configure --includedir=%_includedir/apt-pkg --enable-Werror %{subst_enable static}
 echo '#define APTRPM_ID "%name-%{?epoch:%epoch:}%version-%release%{?disttag::%disttag}.%_target_cpu"' \
