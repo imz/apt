@@ -328,6 +328,8 @@ Summary: Immediately test %name when installing this package (only basic tests)
 Group: Other
 BuildArch: noarch
 Requires(pre): %name-tests
+# for generating uncompressible files
+Requires(pre): /usr/bin/openssl
 
 %description basic-checkinstall
 Immediately test %name when installing this package.
