@@ -582,6 +582,8 @@ exec 1>&2
 
 %changelog
 * Sat May 13 2023 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt84
+- Increased the buf for reading to 32k for effectiveness in methods:
+  gzip (and other compression types), rsh, ftp.
 - Avoid compilation errors with GCC 13 (thx Alexey Sheplyakov). (ALT#46105)
 
 * Tue Feb 21 2023 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt83
