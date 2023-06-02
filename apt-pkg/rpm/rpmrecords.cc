@@ -114,10 +114,21 @@ string rpmRecordParser::ShortDesc()
 									/*}}}*/
 // RecordParser::LongDesc - Return a longer description			/*{{{*/
 // ---------------------------------------------------------------------
-/* */
+/* Prepare LongDesc in a format as close to Debian's as possible.
+
+   https://www.debian.org/doc/debian-policy/ch-controlfields.html#description
+
+   - all but the first lines begin with a space.
+   - the first line contains the short summary. (Deleted by parsers).
+   - a line containing a single space followed by a single full stop character
+     is the only way to get a blank line.
+   - lines starting with two or more spaces are to be displayed verbatim.
+*/
 string rpmRecordParser::LongDesc()
 {
-   std::string const desc = Handler->Description();
+   std::string const desc =
+      std::string("\n") // mitigate: parsers delete the first line (with summary)
+      + Handler->Description();
    std::unique_ptr<char[]> ret;
 
    {
