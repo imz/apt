@@ -118,7 +118,7 @@ string rpmRecordParser::ShortDesc()
 string rpmRecordParser::LongDesc()
 {
    std::string const desc = Handler->Description();
-   char *ret;
+   std::unique_ptr<char[]> ret;
 
    {
       // Count size plus number of newlines
@@ -127,14 +127,14 @@ string rpmRecordParser::LongDesc()
          if (*x == '\n')
             len++;
 
-      ret = static_cast<char*>(malloc(len+1));
+      ret.reset(new char[len+1]);
    }
 
-   if (ret == NULL)
+   if (ret == nullptr)
       return "out of mem";
 
    // Copy string, inserting a space after each newline
-   char * y = ret;
+   char * y = ret.get();
    for (const char * x = desc.c_str(); *x; x++, y++)
    {
       *y = *x;
@@ -144,13 +144,10 @@ string rpmRecordParser::LongDesc()
    *y = 0;
 
    // Remove spaces and newlines from end of string
-   for (y--; y > ret && (*y == ' ' || *y == '\n'); y--)
+   for (y--; y > ret.get() && (*y == ' ' || *y == '\n'); y--)
       *y = 0;
 
-   string Ret = string(ret);
-   free(ret);
-
-   return Ret;
+   return std::string(ret.get());
 }
 									/*}}}*/
 // RecordParser::Changelog - Return package changelog if any		/*{{{*/
