@@ -591,6 +591,8 @@ exec 1>&2
 - To make future API changes easier, extended a class so that it is suitable
   for aptitude and to untie aptitude and libapt. (Aptitude depended on its
   details, because it reimplemented it.) (Picked from Debian apt 0.6.42.4.)
+- Dropped a compat API, which could have still been relied on by libapt clients
+  not aware of the support (since 0.5.15lorg2-alt73) for multiple hash types.
 
 * Wed Jul 05 2023 Andrey Limachko <liannnix@altlinux.org> 0.5.15lorg2-alt85
 - Added loongarch64 to archtable (thx Alexey Sheplyakov)
