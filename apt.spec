@@ -49,6 +49,12 @@ URL: http://apt-rpm.org
 #
 # The parent with the richer history is 1st for git blame --first-parent -w.
 #
+# Grafting the most recent merge of Debian into apt-rpm:
+#
+# git replace --graft c5f4905b15ac022e6b18cf8acf59a4961210f3f9 725581a78ed5b222f7290321917199fb7fbc4c79 c5f4905b15ac022e6b18cf8acf59a4961210f3f9^
+# git tag Debian/0.5.15 725581a78ed5b222f7290321917199fb7fbc4c79
+# git tag apt-rpm@gitlab/MERGED-0.5.15 c5f4905b15ac022e6b18cf8acf59a4961210f3f9
+#
 # Enhanced apt-rpm history
 # ------------------------
 #
