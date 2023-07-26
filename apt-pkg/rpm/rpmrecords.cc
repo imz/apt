@@ -136,7 +136,11 @@ string rpmRecordParser::LongDesc()
       std::size_t len = 0;
       for (const char * x = desc.c_str(); *x; x++, len++)
          if (*x == '\n')
+         {
             len++;
+            if (*(x+1) == '\n')
+               len++;
+         }
 
       ret.reset(new char[len+1]);
    }
@@ -150,7 +154,12 @@ string rpmRecordParser::LongDesc()
    {
       *y = *x;
       if (*x == '\n')
+      {
 	 *++y = ' ';
+         // pass blank lines (separating paragraphs) as per the Debian format
+         if (*(x+1) == '\n')
+            *++y = '.';
+      }
    }
    *y = 0;
 
