@@ -158,7 +158,7 @@ string rpmRecordParser::LongDesc()
    for (y--; y > ret.get() && (*y == ' ' || *y == '\n'); y--)
       *y = 0;
 
-   return std::string(ret.get());
+   return std::string(ret.get(), y);
 }
 									/*}}}*/
 // RecordParser::Changelog - Return package changelog if any		/*{{{*/
