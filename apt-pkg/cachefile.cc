@@ -14,6 +14,7 @@
 #include <config.h>
 
 #include <algorithm>
+#include <cstdint>
 #include <sstream>
 #include <string.h>
 #include <unistd.h>
@@ -419,6 +420,83 @@ bool CacheFile::CanCommit() const
    return WithLock;
 }
 
+// ShowWithColumns - Show a list in the style of ls			/*{{{*/
+// ---------------------------------------------------------------------
+/* This prints out a vector of strings with the given indent and in as
+   many columns as will fit the screen width.
+   
+   The output looks like:
+  abiword                debootstrap                  gir1.2-upowerglib-1.0
+  abiword-common         dh-make                      google-chrome-beta
+  abiword-plugin-grammar dmeventd                     gstreamer1.0-clutter-3.0
+  binfmt-support         dmsetup                      hostname
+  console-setup          evolution-data-server        iproute2
+  console-setup-linux    evolution-data-server-common
+  coreutils              ffmpeg
+ */
+struct columnInfo
+{
+   bool ValidLen;
+   size_t LineWidth;
+   std::vector<size_t> RemainingWidths;
+};
+void ShowWithColumns(ostream &out, vector<string> const &List, size_t Indent, size_t ScreenWidth)
+{
+   constexpr size_t MinColumnWidth = 2;
+   constexpr size_t ColumnSpace = 2;
+
+   size_t const ListSize = List.size();
+   size_t const MaxScreenCols = (ScreenWidth - Indent) /
+         MinColumnWidth;
+   size_t const MaxNumCols = std::min(MaxScreenCols, ListSize);
+
+   std::vector<columnInfo> ColumnInfo(MaxNumCols);
+   for (size_t I = 0; I < MaxNumCols; ++I) {
+      ColumnInfo[I].ValidLen = true;
+      ColumnInfo[I].LineWidth = (I + 1) * MinColumnWidth;
+      ColumnInfo[I].RemainingWidths.resize(I + 1, MinColumnWidth);
+   }
+
+   for (size_t I = 0; I < ListSize; ++I) {
+      for (size_t J = 0; J < MaxNumCols; ++J) {
+         auto& Col = ColumnInfo[J];
+         if (!Col.ValidLen)
+            continue;
+
+         size_t Idx = I / ((ListSize + J) / (J + 1));
+         size_t RealColLen = List[I].size() + (Idx == J ? 0 : ColumnSpace);
+         if (Col.RemainingWidths[Idx] < RealColLen) {
+            Col.LineWidth += RealColLen - Col.RemainingWidths[Idx];
+            Col.RemainingWidths[Idx] = RealColLen;
+            Col.ValidLen = Col.LineWidth < ScreenWidth;
+         }
+      }
+   }
+   size_t NumCols = MaxNumCols;
+   while (NumCols > 1 && !ColumnInfo[NumCols - 1].ValidLen)
+      --NumCols;
+
+   size_t NumRows = ListSize / NumCols + (ListSize % NumCols != 0);
+   auto const &LineFormat = ColumnInfo[NumCols - 1];
+   for (size_t Row = 0; Row < NumRows; ++Row) {
+      size_t Col = 0;
+      size_t I = Row;
+      out << string(Indent, ' ');
+      while (true) {
+         out << List[I];
+
+         size_t CurLen = List[I].size();
+         size_t MaxLen = LineFormat.RemainingWidths[Col++];
+         I += NumRows;
+         if (I >= ListSize)
+            break;
+
+         out << string(MaxLen - CurLen, ' ');
+      }
+      out << std::endl;
+   }
+}
+
 // ShowList - Show a list						/*{{{*/
 // ---------------------------------------------------------------------
 /* This prints out a string of space separated words with a title and
@@ -441,16 +519,33 @@ bool ShowList(std::ostream &out, const std::string &Title, std::string List, con
       }
    }
 
+   bool const ShowVersions = _config->FindB("APT::Get::Show-Versions", false);
+   bool const ListColumns = _config->FindB("APT::Get::List-Columns", true);
+
+   out << Title << std::endl;
+   if (ListColumns && !ShowVersions)
+   {
+      // We need columnar output. First, split the list back (sigh).
+      std::istringstream ListStream(List);
+      std::vector<std::string> Items;
+      std::string Item;
+
+      while (ListStream >> Item) {
+	 Items.push_back(Item);
+      }
+
+      ShowWithColumns(out, Items, 2, l_ScreenWidth);
+      return false;
+   }
+
    // Account for the leading space
    l_ScreenWidth -= 3;
 
-   out << Title << std::endl;
    std::string::size_type Start = 0;
    std::string::size_type VersionsStart = 0;
    while (Start < List.size())
    {
-      if(_config->FindB("APT::Get::Show-Versions",false)
-            && (VersionsList.size() > 0))
+      if(ShowVersions && (VersionsList.size() > 0))
       {
          std::string::size_type End;
          std::string::size_type VersionsEnd;

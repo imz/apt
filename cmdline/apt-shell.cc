@@ -3714,6 +3714,7 @@ CommandLine::Args *CommandArgs(const char *Name)
       {'c',"config-file",0,CommandLine::ConfigFile},
       {'o',"option",0,CommandLine::ArbItem},
       {0, "enable-upgrade", "APT::Get::EnableUpgrade", 0},
+      {0, "list-columns", "APT::Get::List-Columns", 0},
       {0,0,0,0}};
 
    static CommandLine::Args CommitArgs[] = {

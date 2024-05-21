@@ -2631,6 +2631,7 @@ int main(int argc,const char *argv[])
       {'o',"option",0,CommandLine::ArbItem},
       {0,"manifest","manifest",CommandLine::HasArg},
       {0, "enable-upgrade", "APT::Get::EnableUpgrade", 0},
+      {0, "list-columns", "APT::Get::List-Columns", 0},
       {0,0,0,0}};
    CommandLine::Dispatch Cmds[] = {{"update",&DoUpdate},
                                    {"upgrade",&DoUpgrade},
