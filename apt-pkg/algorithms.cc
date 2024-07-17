@@ -1262,11 +1262,15 @@ pkgProblemResolver::complete pkgProblemResolver::DoUpgrade_TreatAllDeps(pkgCache
             else
             {
                if (! (Start == End) // another alternative can be tried?
-                   && ! DoneCompletely
-                   && TryAltHarder)
+                   && ! DoneCompletely)
                   [[unlikely]] // that we have alternative deps (an OR group)
                {
                   DBG.traceSolver(2, "Trying other alternatives; no complete solution even after successful", P);
+                   if (!TryAltHarder)
+                   {
+                      DBG.printMsg(2, "Skip extra search and ignore any alternatives! (configurable with APT::pkgProblemResolver::TryAltHarder)");
+                      return DoneCompletely;
+                   }
                   // Always warn about this, because it can unexpectedly
                   // make APT take too much time.
                   DBG.printMsg(2, "Doing extra search! (configurable with APT::pkgProblemResolver::TryAltHarder)");
