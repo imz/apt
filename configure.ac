@@ -115,7 +115,7 @@ AH_TEMPLATE(COMMON_OS, [Define the common OS])
 AC_MSG_CHECKING(system architecture)
 archset="`awk \" ! /^#|^\\\$/ { if(match(\\\"$host_cpu\\\",\\\"^\\\"\\\$1\\\"\\\$\\\")) {print \\\$2; exit}}\" $srcdir/buildlib/archtable`"
 if test "x$archset" = "x"; then
-  AC_MSG_ERROR(failed: use --host=)
+  AC_MSG_ERROR([failed: use --host=])
 fi
 AC_MSG_RESULT($archset)
 AC_DEFINE_UNQUOTED(COMMON_CPU,"$archset")
