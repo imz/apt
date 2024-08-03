@@ -24,7 +24,3 @@ sheb	sheb
 shel	sh
 sh	sh
 hppa.*	hppa
-ia64	ia64
-s390	s390
-s390x	s390x
-x86_64	x86_64
