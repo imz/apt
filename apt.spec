@@ -3,7 +3,7 @@
 
 Name: apt
 Version: 0.5.15lorg2
-Release: alt88
+Release: alt89
 
 Summary: Debian's Advanced Packaging Tool with RPM support
 Summary(ru_RU.UTF-8): Debian APT - Усовершенствованное средство управления пакетами с поддержкой RPM
@@ -250,14 +250,6 @@ sed -i 's,/usr/share/common-licenses/GPL,/usr/share/license/GPL,' COPYING
 
 # Unhide potential cc/c++ errors.
 sed -i 's, > /dev/null 2>&1,,' buildlib/tools.m4
-
-# Add a straightforward architecture translation.
-# The awk script in the configure.ac file uses the first matching key in the
-# archtable list.  Therefore, if a particular architecture requires a more
-# complex translation (like powerpc64le -> ppc64le), this addition will have no
-# impact, as long as any lines added to the source code will naturally appear
-# before this addition.
-printf '%_target_cpu\t%_target_cpu\n' >> buildlib/archtable
 
 %build
 gettextize --force --quiet --no-changelog --symlink
@@ -592,6 +584,10 @@ exec 1>&2
 %_datadir/%name/tests/
 
 %changelog
+* Sun Nov 24 2024 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt89
+- sources(configure.ac): Made the build procedure work the same even when
+  built not from this .spec by doing a fallback if the archname is unknown.
+
 * Tue May 21 2024 Ivan A. Melnikov <iv@altlinux.org> 0.5.15lorg2-alt88
 - Backport columnar output for apt-get from Debian.
 

@@ -115,9 +115,12 @@ AH_TEMPLATE(COMMON_OS, [Define the common OS])
 AC_MSG_CHECKING(system architecture)
 archset="`awk \" ! /^#|^\\\$/ { if(match(\\\"$host_cpu\\\",\\\"^\\\"\\\$1\\\"\\\$\\\")) {print \\\$2; exit}}\" $srcdir/buildlib/archtable`"
 if test "x$archset" = "x"; then
-  AC_MSG_ERROR([failed: use --host=])
+  archset="$host_cpu"
+  AC_MSG_RESULT($archset)
+  AC_MSG_WARN([archtable has no match for --host=; fallen back on host_cpu (it may be ok)])
+else
+  AC_MSG_RESULT($archset)
 fi
-AC_MSG_RESULT($archset)
 AC_DEFINE_UNQUOTED(COMMON_CPU,"$archset")
 
 dnl Get a common name for the host OS - this is primarily only for HURD and is
