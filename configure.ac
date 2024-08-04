@@ -113,7 +113,7 @@ dnl This is often the dpkg architecture string.
 AH_TEMPLATE(COMMON_CPU, [Define the common CPU])
 AH_TEMPLATE(COMMON_OS, [Define the common OS])
 AC_MSG_CHECKING(system architecture)
-archset="$(awk -v host_cpu="$host_cpu" " ! /^#|^\$/ { if(match(host_cpu,\"^\"\$1\"\$\")) {print \$2; exit}}" $srcdir/buildlib/archtable)"
+archset="$(awk -v host_cpu="$host_cpu" ' ! /^#|^$/ { if(match(host_cpu,"^"$1"$")) {print $2; exit}}' $srcdir/buildlib/archtable)"
 if test "x$archset" = "x"; then
   archset="$host_cpu"
   AC_MSG_RESULT($archset)
@@ -126,7 +126,7 @@ AC_DEFINE_UNQUOTED(COMMON_CPU,"$archset")
 dnl Get a common name for the host OS - this is primarily only for HURD and is
 dnl non fatal if it fails
 AC_MSG_CHECKING(system OS)
-osset="$(awk -v host_vendor="$host_vendor" -v host_os="$host_os" " ! /^#|^\$/ {if (match(host_vendor\"-\"host_os,\$1)) {print \$2; exit}}" $srcdir/buildlib/ostable)"
+osset="$(awk -v host_vendor="$host_vendor" -v host_os="$host_os" ' ! /^#|^$/ {if (match(host_vendor"-"host_os,$1)) {print $2; exit}}' $srcdir/buildlib/ostable)"
 AC_MSG_RESULT($osset)
 AC_DEFINE_UNQUOTED(COMMON_OS,"$osset")
 
