@@ -204,7 +204,7 @@ string QuoteString(const string &Str,const char *Bad)
 	  *I <= 0x20 || *I >= 0x7F)
       {
 	 char Buf[10];
-	 sprintf(Buf,"%%%02x",(int)*I);
+	 snprintf(Buf,sizeof(Buf),"%%%02x",static_cast<unsigned int>(*I));
 	 Res += Buf;
       }
       else
