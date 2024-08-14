@@ -222,6 +222,10 @@ setupenvironment() {
 		addtrap 'cd /; rm -rf %q;' "$TMPWORKINGDIRECTORY"
 	fi
 
+	# The place for build logs and metainfo, and built pkgs (in future).
+	# (In future, it'll be a peristent storage for pkgs across test runs.)
+	APT_TEST_BUILDDIR=$TMPWORKINGDIRECTORY/pkg-build
+
 	msgninfo "Preparing environment for ${CCMD}$(basename $0)${CINFO} in ${TMPWORKINGDIRECTORY}… "
 
 	cd $TMPWORKINGDIRECTORY
@@ -353,6 +357,10 @@ buildpackage() {
 	fi
 
 	msgmsg "Building package: ${NAME}"
+
+	mkdir -p "$APT_TEST_BUILDDIR"/"$NAME"
+	local -r log="$APT_TEST_BUILDDIR/$NAME"/log
+
 	HOME=/var/empty rpmbuild \
 		--define 'EVR %{?epoch:%epoch:}%{version}-%{release}' \
 		--define 'packager test@example.net' \
@@ -360,13 +368,38 @@ buildpackage() {
 		--define="_topdir $TMPWORKINGDIRECTORY/usr/src/RPM" \
 		$target_opt \
 		-ba "${TESTDIRECTORY}/specs/${NAME}.spec" \
-		1>/dev/null
+		1>"$log"
+
+	local builtpackagefile
+	builtpackagefile="$(sed -nEe '$ s/Wrote: (.*) \(.*\)$/\1/p' <"$log")"
+	local -r builtpackagefile
+	{
+	    printf "local -r builtpackagefile=%q\n" "$builtpackagefile"
+	    HOME=/var/empty rpmquery \
+		-p "$builtpackagefile" \
+		--qf '
+		local -r name=%{NAME:shescape}
+		local -r arch=%{ARCH:shescape}
+		local -r epoch=%{EPOCH:shescape}
+		local -r version=%{VERSION:shescape}
+		local -r release=%{RELEASE:shescape}
+		'
+	} >"$APT_TEST_BUILDDIR/$NAME"/metainfo
 }
 
 builtpackagefile() {
 	local -r NAME="$1"
 
-	. "${TESTDIRECTORY}/specs/${NAME}.metainfo"
+	. "$APT_TEST_BUILDDIR"/"$NAME"/metainfo
+
+	if [ -n "$builtpackagefile" ]; then
+	    echo "$builtpackagefile"
+	    return
+	fi
+
+	# The rest is actually never needed now, with auto-detection of
+	# the built pkg file and auto-extraction of the metainfo from it.
+
 	# To type less in *.metainfo, assume that the spec's filename coincides with
 	# the package's name by default:
 	if [ -z "${name-}" ]; then
@@ -383,7 +416,7 @@ builtpackagefile() {
 builtpackagearch() {
 	local -r NAME="$1"
 
-	. "${TESTDIRECTORY}/specs/${NAME}.metainfo"
+	. "$APT_TEST_BUILDDIR"/"$NAME"/metainfo
 	# If arch is not specified in the spec, we know what was given as --target.
 	if [ -z "${arch-}" ]; then
 		arch="$APT_TEST_USED_ARCH"
@@ -395,7 +428,7 @@ builtpackagearch() {
 builtpackageversion() {
 	local -r NAME="$1"
 
-	. "${TESTDIRECTORY}/specs/${NAME}.metainfo"
+	. "$APT_TEST_BUILDDIR"/"$NAME"/metainfo
 
 	echo "${version}-${release}"
 }

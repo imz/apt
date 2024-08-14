@@ -17,7 +17,7 @@ build_P()
     local F="$(mktemp "${TESTDIRECTORY}/specs/$P-XXXX.spec")"
     F="${F%.spec}"
     local -r F
-    addtrap 'rm -f %q.{spec,metainfo}' "$F"
+    addtrap 'rm -f %q.spec' "$F"
 
     # Instead of editing the spec-file, we could perhaps use rpmbuild --define.
     sed -E \
@@ -25,10 +25,6 @@ build_P()
 	-e 's/ 2-alt1$/'" $i-alt1/" \
 	<"${TESTDIRECTORY}/specs/$P.spec" \
 	>|"$F.spec"
-    sed -E \
-	-e 's/version=2$/'"version=$i/" \
-	<"${TESTDIRECTORY}/specs/$P.metainfo" \
-	>|"$F.metainfo"
     buildpackage "${F##*/}"
 }
 
