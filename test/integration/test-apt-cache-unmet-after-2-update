@@ -12,8 +12,7 @@ buildpackage 'conflicting-package-two'
 buildpackage 'simple-package-new'
 buildpackage 'simple-package-noarch'
 buildpackage 'simple-package'
-buildpackage 'simple-package-update-conflict'
-buildpackage 'simple-package-update' # overwrites the previous built package
+buildpackage 'simple-package-update'
 
 generaterepository_and_switch_sources "$TMPWORKINGDIRECTORY/usr/src/RPM/RPMS"
 
