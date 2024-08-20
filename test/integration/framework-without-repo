@@ -62,6 +62,17 @@ fi
 # therefore we use a special FD for them.
 exec 6>&2
 
+wait_for_file() {
+	# The message 'Waiting...' is intentionally printed regardless of $MSGLEVEL;
+	# otherwise it would be difficult to see why the process is hanging;
+	# it can appear only in extra-ordinary situations (under heavy load).
+	[ -s "$1" ] ||
+		printf >&6 'Waiting for %s\n' "$1" &&
+		while ! [ -s "$1" ]; do
+			sleep 0.5
+		done
+}
+
 msgdie() { printf "${CERROR}E: $1${CNORMAL}\n" >&6; exit 1; }
 msgwarn() { printf "${CWARNING}W: $1${CNORMAL}\n" >&6; }
 msgmsg() { printf "${CMSG}$1${CNORMAL}\n" >&6; }
