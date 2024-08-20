@@ -364,6 +364,10 @@ pushd %_datadir/%name/tests/
 system_arch="$(rpm -q rpm --qf='%%{ARCH}')"
 export APT_TEST_TARGET="$system_arch"
 
+# cache built pkgs
+APT_TEST_BUILDDIR="$(mktemp -d)/pkgs"
+export APT_TEST_BUILDDIR
+
 # this macro can be prefixed (e.g., by environment assignments),
 # therefore the extra backslash in the first line
 %global runtests \\\
@@ -413,6 +417,10 @@ gpg-keygen --passphrase '' \
 
 export APT_TEST_GPGPUBKEY
 
+# cache built pkgs
+APT_TEST_BUILDDIR="$(mktemp -d)/pkgs"
+export APT_TEST_BUILDDIR
+
 %runtests
 
 # Everything has been tested by now.
@@ -455,6 +463,10 @@ gpg-keygen --passphrase '' \
 	/dev/null "$APT_TEST_GPGPUBKEY"
 
 export APT_TEST_GPGPUBKEY
+
+# cache built pkgs
+APT_TEST_BUILDDIR="$(mktemp -d)/pkgs"
+export APT_TEST_BUILDDIR
 
 # Below we run the same tests many times in order to possibly catch
 # bad races. (It's more probable to catch a race under heavy load;
@@ -588,6 +600,7 @@ exec 1>&2
 - sources(configure.ac): Made the build procedure work the same even when
   built not from this .spec by doing a fallback if the archname is unknown.
   Also simplified quoting/escaping in that archtable code.
+- tests & checkinstall subpkgs: cache & re-use built pkgs (for speed).
 
 * Tue May 21 2024 Ivan A. Melnikov <iv@altlinux.org> 0.5.15lorg2-alt88
 - Backport columnar output for apt-get from Debian.
