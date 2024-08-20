@@ -69,7 +69,7 @@ wait_for_file() {
 	[ -s "$1" ] ||
 		printf >&6 'Waiting for %s\n' "$1" &&
 		while ! [ -s "$1" ]; do
-			sleep 0.5
+			sleep 0.05
 		done
 }
 
