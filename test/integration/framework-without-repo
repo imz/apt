@@ -222,9 +222,13 @@ setupenvironment() {
 		addtrap 'cd /; rm -rf %q;' "$TMPWORKINGDIRECTORY"
 	fi
 
-	# The place for build logs and metainfo, and built pkgs (in future).
-	# (In future, it'll be a peristent storage for pkgs across test runs.)
-	APT_TEST_BUILDDIR=$TMPWORKINGDIRECTORY/pkg-build
+	# The place for build logs and metainfo, and built pkgs.
+	# Is there a place for persistent storage accross test runs?
+	# If no, make it temporary.
+	if [ -z "$APT_TEST_BUILDDIR" ]; then
+	    APT_TEST_BUILDDIR=$TMPWORKINGDIRECTORY/pkg-build
+	fi
+	mkdir -p "$APT_TEST_BUILDDIR"
 
 	msgninfo "Preparing environment for ${CCMD}$(basename $0)${CINFO} in ${TMPWORKINGDIRECTORY}… "
 
@@ -356,16 +360,25 @@ buildpackage() {
 		target_opt=--target="$APT_TEST_TARGET"
 	fi
 
+	local -r trap_before_mkdir="$CURRENTTRAP"
+
+	if mkdir "$APT_TEST_BUILDDIR/$NAME" &>/dev/null; then
+
+	# On an error during the build procedure, we have to delete the dir
+	# in order to signal that one shouldn't be waiting for a result
+	# on the other branch. So we push a temporary trap for this.
+	# (Then restore from $trap_before_mkdir.)
+	addtrap prefix 'rm -rf %q' "$APT_TEST_BUILDDIR/$NAME"
+
 	msgmsg "Building package: ${NAME}"
 
-	mkdir -p "$APT_TEST_BUILDDIR"/"$NAME"
 	local -r log="$APT_TEST_BUILDDIR/$NAME"/log
 
 	HOME=/var/empty rpmbuild \
 		--define 'EVR %{?epoch:%epoch:}%{version}-%{release}' \
 		--define 'packager test@example.net' \
-		--define="_tmppath $TMPWORKINGDIRECTORY/tmp" \
-		--define="_topdir $TMPWORKINGDIRECTORY/usr/src/RPM" \
+		--define="_tmppath $APT_TEST_BUILDDIR/$NAME/tmp" \
+		--define="_topdir $APT_TEST_BUILDDIR/$NAME/RPM" \
 		$target_opt \
 		-ba "${TESTDIRECTORY}/specs/${NAME}.spec" \
 		1>"$log"
@@ -384,7 +397,22 @@ buildpackage() {
 		local -r version=%{VERSION:shescape}
 		local -r release=%{RELEASE:shescape}
 		'
-	} >"$APT_TEST_BUILDDIR/$NAME"/metainfo
+	} >"$APT_TEST_BUILDDIR/$NAME"/metainfo.in-progress
+	mv -T "$APT_TEST_BUILDDIR/$NAME"/metainfo{.in-progress,}
+
+	CURRENTTRAP="$trap_before_mkdir"
+	addtrap ''
+
+	else
+	    msgmsg "Re-using built package: ${NAME}"
+	    wait_for_file "$APT_TEST_BUILDDIR/$NAME"/metainfo
+	fi
+
+	# Copy out files from the "cache" to where they are expected by our framework
+	# (FIXME: this will silently overwrite existing files with the same name,
+	# but we should report this as an error in the test.)
+	mkdir -p $TMPWORKINGDIRECTORY/usr/src/RPM
+	cp -l -a "$APT_TEST_BUILDDIR/$NAME"/RPM -T $TMPWORKINGDIRECTORY/usr/src/RPM
 }
 
 builtpackagefile() {

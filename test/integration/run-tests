@@ -30,6 +30,22 @@ export APT_TEST_XFAIL="${APT_TEST_XFAIL-}"
 # Setting this parameter explicitly is useful for debugging.
 export APT_TEST_WORKINGDIRECTORY="${APT_TEST_WORKINGDIRECTORY-}"
 
+# If empty or unset, a place under the temporary dir will be used.
+# Setting this parameter explicitly means that built packages are cached between
+# individual tests (for speed) and is useful for debugging afterwards.
+export APT_TEST_BUILDDIR="${APT_TEST_BUILDDIR-}"
+# Clean old stuff (those pkgs might have been built with different parameters).
+if [ -n "$APT_TEST_BUILDDIR" ]; then
+    # Bad idea if several concurrent ./run-tests use the same cache dir
+    # (perhaps, a lock inside it could be an indicator whether it is used):
+    #rm -rf "$APT_TEST_BUILDDIR"
+
+    # So, we simply warn instead:
+    printf >&2 'WARNING: going to re-use built pkgs cached in %s
+WARNING: Clean old stuff (built with different params) yourself if needed!\n' \
+	       "$APT_TEST_BUILDDIR"
+fi
+
 # arch parameters:
 
 # The arch (the machine arch) as detected by rpm or apt
