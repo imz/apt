@@ -6,7 +6,7 @@ echo '=== Test whether searching by file works. ==='
 set -eux
 set -o pipefail
 
-timeout -k 190 180 \
+timeout -k 90 80 \
 	/usr/lib/packagekit-direct search-file /etc/apt/vendors.list
 
 /usr/lib/packagekit-direct search-file /etc/apt/vendors.list |
