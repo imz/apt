@@ -68,9 +68,12 @@ wait_for_file() {
 	# it can appear only in extra-ordinary situations (under heavy load).
 	[ -s "$1" ] ||
 		printf >&6 'Waiting for %s\n' "$1" &&
+		local i=0 &&
 		while ! [ -s "$1" ]; do
-			sleep 0.05
-		done
+			sleep 0.05 &&
+			let '++i'
+		done &&
+		printf >&6 'Waited %s * 0.05s.\n' "$i"
 }
 
 msgdie() { printf "${CERROR}E: $1${CNORMAL}\n" >&6; exit 1; }
