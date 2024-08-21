@@ -67,13 +67,15 @@ wait_for_file() {
 	# otherwise it would be difficult to see why the process is hanging;
 	# it can appear only in extra-ordinary situations (under heavy load).
 	[ -s "$1" ] ||
+	{ # need to group the alternative commands after a ||
 		printf >&6 'Waiting for %s\n' "$1" &&
 		local i=0 &&
 		while ! [ -s "$1" ]; do
 			sleep 0.05 &&
 			let '++i'
 		done &&
-		printf >&6 'Waited %s * 0.05s.\n' "$i"
+		printf >&6 'Waited %s * 0.05s.\n' "$i" # count&print i out of curiosity
+	}
 }
 
 msgdie() { printf "${CERROR}E: $1${CNORMAL}\n" >&6; exit 1; }
