@@ -577,6 +577,9 @@ testscriptnooutput() {
 	testfileequal --nomsg "$1"
 }
 
+# Warning: For some reason, you shouldn't have empty lines at the end of
+# the pattern (even if they would actually match the input)...
+#
 # Effects:
 #
 # * global vars OUTPUT, RESULT
