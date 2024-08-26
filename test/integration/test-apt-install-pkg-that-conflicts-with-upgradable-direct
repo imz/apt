@@ -20,7 +20,7 @@ buildpackage 'simple-package-noarch'
 aptgetinstallpackage 'simple-package'
 testpkginstalled 'simple-package'
 
-testequal '1-alt1' getpackageversion 'simple-package'
+testequal "$(V 1)-alt1" getpackageversion 'simple-package'
 
 generaterepository_and_switch_sources "$TMPWORKINGDIRECTORY/usr/src/RPM/RPMS"
 

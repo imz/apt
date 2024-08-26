@@ -25,7 +25,7 @@ aptgetinstallpackage 'provides-simple-package'
 testpkginstalled 'simple-package'
 testpkginstalled 'provides-simple-package'
 
-testequal '2-alt1' getpackageversion 'simple-package'
+testequal "$(V 2)-alt1" getpackageversion 'simple-package'
 
 generaterepository_and_switch_sources "$TMPWORKINGDIRECTORY/usr/src/RPM/RPMS"
 

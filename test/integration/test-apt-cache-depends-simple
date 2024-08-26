@@ -19,20 +19,20 @@ generaterepository_and_switch_sources "$TMPWORKINGDIRECTORY/usr/src/RPM/RPMS"
 
 testsuccess aptget update
 
-testregexmatch 'simple-package-2-alt1@[0-9]+
-' \
+testregexmatch "simple-package-$(v 2)-alt1@[0-9]+
+" \
 	       aptcache depends 'simple-package'
 
-testregexmatch 'missing-dependency-1-alt1@[0-9]+
+testregexmatch "missing-dependency-$(v 1)-alt1@[0-9]+
   Depends: <no-such-package>
-' \
+" \
 	       aptcache depends 'missing-dependency'
 
-testregexmatch 'conflicting-package-one-2-alt1@[0-9]+
+testregexmatch "conflicting-package-one-$(v 2)-alt1@[0-9]+
   Conflicts: conflicting-package-two
   Conflicts: simple-package
-    simple-package-new-3-alt1@[0-9]+
-' \
+    simple-package-new-$(v 3)-alt1@[0-9]+
+" \
 	       aptcache depends 'conflicting-package-one'
 
 testregexmatch '<no-such-package>

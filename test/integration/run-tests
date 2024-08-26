@@ -28,6 +28,10 @@ DIR=$(readlink -f $(dirname $0))
 APT_TEST_PKG_FILENAME_BY_ALIAS="${APT_TEST_PKG_FILENAME_BY_ALIAS-}"
 export APT_TEST_PKG_FILENAME_BY_ALIAS
 
+# If set, V() function will be redefined to make some decoration.
+APT_TEST_PKG_DECORATE_VERSION="${APT_TEST_PKG_DECORATE_VERSION-}"
+export APT_TEST_PKG_DECORATE_VERSION
+
 # If non-empty, test failures won't count as failures
 # (rather as expected failures due to known bugs).
 export APT_TEST_XFAIL="${APT_TEST_XFAIL-}"

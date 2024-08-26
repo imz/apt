@@ -357,6 +357,32 @@ else
 	APT_TEST_USED_ARCH="$APT_TEST_DEFAULT_ARCH"
 fi
 
+# "Decorating" pkg metainfo on top of what's written in the spec-files:
+# N, E, V, R, etc.
+# -- that's how it'll look like when the pkg is actually built by us.
+
+# default no-op placeholder (to be overridden)
+V() {
+    printf '%s' "$1"
+}
+
+# for usage in regexes
+v() {
+    regex_quote "$(V "$1")"
+}
+
+# We could actually modify the function to make a more complex decoration here.
+# The variable would only tell us whether to do a decoration at all
+# (not the content).
+# However, if it is not postfix, the comparisons in Requires etc could break;
+# so it would be possible only if we decorate all occurences of versions
+# in spec-files with an analoguos transformation like %(V ...).
+if [ -n "$APT_TEST_PKG_DECORATE_VERSION" ]; then
+V() {
+    printf '%s%s' "$1" '_0'
+}
+fi
+
 buildpackage() {
 	local NAME="$1"
 
@@ -377,6 +403,14 @@ buildpackage() {
 
 	msgmsg "Building package: ${NAME}"
 
+	local -r spec="$APT_TEST_BUILDDIR/$NAME"/spec
+
+	# FIXME: just applying V to a part of regex is not a universal solution.
+	sed -E -e '' \
+	    ${APT_TEST_PKG_DECORATE_VERSION:+-e 's/^Version:[[:space:]]* ([^[:space:]]+)[[:space:]]*$/Version: '"$(V '\1')"'/'} \
+	    <"${TESTDIRECTORY}/specs/${NAME}.spec" \
+	    >"$spec"
+
 	local -r log="$APT_TEST_BUILDDIR/$NAME"/log
 
 	HOME=/var/empty rpmbuild \
@@ -386,7 +420,7 @@ buildpackage() {
 		--define="_tmppath $APT_TEST_BUILDDIR/$NAME/tmp" \
 		--define="_topdir $APT_TEST_BUILDDIR/$NAME/RPM" \
 		$target_opt \
-		-bb "${TESTDIRECTORY}/specs/${NAME}.spec" \
+		-bb "$spec" \
 		1>"$log"
 
 	local builtpackagefile

@@ -19,34 +19,34 @@ generaterepository_and_switch_sources "$TMPWORKINGDIRECTORY/usr/src/RPM/RPMS"
 
 testsuccess aptget update
 
-testregexmatch 'simple-package-2-alt1@[0-9]+
-  simple-package-new-3-alt1@[0-9]+
-    Conflicts: simple-package < 3-alt1
-    Obsoletes: simple-package < 3-alt1
-  conflicting-package-one-2-alt1@[0-9]+
+testregexmatch "simple-package-$(v 2)-alt1@[0-9]+
+  simple-package-new-$(v 3)-alt1@[0-9]+
+    Conflicts: simple-package < $(v 3)-alt1
+    Obsoletes: simple-package < $(v 3)-alt1
+  conflicting-package-one-$(v 2)-alt1@[0-9]+
     Conflicts: simple-package
-      simple-package-new-3-alt1@[0-9]+
-' \
+      simple-package-new-$(v 3)-alt1@[0-9]+
+" \
 	       aptcache whatdepends 'simple-package'
 
-testregexmatch 'missing-dependency-1-alt1@[0-9]+
-' \
+testregexmatch "missing-dependency-$(v 1)-alt1@[0-9]+
+" \
 	       aptcache whatdepends 'missing-dependency'
 
-testregexmatch 'conflicting-package-one-2-alt1@[0-9]+
-  conflicting-package-two-1-alt1@[0-9]+
+testregexmatch "conflicting-package-one-$(v 2)-alt1@[0-9]+
+  conflicting-package-two-$(v 1)-alt1@[0-9]+
     Conflicts: conflicting-package-one
-' \
+" \
 	       aptcache whatdepends 'conflicting-package-one'
 
-testregexmatch 'missing-dependency-1-alt1@[0-9]+
-' \
+testregexmatch "missing-dependency-$(v 1)-alt1@[0-9]+
+" \
 	       aptcache whatdepends 'missing-dependency'
 
-testregexmatch '<no-such-package>
-  missing-dependency-1-alt1@[0-9]+
+testregexmatch "<no-such-package>
+  missing-dependency-$(v 1)-alt1@[0-9]+
     Depends: <no-such-package>
-' \
+" \
 	       aptcache whatdepends 'no-such-package'
 
 testregexmatch 'W: Unable to locate package definitely-no-such-package

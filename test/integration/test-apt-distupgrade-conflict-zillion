@@ -59,8 +59,8 @@ aptgetinstallpackage 'conflicting-package-one'
 testpkginstalled 'simple-package'
 testpkginstalled 'conflicting-package-one'
 
-testequal '1-alt1' getpackageversion 'simple-package'
-testequal '1-alt1' getpackageversion 'conflicting-package-one'
+testequal "$(V 1)-alt1" getpackageversion 'simple-package'
+testequal "$(V 1)-alt1" getpackageversion 'conflicting-package-one'
 
 wait # we don't care much whether a few (up to 99) of the build_P's failed
 generaterepository_and_switch_sources "$TMPWORKINGDIRECTORY/usr/src/RPM/RPMS"
@@ -75,5 +75,5 @@ testfailure
 
 # More correct behavior would be:
 #testsuccess aptget dist-upgrade -y
-#testequal "$N-alt1" getpackageversion 'simple-package'
-#testequal '1-alt1' getpackageversion 'conflicting-package-one'
+#testequal "$(V "$N")-alt1" getpackageversion 'simple-package'
+#testequal "$(V 1)-alt1" getpackageversion 'conflicting-package-one'

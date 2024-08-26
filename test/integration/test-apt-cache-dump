@@ -38,39 +38,39 @@ readonly APT_FETCHED_MYARCH_PKGLIST_RE
 
 readonly -a dump_pkgs=(
 	"Package: conflicting-package-two
- Version: 1-alt1@[0-9]+
+ Version: $(v 1)-alt1@[0-9]+
      File: $APT_FETCHED_MYARCH_PKGLIST_RE
   Depends: conflicting-package-one \(null\)"
 
 	"Package: no-such-package"
 
 	"Package: simple-package-noarch
- Version: 1-alt1@[0-9]+
+ Version: $(v 1)-alt1@[0-9]+
      File: $APT_FETCHED_NOARCH_PKGLIST_RE"
 
 	"Package: simple-package-new
- Version: 3-alt1@[0-9]+
+ Version: $(v 3)-alt1@[0-9]+
      File: $APT_FETCHED_MYARCH_PKGLIST_RE
-  Depends: simple-package 3-alt1
-  Depends: simple-package 3-alt1"
+  Depends: simple-package $(v 3)-alt1
+  Depends: simple-package $(v 3)-alt1"
 
 	"Package: missing-dependency
- Version: 1-alt1@[0-9]+
+ Version: $(v 1)-alt1@[0-9]+
      File: $APT_FETCHED_MYARCH_PKGLIST_RE
   Depends: no-such-package \(null\)"
 
 	"Package: simple-package
- Version: 2-alt1@[0-9]+
+ Version: $(v 2)-alt1@[0-9]+
      File: $APT_FETCHED_MYARCH_PKGLIST_RE
- Version: 1-alt1@[0-9]+
+ Version: $(v 1)-alt1@[0-9]+
      File: $APT_FETCHED_MYARCH_PKGLIST_RE"
 
 	"Package: conflicting-package-one
- Version: 2-alt1@[0-9]+
+ Version: $(v 2)-alt1@[0-9]+
      File: $APT_FETCHED_MYARCH_PKGLIST_RE
   Depends: conflicting-package-two \(null\)
   Depends: simple-package \(null\)
- Version: 1-alt1@[0-9]+
+ Version: $(v 1)-alt1@[0-9]+
      File: $APT_FETCHED_MYARCH_PKGLIST_RE
   Depends: conflicting-package-two \(null\)"
 

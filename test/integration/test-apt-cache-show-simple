@@ -23,9 +23,9 @@ testregexmatch "Package: simple-package
 Section: Other
 Installed Size: 0
 Maintainer: test@example.net
-Version: 2-alt1@[0-9]+
+Version: $(v 2)-alt1@[0-9]+
 Pre-Depends: rpmlib\(PayloadIsLzma\)
-Provides: simple-package \(= 2-alt1\)
+Provides: simple-package \(= $(v 2)-alt1\)
 Architecture: $(builtpackagearch 'simple-package-update')
 Size: [0-9]+
 MD5Sum: [0-9a-fA-F]+
@@ -43,9 +43,9 @@ Package: simple-package
 Section: Other
 Installed Size: 0
 Maintainer: test@example.net
-Version: 1-alt1@[0-9]+
+Version: $(v 1)-alt1@[0-9]+
 Pre-Depends: rpmlib\(PayloadIsLzma\)
-Provides: simple-package \(= 1-alt1\)
+Provides: simple-package \(= $(v 1)-alt1\)
 Architecture: $(builtpackagearch 'simple-package')
 Size: [0-9]+
 MD5Sum: [0-9a-fA-F]+
@@ -64,10 +64,10 @@ testregexmatch "Package: missing-dependency
 Section: Other
 Installed Size: 0
 Maintainer: test@example.net
-Version: 1-alt1@[0-9]+
+Version: $(v 1)-alt1@[0-9]+
 Pre-Depends: rpmlib\(PayloadIsLzma\)
 Depends: no-such-package
-Provides: missing-dependency \(= 1-alt1\)
+Provides: missing-dependency \(= $(v 1)-alt1\)
 Architecture: $(builtpackagearch 'missing-dependency')
 Size: [0-9]+
 MD5Sum: [0-9a-fA-F]+

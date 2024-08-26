@@ -436,7 +436,7 @@ export APT_TEST_BUILDDIR
 # Everything has been tested by now.
 
 %package long-v-checkinstall
-Summary: Immediately test %name when installing this package (complete set of tests)
+Summary: Immediately test %name when installing this (with too long filenames due to V)
 Group: Other
 BuildArch: noarch
 Requires(pre): %name-tests
@@ -445,7 +445,8 @@ Requires(pre): %complete_reqs_of_tests
 Requires(pre): gpg-keygen
 
 %description long-v-checkinstall
-Immediately test %name when installing this package.
+Immediately test %name when installing this package (with too long filenames
+due to long Versions).
 
 The set of testcases is complete (all the methods that are tested by default
 and some additional peculiarities are tested).
@@ -456,14 +457,10 @@ and some additional peculiarities are tested).
 set -o pipefail
 pushd %_datadir/%name/tests/
 
-# This option makes sense just for the maintainer (to test the tests).
-# This option makes the built pkgs be saved under a special filename
-# (our alias). This mechanism is used to test pkgs with N-V-R that would be
-# too long for filenames, in another run of the tests with
-# APT_TEST_PKG_DECORATE_VERSION turned on. And here we just can make sure
-# that the tests are robust with APT_TEST_PKG_FILENAME_BY_ALIAS alone.
-# APT_TEST_PKG_FILENAME_BY_ALIAS=yes
-# export APT_TEST_PKG_FILENAME_BY_ALIAS
+# This option might make versions very long (so that they don't fit into
+# filenames).
+APT_TEST_PKG_DECORATE_VERSION=yes
+export APT_TEST_PKG_DECORATE_VERSION
 
 # force the target arch for the tests
 #
