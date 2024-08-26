@@ -39,4 +39,5 @@ Total Provides Mappings: 9 \([^\)]*\)
 Total Globbed Strings: [0-9]* \([^\)]*\)
 Total Dependency Version space: 14
 Total Slack space: .*
-Total Space Accounted for: .*' aptcache stats
+Total Space Accounted for: .*' \
+	       aptcache stats

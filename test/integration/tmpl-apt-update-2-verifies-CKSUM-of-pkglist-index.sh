@@ -60,10 +60,12 @@ esac
 
 case "$CKSUM_TYPE" in
 	Size)
-		testregexmatch '.*Size mismatch.*' aptget update
+		testregexmatch '.*Size mismatch.*' \
+			       aptget update
 		;;
 	*)
-		testregexmatch '.*Checksum mismatch.*' aptget update
+		testregexmatch '.*Checksum mismatch.*' \
+			       aptget update
 		;;
 esac
 testfailure

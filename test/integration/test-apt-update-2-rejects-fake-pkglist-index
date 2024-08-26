@@ -25,7 +25,8 @@ fake_repo_noarch_pkglist \
 # (we haven't changed it in the release file).
 # And it is cached uncompressed, so the size matches, too.
 
-#testregexmatch '.*Checksum mismatch.*' aptget update
+#testregexmatch '.*Checksum mismatch.*' \
+# 	       aptget update
 testsuccess aptget update
 testsuccess aptcache show simple-package
 testsuccess aptcache show simple-package-noarch

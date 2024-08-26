@@ -37,4 +37,5 @@ esac
 testsuccess aptget update
 
 testregexmatch 'Package missing-dependency version 1-alt1@[0-9]+ has an unmet dep:
- Depends: no-such-package' aptcache unmet
+ Depends: no-such-package' \
+	       aptcache unmet

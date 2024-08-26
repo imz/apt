@@ -30,7 +30,8 @@ fake_repo_noarch_pkglist \
 
 # Cksum verification shouldn't pass.
 
-testregexmatch '.*Checksum mismatch.*' aptget update
+testregexmatch '.*Checksum mismatch.*' \
+	       aptget update
 testfailure
 testsuccess aptcache show simple-package
 testfailure aptcache show simple-package-noarch
