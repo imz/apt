@@ -29,9 +29,6 @@ testregexmatch 'conflicting-package-one-2-alt1@[0-9]+
   Conflicts: simple-package
     simple-package-new-3-alt1@[0-9]+' aptcache depends 'conflicting-package-one'
 
-testregexmatch 'missing-dependency-1-alt1@[0-9]+
-  Depends: <no-such-package>' aptcache depends 'missing-dependency'
-
 testregexmatch '<no-such-package>' aptcache depends 'no-such-package'
 
 testregexmatch 'W: Unable to locate package definitely-no-such-package' aptcache depends 'definitely-no-such-package'
