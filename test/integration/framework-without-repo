@@ -509,18 +509,12 @@ testfileequal() {
 	if [ -n "$MSG" ]; then
 		msgtest "$MSG" "$FILE"
 	fi
-	if [ -z "$*" ]; then
-		echo -n ''
-	else
-		echo "$*"
-	fi | {
-		checkdiff - $FILE \
-		    && msgpass \
-		    || {
-			msgfail
-			echo >&6 "$DIFFTEXT"
-		    }
-	}
+	checkdiff - $FILE <<<"${*:+$*}" \
+	    && msgpass \
+	    || {
+		msgfail
+		echo >&6 "$DIFFTEXT"
+	    }
 
 }
 
@@ -542,21 +536,20 @@ testequal() {
 		shift
 	fi
 
-	local COMPAREFILE="${TMPWORKINGDIRECTORY}/rootdir/tmp/testequal.comparefile"
-	echo "$1" > $COMPAREFILE
+	local -r COMPARE="$1"
 	shift
 
 	if [ -n "$MSG" ]; then
 		msgtest "$MSG" "$*"
 	fi
-	"$@" 2>&1 | {
-		checkdiff $COMPAREFILE - \
-		    && msgpass \
-		    || {
-			msgfail
-			echo >&6 "$DIFFTEXT"
-		    }
-	}
+	local -r RESULTFILE="${TMPWORKINGDIRECTORY}/rootdir/tmp/testequal.resultfile"
+	"$@" >|"$RESULTFILE" 2>&1
+	checkdiff - "$RESULTFILE" <<<"$COMPARE" \
+	    && msgpass \
+	    || {
+		msgfail
+		echo >&6 "$DIFFTEXT"
+	    }
 }
 
 testscriptoutput() {
