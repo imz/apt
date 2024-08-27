@@ -16,6 +16,6 @@ testpkgnotinstalled 'simple-package'
 aptgetinstallpackage 'simple-package'
 testpkginstalled 'simple-package'
 
-testscriptoutput 'RPM::Pre-Invoke' 'RPM::Pre-Invoke called' cat $TMPWORKINGDIRECTORY/bash/results/rpm-pre-invoke.result
-testscriptoutput 'RPM::Pre-Install-Pkgs' 'RPM::Pre-Install-Pkgs called' cat $TMPWORKINGDIRECTORY/bash/results/rpm-pre-install-pkgs.result
-testscriptoutput 'RPM::Post-Invoke' 'RPM::Post-Invoke called' cat $TMPWORKINGDIRECTORY/bash/results/rpm-post-invoke.result
+testscriptoutput 'RPM::Pre-Invoke' 'RPM::Pre-Invoke called' $TMPWORKINGDIRECTORY/bash/results/rpm-pre-invoke.result
+testscriptoutput 'RPM::Pre-Install-Pkgs' 'RPM::Pre-Install-Pkgs called' $TMPWORKINGDIRECTORY/bash/results/rpm-pre-install-pkgs.result
+testscriptoutput 'RPM::Post-Invoke' 'RPM::Post-Invoke called' $TMPWORKINGDIRECTORY/bash/results/rpm-post-invoke.result

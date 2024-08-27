@@ -498,15 +498,23 @@ checkdiff() {
 }
 
 testfileequal() {
+	local MSG='Test for correctness of file'
+	if [ "$1" = '--nomsg' ]; then
+		MSG=''
+		shift
+	fi
+
 	local FILE="$1"
 	shift
-	msgtest 'Test for correctness of file' "$FILE"
+	if [ -n "$MSG" ]; then
+		msgtest "$MSG" "$FILE"
+	fi
 	if [ -z "$*" ]; then
 		echo -n ''
 	else
 		echo "$*"
 	fi | {
-		checkdiff $FILE - \
+		checkdiff - $FILE \
 		    && msgpass \
 		    || {
 			msgfail
@@ -557,7 +565,7 @@ testscriptoutput() {
 
 	msgtest 'Test of output of' "$MSG"
 
-	testequal --nomsg "$@"
+	testfileequal --nomsg "$2" "$1"
 }
 
 testscriptnooutput() {
@@ -566,7 +574,7 @@ testscriptnooutput() {
 
 	msgtest 'Test for no output of' "$MSG"
 
-	[ ! -e "$1" ] && msgpass || msgfail
+	testfileequal --nomsg "$1"
 }
 
 # Effects:
