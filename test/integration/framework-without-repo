@@ -646,7 +646,8 @@ testpartsexhaust() {
 	"$@" &> $OUTPUT
 	RESULT=$?
 	set -e
-	local OUTPUT_STR="$(cat "$OUTPUT")"
+	local OUTPUT_STR
+	IFS= read -rd '' OUTPUT_STR <"$OUTPUT" ||: # non-zero status always (because of EOF)
 
 	local REGEXPART
 	for REGEXPART in "${REGEXPARTS[@]}"; do
@@ -655,11 +656,12 @@ testpartsexhaust() {
 			echo "${CINFO}*** During matching parts with the output result, a part couldn't be matched.${CNORMAL}"
 			echo "${CINFO}The remaining unmatched output:${CNORMAL}"
 			echo "${CINFO}----------------------------------------${CNORMAL}"
-			echo "$OUTPUT_STR"
+			printf '%s' "$OUTPUT_STR"
 			echo "${CINFO}----------------------------------------${CNORMAL}"
 			echo "${CINFO}The part that didn't match:${CNORMAL}"
 			echo "${CINFO}----------------------------------------${CNORMAL}"
-			echo "$REGEXPART"
+			printf '%s' "$REGEXPART"
+			echo "${CINFO}----------------------------------------${CNORMAL}"
 			return
 		fi
 	done
