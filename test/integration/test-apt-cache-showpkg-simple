@@ -26,7 +26,8 @@ Dependencies:[ ]*
 Provides:[ ]*
 1-alt1@[0-9]+ - simple-package[ ]*
 Reverse Provides:[ ]*
-simple-package 1-alt1@[0-9]+[ ]*' \
+simple-package 1-alt1@[0-9]+[ ]*
+' \
 	       aptcache showpkg 'simple-package'
 
 aptgetinstallpackage 'simple-package'
@@ -42,5 +43,6 @@ Dependencies:[ ]*
 Provides:[ ]*
 1-alt1@[0-9]+ - simple-package[ ]*
 Reverse Provides:[ ]*
-simple-package 1-alt1@[0-9]+[ ]*' \
+simple-package 1-alt1@[0-9]+[ ]*
+' \
 	       aptcache showpkg 'simple-package'

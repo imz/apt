@@ -570,9 +570,6 @@ testscriptnooutput() {
 	testfileequal --nomsg "$1"
 }
 
-# Warning: For some reason, you shouldn't have empty lines at the end of
-# the pattern (even if they would actually match the input)...
-#
 # Effects:
 #
 # * global vars OUTPUT, RESULT
@@ -597,13 +594,16 @@ testregexmatch() {
 	"$@" &> $OUTPUT
 	RESULT=$?
 	set -e
+	local OUTPUT_STR
+	IFS= read -rd '' OUTPUT_STR <"$OUTPUT" ||: # non-zero status always (because of EOF)
+	local -r OUTPUT_STR
 
-	if [[ "$(cat $OUTPUT)" =~ ^$COMPAREMSG$ ]] ; then
+	if [[ "$OUTPUT_STR" =~ ^$COMPAREMSG$ ]] ; then
 		msgpass
 	else
 		msgfail
 		local COMPAREFILE="${TMPWORKINGDIRECTORY}/rootdir/tmp/testregexmatch.comparefile"
-		echo "$COMPAREMSG" > $COMPAREFILE
+		printf '%s' "$COMPAREMSG" > $COMPAREFILE
 		checkdiff $COMPAREFILE $OUTPUT || true
 		echo >&6 "$DIFFTEXT"
 	fi

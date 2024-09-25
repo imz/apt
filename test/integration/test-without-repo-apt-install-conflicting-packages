@@ -24,5 +24,6 @@ The following information may help to resolve the situation:
 The following packages have unmet dependencies:
   conflicting-package-one: Conflicts: conflicting-package-two
   conflicting-package-two: Conflicts: conflicting-package-one
-E: Broken packages" \
+E: Broken packages
+" \
 	       aptget install "$(builtpackagefile 'conflicting-package-one')" "$(builtpackagefile 'conflicting-package-two')"

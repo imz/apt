@@ -20,7 +20,8 @@ testregexmatch \
 )*Reading Package Lists\.\.\.
 Building Dependency Tree\.\.\.
 W: pkgMakeStatusCache: The configured APT::Cache-Limit \($LOW_LIMIT\) is below the recommended default value \([0-9]*\)\. Remove it to use the default\.
-W: You may want to run apt-get update to correct these problems" \
+W: You may want to run apt-get update to correct these problems
+" \
 	aptget update -o APT::Cache-Limit="$LOW_LIMIT"
 testsuccess aptcache show simple-package
 testsuccess aptcache show simple-package-noarch

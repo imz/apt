@@ -54,7 +54,10 @@ Description: Test package
  Dummy description
 Changelog:
  \* Mon Sep 30 2019 Nobody <nobody@altlinux\.org> 1-alt1
- - Test package created" \
+ - Test package created
+
+
+" \
 	       aptcache show 'simple-package'
 
 testregexmatch "Package: missing-dependency
@@ -73,7 +76,10 @@ Description: Test package
  Dummy description
 Changelog:
  \* Mon Sep 30 2019 Nobody <nobody@altlinux\.org> 1-alt1
- - Test package created" \
+ - Test package created
+
+
+" \
 	       aptcache show 'missing-dependency'
 
 testempty aptcache show 'no-such-package'

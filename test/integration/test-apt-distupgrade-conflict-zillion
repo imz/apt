@@ -68,7 +68,8 @@ generaterepository_and_switch_sources "$TMPWORKINGDIRECTORY/usr/src/RPM/RPMS"
 testsuccess aptget update
 
 # At least, it fails on assertion instead of badly overflowing the buffer.
-testregexmatch '.*: Assertion .* failed\.' \
+testregexmatch '.*: Assertion .* failed\.
+' \
 	       aptget dist-upgrade -y
 testfailure
 
