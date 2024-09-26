@@ -64,9 +64,11 @@ if [ -n "$INI" ]; then
 	*)
 	    # (can be run many times)
 	    hsh-install "$HSHDIR" \
+			apt-https \
 			apt-conf-sisyphus \
 			apt-repo
 	    run_sh_e apt-repo add "$INI"
+	    run_sh_e sed -i -Ee 's/http:/https:/' /etc/apt/sources.list
 	    ;;
     esac
     run_sh_e apt-get \
