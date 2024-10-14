@@ -378,9 +378,26 @@ v() {
 # so it would be possible only if we decorate all occurences of versions
 # in spec-files with an analoguos transformation like %(V ...).
 if [ -n "$APT_TEST_PKG_DECORATE_VERSION" ]; then
+
+NAME_MAX="$(getconf NAME_MAX .)"
+readonly NAME_MAX
+# Well, LONG_SUFFIX will be twice as long, but that's fine for the tests
+# as long as it longer than NAME_MAX.
+LONG_SUFFIX=
+for (( i = 0; i < NAME_MAX; ++i )); do
+    LONG_SUFFIX="_0$LONG_SUFFIX"
+done
+readonly LONG_SUFFIX
+
 V() {
-    printf '%s%s' "$1" '_0'
+    printf '%s%s' "$1" "$LONG_SUFFIX"
 }
+
+# If you want to see how the tests behave under rpmbuild errors caused
+# by too long filenames, turn this option off.
+APT_TEST_PKG_FILENAME_BY_ALIAS=yes
+export APT_TEST_PKG_FILENAME_BY_ALIAS
+
 fi
 
 buildpackage() {
