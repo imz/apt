@@ -160,6 +160,8 @@ exitwithstatus() {
 
 shellsetedetector() {
 	local exit_status=$?
+	printf >&6 'DETECTOR with TRAP: %s\n' "$CURRENTTRAP"
+	set -x
 	if [ "$exit_status" != '0' ]; then
 		printf >&6 "${CERROR}E: Looks like the testcases ended prematurely with exitcode: ${exit_status}${CNORMAL}\n"
 		if [ "$EXIT_CODE" = '0' ]; then
@@ -180,6 +182,7 @@ addtrap() {
 	fi
 	trap "shellsetedetector; $CURRENTTRAP exitwithstatus; exit 0;" 0 HUP INT QUIT ILL ABRT FPE SEGV PIPE TERM
 }
+addtrap 'printf >&6 %q;' 'TRAP\n'
 
 # Source a script whose effect is a prerequisite.
 # Do not continue, if that script has failed or x-failed.
