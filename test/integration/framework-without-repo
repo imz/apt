@@ -1,6 +1,11 @@
 #!/bin/sh -X # no runnable script, just for editors
 # set -eu is assumed.
 
+if [ -n "${APT_TEST_FRAMEWORK_WITHOUT_REPO_SOURCED:+yes}" ]; then
+    return
+fi
+readonly APT_TEST_FRAMEWORK_WITHOUT_REPO_SOURCED=1
+
 # Under set -x, don't mess the trace with other commands' output (possibly
 # redirected), rather send it directly to the global stderr.
 exec 5>&2
