@@ -178,10 +178,10 @@ addtrap() {
 	if [ "$1" = 'prefix' ]; then
 		shift
 		local -r fmt="$1"; shift
-		printf -v CURRENTTRAP "$fmt %s" "$@" "$CURRENTTRAP"
+		printf -v CURRENTTRAP "$fmt\n%s" "$@" "$CURRENTTRAP"
 	else
 		local -r fmt="$1"; shift
-		printf -v CURRENTTRAP "%s $fmt" "$CURRENTTRAP" "$@"
+		printf -v CURRENTTRAP "%s$fmt\n" "$CURRENTTRAP" "$@"
 	fi
 	trap "shellsetedetector; $CURRENTTRAP exitwithstatus; exit 0;" 0 HUP INT QUIT ILL ABRT FPE SEGV PIPE TERM
 }
