@@ -183,7 +183,7 @@ addtrap() {
 		local -r fmt="$1"; shift
 		printf -v CURRENTTRAP "%s$fmt\n" "$CURRENTTRAP" "$@"
 	fi
-	trap "shellsetedetector; $CURRENTTRAP exitwithstatus; exit 0;" 0 HUP INT QUIT ILL ABRT FPE SEGV PIPE TERM
+	trap "shellsetedetector; $CURRENTTRAP trap - 0; exitwithstatus; exit 0;" 0 HUP INT QUIT ILL ABRT FPE SEGV PIPE TERM
 }
 
 # Source a script whose effect is a prerequisite.
