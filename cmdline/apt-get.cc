@@ -2091,6 +2091,80 @@ bool DoSource(CommandLine &CmdL)
 
    return true;
 }
+
+void DisplayChangelog(CacheFile& Cache, pkgCache::VerIterator V) {
+   pkgCache::VerFileIterator Vf = V.FileList();
+   for (; Vf.end() == false; Vf++)
+     if ((Vf.File()->Flags & pkgCache::Flag::NotSource) == 0)
+       break;
+
+   if (Vf.end() == true)
+     Vf = V.FileList();
+
+   pkgRecords Recs(*Cache);
+   pkgRecords::Parser &P = Recs.Lookup(Vf);
+
+   std::cout << "Changelog for " << P.Name() << ":\n";
+   std::cout << P.Changelog() << "\n";
+}
+
+bool DoChangelog(CommandLine &CmdL) {
+   // Implementation is very similar to apt-cache show
+   CacheFile Cache(devnull, false /* not WithLock */);
+   if (Cache.Open() == false)
+     return false;
+
+   if (CmdL.FileSize() <= 1)
+     return _error->Error(_("Must specify at least one package to get changelog for"));
+
+   pkgDepCache::Policy Plcy;
+
+   unsigned int found = 0;
+
+   for (const char **I = CmdL.FileList + 1; *I != 0; ++I) {
+    pkgCache::PkgIterator Pkg = Cache->FindPkg(*I);
+    if (Pkg.end() == true) {
+      _error->Warning(_("Unable to locate package %s"), *I);
+      continue;
+    }
+
+    ++found;
+
+    // If it's a virtual package, require user to select
+    if (Pkg.VersionList().end() == true and Pkg->ProvidesList != 0) {
+      ioprintf(cout, _("Package %s is a virtual package provided by:\n"),
+               Pkg.Name());
+      for (pkgCache::PrvIterator Prv = Pkg.ProvidesList(); Prv.end() == false;
+           Prv++) {
+        pkgCache::VerIterator V = Plcy.GetCandidateVer(Prv.OwnerPkg());
+        if (V.end() == true)
+          continue;
+        if (V != Prv.OwnerVer())
+          continue;
+        cout << "  " << Prv.OwnerPkg().Name() << " " << V.VerStr() << endl;
+      }
+
+      _error->Error(
+          _("Package %s is a virtual package with multiple providers."),
+          Pkg.Name());
+      return false;
+    }
+
+   // Find the proper version to use.
+   pkgCache::VerIterator V = Plcy.GetCandidateVer(Pkg);
+
+   if (V.end() == true || V.FileList().end() == true)
+     continue;
+
+   DisplayChangelog(Cache, V);
+  }
+
+  if (found > 0)
+    return true;
+  return _error->Error(_("No packages found"));
+
+}
+
 									/*}}}*/
 // DoBuildDep - Install/removes packages to satisfy build dependencies  /*{{{*/
 // ---------------------------------------------------------------------
@@ -2518,6 +2592,7 @@ bool ShowHelp(CommandLine &CmdL)
       "   clean - Erase downloaded archive files\n"
       "   autoclean - Erase old downloaded archive files\n"
       "   check - Verify that there are no broken dependencies\n"
+      "   changelog - Display the changelog for the given package\n"
 // CNC:2003-03-16
       );
 #ifdef WITH_LUA
@@ -2648,6 +2723,7 @@ int main(int argc,const char *argv[])
 				   {"source",&DoSource},
 				   {"moo",&DoMoo},
 				   {"autoremove", &DoAutoremove},
+				   {"changelog",&DoChangelog},
 				   {"help",&ShowHelp},
 // CNC:2003-03-19
 #ifdef WITH_LUA
