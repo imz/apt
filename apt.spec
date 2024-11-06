@@ -400,6 +400,15 @@ and some additional peculiarities are tested).
 set -o pipefail
 pushd %_datadir/%name/tests/
 
+# This option makes sense just for the maintainer (to test the tests).
+# This option makes the built pkgs be saved under a special filename
+# (our alias). This mechanism is used to test pkgs with N-V-R that would be
+# too long for filenames, in another run of the tests with
+# APT_TEST_PKG_DECORATE_VERSION turned on. And here we just can make sure
+# that the tests are robust with APT_TEST_PKG_FILENAME_BY_ALIAS alone.
+APT_TEST_PKG_FILENAME_BY_ALIAS=yes
+export APT_TEST_PKG_FILENAME_BY_ALIAS
+
 # force the target arch for the tests
 #
 # By default, the packages would be built for the arch detected by rpm-build
@@ -606,6 +615,7 @@ exec 1>&2
 - tests subpkg: do not depend on apt (to be able to test other apt versions).
 - tests: Fixed to detect more failures (previously unnoticed).
 - tests & checkinstall subpkgs: test copy method, too.
+- tests: prepare for non-std filenames for built pkgs.
 
 * Tue May 21 2024 Ivan A. Melnikov <iv@altlinux.org> 0.5.15lorg2-alt88
 - Backport columnar output for apt-get from Debian.

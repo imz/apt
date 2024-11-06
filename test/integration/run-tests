@@ -22,6 +22,12 @@ DIR=$(readlink -f $(dirname $0))
 # For multiple instances to be run in parallel under xargs:
 # PARALLEL_SLOT (unset if not run in parallel under xargs)
 
+# If set, the built pkgs will be written under a filename matching our alias
+# in tests (the name of the spec). (Useful, among other uses, if the usual name
+# would be too long.)
+APT_TEST_PKG_FILENAME_BY_ALIAS="${APT_TEST_PKG_FILENAME_BY_ALIAS-}"
+export APT_TEST_PKG_FILENAME_BY_ALIAS
+
 # If non-empty, test failures won't count as failures
 # (rather as expected failures due to known bugs).
 export APT_TEST_XFAIL="${APT_TEST_XFAIL-}"

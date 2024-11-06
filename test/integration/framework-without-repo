@@ -380,6 +380,7 @@ buildpackage() {
 	local -r log="$APT_TEST_BUILDDIR/$NAME"/log
 
 	HOME=/var/empty rpmbuild \
+		${APT_TEST_PKG_FILENAME_BY_ALIAS:+--define "_rpmfilename %{ARCH}/${NAME}.%{ARCH}.rpm"} \
 		--define 'EVR %{?epoch:%epoch:}%{version}-%{release}' \
 		--define 'packager test@example.net' \
 		--define="_tmppath $APT_TEST_BUILDDIR/$NAME/tmp" \
@@ -443,7 +444,11 @@ builtpackagefile() {
 		arch="$APT_TEST_USED_ARCH"
 	fi
 
-	echo "$TMPWORKINGDIRECTORY/usr/src/RPM/RPMS/${arch}/${name}-${version}-${release}.${arch}.rpm"
+	if [ -n "$APT_TEST_PKG_FILENAME_BY_ALIAS" ]; then
+	    echo "$TMPWORKINGDIRECTORY/usr/src/RPM/RPMS/${arch}/${name}-${version}-${release}.${arch}.rpm"
+	else
+	    echo "$TMPWORKINGDIRECTORY/usr/src/RPM/RPMS/${arch}/${NAME}.${arch}.rpm"
+	fi
 }
 
 builtpackagebasename_re() {
