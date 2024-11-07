@@ -385,7 +385,7 @@ buildpackage() {
 		--define="_tmppath $APT_TEST_BUILDDIR/$NAME/tmp" \
 		--define="_topdir $APT_TEST_BUILDDIR/$NAME/RPM" \
 		$target_opt \
-		-ba "${TESTDIRECTORY}/specs/${NAME}.spec" \
+		-bb "${TESTDIRECTORY}/specs/${NAME}.spec" \
 		1>"$log"
 
 	local builtpackagefile
