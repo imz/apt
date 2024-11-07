@@ -139,7 +139,6 @@ Summary: Test suite for APT
 Summary(ru_RU.UTF-8): Набор тестов для APT
 Group: Other
 BuildArch: noarch
-Requires: %name = %EVR
 Requires: rpm-build
 Requires: /usr/bin/genbasedir
 # optional
@@ -331,6 +330,7 @@ Summary: Immediately test %name when installing this package (only basic tests)
 Group: Other
 BuildArch: noarch
 Requires(pre): %name-tests
+Requires(pre): %name = %EVR
 
 %description basic-checkinstall
 Immediately test %name when installing this package.
@@ -384,6 +384,7 @@ Summary: Immediately test %name when installing this package (complete set of te
 Group: Other
 BuildArch: noarch
 Requires(pre): %name-tests
+Requires(pre): %name = %EVR
 Requires(pre): %complete_reqs_of_tests
 Requires(pre): gpg-keygen
 
@@ -430,6 +431,7 @@ Summary: Immediately test %name when installing this package (many times under h
 Group: Other
 BuildArch: noarch
 Requires(pre): %name-tests
+Requires(pre): %name = %EVR
 Requires(pre): %complete_reqs_of_tests
 Requires(pre): gpg-keygen
 
@@ -601,6 +603,7 @@ exec 1>&2
   built not from this .spec by doing a fallback if the archname is unknown.
   Also simplified quoting/escaping in that archtable code.
 - tests & checkinstall subpkgs: cache & re-use built pkgs (for speed).
+- tests subpkg: do not depend on apt (to be able to test other apt versions).
 
 * Tue May 21 2024 Ivan A. Melnikov <iv@altlinux.org> 0.5.15lorg2-alt88
 - Backport columnar output for apt-get from Debian.
