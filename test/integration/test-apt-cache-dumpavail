@@ -30,7 +30,7 @@ Provides: conflicting-package-two \(= 1-alt1\)
 Architecture: $(builtpackagearch 'conflicting-package-two')
 Size: [0-9]+
 MD5Sum: [0-9a-fA-F]+
-Filename: conflicting-package-two-1-alt1\.$(builtpackagearch 'conflicting-package-two')\.rpm
+Filename: $(builtpackagebasename_re 'conflicting-package-two')
 Description: Test package
  Dummy description
 Changelog:
@@ -48,7 +48,7 @@ Provides: simple-package-noarch \(= 1-alt1\)
 Architecture: $(builtpackagearch 'simple-package-noarch')
 Size: [0-9]+
 MD5Sum: [0-9a-fA-F]+
-Filename: simple-package-noarch-1-alt1\.$(builtpackagearch 'simple-package-noarch')\.rpm
+Filename: $(builtpackagebasename_re 'simple-package-noarch')
 Description: Test package
  Dummy description
 Changelog:
@@ -68,7 +68,7 @@ Obsoletes: simple-package \(< 3-alt1\)
 Architecture: $(builtpackagearch 'simple-package-new')
 Size: [0-9]+
 MD5Sum: [0-9a-fA-F]+
-Filename: simple-package-new-3-alt1\.$(builtpackagearch 'simple-package-new')\.rpm
+Filename: $(builtpackagebasename_re 'simple-package-new')
 Description: Test package
  Dummy description
 Changelog:
@@ -89,7 +89,7 @@ Provides: missing-dependency \(= 1-alt1\)
 Architecture: $(builtpackagearch 'missing-dependency')
 Size: [0-9]+
 MD5Sum: [0-9a-fA-F]+
-Filename: missing-dependency-1-alt1\.$(builtpackagearch 'missing-dependency')\.rpm
+Filename: $(builtpackagebasename_re 'missing-dependency')
 Description: Test package
  Dummy description
 Changelog:
@@ -104,10 +104,10 @@ Maintainer: test@example.net
 Version: 2-alt1@[0-9]+
 Pre-Depends: rpmlib\(PayloadIsLzma\)
 Provides: simple-package \(= 2-alt1\)
-Architecture: $(builtpackagearch 'simple-package')
+Architecture: $(builtpackagearch 'simple-package-update')
 Size: [0-9]+
 MD5Sum: [0-9a-fA-F]+
-Filename: simple-package-2-alt1\.$(builtpackagearch 'simple-package')\.rpm
+Filename: $(builtpackagebasename_re 'simple-package-update')
 Description: Test package
  Dummy description
 Changelog:
@@ -125,10 +125,10 @@ Version: 2-alt1@[0-9]+
 Pre-Depends: rpmlib\(PayloadIsLzma\)
 Conflicts: conflicting-package-two, simple-package
 Provides: conflicting-package-one \(= 2-alt1\)
-Architecture: $(builtpackagearch 'conflicting-package-one')
+Architecture: $(builtpackagearch 'conflicting-package-distupgrade')
 Size: [0-9]+
 MD5Sum: [0-9a-fA-F]+
-Filename: conflicting-package-one-2-alt1\.$(builtpackagearch 'conflicting-package-one')\.rpm
+Filename: $(builtpackagebasename_re 'conflicting-package-distupgrade')
 Description: Test package
  Dummy description
 Changelog:

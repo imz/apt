@@ -446,6 +446,17 @@ builtpackagefile() {
 	echo "$TMPWORKINGDIRECTORY/usr/src/RPM/RPMS/${arch}/${name}-${version}-${release}.${arch}.rpm"
 }
 
+builtpackagebasename_re() {
+    local fname
+
+    fname="$(builtpackagefile "$1")"
+    fname="${fname##*/}"
+
+    local -r fname
+
+    regex_quote "$fname"
+}
+
 builtpackagearch() {
 	local -r NAME="$1"
 
