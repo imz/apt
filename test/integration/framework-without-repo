@@ -872,6 +872,15 @@ set_regex_quote_str() {
 	fi
 }
 
+regex_quote() {
+    local re
+
+    set_regex_quote_str re "$1"
+    local -r re
+
+    printf '%s' "$re"
+}
+
 ############################################################
 # Helpers for a background apt-shell process.
 # The process will be used to run commands.
