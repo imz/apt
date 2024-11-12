@@ -406,8 +406,8 @@ pushd %_datadir/%name/tests/
 # too long for filenames, in another run of the tests with
 # APT_TEST_PKG_DECORATE_VERSION turned on. And here we just can make sure
 # that the tests are robust with APT_TEST_PKG_FILENAME_BY_ALIAS alone.
-APT_TEST_PKG_FILENAME_BY_ALIAS=yes
-export APT_TEST_PKG_FILENAME_BY_ALIAS
+# APT_TEST_PKG_FILENAME_BY_ALIAS=yes
+# export APT_TEST_PKG_FILENAME_BY_ALIAS
 
 # force the target arch for the tests
 #
