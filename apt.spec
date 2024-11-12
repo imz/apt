@@ -490,7 +490,7 @@ fi
 already_once=0
 for (( try = 0; try < TRIES; )); do
     # all methods (you might want to update the list if there are new ones)
-    for method in file cdrom http https; do
+    for method in file copy cdrom http https; do
 	# do the same method several times in parallel (to provoke races)
 	for (( repeat = 0; repeat < 2; ++repeat )); do
 	    echo "$((try++)):$method"
@@ -605,6 +605,7 @@ exec 1>&2
 - tests & checkinstall subpkgs: cache & re-use built pkgs (for speed).
 - tests subpkg: do not depend on apt (to be able to test other apt versions).
 - tests: Fixed to detect more failures (previously unnoticed).
+- tests & checkinstall subpkgs: test copy method, too.
 
 * Tue May 21 2024 Ivan A. Melnikov <iv@altlinux.org> 0.5.15lorg2-alt88
 - Backport columnar output for apt-get from Debian.

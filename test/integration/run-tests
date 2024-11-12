@@ -3,7 +3,7 @@ set -e
 
 # Some tests are "multiplied" by the method for accessing the repo (the one
 # specified in sources.list). The user may override them with this parameter.
-readonly -a APT_TEST_METHODS=(${APT_TEST_METHODS:-file cdrom http https})
+readonly -a APT_TEST_METHODS=(${APT_TEST_METHODS:-file copy cdrom http https})
 
 FAIL=0
 XFAIL=0

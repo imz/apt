@@ -24,10 +24,17 @@ fake_repo_noarch_pkglist \
 # Because the old fetched pkglist matches the cksum
 # (we haven't changed it in the release file).
 # And it is cached uncompressed, so the size matches, too.
+# FIXME: The only exception to this behavior is copy method for some reason.
 
-#testregexmatch '.*Checksum mismatch.*' \
-# 	       aptget update
-testsuccess aptget update
+case "$APT_TEST_METHOD" in
+	copy)
+	    testregexmatch '.*(Checksum|BLAKE2b) mismatch of index file.*' \
+			   aptget update
+	    ;;
+	*)
+	    testsuccess aptget update
+	    ;;
+esac
 testsuccess aptcache show simple-package
 testsuccess aptcache show simple-package-noarch
 testfailure aptcache show nosuchpkg

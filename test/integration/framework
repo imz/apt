@@ -69,7 +69,7 @@ generaterepository() {
 		# (FIXME: fix APT so that the used compression doesn't matter!)
 		case "$APT_TEST_METHOD" in
 
-			http*) compression_opts='--no-bz2 --xz'
+			http*|copy) compression_opts='--no-bz2 --xz'
 			       REPO_COMPR_EXT=.xz
 			       ;;
 
@@ -154,7 +154,7 @@ generaterepository_and_switch_sources() {
 	# And set REPO_STORAGE accordingly.
 	case "$APT_TEST_METHOD" in
 
-		file)
+		file|copy)
 			REPO_STORAGE="$TMPWORKINGDIRECTORY/usr/src/RPM/REPO"
 			;;
 
@@ -258,7 +258,7 @@ generaterepository_and_switch_sources() {
 			APT_SOURCES_URI="$APT_SOURCES_SITE"
 			;;
 
-		file)
+		file|copy)
 			APT_SOURCES_SITE=''
 			APT_SOURCES_URI="$APT_SOURCES_SITE$REPO_STORAGE"
 
@@ -276,6 +276,10 @@ generaterepository_and_switch_sources() {
 				rpm ${APT_TEST_METHOD%%_*}://$APT_SOURCES_URI/ $MYARCH_DISTRO $DISTRO_COMPONENT
 				rpm ${APT_TEST_METHOD%%_*}://$APT_SOURCES_URI/ $NOARCH_DISTRO $DISTRO_COMPONENT
 			END
+			;;
+
+		*)
+			msgdie 'unknown $APT_TEST_METHOD'
 			;;
 
 	esac
