@@ -435,6 +435,60 @@ export APT_TEST_BUILDDIR
 
 # Everything has been tested by now.
 
+%package long-v-checkinstall
+Summary: Immediately test %name when installing this package (complete set of tests)
+Group: Other
+BuildArch: noarch
+Requires(pre): %name-tests
+Requires(pre): %name = %EVR
+Requires(pre): %complete_reqs_of_tests
+Requires(pre): gpg-keygen
+
+%description long-v-checkinstall
+Immediately test %name when installing this package.
+
+The set of testcases is complete (all the methods that are tested by default
+and some additional peculiarities are tested).
+
+%files long-v-checkinstall
+
+%pre long-v-checkinstall -p %_sbindir/sh-safely
+set -o pipefail
+pushd %_datadir/%name/tests/
+
+# This option makes sense just for the maintainer (to test the tests).
+# This option makes the built pkgs be saved under a special filename
+# (our alias). This mechanism is used to test pkgs with N-V-R that would be
+# too long for filenames, in another run of the tests with
+# APT_TEST_PKG_DECORATE_VERSION turned on. And here we just can make sure
+# that the tests are robust with APT_TEST_PKG_FILENAME_BY_ALIAS alone.
+# APT_TEST_PKG_FILENAME_BY_ALIAS=yes
+# export APT_TEST_PKG_FILENAME_BY_ALIAS
+
+# force the target arch for the tests
+#
+# By default, the packages would be built for the arch detected by rpm-build
+# (rpmbuild --eval %%_arch). On installation, they would be compared
+# by rpm for compatibility with the arch detected by rpm. Currently,
+# the mismatch in the detection between rpm and rpm-build can lead to problems,
+# at least, on armh. So, we set the target by force to a value that must work.
+system_arch="$(rpm -q rpm --qf='%%{ARCH}')"
+export APT_TEST_TARGET="$system_arch"
+
+# prepare data for rpm --import
+APT_TEST_GPGPUBKEY="$PWD"/example-pubkey.asc
+gpg-keygen --passphrase '' \
+	--name-real 'Some One' --name-email someone@example.com \
+	/dev/null "$APT_TEST_GPGPUBKEY"
+
+export APT_TEST_GPGPUBKEY
+
+# cache built pkgs
+APT_TEST_BUILDDIR="$(mktemp -d)/pkgs"
+export APT_TEST_BUILDDIR
+
+%runtests
+
 %package xxtra-heavy-load-checkinstall
 Summary: Immediately test %name when installing this package (many times under heavy load)
 Group: Other
