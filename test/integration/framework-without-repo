@@ -6,6 +6,9 @@ if [ -n "${APT_TEST_FRAMEWORK_WITHOUT_REPO_SOURCED:+yes}" ]; then
 fi
 readonly APT_TEST_FRAMEWORK_WITHOUT_REPO_SOURCED=1
 
+# Why no repeat it?..
+set -eu
+
 # Under set -x, don't mess the trace with other commands' output (possibly
 # redirected), rather send it directly to the global stderr.
 exec 5>&2
@@ -13,6 +16,8 @@ BASH_XTRACEFD=5
 
 # the mode common for our test scripts
 set -o pipefail
+# and some more strictness (bash 4.4):
+#set -o inherit_errexit
 
 EXIT_CODE=0
 
