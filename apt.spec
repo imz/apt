@@ -587,6 +587,7 @@ exec 1>&2
 * Sun Nov 24 2024 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt89
 - sources(configure.ac): Made the build procedure work the same even when
   built not from this .spec by doing a fallback if the archname is unknown.
+  Also simplified quoting/escaping in that archtable code.
 
 * Tue May 21 2024 Ivan A. Melnikov <iv@altlinux.org> 0.5.15lorg2-alt88
 - Backport columnar output for apt-get from Debian.
