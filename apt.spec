@@ -604,6 +604,7 @@ exec 1>&2
   Also simplified quoting/escaping in that archtable code.
 - tests & checkinstall subpkgs: cache & re-use built pkgs (for speed).
 - tests subpkg: do not depend on apt (to be able to test other apt versions).
+- tests: Fixed to detect more failures (previously unnoticed).
 
 * Tue May 21 2024 Ivan A. Melnikov <iv@altlinux.org> 0.5.15lorg2-alt88
 - Backport columnar output for apt-get from Debian.
