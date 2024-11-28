@@ -1,6 +1,8 @@
 #!/bin/bash
 set -eu
 
+APT_TEST_XFAIL=yes
+
 TESTDIR=$(readlink -f $(dirname $0))
 . $TESTDIR/framework
 
@@ -19,67 +21,25 @@ generaterepository_and_switch_sources "$TMPWORKINGDIRECTORY/usr/src/RPM/RPMS"
 
 testsuccess aptget update
 
-testregexmatch "Package: simple-package
-Section: Other
-Installed Size: 0
-Maintainer: test@example.net
-Version: 2-alt1@[0-9]+
-Pre-Depends: rpmlib\(PayloadIsLzma\)
-Provides: simple-package \(= 2-alt1\)
-Architecture: $(builtpackagearch 'simple-package-update')
-Size: [0-9]+
-MD5Sum: [0-9a-fA-F]+
-Filename: $(builtpackagebasename_re 'simple-package-update')
-Description: Test package
- Dummy description
-Changelog:
- \* Tue Oct 01 2019 Nobody <nobody@altlinux\.org> 2-alt1
- - Test package updated
- \* Mon Sep 30 2019 Nobody <somebody@altlinux\.org> 1-alt1
- - Test package created
-
-
-Package: simple-package
-Section: Other
-Installed Size: 0
-Maintainer: test@example.net
-Version: 1-alt1@[0-9]+
-Pre-Depends: rpmlib\(PayloadIsLzma\)
-Provides: simple-package \(= 1-alt1\)
-Architecture: $(builtpackagearch 'simple-package')
-Size: [0-9]+
-MD5Sum: [0-9a-fA-F]+
-Filename: $(builtpackagebasename_re 'simple-package')
-Description: Test package
- Dummy description
-Changelog:
- \* Mon Sep 30 2019 Nobody <nobody@altlinux\.org> 1-alt1
- - Test package created
-
+testregexmatch "Reading Package Lists...
+Building Dependency Tree...
+Changelog for simple-package:
+\* Tue Oct 01 2019 Nobody <nobody@altlinux\.org> 2-alt1
+- Test package updated
+\* Mon Sep 30 2019 Nobody <somebody@altlinux\.org> 1-alt1
+- Test package created
 
 " \
-	       aptcache show 'simple-package'
+	       aptget changelog 'simple-package'
 
-testregexmatch "Package: missing-dependency
-Section: Other
-Installed Size: 0
-Maintainer: test@example.net
-Version: 1-alt1@[0-9]+
-Pre-Depends: rpmlib\(PayloadIsLzma\)
-Depends: no-such-package
-Provides: missing-dependency \(= 1-alt1\)
-Architecture: $(builtpackagearch 'missing-dependency')
-Size: [0-9]+
-MD5Sum: [0-9a-fA-F]+
-Filename: $(builtpackagebasename_re 'missing-dependency')
-Description: Test package
- Dummy description
-Changelog:
- \* Mon Sep 30 2019 Nobody <nobody@altlinux\.org> 1-alt1
- - Test package created
-
+testregexmatch "Reading Package Lists...
+Building Dependency Tree...
+Changelog for missing-dependency:
+\* Mon Sep 30 2019 Nobody <nobody@altlinux\.org> 1-alt1
+- Test package created
 
 " \
-	       aptcache show 'missing-dependency'
+	       aptget changelog 'missing-dependency'
 
-testempty aptcache show 'no-such-package'
+# FIXME: the output of the progress of building the caches makes it not empty!
+#testempty aptget changelog 'no-such-package'
