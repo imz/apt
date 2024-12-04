@@ -608,6 +608,8 @@ exec 1>&2
 
 %changelog
 * Sun Nov 24 2024 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt89
+- apt-get changelog: new Debian-compatible cmd; in ALT, it just reads it from
+  the cache rather than downloads. (Thx Sergey Konev konevsa@) (ALT#51975)
 - sources(configure.ac): Made the build procedure work the same even when
   built not from this .spec by doing a fallback if the archname is unknown.
   Also simplified quoting/escaping in that archtable code.
