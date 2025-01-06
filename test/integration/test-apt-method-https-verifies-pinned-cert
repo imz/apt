@@ -4,7 +4,7 @@ set -eu
 TESTDIR=$(readlink -f $(dirname $0))
 
 case "$APT_TEST_METHOD" in
-	https*)
+	https|https_*)
 		:
 		;;
 	*)

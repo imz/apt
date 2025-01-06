@@ -158,17 +158,18 @@ generaterepository_and_switch_sources() {
 			REPO_STORAGE="$TMPWORKINGDIRECTORY/usr/src/RPM/REPO"
 			;;
 
-		http)
-			nginxsetuphttp
-			REPO_STORAGE="$NGINX_STORAGE"
-			;;
-
-		https|https_invalid_cert_hostname)
+		https|https_*)
 			nginxsetuphttps
 			REPO_STORAGE="$NGINX_STORAGE"
 			;;
 
-		cdrom|cdrom_missing_release)
+		# less specific than https*
+		http|http_*)
+			nginxsetuphttp
+			REPO_STORAGE="$NGINX_STORAGE"
+			;;
+
+		cdrom|cdrom_*)
 			REPO_STORAGE="$MOCKUP_CDROM_STORAGE"
 			;;
 
@@ -206,7 +207,7 @@ generaterepository_and_switch_sources() {
 	esac
 
 	case "$APT_TEST_METHOD" in
-		https*)
+		https|https_*)
 			# generate key
 			case "$APT_TEST_METHOD" in
 				https_invalid_cert_hostname)
@@ -239,7 +240,7 @@ generaterepository_and_switch_sources() {
 	# Start the server.
 	case "$APT_TEST_METHOD" in
 
-		http*)
+		http|http_*|https|https_*)
 			nginxrestart
 			;;
 	esac
@@ -249,7 +250,7 @@ generaterepository_and_switch_sources() {
 	# And set APT_SOURCES_SITE, APT_SOURCES_URI accordingly.
 	case "$APT_TEST_METHOD" in
 
-		cdrom*)
+		cdrom|cdrom_*)
 			# overwrite old sources.list
 			echo >| rootdir/etc/apt/sources.list
 			aptcdrom add >&2 <<<$'\n'
@@ -268,7 +269,7 @@ generaterepository_and_switch_sources() {
 			END
 			;;
 
-		http*)
+		http|http_*|https|https_*)
 			APT_SOURCES_SITE="$NGINX_HOST"
 			APT_SOURCES_URI="$APT_SOURCES_SITE:$NGINX_PORT"
 
