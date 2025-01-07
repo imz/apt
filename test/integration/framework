@@ -159,13 +159,13 @@ generaterepository_and_switch_sources() {
 			;;
 
 		https|https_*)
-			nginxsetuphttps
+			nginxsetup https
 			REPO_STORAGE="$NGINX_STORAGE"
 			;;
 
 		# less specific than https*
 		http|http_*)
-			nginxsetuphttp
+			nginxsetup
 			REPO_STORAGE="$NGINX_STORAGE"
 			;;
 
@@ -300,14 +300,36 @@ generaterepository_and_switch_sources() {
 # Output/effects:
 # * global vars representing the actual configuration of the server
 #   (convenient for use in other scripts):
-#   NGINX_HOST, NGINX_PORT, NGINX_STORAGE, NGINX_PIDFILE
+#   NGINX_HOST, NGINX_PORT, NGINX_STORAGE, NGINX_PIDFILE;
+#   if https, also: NGINX_KEY, NGINX_CRT;
 # * the server configured, ready for nginxrestart()
-nginxsetuphttp() {
+#   (if https: configured & ready except for the key)
+nginxsetup() {
+	local opt https
+	for opt; do
+	    case "$opt" in
+
+		https)
+		    https=yes
+		    ;;
+
+		*)
+		    msgdie "unknown nginxsetup opt: $opt"
+		    ;;
+
+	    esac
+	done
+	local -r https
+
 	mkdir -p $TMPWORKINGDIRECTORY/nginx
 	mkdir -p $TMPWORKINGDIRECTORY/nginx/tmp
 
 	NGINX_HOST=localhost
 	NGINX_PORT=$((8080+${PARALLEL_SLOT:-0}))
+	if [ -n "${https-}" ]; then
+	    NGINX_KEY=$TMPWORKINGDIRECTORY/nginx/cert.key
+	    NGINX_CRT=$TMPWORKINGDIRECTORY/nginx/cert.crt
+	fi
 	NGINX_STORAGE=$TMPWORKINGDIRECTORY/nginx/repo
 	NGINX_PIDFILE=$TMPWORKINGDIRECTORY/nginx/nginx.pid
 
@@ -340,66 +362,10 @@ http {
 	error_log stderr;
 
 	server {
-		listen $NGINX_PORT;
+		listen $NGINX_PORT ${https:+ssl};
 		server_name $NGINX_HOST localhost.localdomain;
 
-		location / {
-			root $NGINX_STORAGE;
-			autoindex on;
-		}
-	}
-}
-ENDCONFIG
-}
-
-# Output/effects:
-# * global vars representing the actual configuration of the server
-#   (convenient for use in other scripts):
-#   NGINX_HOST, NGINX_PORT, NGINX_KEY, NGINX_CRT, NGINX_STORAGE, NGINX_PIDFILE
-# * the server configured, ready for nginxrestart() (except for the key)
-nginxsetuphttps() {
-	mkdir -p $TMPWORKINGDIRECTORY/nginx
-	mkdir -p $TMPWORKINGDIRECTORY/nginx/tmp
-
-	NGINX_HOST=localhost
-	NGINX_PORT=$((8080+${PARALLEL_SLOT:-0}))
-	NGINX_KEY=$TMPWORKINGDIRECTORY/nginx/cert.key
-	NGINX_CRT=$TMPWORKINGDIRECTORY/nginx/cert.crt
-	NGINX_STORAGE=$TMPWORKINGDIRECTORY/nginx/repo
-	NGINX_PIDFILE=$TMPWORKINGDIRECTORY/nginx/nginx.pid
-
-	cat >| $TMPWORKINGDIRECTORY/nginx/nginx.conf << ENDCONFIG
-error_log stderr;
-worker_processes 1;
-pid $NGINX_PIDFILE;
-
-events {
-	worker_connections  1024;
-}
-
-http {
-	client_body_temp_path $TMPWORKINGDIRECTORY/nginx/tmp/client_body;
-	fastcgi_temp_path $TMPWORKINGDIRECTORY/nginx/tmp/fastcgi_temp;
-	proxy_temp_path $TMPWORKINGDIRECTORY/nginx/tmp/proxy_temp;
-	scgi_temp_path $TMPWORKINGDIRECTORY/nginx/tmp/scgi_temp;
-	uwsgi_temp_path $TMPWORKINGDIRECTORY/nginx/tmp/uwsgi_temp;
-
-	include             /etc/nginx/mime.types;
-	default_type        application/octet-stream;
-
-	sendfile off;
-
-	keepalive_timeout   65;
-
-	ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
-	ssl_prefer_server_ciphers on;
-	access_log stderr;
-	error_log stderr;
-
-	server {
-		listen $NGINX_PORT ssl;
-		server_name $NGINX_HOST localhost.localdomain;
-
+	${https:+
 		ssl_certificate	$NGINX_CRT;
 		ssl_certificate_key	$NGINX_KEY;
 
@@ -407,6 +373,7 @@ http {
 		ssl_protocols TLSv1.2;
 		ssl_ciphers HIGH:!aNULL:!eNULL:!EXPORT:!CAMELLIA:!DES:!MD5:!PSK:!RC4;
 		ssl_prefer_server_ciphers on;
+	}
 
 		location / {
 			root $NGINX_STORAGE;
