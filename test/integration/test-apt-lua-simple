@@ -58,7 +58,7 @@ testscriptoutput 'Scripts::AptGet::Update::Post' 'Scripts::AptGet::Update::Post 
 generaterepository_and_switch_sources "$TMPWORKINGDIRECTORY/usr/src/RPM/RPMS"
 
 rm -f $TMPWORKINGDIRECTORY/lua/results/* ||:
-testsuccess aptget update
+testsuccess aptget_without_first_trying_repo update
 
 testscriptoutput 'Scripts::Init' 'Scripts::Init called' $TMPWORKINGDIRECTORY/lua/results/init.result
 testscriptoutput 'Scripts::Cache::Init' 'Scripts::Cache::Init called' $TMPWORKINGDIRECTORY/lua/results/cache-init.result
@@ -67,7 +67,7 @@ testscriptoutput 'Scripts::AptGet::Update::Pre' 'Scripts::AptGet::Update::Pre ca
 testscriptoutput 'Scripts::AptGet::Update::Post' 'Scripts::AptGet::Update::Post called' $TMPWORKINGDIRECTORY/lua/results/aptget-update-post.result
 
 rm -f $TMPWORKINGDIRECTORY/lua/results/* ||:
-testsuccess aptget dist-upgrade -y
+testsuccess aptget_without_first_trying_repo dist-upgrade -y
 
 testscriptoutput 'Scripts::Init' 'Scripts::Init called' $TMPWORKINGDIRECTORY/lua/results/init.result
 testscriptoutput 'Scripts::Cache::Init' 'Scripts::Cache::Init called' $TMPWORKINGDIRECTORY/lua/results/cache-init.result

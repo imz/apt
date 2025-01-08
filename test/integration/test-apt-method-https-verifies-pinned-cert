@@ -16,20 +16,22 @@ esac
 . $TESTDIR/framework-without-repo
 prereq $TESTDIR/test-apt-install-simple
 
-# generate another key, and pin apt to it. Check cert pinning
-msgmsg 'Pinning invalid cert in apt'
-readonly ANOTHER_CRT=$TMPWORKINGDIRECTORY/cert.another.crt
+# Generate another key, and pin apt to it. Check cert pinning
+
+# use a filename which is unique for this specific test (not to interfere)
+readonly MY_OTHER_CRT=$TMPWORKINGDIRECTORY/cert."${0##*/}".crt
 openssl req -x509 \
 	-newkey rsa:4096 \
 	-keyout /dev/null \
-	-out "$ANOTHER_CRT" \
+	-out "$MY_OTHER_CRT" \
 	-nodes \
 	-days 365 \
 	-subj "/CN=$NGINX_HOST" \
     &>/dev/null
 
-cat >| $TMPWORKINGDIRECTORY/rootdir/etc/apt/apt.conf.d/81https-pinning.conf << END
-Acquire::https::PinnedCert	"$ANOTHER_CRT";
+msgmsg 'Pinning invalid cert in apt'
+cat >| "$APT_TEST_PINNING_CONF" <<- END
+Acquire::https::PinnedCert	"$MY_OTHER_CRT";
 END
 
 testfailure aptget update

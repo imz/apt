@@ -11,6 +11,33 @@
 
 aptcdrom() { runapt apt-cdrom "${CDROM_OPTS[@]}" "$@"; }
 
+with_pinned() {
+    local -r another_crt="$1"; shift
+
+    local ret=0
+
+    # save current conf
+    local -r conf_before=$TMPWORKINGDIRECTORY/apt-pinning.conf
+    rm -f "$conf_before"
+    if [ -e "$APT_TEST_PINNING_CONF" ]; then
+	mv "$APT_TEST_PINNING_CONF" -T "$conf_before"
+    fi
+
+    cat >| "$APT_TEST_PINNING_CONF" <<- END
+	Acquire::https::PinnedCert	"$another_crt";
+	END
+    "$@" ||
+	ret=$?
+
+    # clean up (restore the conf)
+    rm "$APT_TEST_PINNING_CONF"
+    if [ -e "$conf_before" ]; then
+	mv "$conf_before" -T "$APT_TEST_PINNING_CONF"
+    fi
+
+    return "$ret"
+}
+
 # Input:
 # * args: orig_dir repo_dir [repo_date]
 #   (orig_dir may be empty if we just need to re-generate without copying rpms.)
@@ -226,20 +253,63 @@ generaterepository_and_switch_sources() {
 				-subj "/CN=$cert_hostname" \
 			    &>/dev/null
 
-			# add key to apt's config. Also pin the key
+			# add cert to apt's config.
+			# (Pinning is a separate feature to test.)
 			cat >| $TMPWORKINGDIRECTORY/rootdir/etc/apt/apt.conf.d/80https.conf <<- END
 			Acquire::https::CaInfo	"$NGINX_CRT";
-			END
-
-			cat >| $TMPWORKINGDIRECTORY/rootdir/etc/apt/apt.conf.d/81https-pinning.conf <<- END
-			Acquire::https::PinnedCert	"$NGINX_CRT";
 			END
 			;;
 	esac
 
+	# pin the cert & use another one for checking pinning
+	case "$APT_TEST_METHOD" in
+	    https*_pinned*)
+		cat >| "$APT_TEST_PINNING_CONF" <<- END
+		Acquire::https::PinnedCert	"$NGINX_CRT";
+		END
+
+		readonly ANOTHER_CRT=$TMPWORKINGDIRECTORY/cert.another.crt
+		openssl req -x509 \
+			-newkey rsa:4096 \
+			-keyout /dev/null \
+			-out "$ANOTHER_CRT" \
+			-nodes \
+			-days 365 \
+			-subj "/CN=$NGINX_HOST" \
+		    &>/dev/null
+
+		# Redefine aptget() to test that the repo is actually accessed
+		# with verifying the pinned cert in any test where it's called;
+		# pinning a wrong cert must lead to no access.
+		# (Redefined here because it makes sense only after sources.list
+		# have been set up.) Doing it in every test seems like overdoing,
+		# but well, it doesn't hurt much.
+		aptget() {
+		    echo 'Running apt-get with a non-matching pinned cert'
+		    echo 'We assert that it fails'
+		    # FIXME: we could use msgfail or even testfailure
+		    # here; the difficulty is that it'd be nested
+		    ! with_pinned \
+		      "$ANOTHER_CRT" \
+		      aptget_without_first_trying_repo "$@" ||
+			msgdie 'apt-get did not fail with a non-matching pinned cert as expected'
+		    # FIXME: show the output when dying.
+		    #
+		    # This test (the assertion) is significant only
+		    # in a positive context (when aptget is expected
+		    # to succeed). Otherwise, the failure might be
+		    # due to a different reason; then we go on and
+		    # at least get the correct return code from the
+		    # normal run below.
+
+		    echo 'Running apt-get normally (perhaps with a _matching_ pinned cert)'
+		    aptget_without_first_trying_repo "$@"
+		}
+		;;
+	esac
+
 	# Start the server.
 	case "$APT_TEST_METHOD" in
-
 		http|http_*|https|https_*)
 			nginxrestart
 			;;

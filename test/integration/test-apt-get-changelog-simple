@@ -19,6 +19,11 @@ generaterepository_and_switch_sources "$TMPWORKINGDIRECTORY/usr/src/RPM/RPMS"
 
 testsuccess aptget update
 
+# Avoid aptget() below because it expects some attempts to access the repo
+# to be done and fail (for testing), but apt-get changelog in ALT has nothing
+# to do with downloading (unlike in Debian);
+# FIXME: it should be apt-cache changelog in ALT.
+
 testregexmatch "Reading Package Lists...
 Building Dependency Tree...
 Changelog for simple-package:
@@ -28,7 +33,7 @@ Changelog for simple-package:
 - Test package created
 
 " \
-	       aptget changelog 'simple-package'
+	       aptget_without_first_trying_repo changelog 'simple-package'
 
 testregexmatch "Reading Package Lists...
 Building Dependency Tree...
@@ -37,7 +42,7 @@ Changelog for missing-dependency:
 - Test package created
 
 " \
-	       aptget changelog 'missing-dependency'
+	       aptget_without_first_trying_repo changelog 'missing-dependency'
 
 # FIXME: the output of the progress of building the caches makes it not empty!
 #testempty aptget changelog 'no-such-package'

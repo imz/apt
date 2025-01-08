@@ -170,7 +170,10 @@ runapt() {
 }
 aptconfig() { runapt apt-config "$@"; }
 aptcache() { runapt apt-cache "$@"; }
-aptget() { runapt apt-get "${CDROM_OPTS[@]}" "$@"; }
+aptget_without_first_trying_repo() { runapt apt-get "${CDROM_OPTS[@]}" "$@"; }
+# to be redefined, e.g., for tests with a repo
+# (to test features of access methods by first doing failing tries)
+aptget() { aptget_without_first_trying_repo "$@"; }
 aptmark() { runapt apt-mark "$@"; }
 
 
@@ -275,6 +278,10 @@ END
 
 	# just an empty sources.list for the beginning
 	echo > rootdir/etc/apt/sources.list
+
+	# global var to be conveniently re-used in tests, where cert-pinning is
+	# involved (so that all edit the same place)
+	readonly APT_TEST_PINNING_CONF=$TMPWORKINGDIRECTORY/rootdir/etc/apt/apt.conf.d/81https-pinning.conf
 
 	# cleanup the environment a bit
 	export PATH="${PATH}:/usr/local/sbin:/usr/sbin:/sbin"
@@ -500,8 +507,11 @@ aptgetinstallpackage() {
 
 	local PKGFILE="$(builtpackagefile "$NAME")"
 
-	msgmsg "Installing package via apt-get: $(basename "$PKGFILE")"
-	aptget install "$PKGFILE" \
+	msgmsg "Installing package via apt-get (as a file): $(basename "$PKGFILE")"
+	# Avoid aptget() here because it may want first to see a failure when
+	# trying to access the repo in an invalid way (as a means to test this),
+	# but it won't get a chance to see it because there is no repo access.
+	aptget_without_first_trying_repo install "$PKGFILE" \
 		   1>/dev/null
 }
 
