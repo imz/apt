@@ -665,7 +665,9 @@ testpartsexhaust() {
 	RESULT=$?
 	set -e
 	local OUTPUT_STR
-	IFS= read -rd '' OUTPUT_STR <"$OUTPUT" ||: # non-zero status always (because of EOF)
+	# disable IFS not to strip spaces at the beginning and the end of file
+	read -rd '' OUTPUT_STR <"$OUTPUT" ||
+	    : # non-zero status always (because of EOF)
 
 	local REGEXPART
 	for REGEXPART in "${REGEXPARTS[@]}"; do
