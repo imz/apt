@@ -230,13 +230,13 @@ setupenvironment() {
 		addtrap 'cd /; rm -rf %q;' "$TMPWORKINGDIRECTORY"
 	fi
 
-	# The place for build logs and metainfo, and built pkgs.
+	# The place for build logs and metainfo, and built pkgs,
+	# and other intermediate prerequisites for the tests.
 	# Is there a place for persistent storage accross test runs?
 	# If no, make it temporary.
-	if [ -z "$APT_TEST_BUILDDIR" ]; then
-	    APT_TEST_BUILDDIR=$TMPWORKINGDIRECTORY/pkg-build
+	if [ -z "$APT_TEST_INTERMEDIATES" ]; then
+	    APT_TEST_INTERMEDIATES=$TMPWORKINGDIRECTORY/intermediates
 	fi
-	mkdir -p "$APT_TEST_BUILDDIR"
 
 	msgninfo "Preparing environment for ${CCMD}$(basename $0)${CINFO} in ${TMPWORKINGDIRECTORY}… "
 
@@ -375,7 +375,8 @@ buildpackage() {
 	local -r trap_before_mkdir="$CURRENTTRAP"
 
 	# where it is being built and/or cached:
-	local -r d="$APT_TEST_BUILDDIR/$NAME"
+	local -r d="$APT_TEST_INTERMEDIATES/pkg-build/$NAME"
+	mkdir -p "${d%/*}"
 	if ! mkdir "$d" &>/dev/null; then
 	    msgmsg "Re-using built package: ${NAME}"
 	    wait_for_file "$d"/metainfo
@@ -434,7 +435,7 @@ buildpackage() {
 builtpackagefile() {
 	local -r NAME="$1"
 
-	. "$APT_TEST_BUILDDIR"/"$NAME"/metainfo
+	. "$APT_TEST_INTERMEDIATES"/pkg-build/"$NAME"/metainfo
 
 	if [ -n "$builtpackagefile" ]; then
 	    echo "$builtpackagefile"
@@ -475,7 +476,7 @@ builtpackagebasename_re() {
 builtpackagearch() {
 	local -r NAME="$1"
 
-	. "$APT_TEST_BUILDDIR"/"$NAME"/metainfo
+	. "$APT_TEST_INTERMEDIATES"/pkg-build/"$NAME"/metainfo
 	# If arch is not specified in the spec, we know what was given as --target.
 	if [ -z "${arch-}" ]; then
 		arch="$APT_TEST_USED_ARCH"
@@ -487,7 +488,7 @@ builtpackagearch() {
 builtpackageversion() {
 	local -r NAME="$1"
 
-	. "$APT_TEST_BUILDDIR"/"$NAME"/metainfo
+	. "$APT_TEST_INTERMEDIATES"/pkg-build/"$NAME"/metainfo
 
 	echo "${version}-${release}"
 }

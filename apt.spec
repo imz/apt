@@ -364,9 +364,9 @@ pushd %_datadir/%name/tests/
 system_arch="$(rpm -q rpm --qf='%%{ARCH}')"
 export APT_TEST_TARGET="$system_arch"
 
-# cache built pkgs
-APT_TEST_BUILDDIR="$(mktemp -d)/pkgs"
-export APT_TEST_BUILDDIR
+# cache built pkgs and other stuff
+APT_TEST_INTERMEDIATES="$(mktemp -d)"
+export APT_TEST_INTERMEDIATES
 
 # this macro can be prefixed (e.g., by environment assignments),
 # therefore the extra backslash in the first line
@@ -427,9 +427,9 @@ gpg-keygen --passphrase '' \
 
 export APT_TEST_GPGPUBKEY
 
-# cache built pkgs
-APT_TEST_BUILDDIR="$(mktemp -d)/pkgs"
-export APT_TEST_BUILDDIR
+# cache built pkgs and other stuff
+APT_TEST_INTERMEDIATES="$(mktemp -d)"
+export APT_TEST_INTERMEDIATES
 
 %runtests
 
@@ -475,9 +475,9 @@ gpg-keygen --passphrase '' \
 
 export APT_TEST_GPGPUBKEY
 
-# cache built pkgs
-APT_TEST_BUILDDIR="$(mktemp -d)/pkgs"
-export APT_TEST_BUILDDIR
+# cache built pkgs and other stuff
+APT_TEST_INTERMEDIATES="$(mktemp -d)"
+export APT_TEST_INTERMEDIATES
 
 # Below we run the same tests many times in order to possibly catch
 # bad races. (It's more probable to catch a race under heavy load;
