@@ -77,7 +77,8 @@ wait_for_file() {
 		local i=0 &&
 		while ! [ -s "$1" ]; do
 			sleep 0.05 &&
-			let '++i'
+			let '++i' &&
+			{ (( i < 1000 )) || msgdie "Waited too long (50s)!"; }
 		done &&
 		printf >&6 'Waited %s * 0.05s.\n' "$i" # count&print i out of curiosity
 	}
@@ -383,10 +384,12 @@ buildpackage() {
 	    wait_for_file "$d"/metainfo
 	else
 
-	    # On an error during the build procedure, we have to delete the dir
-	    # in order to signal that one shouldn't be waiting for a result
+	    # After an error during the build procedure, we have to delete the dir
+	    # in order to make clear that one shouldn't start waiting for a result
 	    # on the other branch. So we push a temporary trap for this.
 	    # (Then restore from $trap_before_mkdir.)
+	    # (And waiting that has already started can be limited in wait_for_file.)
+	    # Note: This doesn't prevent trying the erroneous build once again.
 	    addtrap prefix 'rm -rf %q' "$d"
 
 	    msgmsg "Building package: ${NAME}"
