@@ -365,12 +365,13 @@ else
 fi
 
 buildpackage() {
-	local NAME="$1"
+	local -r NAME="$1"
 
 	local target_opt=
 	if [ -n "$APT_TEST_TARGET" ]; then
 		target_opt=--target="$APT_TEST_TARGET"
 	fi
+	local -r target_opt
 
 	local -r trap_before_mkdir="$CURRENTTRAP"
 
@@ -390,6 +391,15 @@ buildpackage() {
 
 	    msgmsg "Building package: ${NAME}"
 
+	    local in_spec="$APT_TEST_INTERMEDIATES/specs/$NAME"/spec
+	    if ! [ -e "$in_spec" ]; then
+		in_spec="${TESTDIRECTORY}/specs/${NAME}.spec"
+	    fi
+	    local -r in_spec
+	    if ! [ -e "$in_spec" ]; then
+		msgdie "No spec for $NAME found in {APT_TEST_INTERMEDIATES,TESTDIRECTORY}/specs/"
+	    fi
+
 	    local -r log="$d"/log
 
 	    HOME=/var/empty rpmbuild \
@@ -399,7 +409,7 @@ buildpackage() {
 		--define="_tmppath $d/tmp" \
 		--define="_topdir $d/RPM" \
 		$target_opt \
-		-bb "${TESTDIRECTORY}/specs/${NAME}.spec" \
+		-bb "$in_spec" \
 		1>"$log"
 
 	    local builtpackagefile
