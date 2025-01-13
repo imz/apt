@@ -13,19 +13,53 @@ readonly N=$(( 1024 + 100 ))
 build_P()
 {
     local -r i="$1"; shift
+    local name
+    printf -v name '%s-%04x' "$P" "$i"
 
-    local F="$(mktemp "${TESTDIRECTORY}/specs/$P-XXXX.spec")"
-    F="${F%.spec}"
-    local -r F
-    addtrap 'rm -f %q.spec' "$F"
+    local -r trap_before_mkdir="$CURRENTTRAP"
 
-    # Instead of editing the spec-file, we could perhaps use rpmbuild --define.
-    sed -E \
-	-e 's/^Version:[[:space:]]* 2$/'"Version: $i/" \
-	-e 's/ 2-alt1$/'" $i-alt1/" \
-	<"${TESTDIRECTORY}/specs/$P.spec" \
-	>|"$F.spec"
-    buildpackage "${F##*/}"
+    # where the spec is being generated and/or cached:
+    local -r d="$APT_TEST_INTERMEDIATES/specs/$name"
+    mkdir -p "${d%/*}"
+    if ! mkdir "$d" &>/dev/null; then
+	msginfo "Re-using generated spec: ${name}"
+	wait_for_file "$d"/spec
+    else
+
+	# After an error during the procedure here, we have to delete the dir
+	# in order to make clear that one shouldn't start waiting for a result
+	# on the other branch. So we push a temporary trap for this.
+	# (Then restore from $trap_before_mkdir. Not so important since build_P
+	# is always run in a subshell, but this way it's more consistent.)
+	# (And waiting that has already started can be limited in wait_for_file.)
+	# Note: This doesn't prevent trying the erroneous procedure once again.
+	addtrap prefix 'rm -rf %q' "$d"
+
+	msginfo "Generating spec: ${name}"
+
+	local in_spec="$APT_TEST_INTERMEDIATES/specs/$P"/spec
+	if ! [ -e "$in_spec" ]; then
+	    in_spec="${TESTDIRECTORY}/specs/${P}.spec"
+	fi
+	local -r in_spec
+	if ! [ -e "$in_spec" ]; then
+	    msgdie "No spec for $P found in {APT_TEST_INTERMEDIATES,TESTDIRECTORY}/specs/"
+	fi
+
+	# Instead of editing the spec-file, we could perhaps use rpmbuild --define.
+	sed -E \
+	    -e 's/^Version:[[:space:]]* 2$/'"Version: $i/" \
+	    -e 's/ 2-alt1$/'" $i-alt1/" \
+	    <"$in_spec" \
+	    >|"$d"/spec.in-progress
+	mv -T "$d"/spec{.in-progress,}
+
+	CURRENTTRAP="$trap_before_mkdir"
+	addtrap ''
+
+    fi
+
+    buildpackage "$name"
 }
 
 if [ -z "${PARALLEL_SLOT-}" ]; then
