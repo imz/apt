@@ -374,58 +374,61 @@ buildpackage() {
 
 	local -r trap_before_mkdir="$CURRENTTRAP"
 
-	if mkdir "$APT_TEST_BUILDDIR/$NAME" &>/dev/null; then
+	# where it is being built and/or cached:
+	local -r d="$APT_TEST_BUILDDIR/$NAME"
+	if ! mkdir "$d" &>/dev/null; then
+	    msgmsg "Re-using built package: ${NAME}"
+	    wait_for_file "$d"/metainfo
+	else
 
-	# On an error during the build procedure, we have to delete the dir
-	# in order to signal that one shouldn't be waiting for a result
-	# on the other branch. So we push a temporary trap for this.
-	# (Then restore from $trap_before_mkdir.)
-	addtrap prefix 'rm -rf %q' "$APT_TEST_BUILDDIR/$NAME"
+	    # On an error during the build procedure, we have to delete the dir
+	    # in order to signal that one shouldn't be waiting for a result
+	    # on the other branch. So we push a temporary trap for this.
+	    # (Then restore from $trap_before_mkdir.)
+	    addtrap prefix 'rm -rf %q' "$d"
 
-	msgmsg "Building package: ${NAME}"
+	    msgmsg "Building package: ${NAME}"
 
-	local -r log="$APT_TEST_BUILDDIR/$NAME"/log
+	    local -r log="$d"/log
 
-	HOME=/var/empty rpmbuild \
+	    HOME=/var/empty rpmbuild \
 		${APT_TEST_PKG_FILENAME_BY_ALIAS:+--define "_rpmfilename %{ARCH}/${NAME}.%{ARCH}.rpm"} \
 		--define 'EVR %{?epoch:%epoch:}%{version}-%{release}' \
 		--define 'packager test@example.net' \
-		--define="_tmppath $APT_TEST_BUILDDIR/$NAME/tmp" \
-		--define="_topdir $APT_TEST_BUILDDIR/$NAME/RPM" \
+		--define="_tmppath $d/tmp" \
+		--define="_topdir $d/RPM" \
 		$target_opt \
 		-bb "${TESTDIRECTORY}/specs/${NAME}.spec" \
 		1>"$log"
 
-	local builtpackagefile
-	builtpackagefile="$(sed -nEe '$ s/Wrote: (.*) \(.*\)$/\1/p' <"$log")"
-	local -r builtpackagefile
-	{
-	    printf "local -r builtpackagefile=%q\n" "$builtpackagefile"
-	    HOME=/var/empty rpmquery \
-		-p "$builtpackagefile" \
-		--qf '
-		local -r name=%{NAME:shescape}
-		local -r arch=%{ARCH:shescape}
-		local -r epoch=%{EPOCH:shescape}
-		local -r version=%{VERSION:shescape}
-		local -r release=%{RELEASE:shescape}
-		'
-	} >"$APT_TEST_BUILDDIR/$NAME"/metainfo.in-progress
-	mv -T "$APT_TEST_BUILDDIR/$NAME"/metainfo{.in-progress,}
+	    local builtpackagefile
+	    builtpackagefile="$(sed -nEe '$ s/Wrote: (.*) \(.*\)$/\1/p' <"$log")"
+	    local -r builtpackagefile
+	    {
+		printf "local -r builtpackagefile=%q\n" \
+		       "$builtpackagefile"
+		HOME=/var/empty rpmquery \
+		    -p "$builtpackagefile" \
+		    --qf '
+			local -r name=%{NAME:shescape}
+			local -r arch=%{ARCH:shescape}
+			local -r epoch=%{EPOCH:shescape}
+			local -r version=%{VERSION:shescape}
+			local -r release=%{RELEASE:shescape}
+			'
+	    } >"$d"/metainfo.in-progress
+	    mv -T "$d"/metainfo{.in-progress,}
 
-	CURRENTTRAP="$trap_before_mkdir"
-	addtrap ''
+	    CURRENTTRAP="$trap_before_mkdir"
+	    addtrap ''
 
-	else
-	    msgmsg "Re-using built package: ${NAME}"
-	    wait_for_file "$APT_TEST_BUILDDIR/$NAME"/metainfo
 	fi
 
 	# Copy out files from the "cache" to where they are expected by our framework
 	# (FIXME: this will silently overwrite existing files with the same name,
 	# but we should report this as an error in the test.)
 	mkdir -p $TMPWORKINGDIRECTORY/usr/src/RPM
-	cp -l -a "$APT_TEST_BUILDDIR/$NAME"/RPM -T $TMPWORKINGDIRECTORY/usr/src/RPM
+	cp -l -a "$d"/RPM -T $TMPWORKINGDIRECTORY/usr/src/RPM
 }
 
 builtpackagefile() {
