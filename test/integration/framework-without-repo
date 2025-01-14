@@ -337,6 +337,39 @@ END
 	msgdebug "$(rpm --eval '_tmppath: %_tmppath')"
 }
 
+mk_intermediate() {
+    local -r what="$1"; shift
+    local -r build_cmd="$1"; shift
+    # No additional args for build_cmd; nothing but $what shall determine
+    # the result to ensure its stability across different invocations.
+
+    local -r trap_before_mkdir="$CURRENTTRAP"
+
+    # where it is being built and/or cached:
+    local -r f="$APT_TEST_INTERMEDIATES/$what"
+    local -r d="${f%/*}"
+    mkdir -p "${d%/*}" # the prefix
+    if ! mkdir "$d" &>/dev/null; then
+	msginfo "Re-using ${what%/*}"
+	wait_for_file "$f"
+    else
+	# After an error during the build procedure, we have to delete the dir
+	# in order to make clear that one shouldn't start waiting for a result
+	# on the other branch. So we push a temporary trap for this.
+	# (Then restore from $trap_before_mkdir.)
+	# (And waiting that has already started can be limited in wait_for_file.)
+	# Note: This doesn't prevent trying the erroneous build once again.
+	addtrap prefix 'rm -rf %q' "$d"
+
+	# pass args: prefix name out_basename
+	"$build_cmd" "${d%/*}" "${d##*/}" "${f##*/}".in-progress
+	mv -T "$f"{.in-progress,}
+
+	CURRENTTRAP="$trap_before_mkdir"
+	addtrap ''
+    fi
+}
+
 # The arch (the machine arch) as detected by rpm or apt
 # (and as expected to appear in the APT conf by default).
 #
@@ -365,90 +398,77 @@ else
 	APT_TEST_USED_ARCH="$APT_TEST_DEFAULT_ARCH"
 fi
 
+buildpackage_() {
+    local -r prefix="$1"; shift
+    local -r NAME="$1"; shift
+    local -r out_basename="$1"; shift
+
+    msgmsg "Building package: ${NAME}"
+
+    local target_opt=
+    if [ -n "$APT_TEST_TARGET" ]; then
+	target_opt=--target="$APT_TEST_TARGET"
+    fi
+    local -r target_opt
+
+    local in_spec="$APT_TEST_INTERMEDIATES/specs/$NAME"/spec
+    if ! [ -e "$in_spec" ]; then
+	in_spec="${TESTDIRECTORY}/specs/${NAME}.spec"
+    fi
+    local -r in_spec
+    if ! [ -e "$in_spec" ]; then
+	msgdie "No spec for $NAME found in {APT_TEST_INTERMEDIATES,TESTDIRECTORY}/specs/"
+    fi
+
+    local -r d="$prefix/$NAME"
+
+    local -r log="$d"/log
+
+    HOME=/var/empty rpmbuild \
+	${APT_TEST_PKG_FILENAME_BY_ALIAS:+--define "_rpmfilename %{ARCH}/${NAME}.%{ARCH}.rpm"} \
+	--define 'EVR %{?epoch:%epoch:}%{version}-%{release}' \
+	--define 'packager test@example.net' \
+	--define="_tmppath $d/tmp" \
+	--define="_topdir $d/RPM" \
+	$target_opt \
+	-bb "$in_spec" \
+	1>"$log"
+
+    local builtpackagefile
+    builtpackagefile="$(sed -nEe '$ s/Wrote: (.*) \(.*\)$/\1/p' <"$log")"
+    local -r builtpackagefile
+    {
+	printf "local -r builtpackagefile=%q\n" \
+	       "$builtpackagefile"
+	HOME=/var/empty rpmquery \
+	    -p "$builtpackagefile" \
+	    --qf '
+		local -r name=%{NAME:shescape}
+		local -r arch=%{ARCH:shescape}
+		local -r epoch=%{EPOCH:shescape}
+		local -r version=%{VERSION:shescape}
+		local -r release=%{RELEASE:shescape}
+		'
+    } >"$d/$out_basename"
+}
+
 buildpackage() {
 	local -r NAME="$1"
 
-	local target_opt=
-	if [ -n "$APT_TEST_TARGET" ]; then
-		target_opt=--target="$APT_TEST_TARGET"
-	fi
-	local -r target_opt
-
-	local -r trap_before_mkdir="$CURRENTTRAP"
-
-	# where it is being built and/or cached:
-	local -r d="$APT_TEST_INTERMEDIATES/pkg-build/$NAME"
-	mkdir -p "${d%/*}"
-	if ! mkdir "$d" &>/dev/null; then
-	    msgmsg "Re-using built package: ${NAME}"
-	    wait_for_file "$d"/metainfo
-	else
-
-	    # After an error during the build procedure, we have to delete the dir
-	    # in order to make clear that one shouldn't start waiting for a result
-	    # on the other branch. So we push a temporary trap for this.
-	    # (Then restore from $trap_before_mkdir.)
-	    # (And waiting that has already started can be limited in wait_for_file.)
-	    # Note: This doesn't prevent trying the erroneous build once again.
-	    addtrap prefix 'rm -rf %q' "$d"
-
-	    msgmsg "Building package: ${NAME}"
-
-	    local in_spec="$APT_TEST_INTERMEDIATES/specs/$NAME"/spec
-	    if ! [ -e "$in_spec" ]; then
-		in_spec="${TESTDIRECTORY}/specs/${NAME}.spec"
-	    fi
-	    local -r in_spec
-	    if ! [ -e "$in_spec" ]; then
-		msgdie "No spec for $NAME found in {APT_TEST_INTERMEDIATES,TESTDIRECTORY}/specs/"
-	    fi
-
-	    local -r log="$d"/log
-
-	    HOME=/var/empty rpmbuild \
-		${APT_TEST_PKG_FILENAME_BY_ALIAS:+--define "_rpmfilename %{ARCH}/${NAME}.%{ARCH}.rpm"} \
-		--define 'EVR %{?epoch:%epoch:}%{version}-%{release}' \
-		--define 'packager test@example.net' \
-		--define="_tmppath $d/tmp" \
-		--define="_topdir $d/RPM" \
-		$target_opt \
-		-bb "$in_spec" \
-		1>"$log"
-
-	    local builtpackagefile
-	    builtpackagefile="$(sed -nEe '$ s/Wrote: (.*) \(.*\)$/\1/p' <"$log")"
-	    local -r builtpackagefile
-	    {
-		printf "local -r builtpackagefile=%q\n" \
-		       "$builtpackagefile"
-		HOME=/var/empty rpmquery \
-		    -p "$builtpackagefile" \
-		    --qf '
-			local -r name=%{NAME:shescape}
-			local -r arch=%{ARCH:shescape}
-			local -r epoch=%{EPOCH:shescape}
-			local -r version=%{VERSION:shescape}
-			local -r release=%{RELEASE:shescape}
-			'
-	    } >"$d"/metainfo.in-progress
-	    mv -T "$d"/metainfo{.in-progress,}
-
-	    CURRENTTRAP="$trap_before_mkdir"
-	    addtrap ''
-
-	fi
+	mk_intermediate built-pkg/"$NAME"/metainfo buildpackage_
 
 	# Copy out files from the "cache" to where they are expected by our framework
 	# (FIXME: this will silently overwrite existing files with the same name,
 	# but we should report this as an error in the test.)
 	mkdir -p $TMPWORKINGDIRECTORY/usr/src/RPM
-	cp -l -a "$d"/RPM -T $TMPWORKINGDIRECTORY/usr/src/RPM
+	cp -l -a "$APT_TEST_INTERMEDIATES"/built-pkg/"$NAME"/RPM \
+	   -T $TMPWORKINGDIRECTORY/usr/src/RPM
 }
 
 builtpackagefile() {
 	local -r NAME="$1"
 
-	. "$APT_TEST_INTERMEDIATES"/pkg-build/"$NAME"/metainfo
+	. "$APT_TEST_INTERMEDIATES"/built-pkg/"$NAME"/metainfo
 
 	if [ -n "$builtpackagefile" ]; then
 	    echo "$builtpackagefile"
@@ -489,7 +509,7 @@ builtpackagebasename_re() {
 builtpackagearch() {
 	local -r NAME="$1"
 
-	. "$APT_TEST_INTERMEDIATES"/pkg-build/"$NAME"/metainfo
+	. "$APT_TEST_INTERMEDIATES"/built-pkg/"$NAME"/metainfo
 	# If arch is not specified in the spec, we know what was given as --target.
 	if [ -z "${arch-}" ]; then
 		arch="$APT_TEST_USED_ARCH"
@@ -501,7 +521,7 @@ builtpackagearch() {
 builtpackageversion() {
 	local -r NAME="$1"
 
-	. "$APT_TEST_INTERMEDIATES"/pkg-build/"$NAME"/metainfo
+	. "$APT_TEST_INTERMEDIATES"/built-pkg/"$NAME"/metainfo
 
 	echo "${version}-${release}"
 }
