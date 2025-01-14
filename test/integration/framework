@@ -244,14 +244,11 @@ generaterepository_and_switch_sources() {
 					local -r cert_hostname="$NGINX_HOST"
 					;;
 			esac
-			openssl req -x509 \
-				-newkey rsa:4096 \
-				-keyout $NGINX_KEY \
-				-out $NGINX_CRT \
-				-nodes \
-				-days 365 \
-				-subj "/CN=$cert_hostname" \
-			    &>/dev/null
+			mk_intermediate cert/nginx@"$cert_hostname"/crt \
+				ssl_keygen
+
+			cp -f "$APT_TEST_INTERMEDIATES"/cert/nginx@"$cert_hostname"/key -T $NGINX_KEY
+			cp -f "$APT_TEST_INTERMEDIATES"/cert/nginx@"$cert_hostname"/crt -T $NGINX_CRT
 
 			# add cert to apt's config.
 			# (Pinning is a separate feature to test.)
@@ -268,15 +265,8 @@ generaterepository_and_switch_sources() {
 		Acquire::https::PinnedCert	"$NGINX_CRT";
 		END
 
-		readonly ANOTHER_CRT=$TMPWORKINGDIRECTORY/cert.another.crt
-		openssl req -x509 \
-			-newkey rsa:4096 \
-			-keyout /dev/null \
-			-out "$ANOTHER_CRT" \
-			-nodes \
-			-days 365 \
-			-subj "/CN=$NGINX_HOST" \
-		    &>/dev/null
+		mk_intermediate cert/another@"$NGINX_HOST"/crt \
+				ssl_keygen
 
 		# Redefine aptget() to test that the repo is actually accessed
 		# with verifying the pinned cert in any test where it's called;
@@ -290,7 +280,7 @@ generaterepository_and_switch_sources() {
 		    # FIXME: we could use msgfail or even testfailure
 		    # here; the difficulty is that it'd be nested
 		    ! with_pinned \
-		      "$ANOTHER_CRT" \
+		      "$APT_TEST_INTERMEDIATES"/cert/another@"$NGINX_HOST"/crt \
 		      aptget_without_first_trying_repo "$@" ||
 			msgdie 'apt-get did not fail with a non-matching pinned cert as expected'
 		    # FIXME: show the output when dying.

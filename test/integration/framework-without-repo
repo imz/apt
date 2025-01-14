@@ -942,6 +942,25 @@ regex_quote() {
     printf '%s' "$re"
 }
 
+# for mk_intermediate
+ssl_keygen() {
+    local -r prefix="$1"; shift
+    local -r name="$1"; shift
+    local -r out_basename="$1"; shift
+    local -r hostname="${name##*@}"
+
+    msginfo "Generating SSL key+cert: ${name}"
+
+    openssl req -x509 \
+	    -newkey rsa:4096 \
+	    -nodes \
+	    -days 365 \
+	    -subj "/CN=$hostname" \
+	    -keyout "$prefix/$name"/key \
+	    -out "$prefix/$name/$out_basename" \
+	&>/dev/null
+}
+
 ############################################################
 # Helpers for a background apt-shell process.
 # The process will be used to run commands.

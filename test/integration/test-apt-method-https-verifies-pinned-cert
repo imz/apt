@@ -19,19 +19,12 @@ prereq $TESTDIR/test-apt-install-simple
 # Generate another key, and pin apt to it. Check cert pinning
 
 # use a filename which is unique for this specific test (not to interfere)
-readonly MY_OTHER_CRT=$TMPWORKINGDIRECTORY/cert."${0##*/}".crt
-openssl req -x509 \
-	-newkey rsa:4096 \
-	-keyout /dev/null \
-	-out "$MY_OTHER_CRT" \
-	-nodes \
-	-days 365 \
-	-subj "/CN=$NGINX_HOST" \
-    &>/dev/null
+mk_intermediate cert/"${0##*/}"@"$NGINX_HOST"/crt \
+		ssl_keygen
 
 msgmsg 'Pinning invalid cert in apt'
 cat >| "$APT_TEST_PINNING_CONF" <<- END
-Acquire::https::PinnedCert	"$MY_OTHER_CRT";
+Acquire::https::PinnedCert	"$APT_TEST_INTERMEDIATES/cert/${0##*/}@$NGINX_HOST/crt";
 END
 
 testfailure aptget update
