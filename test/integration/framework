@@ -192,6 +192,16 @@ generaterepository_and_switch_sources() {
 			REPO_STORAGE="$TMPWORKINGDIRECTORY/usr/src/RPM/REPO"
 			;;
 
+		https*_proxy*)
+			nginxsetup https only1ip
+			REPO_STORAGE="$NGINX_STORAGE"
+			;;
+
+		http*_proxy*)
+			nginxsetup only1ip
+			REPO_STORAGE="$NGINX_STORAGE"
+			;;
+
 		https|https_*)
 			nginxsetup https
 			REPO_STORAGE="$NGINX_STORAGE"
@@ -263,6 +273,19 @@ generaterepository_and_switch_sources() {
 			Acquire::https::CaInfo	"$NGINX_CRT";
 			END
 			;;
+	esac
+
+	# TODO: set up proxy access; check that it's actually used by unsetting proxy
+	case "$APT_TEST_METHOD" in
+	    http*_proxy*)
+
+		# Doing HTTP(S) through proxy? (And if we are setting up
+		# the repo, I believe we are going to access it with apt-get.)
+		# But the tests are not implemented yet, so mark the tests
+		# correspondingly:
+		APT_TEST_XFAIL=yes
+
+		;;
 	esac
 
 	# pin the cert & use another one for checking pinning
@@ -352,6 +375,8 @@ generaterepository_and_switch_sources() {
 	APT_FETCHED_PARTIAL_MYARCH_PKGLIST="$APT_LISTS_DIR/partial/$encoded_myarch_pkglist_uri"
 }
 
+readonly ALLOWED_FROM_IP=127.0.0.2
+
 # Output/effects:
 # * global vars representing the actual configuration of the server
 #   (convenient for use in other scripts):
@@ -360,12 +385,16 @@ generaterepository_and_switch_sources() {
 # * the server configured, ready for nginxrestart()
 #   (if https: configured & ready except for the key)
 nginxsetup() {
-	local opt https
+	local opt https only1ip
 	for opt; do
 	    case "$opt" in
 
 		https)
 		    https=yes
+		    ;;
+
+		only1ip)
+		    only1ip=yes
 		    ;;
 
 		*)
@@ -375,6 +404,7 @@ nginxsetup() {
 	    esac
 	done
 	local -r https
+	local -r only1ip
 
 	mkdir -p $TMPWORKINGDIRECTORY/nginx
 	mkdir -p $TMPWORKINGDIRECTORY/nginx/tmp
@@ -434,8 +464,11 @@ http {
 			root $NGINX_STORAGE;
 			autoindex on;
 
-			allow 127.0.0.1;
+		${only1ip:+
+			allow $ALLOWED_FROM_IP;
 			deny all;
+		}
+
 		}
 	}
 }
