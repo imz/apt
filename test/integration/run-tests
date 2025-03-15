@@ -3,7 +3,15 @@ set -e
 
 # Some tests are "multiplied" by the method for accessing the repo (the one
 # specified in sources.list). The user may override them with this parameter.
-readonly -a APT_TEST_METHODS=(${APT_TEST_METHODS:-file copy cdrom http https https_pinned})
+#
+# Here we actually have much more "quasi-methods", where the base methods are
+# further modified with various details about how the connection is set up
+# to be made by apt.
+if [ -n "${APT_TEST_METHODS:-}" ]; then
+    readonly -a APT_TEST_METHODS=($APT_TEST_METHODS)
+else
+    readonly -a APT_TEST_METHODS=(file copy cdrom http{,s{,_pinned}})
+fi
 
 FAIL=0
 XFAIL=0
