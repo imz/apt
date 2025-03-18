@@ -10,7 +10,7 @@ set -e
 if [ -n "${APT_TEST_METHODS:-}" ]; then
     readonly -a APT_TEST_METHODS=($APT_TEST_METHODS)
 else
-    readonly -a APT_TEST_METHODS=(file copy cdrom http{,s{,_pinned}})
+    readonly -a APT_TEST_METHODS=(file http{,s{,_pinned}} copy cdrom)
 fi
 
 FAIL=0
