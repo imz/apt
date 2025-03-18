@@ -9,6 +9,13 @@
 # TESTDIR is usually set in all the testscripts sourcing framework.
 . $TESTDIR/framework-without-repo
 
+# for debugging failed downloads
+print_failed_lists()
+{
+    find "$APT_LISTS_DIR" -type f -name '*.FAILED' -print0 |
+	xargs --no-run-if-empty -0 tail -v -n+1
+}
+
 aptcdrom() { runapt apt-cdrom "${CDROM_OPTS[@]}" "$@"; }
 
 with_pinned() {
@@ -328,6 +335,10 @@ generaterepository_and_switch_sources() {
 			;;
 
 	esac
+
+	# debug failed downloads
+	addtrap 'prefix' \
+		'[ "$EXIT_CODE" = 0 ] || print_failed_lists >&6;'
 
 	NOARCH_PKGLIST_URI="$APT_SOURCES_URI/$NOARCH_DISTRO/base/pkglist.$DISTRO_COMPONENT"
 	MYARCH_PKGLIST_URI="$APT_SOURCES_URI/$MYARCH_DISTRO/base/pkglist.$DISTRO_COMPONENT"
