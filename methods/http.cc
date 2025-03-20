@@ -221,13 +221,15 @@ bool CircleBuf::WriteTillEl(string &Data,bool Single)
 
       if (Single == false)
       {
+         // do not check invalid data
+         if (I >= InP)
+            continue; /* implies: return false
+                         (and ideally wait/one more load by the caller). */
+
 	 if (Buf[I%Size] != '\n')
 	    continue;
 	 for (I++; I < InP && Buf[I%Size] == '\r'; I++);
       }
-
-      if (I > InP)
-	 I = InP;
 
       Data = "";
       while (OutP < I)
