@@ -187,8 +187,25 @@ generaterepository_and_switch_sources() {
 	DISTRO_COMPONENT=apt-tests
 
 	# Additional configuration for the server or other methods.
-	case "$APT_TEST_METHOD" in
 
+	case "$APT_TEST_METHOD" in
+		cdrom|cdrom_*)
+			mkdir "$MOCKUP_CDROM_STORAGE"/.disk
+			# trailing whitespace here might be misinterpreted
+			echo "Distribution $REPO_DATE Disk" >"$MOCKUP_CDROM_STORAGE"/.disk/info
+
+			# DEBUG: Let's have an idea of the FS tree there:
+			#ls -laR "$MOCKUP_CDROM_STORAGE"
+			;;
+	esac
+
+	case "$APT_TEST_METHOD" in
+	    cdrom_missing_release)
+		find "$MOCKUP_CDROM_STORAGE"/*/base -name 'release*' -print -delete
+		;;
+	esac
+
+	case "$APT_TEST_METHOD" in
 		https*)
 			# generate key
 			case "$APT_TEST_METHOD" in
@@ -217,22 +234,6 @@ generaterepository_and_switch_sources() {
 			Acquire::https::PinnedCert	"$NGINX_CRT";
 			END
 			;;
-
-		cdrom*)
-			mkdir "$MOCKUP_CDROM_STORAGE"/.disk
-			# trailing whitespace here might be misinterpreted
-			echo "Distribution $REPO_DATE Disk" >"$MOCKUP_CDROM_STORAGE"/.disk/info
-
-			# DEBUG: Let's have an idea of the FS tree there:
-			#ls -laR "$MOCKUP_CDROM_STORAGE"
-
-			case "$APT_TEST_METHOD" in
-				cdrom_missing_release)
-					find "$MOCKUP_CDROM_STORAGE"/*/base -name 'release*' -print -delete
-					;;
-			esac
-			;;
-
 	esac
 
 	# Start the server.
@@ -241,7 +242,6 @@ generaterepository_and_switch_sources() {
 		http*)
 			nginxrestart
 			;;
-
 	esac
 
 	# Overwrite old sources.list.
