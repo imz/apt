@@ -15,6 +15,8 @@ LDADD = ../apt-pkg/libapt-pkg.la
 connectlib_SOURCES = \
 	       rfc2553emu.cc \
 	       rfc2553emu.h \
+	       connect-debug.cc \
+	       connect-debug.h \
 	       connect.cc \
 	       connect.h
 

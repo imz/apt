@@ -39,6 +39,10 @@
 #include <apti18n.h>
 
 #include "rfc2553emu.h"
+
+// for debugging
+#include "connect-debug.h"
+
 									/*}}}*/
 
 static string LastHost;
@@ -145,6 +149,20 @@ static bool DoConnect(struct addrinfo *Addr,const string &Host,
       errno = Err;
       return _error->Errno("connect",_("Could not connect to %s:%s (%s)."),Host.c_str(),
 			   Service,Name);
+   }
+
+   // FindDir never returns an empty string, so we can't use it as an indicator. 
+   std::string const LogDir = _config->FindFile("Debug::Connect");
+   if (! LogDir.empty())
+   {
+      if (! DebugMethodFd(LogDir,
+                          Host + ":" + Service + "_" + Name,
+                          Fd))
+         // A failure to set up debugging is not a connection error,
+         // so don't report it as such, i.e., don't return false.
+         _error->Warning(_("Could not set up debugging for "
+                           "the connection to %s:%s (%s)"),
+                         Host.c_str(),Service,Name);
    }
 
    return true;

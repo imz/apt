@@ -6,4 +6,8 @@
 # Here we actually have much more "pseudo-methods", where the base methods are
 # further modified with various details about how the connection is set up
 # to be made by apt.
-readonly -a APT_TEST_ALL_METHODS=(file http{,s{,_pinned}}{,_proxy} copy cdrom)
+#
+# As for the _dbgconn modifier, tests with it are run first (to see more
+# debug info if it takes much time waiting in tests and so the time limit
+# is exceeded before all tests are complete).
+readonly -a APT_TEST_ALL_METHODS=(file http{,s{,_pinned}}{,_proxy}{_dbgconn,} copy cdrom)

@@ -16,6 +16,14 @@ print_failed_lists()
 	xargs --no-run-if-empty -0 tail -v -n+1
 }
 
+print_debug_connect()
+{
+    pushd "$APT_DEBUG_CONNECT_DIR" >/dev/null
+    find ./ -type f -print0 | sort -z |
+	xargs --no-run-if-empty -0 tail -v -n+1
+    popd >/dev/null
+}
+
 aptcdrom() { runapt apt-cdrom "${CDROM_OPTS[@]}" "$@"; }
 
 with_unset_proxy_for_http() {
@@ -354,6 +362,18 @@ generaterepository_and_switch_sources() {
 			"$@"
 		}
 		;;
+	esac
+
+	case "$APT_TEST_METHOD" in
+		*_dbgconn*)
+		    mkdir -p "$APT_DEBUG_CONNECT_DIR"
+		    {
+			printf 'Debug::Connect "%s";\n' "$APT_DEBUG_CONNECT_DIR"
+			echo 'Debug::Acquire::http "yes";'
+		    } >$TMPWORKINGDIRECTORY/rootdir/etc/apt/apt.conf.d/81dbg-conn.conf
+		    addtrap 'prefix' \
+			    '[ "$EXIT_CODE" = 0 ] || print_debug_connect >&6;'
+		    ;;
 	esac
 
 	# Start the server.

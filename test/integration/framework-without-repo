@@ -345,6 +345,8 @@ END
 	# involved (so that all edit the same place)
 	readonly APT_TEST_PROXY_FOR_HTTP_CONF=$TMPWORKINGDIRECTORY/rootdir/etc/apt/apt.conf.d/81http-proxy.conf
 
+	readonly APT_DEBUG_CONNECT_DIR=$TMPWORKINGDIRECTORY/debug/connect
+
 	# cleanup the environment a bit
 	export PATH="${PATH}:/usr/local/sbin:/usr/sbin:/sbin"
 	export LC_ALL=C.UTF-8
