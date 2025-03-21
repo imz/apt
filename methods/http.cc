@@ -50,7 +50,6 @@
 #include <apti18n.h>
 
 #include "connect.h"
-#include "rfc2553emu.h"
 #include "http.h"
 
 									/*}}}*/

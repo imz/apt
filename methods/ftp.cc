@@ -41,7 +41,6 @@
 // 		    --disable-nls is used.
 #include <apti18n.h>
 
-#include "rfc2553emu.h"
 #include "ftp.h"
 									/*}}}*/
 

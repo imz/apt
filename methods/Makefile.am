@@ -25,8 +25,6 @@ rsync_SOURCES = rsync.cc rsync-method.h
 http_SOURCES = \
 	       http.cc \
 	       http.h \
-	       rfc2553emu.cc \
-	       rfc2553emu.h \
 	       connect.cc \
 	       connect.h
 http_LDADD = $(LDADD) @SOCKETLIBS@
@@ -34,8 +32,6 @@ http_LDADD = $(LDADD) @SOCKETLIBS@
 https_SOURCES = \
 	       http.cc \
 	       http.h \
-	       rfc2553emu.cc \
-	       rfc2553emu.h \
 	       connect.cc \
 	       connect.h
 https_LDADD = $(LDADD) @SOCKETLIBS@ @TLSLIBS@
@@ -44,8 +40,6 @@ https_CPPFLAGS = -DUSE_TLS
 ftp_SOURCES = \
 	       ftp.cc \
 	       ftp.h \
-	       rfc2553emu.cc \
-	       rfc2553emu.h \
 	       connect.cc \
 	       connect.h
 ftp_LDADD = $(LDADD) @SOCKETLIBS@
