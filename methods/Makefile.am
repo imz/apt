@@ -12,6 +12,12 @@ AM_CXXFLAGS = $(WARN_CXXFLAGS)
 AM_LDFLAGS = $(WARN_LD_FLAGS)
 LDADD = ../apt-pkg/libapt-pkg.la
 
+connectlib_SOURCES = \
+	       rfc2553emu.cc \
+	       rfc2553emu.h \
+	       connect.cc \
+	       connect.h
+
 cdrom_SOURCES = cdrom.cc
 copy_SOURCES = copy.cc
 file_SOURCES = file.cc
@@ -25,27 +31,18 @@ rsync_SOURCES = rsync.cc rsync-method.h
 http_SOURCES = \
 	       http.cc \
 	       http.h \
-	       rfc2553emu.cc \
-	       rfc2553emu.h \
-	       connect.cc \
-	       connect.h
+	       $(connectlib_SOURCES)
 http_LDADD = $(LDADD) @SOCKETLIBS@
 
 https_SOURCES = \
 	       http.cc \
 	       http.h \
-	       rfc2553emu.cc \
-	       rfc2553emu.h \
-	       connect.cc \
-	       connect.h
+	       $(connectlib_SOURCES)
 https_LDADD = $(LDADD) @SOCKETLIBS@ @TLSLIBS@
 https_CPPFLAGS = -DUSE_TLS
 
 ftp_SOURCES = \
 	       ftp.cc \
 	       ftp.h \
-	       rfc2553emu.cc \
-	       rfc2553emu.h \
-	       connect.cc \
-	       connect.h
+	       $(connectlib_SOURCES)
 ftp_LDADD = $(LDADD) @SOCKETLIBS@
