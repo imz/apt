@@ -34,8 +34,6 @@ RSYNC Aquire Method - This is the RSYNC aquire method for APT.
 #include <netdb.h>
 
 #include "apti18n.h"
-#include "rfc2553emu.h"
-#include "connect.h"
 #include "rsync-method.h"
 /*}}}*/
 
