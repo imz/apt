@@ -3,7 +3,7 @@
 
 Name: apt
 Version: 0.5.15lorg2
-Release: alt95
+Release: alt96
 
 Summary: Debian's Advanced Packaging Tool with RPM support
 Summary(ru_RU.UTF-8): Debian APT - Усовершенствованное средство управления пакетами с поддержкой RPM
@@ -591,6 +591,12 @@ exec 1>&2
 %_datadir/%name/tests/
 
 %changelog
+* Wed May 21 2025 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt96
+- Made the order of the applicable proxy configuration for HTTP(S) same as in
+  Debian: Acquire::http::Proxy:<a host>, Acquire::http::Proxy, $http_proxy
+  (https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=479617 ,
+   https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=157759 ). Same for FTP.
+
 * Wed May 21 2025 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt95
 - Restricted access to files output by Debug::Connect (to protect secrets).
 - Updated Russian help message (missing commands were: autoremove, changelog);
