@@ -132,9 +132,9 @@ bool CircleBuf::Read(const std::unique_ptr<MethodFd> &Fd)
 // CircleBuf::Read - Put the string into the buffer			/*{{{*/
 // ---------------------------------------------------------------------
 /* This will hold the string in and fill the buffer with it as it empties */
-bool CircleBuf::Read(const string &Data)
+bool CircleBuf::Read(string const &Data)
 {
-   OutQueue += Data;
+   OutQueue.append(Data);
    FillOut();
    return true;
 }
@@ -664,7 +664,7 @@ void HttpMethod::SendReq(FetchItem *Itm,CircleBuf &Out)
       but while its a must for all servers to accept absolute URIs,
       it is assumed clients will sent an absolute path for non-proxies */
    std::string requesturi;
-   if (Proxy.empty() == true || Proxy.Host.empty())
+   if (Proxy.Access != "http" || Proxy.empty() == true || Proxy.Host.empty())
       requesturi = Uri.Path;
    else
       requesturi = Uri;
@@ -719,7 +719,8 @@ void HttpMethod::SendReq(FetchItem *Itm,CircleBuf &Out)
       }
    }
 
-   if (Proxy.User.empty() == false || Proxy.Password.empty() == false)
+   if (Proxy.Access == "http" &&
+	 (Proxy.User.empty() == false || Proxy.Password.empty() == false))
       Req += string("Proxy-Authorization: Basic ") +
           Base64Encode(Proxy.User + ":" + Proxy.Password) + "\r\n";
 

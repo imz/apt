@@ -53,11 +53,11 @@ class CircleBuf
    Hashes *Hash;
 
    // Read data in
-   bool Read(const std::unique_ptr<MethodFd> &Fd);
-   bool Read(const string &Data);
+   bool Read(std::unique_ptr<MethodFd> const &Fd);
+   bool Read(std::string const &Data);
 
    // Write data out
-   bool Write(const std::unique_ptr<MethodFd> &Fd);
+   bool Write(std::unique_ptr<MethodFd> const &Fd);
    bool WriteTillEl(string &Data,bool Single = false);
 
    // Control the write limit
