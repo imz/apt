@@ -667,7 +667,7 @@ void HttpMethod::SendReq(FetchItem *Itm,CircleBuf &Out)
    if (Proxy.empty() == true || Proxy.Host.empty())
       requesturi = Uri.Path;
    else
-      requesturi = Itm->Uri;
+      requesturi = Uri;
 
    // The "+" is encoded as a workaround for a amazon S3 bug
    // see LP bugs #1003633 and #1086997.
