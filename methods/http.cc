@@ -64,14 +64,6 @@ unsigned long TimeOut = 120;
 bool ChokePipe = true;
 bool Debug = false;
 
-#ifdef USE_TLS
-#define service_name "https"
-#define default_port 443
-#else /* USE_TLS */
-#define service_name "http"
-#define default_port 80
-#endif /* USE_TLS */
-
 // CircleBuf::CircleBuf - Circular input buffer				/*{{{*/
 // ---------------------------------------------------------------------
 /* */
@@ -322,30 +314,42 @@ bool ServerState::Open()
 	 Proxy = "";
    }
 
-   // Determine what host and port to use based on the proxy settings
-   int Port = 0;
-   string Host;
-   if (Proxy.empty() == true || Proxy.Host.empty() == true)
+   bool tls = (ServerName.Access == "https" || APT::String::Endswith(ServerName.Access, "+https"));
+   auto const DefaultService = tls ? "https" : "http";
+   auto const DefaultPort = tls ? 443 : 80;
+
+   if (Proxy.Access == "socks5h")
    {
-      if (ServerName.Port != 0)
-	 Port = ServerName.Port;
-      Host = ServerName.Host;
+      return _error->Error("Not yet supported %s proxy configured: %s",
+                           Proxy.Access.c_str(),
+                           URI::SiteOnly(Proxy).c_str());
    }
    else
    {
-      if (Proxy.Port != 0)
-	 Port = Proxy.Port;
-      Host = Proxy.Host;
+      // Determine what host and port to use based on the proxy settings
+      int Port = 0;
+      string Host;
+      if (Proxy.empty() == true || Proxy.Host.empty() == true)
+      {
+	 if (ServerName.Port != 0)
+	    Port = ServerName.Port;
+	 Host = ServerName.Host;
+      }
+      else if (Proxy.Access != "http")
+	 return _error->Error("Unsupported proxy configured: %s", URI::SiteOnly(Proxy).c_str());
+      else
+      {
+	 if (Proxy.Port != 0)
+	    Port = Proxy.Port;
+	 Host = Proxy.Host;
+      }
+
+      if (!Connect(Host, Port, DefaultService, DefaultPort, ServerFd, TimeOut, Owner))
+	 return false;
    }
 
-   // Connect to the remote server
-   if (Connect(Host,Port,service_name,default_port,ServerFd,TimeOut,Owner) == false)
+   if (tls && UnwrapTLS(ServerName.Host, ServerFd, TimeOut, Owner) == false)
       return false;
-
-#ifdef USE_TLS
-   if (!UnwrapTLS(ServerName.Host, ServerFd, TimeOut, Owner))
-      return false;
-#endif /* USE_TLS */
 
    return true;
 }
@@ -982,10 +986,8 @@ int HttpMethod::DealWithHeaders(FetchResult &Res,ServerState *Srv)
       {
 	 Description = ParsedURI.Host;
 
-#ifdef USE_TLS
 	 if (ParsedURI.Access == "https")
 	    Description += string(" (secure)");
-#endif
 
 	 if (NeedAuth(Description, AuthUser, AuthPass) == true)
 	 {
