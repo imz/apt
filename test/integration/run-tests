@@ -1,16 +1,20 @@
 #!/bin/bash
 set -e
 
+DIR=$(readlink -f $(dirname $0))
+
+. "$DIR"/run-tests.defaults.sh
+
 # Some tests are "multiplied" by the method for accessing the repo (the one
 # specified in sources.list). The user may override them with this parameter.
 #
-# Here we actually have much more "quasi-methods", where the base methods are
+# Here we actually have much more "pseudo-methods", where the base methods are
 # further modified with various details about how the connection is set up
 # to be made by apt.
 if [ -n "${APT_TEST_METHODS:-}" ]; then
     readonly -a APT_TEST_METHODS=($APT_TEST_METHODS)
 else
-    readonly -a APT_TEST_METHODS=(file http{,s{,_pinned}} copy cdrom)
+    readonly -a APT_TEST_METHODS=("${APT_TEST_ALL_METHODS[@]}")
 fi
 
 FAIL=0
@@ -22,7 +26,6 @@ ALL=0
 FAILED_TESTS=""
 XFAILED_TESTS=""
 XPASSED_TESTS=""
-DIR=$(readlink -f $(dirname $0))
 
 # Global parameters which affect the tests (or the framework)
 # and must be set before running the tests and using the framework:
