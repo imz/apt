@@ -610,7 +610,7 @@ aptgetinstallpackage() {
 }
 
 checkdiff() {
-	DIFFTEXT="$(command diff -u "$@")" || {
+	DIFFTEXT="$(command diff -Nu "$@")" || {
 		[ $? -eq 1 ] || exit 1
 		DIFFTEXT="$(sed -e '/^---/ d' -e '/^+++/ d' -e '/^@@/ d' <<<"$DIFFTEXT")" || exit 1
 		return 1
