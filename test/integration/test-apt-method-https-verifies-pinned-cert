@@ -39,3 +39,14 @@ testfailure aptget update
 testpkgnotinstalled 'conflicting-package-one'
 testfailure aptget install conflicting-package-one
 testpkgnotinstalled 'conflicting-package-one'
+
+msgmsg 'Pinning the valid cert in apt'
+cat >| "$APT_TEST_PINNING_CONF" <<- END
+Acquire::https::PinnedCert	"$NGINX_CRT";
+END
+
+testsuccess aptget update
+
+testpkgnotinstalled 'conflicting-package-one'
+testsuccess aptget install conflicting-package-one
+testpkginstalled 'conflicting-package-one'
