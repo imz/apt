@@ -3,7 +3,7 @@
 
 Name: apt
 Version: 0.5.15lorg2
-Release: alt89
+Release: alt90
 
 Summary: Debian's Advanced Packaging Tool with RPM support
 Summary(ru_RU.UTF-8): Debian APT - Усовершенствованное средство управления пакетами с поддержкой RPM
@@ -607,6 +607,10 @@ exec 1>&2
 %_datadir/%name/tests/
 
 %changelog
+* Fri Apr  4 2025 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt90
+- tests: Decoupled testing just https from testing certificate pinning
+  (to prepare the framework for testing other features with https).
+
 * Sun Nov 24 2024 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt89
 - apt-get changelog: new Debian-compatible cmd; in ALT, it just reads it from
   the cache rather than downloads. (Thx Sergey Konev konevsa@) (ALT#51975)
