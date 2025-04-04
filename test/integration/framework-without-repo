@@ -606,10 +606,9 @@ testregexmatch() {
 
 	OUTPUT="${TMPWORKINGDIRECTORY}/rootdir/tmp/testregexmatch.output"
 
-	set +e
-	"$@" &> $OUTPUT
-	RESULT=$?
-	set -e
+	local result=0 # not to be overwritten inside the tested command ("$@")
+	"$@" &> $OUTPUT || result=$?
+	RESULT=$result # the global var to hold this value (could be overwritten)
 	local OUTPUT_STR
 	# disable IFS not to strip spaces at the beginning and the end of file
 	IFS= read -rd '' OUTPUT_STR <"$OUTPUT" ||
@@ -660,10 +659,9 @@ testpartsexhaust() {
 
 	OUTPUT="${TMPWORKINGDIRECTORY}/rootdir/tmp/testregexmatch.output"
 
-	set +e
-	"$@" &> $OUTPUT
-	RESULT=$?
-	set -e
+	local result=0 # not to be overwritten inside the tested command ("$@")
+	"$@" &> $OUTPUT || result=$?
+	RESULT=$result # the global var to hold this value (could be overwritten)
 	local OUTPUT_STR
 	# disable IFS not to strip spaces at the beginning and the end of file
 	read -rd '' OUTPUT_STR <"$OUTPUT" ||
@@ -769,11 +767,9 @@ testpkginstalled() {
 getpackageversion() {
 	local result=
 
-	set +e
 	result=$(rpm \
 		 -q --qf '%{EVR}\n' "$@" \
-		 2>/dev/null)
-	set -e
+		 2>/dev/null ||:)
 
 	echo $result
 }
@@ -799,10 +795,9 @@ testsuccess() {
 
 	if [ $# -gt 0 ]; then
 		OUTPUT="${TMPWORKINGDIRECTORY}/rootdir/tmp/testsuccess.output"
-		set +e
-		"$@" &> $OUTPUT
-		RESULT=$?
-		set -e
+		local result=0 # not to be overwritten inside the tested command ("$@")
+		"$@" &> $OUTPUT || result=$?
+		RESULT=$result # the global var to hold this value (could be overwritten)
 	fi
 
 	if [ $RESULT -eq 0 ]; then
@@ -831,10 +826,9 @@ testfailure() {
 
 	if [ $# -gt 0 ]; then
 		OUTPUT="${TMPWORKINGDIRECTORY}/rootdir/tmp/testfailure.output"
-		set +e
-		"$@" &> $OUTPUT
-		RESULT=$?
-		set -e
+		local result=0 # not to be overwritten inside the tested command ("$@")
+		"$@" &> $OUTPUT || result=$?
+		RESULT=$result # the global var to hold this value (could be overwritten)
 	fi
 
 	if [ $RESULT -eq 0 ]; then
