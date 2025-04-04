@@ -610,6 +610,7 @@ exec 1>&2
 * Fri Apr  4 2025 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt90
 - tests: Decoupled testing just https from testing certificate pinning
   (to prepare the framework for testing other features with https).
+- tests & checkinstall subpkgs: cache & re-use generated certs etc (for speed).
 
 * Sun Nov 24 2024 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt89
 - apt-get changelog: new Debian-compatible cmd; in ALT, it just reads it from
