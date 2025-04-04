@@ -142,8 +142,8 @@ BuildArch: noarch
 Requires: rpm-build
 Requires: /usr/bin/genbasedir
 # optional
-%global complete_reqs_of_tests %name-https /usr/sbin/nginx /usr/bin/openssl
-%global reqs_of_tests_to_filter_out \\(%name-https\\|/usr/sbin/nginx\\|nginx\\|/usr/bin/openssl\\|openssl\\)
+%global complete_reqs_of_tests %name-https /usr/sbin/nginx tinyproxy /usr/bin/openssl
+%global reqs_of_tests_to_filter_out \\(%name-https\\|/usr/sbin/nginx\\|nginx\\|/usr/bin/openssl\\|openssl\\|/usr/bin/tinyproxy\\|tinyproxy\\)
 %filter_from_requires \,^%reqs_of_tests_to_filter_out\($\|[[:blank:]]\),d
 
 # {{{ descriptions

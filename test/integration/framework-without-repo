@@ -341,6 +341,10 @@ END
 	# involved (so that all edit the same place)
 	readonly APT_TEST_PINNING_CONF=$TMPWORKINGDIRECTORY/rootdir/etc/apt/apt.conf.d/81https-pinning.conf
 
+	# global var to be conveniently re-used in tests, where proxy for HTTP is
+	# involved (so that all edit the same place)
+	readonly APT_TEST_PROXY_FOR_HTTP_CONF=$TMPWORKINGDIRECTORY/rootdir/etc/apt/apt.conf.d/81http-proxy.conf
+
 	# cleanup the environment a bit
 	export PATH="${PATH}:/usr/local/sbin:/usr/sbin:/sbin"
 	export LC_ALL=C.UTF-8

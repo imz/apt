@@ -18,6 +18,30 @@ print_failed_lists()
 
 aptcdrom() { runapt apt-cdrom "${CDROM_OPTS[@]}" "$@"; }
 
+with_unset_proxy_for_http() {
+    local ret=0
+
+    # save current conf
+    local -r conf_before=$TMPWORKINGDIRECTORY/apt-proxy-for-http.conf
+    rm -f "$conf_before"
+    if [ -e "$APT_TEST_PROXY_FOR_HTTP_CONF" ]; then
+	mv "$APT_TEST_PROXY_FOR_HTTP_CONF" -T "$conf_before"
+    fi
+
+    # (here, we could insert another proxy conf into the file, the code is ready)
+    http_proxy= https_proxy= \
+	      "$@" ||
+	ret=$?
+
+    # clean up (restore the conf)
+    rm -f "$APT_TEST_PROXY_FOR_HTTP_CONF"
+    if [ -e "$conf_before" ]; then
+	mv "$conf_before" -T "$APT_TEST_PROXY_FOR_HTTP_CONF"
+    fi
+
+    return "$ret"
+}
+
 with_pinned() {
     local -r another_crt="$1"; shift
 
@@ -193,11 +217,13 @@ generaterepository_and_switch_sources() {
 			;;
 
 		https*_proxy*)
+			tinyproxysetup
 			nginxsetup https only1ip
 			REPO_STORAGE="$NGINX_STORAGE"
 			;;
 
 		http*_proxy*)
+			tinyproxysetup
 			nginxsetup only1ip
 			REPO_STORAGE="$NGINX_STORAGE"
 			;;
@@ -275,20 +301,38 @@ generaterepository_and_switch_sources() {
 			;;
 	esac
 
-	# TODO: set up proxy access; check that it's actually used by unsetting proxy
+	# set up proxy access; check that it's actually used by unsetting proxy
 	case "$APT_TEST_METHOD" in
 	    http*_proxy*)
+		cat >| "$APT_TEST_PROXY_FOR_HTTP_CONF" <<- END
+		// The prefix http:// seems to be required by apt.
+		Acquire::http::Proxy	"http://$TINYPROXY_HOST:$TINYPROXY_PORT";
+		END
 
-		# Doing HTTP(S) through proxy? (And if we are setting up
-		# the repo, I believe we are going to access it with apt-get.)
-		# But the tests are not implemented yet, so mark the tests
-		# correspondingly:
-		APT_TEST_XFAIL=yes
+		# Redefine aptget() to test that the repo is actually
+		# accessed via proxy in any test where it's called.
+		# (Redefined here because it makes sense only after sources.list
+		# have been set up.) Doing it in every test seems like overdoing,
+		# but well, it doesn't hurt much.
+		aptget() {
+		    aptget_try_bad_then_normal with_unset_proxy_for_http "$@"
+		}
+
+		# Doing HTTPS through proxy? (And if we are setting up the repo,
+		# I believe we are going to access it with apt-get.) So, remember
+		# that it's not implemented yet and mark the tests correspondingly.
+		case "$APT_TEST_METHOD" in
+		    https*)
+			APT_TEST_XFAIL=yes
+			;;
+		esac
 
 		;;
 	esac
 
 	# pin the cert & use another one for checking pinning
+	# (We prioritize checking pinning over proxy-only access;
+	# so we override aptget() here after the http*_proxy* override.)
 	case "$APT_TEST_METHOD" in
 	    https*_pinned*)
 		cat >| "$APT_TEST_PINNING_CONF" <<- END
@@ -317,6 +361,13 @@ generaterepository_and_switch_sources() {
 		http|http_*|https|https_*)
 			nginxrestart
 			;;
+	esac
+
+	# Start the proxy.
+	case "$APT_TEST_METHOD" in
+		http*_proxy*)
+		    tinyproxyrestart
+		    ;;
 	esac
 
 	# Overwrite old sources.list.
@@ -376,6 +427,65 @@ generaterepository_and_switch_sources() {
 }
 
 readonly ALLOWED_FROM_IP=127.0.0.2
+
+# Output/effects:
+# * global vars representing the actual configuration of the server
+#   (convenient for use in other scripts):
+#   TINYPROXY_HOST, TINYPROXY_PORT, TINYPROXY_PIDFILE;
+# * the server configured, ready for tinyproxyrestart()
+tinyproxysetup() {
+
+	mkdir -p $TMPWORKINGDIRECTORY/tinyproxy
+
+        TINYPROXY_HOST=localhost
+        TINYPROXY_PORT=$((8580+${PARALLEL_SLOT:-0}))
+        TINYPROXY_PIDFILE=$TMPWORKINGDIRECTORY/tinyproxy/tinyproxy.pid
+	TINYPROXYLOG=$TMPWORKINGDIRECTORY/tinyproxy/tinyproxy.log
+
+	cat >| $TMPWORKINGDIRECTORY/tinyproxy/tinyproxy.conf << ENDCONFIG
+PidFile "$TINYPROXY_PIDFILE"
+Timeout 70
+MaxClients 2
+
+Port $TINYPROXY_PORT
+# localhost (cannot be given by name)
+Listen 127.0.0.1
+
+Bind $ALLOWED_FROM_IP
+
+# no other way to see the log than in a file; daemon cannot be made to use stdout:
+# https://github.com/tinyproxy/tinyproxy/pull/122/commits/894a0aab3babfbe7d68fbc446ba50a848413992b#diff-46b881d73b3e6407e73cdcc59cdaf1de4bb5a0122acf867cb88bdd28ca34ca45R73
+LogFile "$TINYPROXYLOG"
+
+ENDCONFIG
+}
+
+tinyproxyrestart() {
+	local -r TINYPROXYLOG=$TMPWORKINGDIRECTORY/tinyproxy/process-stderr.log
+
+	! [ -s "$TINYPROXY_PIDFILE" ] || {
+		echo 'Stopping tinyproxy with a signal (before a restart).'
+		kill -TERM "$(cat "$TINYPROXY_PIDFILE")"
+	} &>>"$TINYPROXYLOG"
+	rm -f "$TINYPROXY_PIDFILE"
+
+	# The wait_for_file workaround is not be needed if tinyproxy fully conforms
+	# to the "traditional UNIX forking daemon" behavior described
+	# in systemd.service(5); we don't know whether it does. (Nginx doesn't.)
+	/usr/bin/tinyproxy -c $TMPWORKINGDIRECTORY/tinyproxy/tinyproxy.conf &&
+		wait_for_file "$TINYPROXY_PIDFILE" &&
+		local -r TINYPROXYPID="$(cat "$TINYPROXY_PIDFILE" 2>>"$TINYPROXYLOG")" &&
+		[ -n "$TINYPROXYPID" ] ||
+			{ { echo TINYPROXYLOG:; cat "$TINYPROXYLOG"; } >&6 ||:
+			  msgdie 'tinyproxy failed to start normally'
+			}
+
+	addtrap 'prefix' \
+			'kill -TERM %q ||:; [ "$EXIT_CODE" = 0 ] || if [ -e %q ]; then echo TINYPROXYLOG:; cat %q ||:; fi >&6;' \
+			"$TINYPROXYPID" \
+			"$TINYPROXYLOG" \
+			"$TINYPROXYLOG"
+}
 
 # Output/effects:
 # * global vars representing the actual configuration of the server
