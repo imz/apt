@@ -275,25 +275,9 @@ generaterepository_and_switch_sources() {
 		# have been set up.) Doing it in every test seems like overdoing,
 		# but well, it doesn't hurt much.
 		aptget() {
-		    echo 'Running apt-get with a non-matching pinned cert'
-		    echo 'We assert that it fails'
-		    # FIXME: we could use msgfail or even testfailure
-		    # here; the difficulty is that it'd be nested
-		    ! with_pinned \
-		      "$APT_TEST_INTERMEDIATES"/cert/another@"$NGINX_HOST"/crt \
-		      aptget_without_first_trying_repo "$@" ||
-			msgdie 'apt-get did not fail with a non-matching pinned cert as expected'
-		    # FIXME: show the output when dying.
-		    #
-		    # This test (the assertion) is significant only
-		    # in a positive context (when aptget is expected
-		    # to succeed). Otherwise, the failure might be
-		    # due to a different reason; then we go on and
-		    # at least get the correct return code from the
-		    # normal run below.
-
-		    echo 'Running apt-get normally (perhaps with a _matching_ pinned cert)'
-		    aptget_without_first_trying_repo "$@"
+		    aptget_try_bad_then_normal \
+			"with_pinned $APT_TEST_INTERMEDIATES/cert/another@$NGINX_HOST/crt" \
+			"$@"
 		}
 		;;
 	esac
