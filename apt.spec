@@ -610,7 +610,10 @@ exec 1>&2
 
 %changelog
 * Fri Apr  4 2025 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt90
-- http: Implemented Debug::Connect config parameter (a dir; if set, operations
+- http:
+  + Fixed corrupt files. (The end of valid data from read(2) was overrun
+  when looking for the end of headers, so headers and content got corrupt.)
+  + Implemented Debug::Connect config parameter (a dir; if set, operations
   on the FDs from Connect() are logged there with all the data).
 - tests:
   + Decoupled testing just HTTPS from testing certificate pinning.
