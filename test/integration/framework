@@ -24,6 +24,20 @@ print_debug_connect()
     popd >/dev/null
 }
 
+print_nonclose_in_debug_connect()
+{
+    pushd "$APT_DEBUG_CONNECT_DIR" >/dev/null
+    find ./ -type f -print0 | sort -z |
+	xargs --no-run-if-empty -0 -L1 tail -n1 |
+	grep -v -Fe 'Close() = 0' ||:
+    popd >/dev/null
+}
+
+check_close_in_debug_connect()
+{
+    testempty print_nonclose_in_debug_connect
+}
+
 aptcdrom() { runapt apt-cdrom "${CDROM_OPTS[@]}" "$@"; }
 
 with_unset_proxy_for_http() {
@@ -373,6 +387,8 @@ generaterepository_and_switch_sources() {
 		    } >$TMPWORKINGDIRECTORY/rootdir/etc/apt/apt.conf.d/81dbg-conn.conf
 		    addtrap 'prefix' \
 			    '[ "$EXIT_CODE" = 0 ] || print_debug_connect >&6;'
+		    addtrap 'prefix' \
+			    'check_close_in_debug_connect;'
 		    ;;
 	esac
 
