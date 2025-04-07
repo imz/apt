@@ -254,10 +254,10 @@ sed -i 's, > /dev/null 2>&1,,' buildlib/tools.m4
 gettextize --force --quiet --no-changelog --symlink
 %autoreconf
 
-# std::optional support
+# support for std::optional (C++17), std::string::starts_with (C++20)
 # (We set a GNU dialect in -std= in order to minimally diverge
 # from GCC's default, which is also -std=gnu++NN.)
-%add_optflags -std=gnu++17
+%add_optflags -std=gnu++20
 %ifarch %e2k
 %remove_optflags -Wno-error
 %endif
