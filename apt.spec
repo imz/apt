@@ -617,6 +617,7 @@ exec 1>&2
 - New sample configs in apt.conf.d:
   + 01-Debug-pkgMarkInstall.conf: the common options for bug reports (ALT#49565)
   + 01-Debug-Acquire.conf: for debugging fetching and connections
+  + 01-UI.conf: to turn off the columnar output from 0.5.15lorg2-alt88 in the UI
 
 * Fri Apr  4 2025 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt90
 - http:
