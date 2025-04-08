@@ -328,10 +328,10 @@
      </Para></ListItem>
      </VarListEntry>
 
-     <VarListEntry><term><option/--no-list-columns/</>
+     <VarListEntry><term><option/--list-columns/</>
      <ListItem><Para>
-     Display package lists without arranging them in columns. By default,
-     package lists are printed in the style of the "ls" command.
+     Print package lists in the style of the "ls" command. By default,
+     package lists are displayed without arranging them in columns.
      Configuration Item: <literal/APT::Get::List-Columns/.
      </Para></ListItem>
      </VarListEntry>

@@ -526,7 +526,7 @@ bool ShowList(std::ostream &out, const std::string &Title, std::string List, con
    // and additional spaces. In this case, List cannot be reliably
    // split into packages, so we should not use columnar output. This
    // case can be detected by checking if VersionsList is empty.
-   bool const ListColumns = _config->FindB("APT::Get::List-Columns", true)
+   bool const ListColumns = _config->FindB("APT::Get::List-Columns", false)
       && !VersionsList.empty();
 
    out << Title << std::endl;
