@@ -522,7 +522,7 @@ msgstr "Наступныя утрыманыя пакеты будуць зьме
 #: cmdline/apt-get.cc:644 cmdline/apt-shell.cc:695
 #, c-format
 msgid "%s (due to %s) "
-msgstr "%s (з-за %s)"
+msgstr "%s (з-за %s) "
 
 #: cmdline/apt-get.cc:652 cmdline/apt-shell.cc:703
 msgid ""

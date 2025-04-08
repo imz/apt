@@ -523,7 +523,7 @@ msgstr "以下の保留パッケージが変更されます"
 #: cmdline/apt-get.cc:644 cmdline/apt-shell.cc:695
 #, c-format
 msgid "%s (due to %s) "
-msgstr "%s (%s に依存)"
+msgstr "%s (%s に依存) "
 
 #: cmdline/apt-get.cc:652 cmdline/apt-shell.cc:703
 msgid ""

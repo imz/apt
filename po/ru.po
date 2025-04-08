@@ -530,7 +530,7 @@ msgstr "Следующие удерживаемые пакеты будут изменены:"
 #: cmdline/apt-get.cc:647 cmdline/apt-shell.cc:696
 #, c-format
 msgid "%s (due to %s) "
-msgstr "%s (по причине %s)"
+msgstr "%s (по причине %s) "
 
 #: cmdline/apt-get.cc:655 cmdline/apt-shell.cc:704
 msgid ""
