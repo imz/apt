@@ -3,7 +3,7 @@
 
 Name: apt
 Version: 0.5.15lorg2
-Release: alt90
+Release: alt91
 
 Summary: Debian's Advanced Packaging Tool with RPM support
 Summary(ru_RU.UTF-8): Debian APT - Усовершенствованное средство управления пакетами с поддержкой RPM
@@ -611,6 +611,10 @@ exec 1>&2
 %_datadir/%name/tests/
 
 %changelog
+* Tue Apr  8 2025 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt91
+- New sample config: apt.conf.d/01-Debug-pkgMarkInstall.conf (the common options
+  for bug reports) (ALT#49565)
+
 * Fri Apr  4 2025 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt90
 - http:
   + Fixed corrupt files. (The end of valid data from read(2) was overrun
