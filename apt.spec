@@ -294,7 +294,7 @@ mkdir -p %buildroot%_libdir/%name/tests
 %makeinstall includedir=%buildroot%_includedir/apt-pkg
 
 install -pm644 apt.conf %buildroot%_sysconfdir/%name/
-install -pm644 apt.conf.d/01-Debug-pkgMarkInstall.conf -t %buildroot%_sysconfdir/%name/apt.conf.d/
+install -pm644 apt.conf.d/* -t %buildroot%_sysconfdir/%name/apt.conf.d/
 
 # This is still needed.
 ln -sf rsh %buildroot%_libdir/%name/methods/ssh
@@ -573,6 +573,7 @@ exec 1>&2
 %config(noreplace) %_sysconfdir/%name/%name.conf
 %dir %_sysconfdir/%name/*.d
 %config(noreplace) %_sysconfdir/%name/%name.conf.d/01-Debug-pkgMarkInstall.conf
+%config(noreplace) %_sysconfdir/%name/%name.conf.d/01-Debug-Acquire.conf
 %_mandir/man?/*
 %doc README* TODO COPYING AUTHORS* ChangeLog-rpm.old.bz2 doc/examples contrib
 
