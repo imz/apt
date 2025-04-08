@@ -574,6 +574,7 @@ exec 1>&2
 %dir %_sysconfdir/%name/*.d
 %config(noreplace) %_sysconfdir/%name/%name.conf.d/01-Debug-pkgMarkInstall.conf
 %config(noreplace) %_sysconfdir/%name/%name.conf.d/01-Debug-Acquire.conf
+%config(noreplace) %_sysconfdir/%name/%name.conf.d/01-UI.conf
 %_mandir/man?/*
 %doc README* TODO COPYING AUTHORS* ChangeLog-rpm.old.bz2 doc/examples contrib
 
