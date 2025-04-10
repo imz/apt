@@ -259,18 +259,28 @@ aptget_try_bad_then_normal() {
     # Count broken assertion here as another failure in tests
     # (that's what it is logically).
     ! $with_bad_context \
-      aptget_without_first_trying_repo "$@" \
-	|| msgfail "apt-get did not fail $with_bad_context as expected"
-    # FIXME: nested testfailure() would need solving OUTPUT collisions
-    # (example: test-apt-install-rejects-fake-rpm-archive_via_http_proxy)
-    #
-    # (Just dying would break normal result reporting
-    # in tests where this accidentally succeeds,
-    # e.g., in case of a "dist-upgrade" that has nothing to do
-    # because "apt-get update" didn't fetch anything because of
-    # no implementation yet (i.e., "apt-get update" should have xfailed);
-    # example: test-apt-distupgrade-simple_via_https_proxy testcase.)
-    #|| msgdie "apt-get did not fail $with_bad_context as expected'
+      aptget_without_first_trying_repo "$@" || {
+	msgfail "apt-get did not fail $with_bad_context as expected"
+	# FIXME: nested testfailure() would need solving OUTPUT collisions
+	# (example: test-apt-install-rejects-fake-rpm-archive_via_http_proxy)
+
+	# Just dying would break normal result reporting
+	# in tests where this accidentally succeeds,
+	# e.g., in case of a "dist-upgrade" that has nothing to do
+	# because "apt-get update" didn't fetch anything because of
+	# no implementation yet (i.e., "apt-get update" should have xfailed);
+	# example: test-apt-distupgrade-simple_via_https_proxy testcase.
+	#msgdie "apt-get did not fail $with_bad_context as expected'
+
+	# The solution is just to skip the rest on the first broken assertion.
+	# Anyway the rest has not much additional meaning for our testing.
+	# The overall result must be FAILED (or XFAILED) due to msgfail() above,
+	# which adds to the overall failure counter. (The difference to
+	# msgdie() is that msgdie() would abort with a non-zero exit code
+	# and would not let us simply count a test as XFAILED when we want to.)
+	msgskip
+	exit 0
+    }
 
     # This test (the assertion) is significant only
     # in a positive context (when aptget is expected
