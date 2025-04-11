@@ -84,6 +84,28 @@ wait_for_file() {
 	}
 }
 
+# Not to hang on waiting, we start a parallell subshell which
+# will kill it after a timeout (sleep). (Or which would just sleep,
+# and we'd wait -n on either processes, then kill it in the main
+# script.) Idea: https://stackoverflow.com/a/22384727/94687 .
+ensure_it_is_killed_in_a_while() {
+    local -r old_pid="$1"; shift
+
+    local killer_pid=
+    kill -0 "$old_pid" &>/dev/null &&
+	{ (sleep 5 &&
+	       kill "$old_pid" &&
+	       kill -0 "$old_pid" &>/dev/null &&
+	       sleep 5 &&
+	       kill -0 "$old_pid" &>/dev/null &&
+	       kill -KILL "$old_pid" ||: ) &
+	  killer_pid=$!
+	}
+    local -r killer_pid
+    wait "$old_pid" ||:
+    [ -z "$killer_pid" ] || { kill -0 "$killer_pid" &>/dev/null && kill "$killer_pid"; } ||:
+}
+
 msgdie() { printf "${CERROR}E: %s${CNORMAL}\n" "$1" >&6; exit 1; }
 msgwarn() { printf "${CWARNING}W: %s${CNORMAL}\n" "$1" >&6; }
 msgmsg() { printf "${CMSG}%s${CNORMAL}\n" "$1" >&6; }
@@ -1050,25 +1072,8 @@ bg_aptshell_exit_helper() {
 	local -r old_pid="$1"; shift
 
 	[ -z "$old_input_fd" ] || echo exit >&"$old_input_fd" ||:
-	[ -z "$old_pid" ] || {
-	    echo >&6 "Exiting the bg apt-shell (pid $old_pid) (ignoring its status)."
-	    # Not to hang on waiting, we start a parallell subshell which
-	    # will kill it after a timeout (sleep). (Or which would just sleep,
-	    # and we'd wait -n on either processes, then kill it in the main
-	    # script.) Idea: https://stackoverflow.com/a/22384727/94687 .
-	    local killer_pid=
-	    kill -0 "$old_pid" &&
-		{ (sleep 5 &&
-		       kill "$old_pid" &&
-		       kill -0 "$old_pid" &&
-		       sleep 5 &&
-		       kill -KILL "$old_pid" ||: ) &
-		  killer_pid=$!
-		}
-	    local -r killer_pid
-	    wait "$old_pid" ||:
-	    [ -z "$killer_pid" ] || { kill -0 "$killer_pid" && kill "$killer_pid"; } ||:
-	}
+	[ -z "$old_pid" ] ||
+	    ensure_it_is_killed_in_a_while "$old_pid"
 }
 
 bg_aptshell_restart() {
