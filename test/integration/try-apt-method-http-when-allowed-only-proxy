@@ -1,0 +1,63 @@
+#!/bin/bash
+set -eu
+
+TESTDIR=$(readlink -f $(dirname $0))
+
+case "$APT_TEST_METHOD" in
+	http*)
+		:
+		;;
+	*)
+		echo 'SKIP (makes sense only for APT_TEST_METHOD being http*)' >&2
+		exit 0
+		;;
+esac
+
+. $TESTDIR/framework
+
+setupenvironment
+
+buildpackage 'simple-package'
+
+generaterepository_and_switch_sources "$TMPWORKINGDIRECTORY/usr/src/RPM/RPMS"
+
+# Deny direct accesses on the server, check this (without any proxy);
+# and then check that access works through proxy.
+
+msgmsg 'Unsetting proxy for apt. Reconfiguring http-server to deny direct access'
+rm -f "$APT_TEST_PROXY_FOR_HTTP_CONF" ||:
+unset http{,s}_proxy # if they were exported, now nothing will be set for children
+
+tinyproxysetup
+case "$APT_TEST_METHOD" in
+
+    https*)
+	nginxsetup https only1ip
+	;;
+
+    http*)
+	nginxsetup only1ip
+	;;
+
+esac
+tinyproxyrestart
+nginxrestart
+
+testfailure aptget update
+
+testpkgnotinstalled 'simple-package'
+testfailure aptget install 'simple-package'
+testpkgnotinstalled 'simple-package'
+
+# And then, check that access works through proxy (in the script which
+# we are sourced from).
+# The prefix http:// seems to be required by apt.
+readonly APT_TEST_HTTP_PROXY="http://$TINYPROXY_HOST:$TINYPROXY_PORT"
+
+# Doing HTTPS through proxy? So, remember that it's not implemented
+# yet and mark the test correspondingly.
+case "$APT_TEST_METHOD" in
+    https*)
+	APT_TEST_XFAIL=yes
+	;;
+esac

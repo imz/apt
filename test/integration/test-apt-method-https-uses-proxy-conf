@@ -1,0 +1,28 @@
+#!/bin/bash
+set -eu
+
+case "$APT_TEST_METHOD" in
+	https|https_*)
+		:
+		;;
+	*)
+		echo 'SKIP (makes sense only for APT_TEST_METHOD being https*)' >&2
+		exit 0
+		;;
+esac
+
+TESTDIR=$(readlink -f $(dirname $0))
+
+. $TESTDIR/framework-without-repo
+prereq $TESTDIR/try-apt-method-http-when-allowed-only-proxy
+
+msgmsg "Setting proxy for https in apt in config: $APT_TEST_HTTP_PROXY"
+cat > "$APT_TEST_PROXY_FOR_HTTP_CONF" <<- END
+Acquire::https::Proxy	"$APT_TEST_HTTP_PROXY";
+END
+
+testsuccess aptget update
+
+testpkgnotinstalled 'simple-package'
+testsuccess aptget install 'simple-package'
+testpkginstalled 'simple-package'
