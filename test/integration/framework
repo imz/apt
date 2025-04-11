@@ -499,7 +499,9 @@ tinyproxyrestart() {
 
 	! [ -s "$TINYPROXY_PIDFILE" ] || {
 		echo 'Stopping tinyproxy with a signal (before a restart).'
-		kill -TERM "$(cat "$TINYPROXY_PIDFILE")"
+		ensure_it_is_killed_in_a_while "$(cat "$TINYPROXY_PIDFILE")"
+		! [ -s "$TINYPROXY_PIDFILE" ] ||
+		    msgwarn 'TINYPROXY_PIDFILE present after stop'
 	} &>>"$TINYPROXYLOG"
 	rm -f "$TINYPROXY_PIDFILE"
 
