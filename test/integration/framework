@@ -627,7 +627,7 @@ nginxrestart() {
 
 	! [ -s "$NGINX_PIDFILE" ] || {
 		echo 'Stopping nginx with a signal (before a restart).'
-		kill -TERM "$(cat "$NGINX_PIDFILE")"
+		ensure_it_is_killed_in_a_while "$(cat "$NGINX_PIDFILE")"
 	} &>>"$NGINXLOG"
 	rm -f "$NGINX_PIDFILE"
 
