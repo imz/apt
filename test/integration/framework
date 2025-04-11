@@ -503,7 +503,7 @@ tinyproxyrestart() {
 	} &>>"$TINYPROXYLOG"
 	rm -f "$TINYPROXY_PIDFILE"
 
-	# The wait_for_file workaround is not be needed if tinyproxy fully conforms
+	# The wait_for_file workaround is not needed if tinyproxy fully conforms
 	# to the "traditional UNIX forking daemon" behavior described
 	# in systemd.service(5); we don't know whether it does. (Nginx doesn't.)
 	/usr/bin/tinyproxy -c $TMPWORKINGDIRECTORY/tinyproxy/tinyproxy.conf &&
