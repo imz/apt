@@ -514,6 +514,9 @@ tinyproxyrestart() {
 			  msgdie 'tinyproxy failed to start normally'
 			}
 
+	# If we have started it one more time, the old trap would output the same log
+	# one more time (FIXME: use unique files for each instance), and killing
+	# would output an error 'No such process', but that's not a problem.
 	addtrap 'prefix' \
 			'kill -TERM %q ||:; [ "$EXIT_CODE" = 0 ] || if [ -e %q ]; then echo TINYPROXYLOG:; cat %q ||:; fi >&6;' \
 			"$TINYPROXYPID" \
