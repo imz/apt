@@ -498,10 +498,14 @@ ENDCONFIG
 tinyproxyrestart() {
 
 	! [ -s "$TINYPROXY_PIDFILE" ] || {
-		echo 'Stopping tinyproxy with a signal (before a restart).'
-		ensure_it_is_killed_in_a_while "$(cat "$TINYPROXY_PIDFILE")"
-		! [ -s "$TINYPROXY_PIDFILE" ] ||
-		    msgwarn 'TINYPROXY_PIDFILE present after stop'
+	    echo 'Stopping tinyproxy with a signal (before a restart).'
+	    local -r old_pid="$(cat "$TINYPROXY_PIDFILE")"
+	    kill "$old_pid"
+	    # we can't "wait" for pid, because the daemon is not a child
+	    wait_for_nofile "$TINYPROXY_PIDFILE" 5000 ||
+		kill -KILL "$old_pid" &>/dev/null ||:
+	    wait_until "! kill -0 $old_pid &>/dev/null" 5000 ||
+		msgdie 'Timeout, could not kill the old tinyproxy'
 	} &>>"$TINYPROXYLOG"
 	rm -f "$TINYPROXY_PIDFILE"
 
