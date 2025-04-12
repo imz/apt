@@ -628,8 +628,14 @@ nginxrestart() {
 	local -r NGINXLOG=$TMPWORKINGDIRECTORY/nginx/process-stderr.log
 
 	! [ -s "$NGINX_PIDFILE" ] || {
-		echo 'Stopping nginx with a signal (before a restart).'
-		ensure_it_is_killed_in_a_while "$(cat "$NGINX_PIDFILE")"
+	    echo 'Stopping nginx with a signal (before a restart).'
+	    local -r old_pid="$(cat "$NGINX_PIDFILE")"
+	    kill "$old_pid"
+	    # we can't "wait" for pid, because the daemon is not a child
+	    wait_for_nofile "$NGINX_PIDFILE" 5000 ||
+		kill -KILL "$old_pid" &>/dev/null ||:
+	    wait_until "! kill -0 $old_pid &>/dev/null" 5000 ||
+		msgdie 'Timeout, could not kill the old nginx'
 	} &>>"$NGINXLOG"
 	rm -f "$NGINX_PIDFILE"
 
