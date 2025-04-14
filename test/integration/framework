@@ -219,31 +219,30 @@ generaterepository_and_switch_sources() {
 	#
 	# And set REPO_STORAGE accordingly.
 	case "$APT_TEST_METHOD" in
+	    http*)
+		local -a nginxsetup_opts=()
+		;;
+	esac
+	case "$APT_TEST_METHOD" in
+	    https*)
+	        nginxsetup_opts=("${nginxsetup_opts[@]}" https)
+		;;
+	esac
+	case "$APT_TEST_METHOD" in
+	    http*_proxy*)
+		tinyproxysetup
+	        nginxsetup_opts=("${nginxsetup_opts[@]}" only1ip)
+		;;
+	esac
+
+	case "$APT_TEST_METHOD" in
 
 		file|copy)
 			REPO_STORAGE="$TMPWORKINGDIRECTORY/usr/src/RPM/REPO"
 			;;
 
-		https*_proxy*)
-			tinyproxysetup
-			nginxsetup https only1ip
-			REPO_STORAGE="$NGINX_STORAGE"
-			;;
-
-		http*_proxy*)
-			tinyproxysetup
-			nginxsetup only1ip
-			REPO_STORAGE="$NGINX_STORAGE"
-			;;
-
-		https|https_*)
-			nginxsetup https
-			REPO_STORAGE="$NGINX_STORAGE"
-			;;
-
-		# less specific than https*
-		http|http_*)
-			nginxsetup
+		http*)
+			nginxsetup "${nginxsetup_opts[@]}"
 			REPO_STORAGE="$NGINX_STORAGE"
 			;;
 
