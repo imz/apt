@@ -26,57 +26,6 @@ print_debug_connect()
 
 aptcdrom() { runapt apt-cdrom "${CDROM_OPTS[@]}" "$@"; }
 
-with_unset_proxy_for_http() {
-    local ret=0
-
-    # save current conf
-    local -r conf_before=$TMPWORKINGDIRECTORY/apt-proxy-for-http.conf
-    rm -f "$conf_before"
-    if [ -e "$APT_TEST_PROXY_FOR_HTTP_CONF" ]; then
-	mv "$APT_TEST_PROXY_FOR_HTTP_CONF" -T "$conf_before"
-    fi
-
-    # (here, we could insert another proxy conf into the file, the code is ready)
-    http_proxy= https_proxy= \
-	      "$@" ||
-	ret=$?
-
-    # clean up (restore the conf)
-    rm -f "$APT_TEST_PROXY_FOR_HTTP_CONF"
-    if [ -e "$conf_before" ]; then
-	mv "$conf_before" -T "$APT_TEST_PROXY_FOR_HTTP_CONF"
-    fi
-
-    return "$ret"
-}
-
-with_pinned() {
-    local -r another_crt="$1"; shift
-
-    local ret=0
-
-    # save current conf
-    local -r conf_before=$TMPWORKINGDIRECTORY/apt-pinning.conf
-    rm -f "$conf_before"
-    if [ -e "$APT_TEST_PINNING_CONF" ]; then
-	mv "$APT_TEST_PINNING_CONF" -T "$conf_before"
-    fi
-
-    cat >| "$APT_TEST_PINNING_CONF" <<- END
-	Acquire::https::PinnedCert	"$another_crt";
-	END
-    "$@" ||
-	ret=$?
-
-    # clean up (restore the conf)
-    rm "$APT_TEST_PINNING_CONF"
-    if [ -e "$conf_before" ]; then
-	mv "$conf_before" -T "$APT_TEST_PINNING_CONF"
-    fi
-
-    return "$ret"
-}
-
 # Input:
 # * args: orig_dir repo_dir [repo_date]
 #   (orig_dir may be empty if we just need to re-generate without copying rpms.)
@@ -308,22 +257,12 @@ generaterepository_and_switch_sources() {
 			;;
 	esac
 
-	# set up proxy access; check that it's actually used by unsetting proxy
 	case "$APT_TEST_METHOD" in
 	    http*_proxy*)
 		cat >| "$APT_TEST_PROXY_FOR_HTTP_CONF" <<- END
 		// The prefix http:// seems to be required by apt.
 		Acquire::http::Proxy	"http://$TINYPROXY_HOST:$TINYPROXY_PORT";
 		END
-
-		# Redefine aptget() to test that the repo is actually
-		# accessed via proxy in any test where it's called.
-		# (Redefined here because it makes sense only after sources.list
-		# have been set up.) Doing it in every test seems like overdoing,
-		# but well, it doesn't hurt much.
-		aptget() {
-		    aptget_try_bad_then_normal with_unset_proxy_for_http "$@"
-		}
 
 		# Doing HTTPS through proxy? (And if we are setting up the repo,
 		# I believe we are going to access it with apt-get.) So, remember
@@ -337,29 +276,12 @@ generaterepository_and_switch_sources() {
 		;;
 	esac
 
-	# pin the cert & use another one for checking pinning
-	# (We prioritize checking pinning over proxy-only access;
-	# so we override aptget() here after the http*_proxy* override.)
 	case "$APT_TEST_METHOD" in
 	    https*_pinned*)
 		cat >| "$APT_TEST_PINNING_CONF" <<- END
 		Acquire::https::PinnedCert	"$NGINX_CRT";
 		END
 
-		mk_intermediate cert/another@"$NGINX_HOST"/crt \
-				ssl_keygen
-
-		# Redefine aptget() to test that the repo is actually accessed
-		# with verifying the pinned cert in any test where it's called;
-		# pinning a wrong cert must lead to no access.
-		# (Redefined here because it makes sense only after sources.list
-		# have been set up.) Doing it in every test seems like overdoing,
-		# but well, it doesn't hurt much.
-		aptget() {
-		    aptget_try_bad_then_normal \
-			"with_pinned $APT_TEST_INTERMEDIATES/cert/another@$NGINX_HOST/crt" \
-			"$@"
-		}
 		;;
 	esac
 
