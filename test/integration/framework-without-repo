@@ -221,10 +221,7 @@ runapt() {
 }
 aptconfig() { runapt apt-config "$@"; }
 aptcache() { runapt apt-cache "$@"; }
-aptget_without_first_trying_repo() { runapt apt-get "${CDROM_OPTS[@]}" "$@"; }
-# to be redefined, e.g., for tests with a repo
-# (to test features of access methods by first doing failing tries)
-aptget() { aptget_without_first_trying_repo "$@"; }
+aptget() { runapt apt-get "${CDROM_OPTS[@]}" "$@"; }
 aptmark() { runapt apt-mark "$@"; }
 
 exitwithstatus() {
@@ -600,10 +597,8 @@ aptgetinstallpackage() {
 	local PKGFILE="$(builtpackagefile "$NAME")"
 
 	msgmsg "Installing package via apt-get (as a file): $(basename "$PKGFILE")"
-	# Avoid aptget() here because it may want first to see a failure when
-	# trying to access the repo in an invalid way (as a means to test this),
-	# but it won't get a chance to see it because there is no repo access.
-	aptget_without_first_trying_repo install "$PKGFILE" \
+	# does no access to the repo
+	aptget install "$PKGFILE" \
 		   1>/dev/null
 }
 
