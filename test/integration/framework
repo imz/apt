@@ -259,10 +259,9 @@ generaterepository_and_switch_sources() {
 
 	case "$APT_TEST_METHOD" in
 	    http*_proxy*)
-		cat >| "$APT_TEST_PROXY_FOR_HTTP_CONF" <<- END
-		// The prefix http:// seems to be required by apt.
-		Acquire::http::Proxy	"http://$TINYPROXY_HOST:$TINYPROXY_PORT";
-		END
+		# The prefix http:// seems to be required by apt.
+		http_proxy="http://$TINYPROXY_HOST:$TINYPROXY_PORT"
+		export http_proxy
 
 		# Doing HTTPS through proxy? (And if we are setting up the repo,
 		# I believe we are going to access it with apt-get.) So, remember

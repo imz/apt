@@ -16,6 +16,7 @@ TESTDIR=$(readlink -f $(dirname $0))
 . $TESTDIR/framework-without-repo
 prereq $TESTDIR/try-apt-method-http-when-allowed-only-proxy
 
+# use the saved value
 msgmsg "Setting proxy for https in apt in config: $APT_TEST_HTTP_PROXY"
 cat > "$APT_TEST_PROXY_FOR_HTTP_CONF" <<- END
 Acquire::https::Proxy	"$APT_TEST_HTTP_PROXY";
