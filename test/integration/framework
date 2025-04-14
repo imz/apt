@@ -530,7 +530,7 @@ tinyproxyrestart() {
 # * the server configured, ready for nginxrestart()
 #   (if https: configured & ready except for the key)
 nginxsetup() {
-	local opt https only1ip
+	local opt https= only1ip=
 	for opt; do
 	    case "$opt" in
 
@@ -556,7 +556,7 @@ nginxsetup() {
 
 	NGINX_HOST=localhost
 	NGINX_PORT=$((8080+${PARALLEL_SLOT:-0}))
-	if [ -n "${https-}" ]; then
+	if [ -n "$https" ]; then
 	    NGINX_KEY=$TMPWORKINGDIRECTORY/nginx/cert.key
 	    NGINX_CRT=$TMPWORKINGDIRECTORY/nginx/cert.crt
 	fi
