@@ -28,6 +28,14 @@ readonly APT_TEST_HTTP_PROXY="$http_proxy"
 rm -f "$APT_TEST_PROXY_FOR_HTTP_CONF" ||:
 unset http{,s}_proxy # if they were exported, now nothing will be set for children
 
+# Skip the denial test in case we need a separate IPv6 address, because we don't.
+case "$APT_TEST_METHOD" in
+    http*_localhost6*)
+	echo 'SKIPPING the direct access denial check on IPv6 (we lack a 2nd address)' >&2
+	return # to where we were sourced from
+	;;
+esac
+
 testfailure aptget update
 
 testpkgnotinstalled 'simple-package'

@@ -178,6 +178,11 @@ generaterepository_and_switch_sources() {
 		;;
 	esac
 	case "$APT_TEST_METHOD" in
+	    http*_localhost6*)
+	        nginxsetup_opts=("${nginxsetup_opts[@]}" ipv6)
+	    ;;
+	esac
+	case "$APT_TEST_METHOD" in
 	    http*_proxy*)
 		tinyproxysetup
 	        nginxsetup_opts=("${nginxsetup_opts[@]}" only1ip)
@@ -366,7 +371,11 @@ generaterepository_and_switch_sources() {
 	APT_FETCHED_PARTIAL_MYARCH_PKGLIST="$APT_LISTS_DIR/partial/$encoded_myarch_pkglist_uri"
 }
 
-readonly ALLOWED_FROM_IP=127.0.0.2
+readonly ALLOWED_FROM=127.0.0.2
+# FIXME: use an address different from localhost6 (for testing
+# proxy-only connections; now we should skip that part of the tests);
+# consider RFC 4193 addresses as a solution (https://serverfault.com/a/935274/68972).
+readonly ALLOWED_FROM6=::1
 
 # Output/effects:
 # * global vars representing the actual configuration of the server
@@ -391,7 +400,8 @@ Port $TINYPROXY_PORT
 # localhost (cannot be given by name)
 Listen 127.0.0.1
 
-Bind $ALLOWED_FROM_IP
+Bind $ALLOWED_FROM
+Bind $ALLOWED_FROM6
 
 # no other way to see the log than in a file; daemon cannot be made to use stdout:
 # https://github.com/tinyproxy/tinyproxy/pull/122/commits/894a0aab3babfbe7d68fbc446ba50a848413992b#diff-46b881d73b3e6407e73cdcc59cdaf1de4bb5a0122acf867cb88bdd28ca34ca45R73
@@ -459,7 +469,7 @@ tinyproxyrestart() {
 # * the server configured, ready for nginxrestart()
 #   (if https: configured & ready except for the key)
 nginxsetup() {
-	local opt https= only1ip=
+	local opt https= only1ip= ipv6=
 	for opt; do
 	    case "$opt" in
 
@@ -471,6 +481,10 @@ nginxsetup() {
 		    only1ip=yes
 		    ;;
 
+		ipv6)
+		    ipv6=yes
+		    ;;
+
 		*)
 		    msgdie "unknown nginxsetup opt: $opt"
 		    ;;
@@ -479,11 +493,12 @@ nginxsetup() {
 	done
 	local -r https
 	local -r only1ip
+	local -r ipv6
 
 	mkdir -p $TMPWORKINGDIRECTORY/nginx
 	mkdir -p $TMPWORKINGDIRECTORY/nginx/tmp
 
-	NGINX_HOST=localhost
+	NGINX_HOST=localhost${ipv6:+6}
 	NGINX_PORT=$((8080+${PARALLEL_SLOT:-0}))
 	if [ -n "$https" ]; then
 	    NGINX_KEY=$TMPWORKINGDIRECTORY/nginx/cert.key
@@ -521,8 +536,8 @@ http {
 	error_log stderr;
 
 	server {
-		listen $NGINX_PORT ${https:+ssl};
-		server_name $NGINX_HOST localhost.localdomain;
+		listen ${ipv6:+[::]:}$NGINX_PORT ${https:+ssl};
+		server_name $NGINX_HOST localhost${ipv6:+6}.localdomain;
 
 	${https:+
 		ssl_certificate	$NGINX_CRT;
@@ -539,7 +554,8 @@ http {
 			autoindex on;
 
 		${only1ip:+
-			allow $ALLOWED_FROM_IP;
+			allow $ALLOWED_FROM;
+			allow $ALLOWED_FROM6;
 			deny all;
 		}
 
