@@ -17,6 +17,15 @@ filter_methods_to_skip() {
     local x
     for x; do
 
+	case "$x" in
+	    https_*_proxy*)
+		# Those make almost no sense at all
+		# because the proxy config is not honored for https now.
+		# However, we leave just https_proxy* ones to demonstrate this.
+		continue
+		;;
+	esac
+
 	echo "$x"
     done
 }
