@@ -155,19 +155,12 @@ msgdone() {
 		printf "${CDONE}DONE${CNORMAL}\n" >&6;
 	fi
 }
-getaptconfig() {
-	if [ -f ./aptconfig.conf ]; then
-            echo './aptconfig.conf'
-	elif [ -f ../aptconfig.conf ]; then
-            echo '../aptconfig.conf'
-        fi
-}
 runapt() {
 	msgdebug "CWD: $PWD"
-	msgdebug "Executing: APT_CONFIG=$(getaptconfig) ${CCMD}$*${CDEBUG} "
+	msgdebug "Executing: APT_CONFIG=./aptconfig.conf ${CCMD}$*${CDEBUG} "
 	local CMD="$1"
 	shift
-	APT_CONFIG="$(getaptconfig)" $CMD "$@"
+	APT_CONFIG=./aptconfig.conf $CMD "$@"
 }
 aptconfig() { runapt apt-config "$@"; }
 aptcache() { runapt apt-cache "$@"; }
