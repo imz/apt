@@ -10,4 +10,16 @@
 # As for the _dbgconn modifier, tests with it are run first (to see more
 # debug info if it takes much time waiting in tests and so the time limit
 # is exceeded before all tests are complete).
-readonly -a APT_TEST_ALL_METHODS=(file http{,s{,_pinned}}{,_proxy}{_dbgconn,} copy cdrom)
+APT_TEST_ALL_METHODS=(file http{,s{,_pinned}}{,_proxy}{_dbgconn,} copy cdrom)
+
+# filter out
+filter_methods_to_skip() {
+    local x
+    for x; do
+
+	echo "$x"
+    done
+}
+APT_TEST_ALL_METHODS=($(filter_methods_to_skip "${APT_TEST_ALL_METHODS[@]}"))
+
+readonly -a APT_TEST_ALL_METHODS
