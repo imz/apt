@@ -1,0 +1,49 @@
+#!/bin/bash
+set -eu
+
+TESTDIR=$(readlink -f $(dirname $0))
+
+case "$APT_TEST_METHOD" in
+	http*_localhost6*) # and list other quasi-methods like this if any!
+		:
+		;;
+	*)
+		echo 'SKIP (makes sense only for unusual connection to src host, like IPv6)' >&2
+		exit 0
+		;;
+esac
+
+. $TESTDIR/framework
+
+setupenvironment
+
+buildpackage 'simple-package'
+
+generaterepository_and_switch_sources "$TMPWORKINGDIRECTORY/usr/src/RPM/RPMS"
+
+# First, check that we can't connect to the "usual" localhost.
+
+msgmsg 'Substituting usual localhost into sources.list'
+readonly APT_TEST_ORIG_SRCLIST=sources.list.orig
+mv rootdir/etc/apt/sources.list -T "$APT_TEST_ORIG_SRCLIST"
+set_regex_quote_str APT_SOURCES_SITE_RE "://$APT_SOURCES_SITE"
+readonly APT_SOURCES_SITE_RE
+sed -Ee "s|$APT_SOURCES_SITE_RE|://localhost|" \
+    <"$APT_TEST_ORIG_SRCLIST" \
+    >rootdir/etc/apt/sources.list
+
+testfailure aptget update
+
+testpkgnotinstalled 'simple-package'
+testfailure aptget install 'simple-package'
+testpkgnotinstalled 'simple-package'
+
+# And then, check that connection works with the "special" host.
+
+mv -f "$APT_TEST_ORIG_SRCLIST" -T rootdir/etc/apt/sources.list
+
+testsuccess aptget update
+
+testpkgnotinstalled 'simple-package'
+testsuccess aptget install 'simple-package'
+testpkginstalled 'simple-package'
