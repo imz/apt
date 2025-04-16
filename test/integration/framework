@@ -497,7 +497,6 @@ ENDCONFIG
 }
 
 tinyproxyrestart() {
-	local -r TINYPROXYLOG=$TMPWORKINGDIRECTORY/tinyproxy/process-stderr.log
 
 	! [ -s "$TINYPROXY_PIDFILE" ] || {
 		echo 'Stopping tinyproxy with a signal (before a restart).'
