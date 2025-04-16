@@ -25,7 +25,7 @@ readonly ANY="[^$NL]"
 
 # values occurring many times in the dump:
 
-set_regex_quote_str APT_SOURCES_SITE_RE "$APT_SOURCES_SITE"
+set_regex_quote_str APT_SOURCES_SITE_RE "${APT_SOURCES_SITE//[][]}"
 readonly APT_SOURCES_SITE_RE
 
 set_regex_quote_str DISTRO_COMPONENT_RE "$DISTRO_COMPONENT"
