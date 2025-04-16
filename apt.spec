@@ -3,7 +3,7 @@
 
 Name: apt
 Version: 0.5.15lorg2
-Release: alt91
+Release: alt92
 
 Summary: Debian's Advanced Packaging Tool with RPM support
 Summary(ru_RU.UTF-8): Debian APT - Усовершенствованное средство управления пакетами с поддержкой RPM
@@ -612,6 +612,14 @@ exec 1>&2
 %_datadir/%name/tests/
 
 %changelog
+* Wed Apr 16 2025 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt92
+- Backported the fixes from Debian 0.9.8~3 (IPv6 literals; encode passwords):
+  + properly escape IP-literals (e.g. IPv6 address) in HTTP requests
+    (allows using IPv6 numeric addresses in sources.list) (ALT#34000);
+  + percent-encode username and password when writing URIs;
+  + include port in shortened URIs (e.g. with apt-cache policy).
+- testcases: Multiplied to test these kinds of HTTP(S) connections.
+
 * Tue Apr  8 2025 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt91
 - Fixes for ShowEssential output (showing the essential to-be-removed packages):
   + Applied a trick to fix a bad case of columnar output (thx iv@). (ALT#51546)
