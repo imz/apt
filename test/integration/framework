@@ -208,11 +208,21 @@ generaterepository_and_switch_sources() {
 		;;
 	esac
 	case "$APT_TEST_METHOD" in
-	    http*_proxy6*)
-		tinyproxysetup ipv6
-		;;
 	    http*_proxy*)
-		tinyproxysetup
+		local -a tinyproxysetup_opts=()
+
+		case "$APT_TEST_METHOD" in
+		    http*_proxy6*)
+			tinyproxysetup_opts=("${tinyproxysetup_opts[@]}" ipv6)
+			;;
+		esac
+		case "$APT_TEST_METHOD" in
+		    http*_authproxy*)
+			tinyproxysetup_opts=("${tinyproxysetup_opts[@]}" auth)
+			;;
+		esac
+
+		tinyproxysetup "${tinyproxysetup_opts[@]}"
 		;;
 	esac
 
@@ -291,13 +301,18 @@ generaterepository_and_switch_sources() {
 
 	case "$APT_TEST_METHOD" in
 	    http*_proxy*)
+		if [ -z "${TINYPROXY_USER-}" ]; then
+		    TINYPROXY_AUTH=
+		else
+		    TINYPROXY_AUTH="$TINYPROXY_USER:$TINYPROXY_PASS"@
+		fi
 		# The prefix http:// seems to be required by apt.
 		case "$APT_TEST_METHOD" in
 		    http*_numeric*)
-			http_proxy="http://$TINYPROXY_IP:$TINYPROXY_PORT"
+			http_proxy="http://$TINYPROXY_AUTH$TINYPROXY_IP:$TINYPROXY_PORT"
 			;;
 		    *)
-			http_proxy="http://$TINYPROXY_HOST:$TINYPROXY_PORT"
+			http_proxy="http://$TINYPROXY_AUTH$TINYPROXY_HOST:$TINYPROXY_PORT"
 			;;
 		esac
 		export http_proxy
@@ -424,14 +439,19 @@ readonly ALLOWED_FROM6=::1
 # * global vars representing the actual configuration of the server
 #   (convenient for use in other scripts):
 #   TINYPROXY_HOST, TINYPROXY_IP, TINYPROXY_PORT, TINYPROXY_PIDFILE;
+#   if auth, also: TINYPROXY_USER, TINYPROXY_PASS
 # * the server configured, ready for tinyproxyrestart()
 tinyproxysetup() {
-	local opt ipv6=
+	local opt ipv6= auth=
 	for opt; do
 	    case "$opt" in
 
 		ipv6)
 		    ipv6=yes
+		    ;;
+
+		auth)
+		    auth=yes
 		    ;;
 
 		*)
@@ -441,6 +461,7 @@ tinyproxysetup() {
 	    esac
 	done
 	local -r ipv6
+	local -r auth
 
 	mkdir -p $TMPWORKINGDIRECTORY/tinyproxy
 
@@ -452,6 +473,11 @@ tinyproxysetup() {
 	    TINYPROXY_IP=[::1]
 	fi
         TINYPROXY_PORT=$((8580+${PARALLEL_SLOT:-0}))
+	if [ -n "$auth" ]; then
+	    TINYPROXY_USER=myuser
+	    # https://bugzilla.altlinux.org/38277
+	    TINYPROXY_PASS=Passw0rd
+	fi
         TINYPROXY_PIDFILE=$TMPWORKINGDIRECTORY/tinyproxy/tinyproxy.pid
 	TINYPROXYLOG=$TMPWORKINGDIRECTORY/tinyproxy/tinyproxy.log
 
@@ -486,6 +512,10 @@ LogFile "$TINYPROXYLOG"
 # Critical would be output, but Notice and below would be suppressed.
 #
 LogLevel Connect
+
+${auth:+
+BasicAuth $TINYPROXY_USER $TINYPROXY_PASS
+}
 
 ENDCONFIG
 }
