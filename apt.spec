@@ -613,10 +613,13 @@ exec 1>&2
 
 %changelog
 * Wed Apr 16 2025 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt92
+- Support encoded usernames and passwords in URIs (incl. http_proxy); it was
+  impossible to have @ there; now one should write %%40 (ALT#38277).
 - Backported the fixes from Debian 0.9.8~3 (IPv6 literals; encode passwords):
   + properly escape IP-literals (e.g. IPv6 address) in HTTP requests
     (allows using IPv6 numeric addresses in sources.list) (ALT#34000);
-  + percent-encode username and password when writing URIs;
+  + %%-encode username and password when writing URIs (doesn't help alone with
+    reading URIs as in the case of http_proxy above, but normalizes output);
   + include port in shortened URIs (e.g. with apt-cache policy).
 - testcases: Multiplied to test these kinds of HTTP(S) connections.
 
