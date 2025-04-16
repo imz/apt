@@ -1006,6 +1006,7 @@ ssl_keygen() {
 	    -nodes \
 	    -days 365 \
 	    -subj "/CN=$hostname" \
+	    -addext "subjectAltName=DNS:$hostname" \
 	    -keyout "$prefix/$name"/key \
 	    -out "$prefix/$name/$out_basename" \
 	&>/dev/null
