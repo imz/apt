@@ -204,8 +204,15 @@ generaterepository_and_switch_sources() {
 	esac
 	case "$APT_TEST_METHOD" in
 	    http*_proxy*)
-		tinyproxysetup
 	        nginxsetup_opts=("${nginxsetup_opts[@]}" only1ip)
+		;;
+	esac
+	case "$APT_TEST_METHOD" in
+	    http*_proxy6*)
+		tinyproxysetup ipv6
+		;;
+	    http*_proxy*)
+		tinyproxysetup
 		;;
 	esac
 
@@ -419,11 +426,31 @@ readonly ALLOWED_FROM6=::1
 #   TINYPROXY_HOST, TINYPROXY_IP, TINYPROXY_PORT, TINYPROXY_PIDFILE;
 # * the server configured, ready for tinyproxyrestart()
 tinyproxysetup() {
+	local opt ipv6=
+	for opt; do
+	    case "$opt" in
+
+		ipv6)
+		    ipv6=yes
+		    ;;
+
+		*)
+		    msgdie "unknown tinyproxysetup opt: $opt"
+		    ;;
+
+	    esac
+	done
+	local -r ipv6
 
 	mkdir -p $TMPWORKINGDIRECTORY/tinyproxy
 
-        TINYPROXY_HOST=localhost
-	TINYPROXY_IP=127.0.0.1
+	if [ -z "$ipv6" ]; then
+            TINYPROXY_HOST=localhost
+	    TINYPROXY_IP=127.0.0.1
+	else
+	    TINYPROXY_HOST=localhost6
+	    TINYPROXY_IP=[::1]
+	fi
         TINYPROXY_PORT=$((8580+${PARALLEL_SLOT:-0}))
         TINYPROXY_PIDFILE=$TMPWORKINGDIRECTORY/tinyproxy/tinyproxy.pid
 	TINYPROXYLOG=$TMPWORKINGDIRECTORY/tinyproxy/tinyproxy.log
@@ -435,7 +462,7 @@ MaxClients 2
 
 Port $TINYPROXY_PORT
 # localhost (cannot be given by name)
-Listen $TINYPROXY_IP
+Listen ${TINYPROXY_IP//[][]}
 
 Bind $ALLOWED_FROM
 Bind $ALLOWED_FROM6

@@ -10,7 +10,7 @@
 # As for the _dbgconn modifier, tests with it are run first (to see more
 # debug info if it takes much time waiting in tests and so the time limit
 # is exceeded before all tests are complete).
-APT_TEST_ALL_METHODS=(file http{,s{,_pinned}}{,_localhost6}{,_numeric}{,_proxy}{_dbgconn,} copy cdrom)
+APT_TEST_ALL_METHODS=(file http{,s{,_pinned}}{,_localhost6}{,_numeric}{,_proxy{,6}}{_dbgconn,} copy cdrom)
 
 # filter out
 filter_methods_to_skip() {
