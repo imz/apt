@@ -382,15 +382,6 @@ generaterepository_and_switch_sources() {
 				rpm ${APT_TEST_METHOD%%_*}://$APT_SOURCES_URI/ $NOARCH_DISTRO $DISTRO_COMPONENT
 			END
 
-			case "$APT_TEST_METHOD" in
-			    https*_numeric*)
-				# Certificate verification failed:
-				# The certificate is NOT trusted. The name in
-				# the certificate does not match the expected.
-				APT_TEST_XFAIL=yes
-				;;
-			esac
-
 			;;
 
 		*)

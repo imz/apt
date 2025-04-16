@@ -999,6 +999,16 @@ ssl_keygen() {
     local -r out_basename="$1"; shift
     local -r hostname="${name##*@}"
 
+    local ip=
+    case "$hostname" in
+	localhost)
+	    ip=,IP:127.0.0.1
+	    ;;
+	localhost6)
+	    ip=,IP:::1
+	    ;;
+    esac	
+
     msginfo "Generating SSL key+cert: ${name}"
 
     openssl req -x509 \
@@ -1006,7 +1016,7 @@ ssl_keygen() {
 	    -nodes \
 	    -days 365 \
 	    -subj "/CN=$hostname" \
-	    -addext "subjectAltName=DNS:$hostname" \
+	    -addext "subjectAltName=DNS:$hostname$ip" \
 	    -keyout "$prefix/$name"/key \
 	    -out "$prefix/$name/$out_basename" \
 	&>/dev/null
