@@ -1069,9 +1069,10 @@ void URI::CopyFrom(const string &U)
    else
    {
       Host = string(U,At - U.begin() + 1,SingleSlash - At - 1);
-      User = string(U,FirstColon - U.begin(),SecondColon - FirstColon);
+      // username and password must be encoded (RFC 3986)
+      User = DeQuoteString(std::string(U,FirstColon - U.begin(),SecondColon - FirstColon));
       if (SecondColon < At)
-	 Password = string(U,SecondColon - U.begin() + 1,At - SecondColon - 1);
+	 Password = DeQuoteString(std::string(U,SecondColon - U.begin() + 1,At - SecondColon - 1));
    }
 
    // Now we parse the RFC 2732 [] hostnames.
