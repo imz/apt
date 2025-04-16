@@ -219,6 +219,13 @@ generaterepository_and_switch_sources() {
 		case "$APT_TEST_METHOD" in
 		    http*_authproxy*)
 			tinyproxysetup_opts=("${tinyproxysetup_opts[@]}" auth)
+			# https://bugzilla.altlinux.org/38277
+			# We don't get a failure with : rather than @ in password.
+			# The failure is like: Could not resolve 'ssw0rd@localhost',
+			# so I wonder whether such a value (in $http_proxy) can be
+			# correctly parsed. If we encode the password in $http_proxy,
+			# we still don't connect (because of: Undetermined Error).
+			APT_TEST_XFAIL=yes
 			;;
 		esac
 
@@ -475,8 +482,9 @@ tinyproxysetup() {
         TINYPROXY_PORT=$((8580+${PARALLEL_SLOT:-0}))
 	if [ -n "$auth" ]; then
 	    TINYPROXY_USER=myuser
-	    # https://bugzilla.altlinux.org/38277
-	    TINYPROXY_PASS=Passw0rd
+	    # https://bugzilla.altlinux.org/38277 , but tinyproxy doesn't allow
+	    # to set a password with @, so we patch it for this test.
+	    TINYPROXY_PASS=P@ssw0rd
 	fi
         TINYPROXY_PIDFILE=$TMPWORKINGDIRECTORY/tinyproxy/tinyproxy.pid
 	TINYPROXYLOG=$TMPWORKINGDIRECTORY/tinyproxy/tinyproxy.log
