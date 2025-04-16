@@ -359,8 +359,9 @@ generaterepository_and_switch_sources() {
 	addtrap 'prefix' \
 		'[ "$EXIT_CODE" = 0 ] || print_failed_lists >&6;'
 
-	NOARCH_PKGLIST_URI="$APT_SOURCES_URI/$NOARCH_DISTRO/base/pkglist.$DISTRO_COMPONENT"
-	MYARCH_PKGLIST_URI="$APT_SOURCES_URI/$MYARCH_DISTRO/base/pkglist.$DISTRO_COMPONENT"
+	# Here we delete the braces in [::1]:8080 to match apt's filenames.
+	NOARCH_PKGLIST_URI="${APT_SOURCES_URI//[][]}/$NOARCH_DISTRO/base/pkglist.$DISTRO_COMPONENT"
+	MYARCH_PKGLIST_URI="${APT_SOURCES_URI//[][]}/$MYARCH_DISTRO/base/pkglist.$DISTRO_COMPONENT"
 	local encoded_noarch_pkglist_uri encoded_myarch_pkglist_uri
 	encoded_noarch_pkglist_uri="$(encode_uri_for_apt_lists "$NOARCH_PKGLIST_URI")"
 	encoded_myarch_pkglist_uri=$(encode_uri_for_apt_lists "$MYARCH_PKGLIST_URI")
