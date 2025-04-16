@@ -615,6 +615,9 @@ exec 1>&2
 * Wed Apr 16 2025 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt92
 - Support encoded usernames and passwords in URIs (incl. http_proxy); it was
   impossible to have @ there; now one should write %%40 (ALT#38277).
+- Get config values with percent (%%) correct in methods (e.g., a password as
+  above in Acquire::http::Proxy). More generally: for correct decoding,
+  do always encode percent (%%) when %%-encoding strings (in any URIs etc).
 - Backported the fixes from Debian 0.9.8~3 (IPv6 literals; encode passwords):
   + properly escape IP-literals (e.g. IPv6 address) in HTTP requests
     (allows using IPv6 numeric addresses in sources.list) (ALT#34000);
