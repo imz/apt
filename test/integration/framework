@@ -285,7 +285,14 @@ generaterepository_and_switch_sources() {
 	case "$APT_TEST_METHOD" in
 	    http*_proxy*)
 		# The prefix http:// seems to be required by apt.
-		http_proxy="http://$TINYPROXY_HOST:$TINYPROXY_PORT"
+		case "$APT_TEST_METHOD" in
+		    http*_numeric*)
+			http_proxy="http://$TINYPROXY_IP:$TINYPROXY_PORT"
+			;;
+		    *)
+			http_proxy="http://$TINYPROXY_HOST:$TINYPROXY_PORT"
+			;;
+		esac
 		export http_proxy
 
 		# Doing HTTPS through proxy? (And if we are setting up the repo,
@@ -418,13 +425,14 @@ readonly ALLOWED_FROM6=::1
 # Output/effects:
 # * global vars representing the actual configuration of the server
 #   (convenient for use in other scripts):
-#   TINYPROXY_HOST, TINYPROXY_PORT, TINYPROXY_PIDFILE;
+#   TINYPROXY_HOST, TINYPROXY_IP, TINYPROXY_PORT, TINYPROXY_PIDFILE;
 # * the server configured, ready for tinyproxyrestart()
 tinyproxysetup() {
 
 	mkdir -p $TMPWORKINGDIRECTORY/tinyproxy
 
         TINYPROXY_HOST=localhost
+	TINYPROXY_IP=127.0.0.1
         TINYPROXY_PORT=$((8580+${PARALLEL_SLOT:-0}))
         TINYPROXY_PIDFILE=$TMPWORKINGDIRECTORY/tinyproxy/tinyproxy.pid
 	TINYPROXYLOG=$TMPWORKINGDIRECTORY/tinyproxy/tinyproxy.log
@@ -436,7 +444,7 @@ MaxClients 2
 
 Port $TINYPROXY_PORT
 # localhost (cannot be given by name)
-Listen 127.0.0.1
+Listen $TINYPROXY_IP
 
 Bind $ALLOWED_FROM
 Bind $ALLOWED_FROM6
