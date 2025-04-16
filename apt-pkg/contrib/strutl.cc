@@ -201,7 +201,8 @@ string QuoteString(const string &Str,const char *Bad)
    for (auto I = Str.begin(); I != Str.end(); I++)
    {
       if (strchr(Bad,*I) != 0 || isprint(*I) == 0 ||
-	  *I <= 0x20 || *I >= 0x7F)
+	  *I == 0x25 || // percent '%' char
+	  *I <= 0x20 || *I >= 0x7F) // control chars
       {
 	 char Buf[10];
 	 snprintf(Buf,sizeof(Buf),"%%%02x",static_cast<unsigned int>(*I));

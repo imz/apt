@@ -6,13 +6,6 @@ TESTDIR=$(readlink -f $(dirname $0))
 . $TESTDIR/framework-without-repo
 prereq $TESTDIR/try-apt-method-http-when-allowed-only-proxy
 
-case "$APT_TEST_METHOD" in
-    http*_authproxy*)
-	# https://bugzilla.altlinux.org/38277
-	APT_TEST_XFAIL=yes
-	;;
-esac
-
 # use the saved value
 msgmsg "Setting proxy for http in apt in config: $APT_TEST_HTTP_PROXY"
 cat > "$APT_TEST_PROXY_FOR_HTTP_CONF" <<- END
