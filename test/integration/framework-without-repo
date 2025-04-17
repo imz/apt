@@ -84,16 +84,16 @@ wait_for_file() {
 	}
 }
 
-msgdie() { printf "${CERROR}E: $1${CNORMAL}\n" >&6; exit 1; }
-msgwarn() { printf "${CWARNING}W: $1${CNORMAL}\n" >&6; }
-msgmsg() { printf "${CMSG}$1${CNORMAL}\n" >&6; }
-msginfo() { printf "${CINFO}I: $1${CNORMAL}\n" >&6; }
-msgdebug() { printf "${CDEBUG}D: $1${CNORMAL}\n" >&6; }
-msgdone() { printf "${CDONE}DONE${CNORMAL}\n" >&6; }
-msgnwarn() { printf "${CWARNING}W: $1${CNORMAL}" >&6; }
-msgnmsg() { printf "${CMSG}$1${CNORMAL}" >&6; }
-msgninfo() { printf "${CINFO}I: $1${CNORMAL}" >&6; }
-msgndebug() { printf "${CDEBUG}D: $1${CNORMAL}" >&6; }
+msgdie() { printf "${CERROR}E: %s${CNORMAL}\n" "$1" >&6; exit 1; }
+msgwarn() { printf "${CWARNING}W: %s${CNORMAL}\n" "$1" >&6; }
+msgmsg() { printf "${CMSG}%s${CNORMAL}\n" "$1" >&6; }
+msginfo() { printf "${CINFO}I: %s${CNORMAL}\n" "$1" >&6; }
+msgdebug() { printf "${CDEBUG}D: %s${CNORMAL}\n" "$1" >&6; }
+msgdone() { printf "${CDONE}%s${CNORMAL}\n" 'DONE' >&6; }
+msgnwarn() { printf "${CWARNING}W: %s${CNORMAL}" "$1" >&6; }
+msgnmsg() { printf "${CMSG}%s${CNORMAL}" "$1" >&6; }
+msgninfo() { printf "${CINFO}I: %s${CNORMAL}" "$1" >&6; }
+msgndebug() { printf "${CDEBUG}D: %s${CNORMAL}" "$1" >&6; }
 msgtest() {
 	while [ $# -gt 0 ]; do
 		printf "${CINFO}%s${CCMD} %s${CNORMAL} " "$1" "$(sed -e 's#^apt\([cgfs]\)#apt-\1#' <<<"${2-}")" >&6
@@ -109,7 +109,7 @@ msgtest() {
 msgpass() { printf "${CPASS}PASS${CNORMAL}\n" >&6; }
 msgskip() { printf "${CWARNING}SKIP${CNORMAL}\n" >&6; }
 msgfail() {
-	if [ $# -gt 0 ]; then printf "${CFAIL}FAIL: $*${CNORMAL}\n" >&6;
+	if [ $# -gt 0 ]; then printf "${CFAIL}FAIL: %s${CNORMAL}\n" "$*" >&6;
 	else printf "${CFAIL}FAIL${CNORMAL}\n" >&6; fi
 	one_more_failure
 }
@@ -241,7 +241,7 @@ exitwithstatus() {
 shellsetedetector() {
 	local exit_status=$?
 	if [ "$exit_status" != '0' ]; then
-		printf >&6 "${CERROR}E: Looks like the testcases ended prematurely with exitcode: ${exit_status}${CNORMAL}\n"
+		printf >&6 "${CERROR}E: Looks like the testcases ended prematurely with exitcode: %d${CNORMAL}\n" "${exit_status}"
 		if [ "$EXIT_CODE" = '0' ]; then
 			EXIT_CODE="$exit_status"
 		fi
@@ -494,7 +494,7 @@ buildpackage_() {
     builtpackagefile="$(sed -nEe '$ s/Wrote: (.*) \(.*\)$/\1/p' <"$log")"
     local -r builtpackagefile
     {
-	printf "local -r builtpackagefile=%q\n" \
+	printf 'local -r builtpackagefile=%q\n' \
 	       "$builtpackagefile"
 	HOME=/var/empty rpmquery \
 	    -p "$builtpackagefile" \
