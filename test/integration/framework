@@ -311,7 +311,7 @@ generaterepository_and_switch_sources() {
 		if [ -z "${TINYPROXY_USER-}" ]; then
 		    TINYPROXY_AUTH=
 		else
-		    TINYPROXY_AUTH="$TINYPROXY_USER:$TINYPROXY_PASS"@
+		    TINYPROXY_AUTH="$(encode_auth_in_uri "$TINYPROXY_USER")":"$(encode_auth_in_uri "$TINYPROXY_PASS")"@
 		fi
 		# The prefix http:// seems to be required by apt.
 		case "$APT_TEST_METHOD" in

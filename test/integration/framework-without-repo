@@ -970,6 +970,12 @@ encode_uri_for_apt_lists() {
 	sed -Ee 's: :%20:g; s:_:%5f:g; s:/:_:g;' <<<"$uri"
 }
 
+encode_auth_in_uri() {
+	local -r uri="$1"; shift
+
+	sed -Ee 's: :%20:g; s:@:%40:g; s|:|%3a|g;' <<<"$uri"
+}
+
 set_regex_quote_str() {
 	local -r regex_var="$1"; shift
 	local -r str="$1"; shift
