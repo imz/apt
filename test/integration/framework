@@ -454,10 +454,14 @@ tinyproxysetup() {
 	fi
         TINYPROXY_PORT=$((8580+${PARALLEL_SLOT:-0}))
 	if [ -n "$auth" ]; then
-	    TINYPROXY_USER=myuser
-	    # https://bugzilla.altlinux.org/38277 , but tinyproxy doesn't allow
-	    # to set a password with @, so we patch it for this test.
-	    TINYPROXY_PASS=P@ssw0rd
+	    # A colon (:) is prohibited (according to RFC2617 & RFC7617).
+	    TINYPROXY_USER='John my@user name'
+	    # https://bugzilla.altlinux.org/38277 , but tinyproxy
+	    # doesn't allow to set a password with @ (TODO: report!),
+	    # so we test with a colon (:) here and an @ in the
+	    # username. This would not have evoked the actual problem
+	    # on all code paths (and test cases: env var or config).
+	    TINYPROXY_PASS='P:ss w0rd'
 	fi
         TINYPROXY_PIDFILE=$TMPWORKINGDIRECTORY/tinyproxy/tinyproxy.pid
 	TINYPROXYLOG=$TMPWORKINGDIRECTORY/tinyproxy/tinyproxy.log
@@ -495,6 +499,7 @@ LogFile "$TINYPROXYLOG"
 LogLevel Connect
 
 ${auth:+
+# No double quotes can be used. It can split wrongly on a space in the password.
 BasicAuth $TINYPROXY_USER $TINYPROXY_PASS
 }
 
