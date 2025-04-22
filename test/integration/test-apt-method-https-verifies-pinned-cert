@@ -4,17 +4,22 @@ set -eu
 TESTDIR=$(readlink -f $(dirname $0))
 
 case "$APT_TEST_METHOD" in
-	https|https_*)
+	https*_pinned*)
 		:
 		;;
 	*)
-		echo 'SKIP (makes sense only for APT_TEST_METHOD being https*)' >&2
+		echo 'SKIP (we rely on APT_TEST_METHOD being https*_pinned* for the cert setup)' >&2
 		exit 0
 		;;
 esac
 
-. $TESTDIR/framework-without-repo
-prereq $TESTDIR/test-apt-install-simple
+. $TESTDIR/framework
+
+setupenvironment
+
+buildpackage 'simple-package'
+
+generaterepository_and_switch_sources "$TMPWORKINGDIRECTORY/usr/src/RPM/RPMS"
 
 # Generate another key, and pin apt to it. Check cert pinning
 
@@ -23,23 +28,32 @@ mk_intermediate cert/"${0##*/}"@"$NGINX_HOST"/crt \
 		ssl_keygen
 
 msgmsg 'Pinning invalid cert in apt'
+# save current conf
+readonly APT_TEST_PINNING_CONF_SAVED=$TMPWORKINGDIRECTORY/apt-pinning.conf
+rm -f "$APT_TEST_PINNING_CONF_SAVED"
+if [ -e "$APT_TEST_PINNING_CONF" ]; then
+   mv "$APT_TEST_PINNING_CONF" -T "$APT_TEST_PINNING_CONF_SAVED"
+fi
+
 cat >| "$APT_TEST_PINNING_CONF" <<- END
 Acquire::https::PinnedCert	"$APT_TEST_INTERMEDIATES/cert/${0##*/}@$NGINX_HOST/crt";
 END
 
 testfailure aptget update
 
-testpkgnotinstalled 'conflicting-package-one'
-testfailure aptget install conflicting-package-one
-testpkgnotinstalled 'conflicting-package-one'
+testpkgnotinstalled 'simple-package'
+testfailure aptget install 'simple-package'
+testpkgnotinstalled 'simple-package'
 
-msgmsg 'Pinning the valid cert in apt'
-cat >| "$APT_TEST_PINNING_CONF" <<- END
-Acquire::https::PinnedCert	"$NGINX_CRT";
-END
+msgmsg 'Restoring the pinning conf for apt (with the presumably valid cert)'
+# clean up (restore the conf)
+rm "$APT_TEST_PINNING_CONF"
+if [ -e "$APT_TEST_PINNING_CONF_SAVED" ]; then
+   mv "$APT_TEST_PINNING_CONF_SAVED" -T "$APT_TEST_PINNING_CONF"
+fi
 
 testsuccess aptget update
 
-testpkgnotinstalled 'conflicting-package-one'
-testsuccess aptget install conflicting-package-one
-testpkginstalled 'conflicting-package-one'
+testpkgnotinstalled 'simple-package'
+testsuccess aptget install 'simple-package'
+testpkginstalled 'simple-package'
