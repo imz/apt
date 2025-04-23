@@ -501,7 +501,6 @@ fi
 
 already_once=0
 for (( try = 0; try < TRIES; )); do
-    # all methods (you might want to update the list if there are new ones)
     for method in "${APT_TEST_ALL_METHODS[@]}"; do
 	# do the same method several times in parallel (to provoke races)
 	for (( repeat = 0; repeat < 2; ++repeat )); do
