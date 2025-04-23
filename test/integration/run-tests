@@ -170,20 +170,30 @@ runtest() {
 	fi
 }
 
-readonly -a TESTSCRIPTS_WITHOUT_REPO=($(ls $DIR | grep -Ee '^test-without-repo-'))
-readonly -a TESTSCRIPTS_WITH_REPO=($(ls $DIR | grep -Ee '^test-' | grep -v -Ee '^test-without-repo-'))
-readonly TOTAL=$(( ${#TESTSCRIPTS_WITHOUT_REPO[@]}
-		   + ${#TESTSCRIPTS_WITH_REPO[@]} * ${#APT_TEST_METHODS[@]} ))
+forall_testcases() {
+    local -r cmd="$1"; shift
 
-for testscript in "${TESTSCRIPTS_WITHOUT_REPO[@]}"; do
-	runtest "$testscript"
-done
+    local testscript method
+    for testscript in test-*; do
+	case "$testscript" in
 
-for method in "${APT_TEST_METHODS[@]}"; do
-for testscript in "${TESTSCRIPTS_WITH_REPO[@]}"; do
-	runtest "$testscript" "$method"
-done
-done
+	    test-without-repo-*)
+		"$cmd" "$testscript"
+		;;
+
+	    *)
+		for method in "${APT_TEST_METHODS[@]}"; do
+		    "$cmd" "$testscript" "$method"
+		done
+		;;
+
+	esac
+    done
+}
+
+readonly TOTAL=$(forall_testcases echo | wc -l)
+
+forall_testcases runtest
 
 echo >&2 "Statistics: $ALL tests were run: $PASS successfully and $FAIL failed and $XFAIL xfailed and $XPASS xpassed"
 if [ -n "$XFAILED_TESTS" ]; then
