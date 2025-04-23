@@ -626,6 +626,9 @@ exec 1>&2
     reading URIs as in the case of http_proxy above, but normalizes output);
   + include port in shortened URIs (e.g. with apt-cache policy).
 - testcases: Multiplied http-related ones to test these kinds of connections.
+- Some HTTP tweaks from Debian:
+  + quote spaces ( ) and plus (+) in filenames (0.9.8~48);
+  + do not send keep-alive (HTTP/1.1 default) (0.9.9.3~4^2).
 
 * Tue Apr  8 2025 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt91
 - Fixes for ShowEssential output (showing the essential to-be-removed packages):
