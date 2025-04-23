@@ -613,6 +613,10 @@ exec 1>&2
 %_datadir/%name/tests/
 
 %changelog
+* Wed Apr 23 2025 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt91.p10.1
+- Build for p10: with some fixes (corrupt downloads, IPv6 literals, etc.),
+  but with the experimental columnar output turned off.
+
 * Wed Apr 16 2025 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt92
 - Support encoded usernames and passwords in URIs (incl. http_proxy); it was
   impossible to have @ there; now one should write %%40 (ALT#38277).
@@ -629,10 +633,6 @@ exec 1>&2
 - Some HTTP tweaks from Debian:
   + quote spaces ( ) and plus (+) in filenames (0.9.8~48);
   + do not send keep-alive (HTTP/1.1 default) (0.9.9.3~4^2).
-
-* Tue Apr  8 2025 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt90.p10.1
-- Build for p10: with the fix for corrupt downloads, but with the experimental
-  columnar output turned off.
 
 * Tue Apr  8 2025 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt91
 - Fixes for ShowEssential output (showing the essential to-be-removed packages):
