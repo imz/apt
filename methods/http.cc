@@ -132,9 +132,9 @@ bool CircleBuf::Read(const std::unique_ptr<MethodFd> &Fd)
 // CircleBuf::Read - Put the string into the buffer			/*{{{*/
 // ---------------------------------------------------------------------
 /* This will hold the string in and fill the buffer with it as it empties */
-bool CircleBuf::Read(const string &Data)
+bool CircleBuf::Read(string const &Data)
 {
-   OutQueue += Data;
+   OutQueue.append(Data);
    FillOut();
    return true;
 }
@@ -644,7 +644,12 @@ void HttpMethod::SendReq(FetchItem *Itm,CircleBuf &Out)
 
    // The HTTP server expects a hostname with a trailing :port
    char Buf[1000];
-   string ProperHost = Uri.Host;
+   string ProperHost;
+
+   if (Uri.Host.find(':') != string::npos)
+      ProperHost = '[' + Uri.Host + ']';
+   else
+      ProperHost = Uri.Host;
    if (Uri.Port != 0)
    {
       sprintf(Buf,":%u",Uri.Port);
@@ -654,36 +659,44 @@ void HttpMethod::SendReq(FetchItem *Itm,CircleBuf &Out)
    // Just in case.
    if (Itm->Uri.length() >= sizeof(Buf))
        abort();
+       
+   /* RFC 2616 §5.1.2 requires absolute URIs for requests to proxies,
+      but while its a must for all servers to accept absolute URIs,
+      it is assumed clients will sent an absolute path for non-proxies */
+   std::string requesturi;
+   if (Proxy.Access != "http" || Proxy.empty() == true || Proxy.Host.empty())
+      requesturi = Uri.Path;
+   else
+      requesturi = Uri;
 
-   /* Build the request. We include a keep-alive header only for non-proxy
-      requests. This is to tweak old http/1.0 servers that do support keep-alive
-      but not HTTP/1.1 automatic keep-alive. Doing this with a proxy server
-      will glitch HTTP/1.0 proxies because they do not filter it out and
-      pass it on, HTTP/1.1 says the connection should default to keep alive
-      and we expect the proxy to do this */
-   if (Proxy.empty() == true)
-      sprintf(Buf,"GET %s HTTP/1.1\r\nHost: %s\r\nConnection: keep-alive\r\n",
-	      QuoteString(Uri.Path,"~").c_str(),ProperHost.c_str());
+   // The "+" is encoded as a workaround for a amazon S3 bug
+   // see LP bugs #1003633 and #1086997.
+   requesturi = QuoteString(requesturi, "+~ ");
+
+   /* Build the request. No keep-alive is included as it is the default
+      in 1.1, can cause problems with proxies, and we are an HTTP/1.1
+      client anyway.
+      C.f. https://tools.ietf.org/wg/httpbis/trac/ticket/158 */
+   sprintf(Buf,"GET %s HTTP/1.1\r\nHost: %s\r\n",
+	   requesturi.c_str(),ProperHost.c_str());
+
+   // generate a cache control header (if needed)
+   if (_config->FindB("Acquire::http::No-Cache",false) == true) 
+   {
+      strcat(Buf,"Cache-Control: no-cache\r\nPragma: no-cache\r\n");
+   }
    else
    {
-      /* Generate a cache control header if necessary. We place a max
-	 cache age on index files, optionally set a no-cache directive
-	 and a no-store directive for archives. */
-      sprintf(Buf,"GET %s HTTP/1.1\r\nHost: %s\r\n",
-	      Itm->Uri.c_str(),ProperHost.c_str());
-      if (_config->FindB("Acquire::http::No-Cache",false) == true)
-	 strcat(Buf,"Cache-Control: no-cache\r\nPragma: no-cache\r\n");
-      else
-      {
 	 if (Itm->IndexFile == true)
+	 {
 	    sprintf(Buf+strlen(Buf),"Cache-Control: max-age=%u\r\n",
 		    _config->FindI("Acquire::http::Max-Age",60*60*24));
+	 }
 	 else
 	 {
 	    if (_config->FindB("Acquire::http::No-Store",false) == true)
 	       strcat(Buf,"Cache-Control: no-store\r\n");
 	 }
-      }
    }
 
    string Req = Buf;
@@ -706,7 +719,8 @@ void HttpMethod::SendReq(FetchItem *Itm,CircleBuf &Out)
       }
    }
 
-   if (Proxy.User.empty() == false || Proxy.Password.empty() == false)
+   if (Proxy.Access == "http" &&
+	 (Proxy.User.empty() == false || Proxy.Password.empty() == false))
       Req += string("Proxy-Authorization: Basic ") +
           Base64Encode(Proxy.User + ":" + Proxy.Password) + "\r\n";
 

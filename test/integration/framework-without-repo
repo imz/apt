@@ -51,49 +51,106 @@ CFAIL=
 CCMD=
 
 if [ "$MSGCOLOR" != 'NO' ]; then
-	CERROR="\033[1;31m" # red
-	CWARNING="\033[1;33m" # yellow
-	CMSG="\033[1;32m" # green
-	CINFO="\033[1;96m" # light blue
-	CDEBUG="\033[1;94m" # blue
-	CNORMAL="\033[0;39m" # default system console color
-	CDONE="\033[1;32m" # green
-	CPASS="\033[1;32m" # green
-	CFAIL="\033[1;31m" # red
-	CCMD="\033[1;35m" # pink
+	CERROR=$'\033[1;31m' # red
+	CWARNING=$'\033[1;33m' # yellow
+	CMSG=$'\033[1;32m' # green
+	CINFO=$'\033[1;96m' # light blue
+	CDEBUG=$'\033[1;94m' # blue
+	CNORMAL=$'\033[0;39m' # default system console color
+	CDONE=$'\033[1;32m' # green
+	CPASS=$'\033[1;32m' # green
+	CFAIL=$'\033[1;31m' # red
+	CCMD=$'\033[1;35m' # pink
 fi
 
 # Our messages shouldn't be messed up with commands' stdout and stderr,
 # therefore we use a special FD for them.
 exec 6>&2
 
-wait_for_file() {
-	# The message 'Waiting...' is intentionally printed regardless of $MSGLEVEL;
-	# otherwise it would be difficult to see why the process is hanging;
-	# it can appear only in extra-ordinary situations (under heavy load).
-	[ -s "$1" ] ||
+wait_until() {
+    local -r cond="$1"; shift
+    local -r ms="$1"; shift
+    local msg="$*"
+    if [ -z "$msg" ]; then
+	msg="$cond"
+    fi
+    local -r msg
+
+    local -r n=$(( ms / 50 ))
+
+    # The message 'Waiting...' is intentionally printed regardless of $MSGLEVEL;
+    # otherwise it would be difficult to see why the process is hanging;
+    # it can appear only in extra-ordinary situations (under heavy load).
+    eval "$cond" ||
 	{ # need to group the alternative commands after a ||
-		printf >&6 'Waiting for %s\n' "$1" &&
+	    printf >&6 'Waiting for %s\n' "$msg" &&
 		local i=0 &&
-		while ! [ -s "$1" ]; do
+		while ! eval "$cond"; do
 			sleep 0.05 &&
 			let '++i' &&
-			{ (( i < 1000 )) || msgdie "Waited too long (50s)!"; }
+			{ (( i < n )) || {
+			      msgwarn "Waited too long (${ms}ms)!"
+			      return 1
+			  }
+			}
 		done &&
 		printf >&6 'Waited %s * 0.05s.\n' "$i" # count&print i out of curiosity
 	}
 }
 
-msgdie() { printf "${CERROR}E: $1${CNORMAL}\n" >&6; exit 1; }
-msgwarn() { printf "${CWARNING}W: $1${CNORMAL}\n" >&6; }
-msgmsg() { printf "${CMSG}$1${CNORMAL}\n" >&6; }
-msginfo() { printf "${CINFO}I: $1${CNORMAL}\n" >&6; }
-msgdebug() { printf "${CDEBUG}D: $1${CNORMAL}\n" >&6; }
-msgdone() { printf "${CDONE}DONE${CNORMAL}\n" >&6; }
-msgnwarn() { printf "${CWARNING}W: $1${CNORMAL}" >&6; }
-msgnmsg() { printf "${CMSG}$1${CNORMAL}" >&6; }
-msgninfo() { printf "${CINFO}I: $1${CNORMAL}" >&6; }
-msgndebug() { printf "${CDEBUG}D: $1${CNORMAL}" >&6; }
+wait_for_file() {
+    local -r f="$1"; shift
+
+    local cond
+    printf -v cond '[ -s %q ]' "$f"
+    local -r cond
+
+    wait_until "$cond" 50000 "$f" || msgdie "Timeout waiting for $f"
+}
+
+wait_for_nofile() {
+    local -r f="$1"; shift
+    local -r time="$1"; shift
+
+    local cond
+    printf -v cond '! [ -s %q ]' "no $f"
+    local -r cond
+
+    wait_until "$cond" "$time" "$f"
+}
+
+# Not to hang on waiting, we start a parallell subshell which
+# will kill it after a timeout (sleep). (Or which would just sleep,
+# and we'd wait -n on either processes, then kill it in the main
+# script.) Idea: https://stackoverflow.com/a/22384727/94687 .
+ensure_it_is_killed_in_a_while() {
+    local -r old_pid="$1"; shift
+
+    local killer_pid=
+    kill -0 "$old_pid" &>/dev/null &&
+	{ (sleep 5 &&
+	       kill "$old_pid" &&
+	       kill -0 "$old_pid" &>/dev/null &&
+	       sleep 5 &&
+	       kill -0 "$old_pid" &>/dev/null &&
+	       kill -KILL "$old_pid" ||: ) &
+	  killer_pid=$!
+	}
+    local -r killer_pid
+    wait "$old_pid" ||:
+    [ -z "$killer_pid" ] || { kill -0 "$killer_pid" &>/dev/null && kill "$killer_pid"; } ||:
+}
+
+msgdie() { printf "${CERROR}E: %s${CNORMAL}\n" "$1" >&6; exit 1; }
+msgwarn() { printf "${CWARNING}W: %s${CNORMAL}\n" "$1" >&6; }
+msgmsg() { printf "${CMSG}%s${CNORMAL}\n" "$1" >&6; }
+msginfo() { printf "${CINFO}I: %s${CNORMAL}\n" "$1" >&6; }
+msgdebug() { printf "${CDEBUG}D: %s${CNORMAL}\n" "$1" >&6; }
+msgdone() { printf "${CDONE}%s${CNORMAL}\n" 'DONE' >&6; }
+msgnwarn() { printf "${CWARNING}W: %s${CNORMAL}" "$1" >&6; }
+msgnmsg() { printf "${CMSG}%s${CNORMAL}" "$1" >&6; }
+msgninfo() { printf "${CINFO}I: %s${CNORMAL}" "$1" >&6; }
+msgndebug() { printf "${CDEBUG}D: %s${CNORMAL}" "$1" >&6; }
 msgtest() {
 	while [ $# -gt 0 ]; do
 		printf "${CINFO}%s${CCMD} %s${CNORMAL} " "$1" "$(sed -e 's#^apt\([cgfs]\)#apt-\1#' <<<"${2-}")" >&6
@@ -109,7 +166,7 @@ msgtest() {
 msgpass() { printf "${CPASS}PASS${CNORMAL}\n" >&6; }
 msgskip() { printf "${CWARNING}SKIP${CNORMAL}\n" >&6; }
 msgfail() {
-	if [ $# -gt 0 ]; then printf "${CFAIL}FAIL: $*${CNORMAL}\n" >&6;
+	if [ $# -gt 0 ]; then printf "${CFAIL}FAIL: %s${CNORMAL}\n" "$*" >&6;
 	else printf "${CFAIL}FAIL${CNORMAL}\n" >&6; fi
 	one_more_failure
 }
@@ -155,85 +212,17 @@ msgdone() {
 		printf "${CDONE}DONE${CNORMAL}\n" >&6;
 	fi
 }
-getaptconfig() {
-	if [ -f ./aptconfig.conf ]; then
-            echo './aptconfig.conf'
-	elif [ -f ../aptconfig.conf ]; then
-            echo '../aptconfig.conf'
-        fi
-}
 runapt() {
 	msgdebug "CWD: $PWD"
-	msgdebug "Executing: APT_CONFIG=$(getaptconfig) ${CCMD}$*${CDEBUG} "
+	msgdebug "Executing: APT_CONFIG=./aptconfig.conf ${CCMD}$*${CDEBUG} "
 	local CMD="$1"
 	shift
-	APT_CONFIG="$(getaptconfig)" $CMD "$@"
+	APT_CONFIG=./aptconfig.conf $CMD "$@"
 }
 aptconfig() { runapt apt-config "$@"; }
 aptcache() { runapt apt-cache "$@"; }
-aptget_without_first_trying_repo() { runapt apt-get "${CDROM_OPTS[@]}" "$@"; }
-# to be redefined, e.g., for tests with a repo
-# (to test features of access methods by first doing failing tries)
-aptget() { aptget_without_first_trying_repo "$@"; }
+aptget() { runapt apt-get "${CDROM_OPTS[@]}" "$@"; }
 aptmark() { runapt apt-mark "$@"; }
-
-# A "template" to redefine aptget() to test that the repo is actually accessed
-# with the normal config, but cannot be accessed under a special context;
-# thus showing that something in the normal config actually contributes
-# to that it works (e.g., a correct pinned cert or proxy configuration).
-#
-# The redefined aptget() can be employed in any test where it's called.
-# (However, this usually doesn't make sense for tests
-# without a repo or before sources.list have been set up.)
-#
-# Using such a redefined aptget() in every test seems like overdoing,
-# but well, it doesn't hurt much. This approach allows
-#
-# 1. to massively test apt with the feature turned on in the normal config
-#    and discover bugs (even unrelated to this feature) that were unseen
-#    otherwise. (Example: HTTP header parsing was broken; this surfaced
-#    sometimes, when reading just small enough response parts from tinyproxy.)
-#
-# 2. less importantly--to make sure that there is no way around the "normal"
-#    configuration that would make the "bad" thing work, in any of the many cases
-#    (actually, incosistency is quite unprobable, but who knows).
-#
-# 3. perhaps also to make the testscripts more robust, express their requirements
-#    more clearly and formally, so that it's easier to adapt them to be used
-#    in unusual ways.
-aptget_try_bad_then_normal() {
-    local -r with_bad_context="$1"; shift
-
-    echo "Running apt-get $with_bad_context"
-    echo 'We assert that it fails'
-    # Count broken assertion here as another failure in tests
-    # (that's what it is logically).
-    ! $with_bad_context \
-      aptget_without_first_trying_repo "$@" \
-	|| msgfail "apt-get did not fail $with_bad_context as expected"
-    # FIXME: nested testfailure() would need solving OUTPUT collisions
-    # (example: test-apt-install-rejects-fake-rpm-archive_via_http_proxy)
-    #
-    # (Just dying would break normal result reporting
-    # in tests where this accidentally succeeds,
-    # e.g., in case of a "dist-upgrade" that has nothing to do
-    # because "apt-get update" didn't fetch anything because of
-    # no implementation yet (i.e., "apt-get update" should have xfailed);
-    # example: test-apt-distupgrade-simple_via_https_proxy testcase.)
-    #|| msgdie "apt-get did not fail $with_bad_context as expected'
-
-    # This test (the assertion) is significant only
-    # in a positive context (when aptget is expected
-    # to succeed). Otherwise, the failure might be
-    # due to a different reason; then we go on and
-    # at least get the correct return code from the
-    # normal run below, without caring about one more
-    # confirmation that we fail with a bad context.
-
-    echo 'Running apt-get normally, _maybe_ with some significant conf'
-    aptget_without_first_trying_repo "$@"
-}
-
 
 exitwithstatus() {
 		if [ $EXIT_CODE -gt 0 ]; then
@@ -248,7 +237,7 @@ exitwithstatus() {
 shellsetedetector() {
 	local exit_status=$?
 	if [ "$exit_status" != '0' ]; then
-		printf >&6 "${CERROR}E: Looks like the testcases ended prematurely with exitcode: ${exit_status}${CNORMAL}\n"
+		printf >&6 "${CERROR}E: Looks like the testcases ended prematurely with exitcode: %d${CNORMAL}\n" "${exit_status}"
 		if [ "$EXIT_CODE" = '0' ]; then
 			EXIT_CODE="$exit_status"
 		fi
@@ -501,7 +490,7 @@ buildpackage_() {
     builtpackagefile="$(sed -nEe '$ s/Wrote: (.*) \(.*\)$/\1/p' <"$log")"
     local -r builtpackagefile
     {
-	printf "local -r builtpackagefile=%q\n" \
+	printf 'local -r builtpackagefile=%q\n' \
 	       "$builtpackagefile"
 	HOME=/var/empty rpmquery \
 	    -p "$builtpackagefile" \
@@ -608,10 +597,8 @@ aptgetinstallpackage() {
 	local PKGFILE="$(builtpackagefile "$NAME")"
 
 	msgmsg "Installing package via apt-get (as a file): $(basename "$PKGFILE")"
-	# Avoid aptget() here because it may want first to see a failure when
-	# trying to access the repo in an invalid way (as a means to test this),
-	# but it won't get a chance to see it because there is no repo access.
-	aptget_without_first_trying_repo install "$PKGFILE" \
+	# does no access to the repo
+	aptget install "$PKGFILE" \
 		   1>/dev/null
 }
 
@@ -983,6 +970,12 @@ encode_uri_for_apt_lists() {
 	sed -Ee 's: :%20:g; s:_:%5f:g; s:/:_:g;' <<<"$uri"
 }
 
+encode_auth_in_uri() {
+	local -r uri="$1"; shift
+
+	sed -Ee 's: :%20:g; s:@:%40:g; s|:|%3a|g;' <<<"$uri"
+}
+
 set_regex_quote_str() {
 	local -r regex_var="$1"; shift
 	local -r str="$1"; shift
@@ -1012,6 +1005,16 @@ ssl_keygen() {
     local -r out_basename="$1"; shift
     local -r hostname="${name##*@}"
 
+    local ip=
+    case "$hostname" in
+	localhost)
+	    ip=,IP:127.0.0.1
+	    ;;
+	localhost6)
+	    ip=,IP:::1
+	    ;;
+    esac	
+
     msginfo "Generating SSL key+cert: ${name}"
 
     openssl req -x509 \
@@ -1019,6 +1022,7 @@ ssl_keygen() {
 	    -nodes \
 	    -days 365 \
 	    -subj "/CN=$hostname" \
+	    -addext "subjectAltName=DNS:$hostname$ip" \
 	    -keyout "$prefix/$name"/key \
 	    -out "$prefix/$name/$out_basename" \
 	&>/dev/null
@@ -1057,25 +1061,8 @@ bg_aptshell_exit_helper() {
 	local -r old_pid="$1"; shift
 
 	[ -z "$old_input_fd" ] || echo exit >&"$old_input_fd" ||:
-	[ -z "$old_pid" ] || {
-	    echo >&6 "Exiting the bg apt-shell (pid $old_pid) (ignoring its status)."
-	    # Not to hang on waiting, we start a parallell subshell which
-	    # will kill it after a timeout (sleep). (Or which would just sleep,
-	    # and we'd wait -n on either processes, then kill it in the main
-	    # script.) Idea: https://stackoverflow.com/a/22384727/94687 .
-	    local killer_pid=
-	    kill -0 "$old_pid" &&
-		{ (sleep 5 &&
-		       kill "$old_pid" &&
-		       kill -0 "$old_pid" &&
-		       sleep 5 &&
-		       kill -KILL "$old_pid" ||: ) &
-		  killer_pid=$!
-		}
-	    local -r killer_pid
-	    wait "$old_pid" ||:
-	    [ -z "$killer_pid" ] || { kill -0 "$killer_pid" && kill "$killer_pid"; } ||:
-	}
+	[ -z "$old_pid" ] ||
+	    ensure_it_is_killed_in_a_while "$old_pid"
 }
 
 bg_aptshell_restart() {

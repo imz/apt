@@ -1,0 +1,50 @@
+#!/bin/bash
+set -eu
+
+TESTDIR=$(readlink -f $(dirname $0))
+
+case "$APT_TEST_METHOD" in
+	http*_authproxy*)
+		:
+		;;
+	*)
+		echo 'SKIP (makes sense only when the proxy is configured for auth)' >&2
+		exit 0
+		;;
+esac
+
+. $TESTDIR/framework
+
+setupenvironment
+
+buildpackage 'simple-package'
+
+generaterepository_and_switch_sources "$TMPWORKINGDIRECTORY/usr/src/RPM/RPMS"
+
+# First, check that we can't connect to the proxy without auth.
+
+msgmsg "Deleting auth info ($TINYPROXY_AUTH) from http_proxy"
+readonly APT_TEST_HTTP_PROXY="$http_proxy"
+rm -f "$APT_TEST_PROXY_FOR_HTTP_CONF" ||:
+unset http{,s}_proxy # if they were exported, now nothing will be set for children
+http_proxy="${APT_TEST_HTTP_PROXY/$TINYPROXY_AUTH}"
+export http_proxy
+msgmsg "Deleted auth info from http_proxy: $http_proxy"
+
+testfailure aptget update
+
+testpkgnotinstalled 'simple-package'
+testfailure aptget install 'simple-package'
+testpkgnotinstalled 'simple-package'
+
+# And then, check that connection to the proxy works with auth.
+
+msgmsg 'Restoring http_proxy env'
+# use the saved value
+export http_proxy="$APT_TEST_HTTP_PROXY"
+
+testsuccess aptget update
+
+testpkgnotinstalled 'simple-package'
+testsuccess aptget install 'simple-package'
+testpkginstalled 'simple-package'

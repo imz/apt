@@ -11,11 +11,8 @@ DIR=$(readlink -f $(dirname $0))
 # Here we actually have much more "pseudo-methods", where the base methods are
 # further modified with various details about how the connection is set up
 # to be made by apt.
-if [ -n "${APT_TEST_METHODS:-}" ]; then
-    readonly -a APT_TEST_METHODS=($APT_TEST_METHODS)
-else
-    readonly -a APT_TEST_METHODS=("${APT_TEST_ALL_METHODS[@]}")
-fi
+readonly -a APT_TEST_METHODS=(${APT_TEST_METHODS-"${APT_TEST_ALL_METHODS[@]}"})
+readonly -a APT_TEST_http_METHODS=(${APT_TEST_http_METHODS-"${APT_TEST_ALL_http_METHODS[@]}"})
 
 FAIL=0
 XFAIL=0
@@ -143,9 +140,9 @@ runtest() {
 
 	local -r testcase="$testscript${method:+_via_$method}"
 	if [ "$MSGLEVEL" -le 2 ]; then
-		printf >&2 "($(($ALL+1))/${TOTAL}) ${CTEST}Testcase ${CHIGH}$testcase${CRESET}: "
+		printf >&2 "(%d/%d) ${CTEST}Testcase ${CHIGH}%s${CRESET}: " $(($ALL+1)) "${TOTAL}" "$testcase"
 	else
-		printf >&2 "${CTEST}Run Testcase ($(($ALL+1))/${TOTAL}) ${CHIGH}$testcase${CRESET}\n"
+		printf >&2 "${CTEST}Run Testcase (%d/%d) ${CHIGH}%s${CRESET}\n" $(($ALL+1)) "${TOTAL}" "$testcase"
 	fi
         APT_TEST_METHOD="${method:-}" \
 		./${testscript} && PASS=$((PASS+1)) || {
@@ -170,20 +167,36 @@ runtest() {
 	fi
 }
 
-readonly -a TESTSCRIPTS_WITHOUT_REPO=($(ls $DIR | grep -Ee '^test-without-repo-'))
-readonly -a TESTSCRIPTS_WITH_REPO=($(ls $DIR | grep -Ee '^test-' | grep -v -Ee '^test-without-repo-'))
-readonly TOTAL=$(( ${#TESTSCRIPTS_WITHOUT_REPO[@]}
-		   + ${#TESTSCRIPTS_WITH_REPO[@]} * ${#APT_TEST_METHODS[@]} ))
+forall_testcases() {
+    local -r cmd="$1"; shift
 
-for testscript in "${TESTSCRIPTS_WITHOUT_REPO[@]}"; do
-	runtest "$testscript"
-done
+    local testscript method
+    for testscript in test-*; do
+	case "$testscript" in
 
-for method in "${APT_TEST_METHODS[@]}"; do
-for testscript in "${TESTSCRIPTS_WITH_REPO[@]}"; do
-	runtest "$testscript" "$method"
-done
-done
+	    test-without-repo-*)
+		"$cmd" "$testscript"
+		;;
+
+	    test-apt-method-http*)
+		for method in "${APT_TEST_http_METHODS[@]}"; do
+		    "$cmd" "$testscript" "$method"
+		done
+		;;
+
+	    *)
+		for method in "${APT_TEST_METHODS[@]}"; do
+		    "$cmd" "$testscript" "$method"
+		done
+		;;
+
+	esac
+    done
+}
+
+readonly TOTAL=$(forall_testcases echo | wc -l)
+
+forall_testcases runtest
 
 echo >&2 "Statistics: $ALL tests were run: $PASS successfully and $FAIL failed and $XFAIL xfailed and $XPASS xpassed"
 if [ -n "$XFAILED_TESTS" ]; then

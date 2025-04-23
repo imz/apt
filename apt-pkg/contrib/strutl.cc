@@ -201,7 +201,8 @@ string QuoteString(const string &Str,const char *Bad)
    for (auto I = Str.begin(); I != Str.end(); I++)
    {
       if (strchr(Bad,*I) != 0 || isprint(*I) == 0 ||
-	  *I <= 0x20 || *I >= 0x7F)
+	  *I == 0x25 || // percent '%' char
+	  *I <= 0x20 || *I >= 0x7F) // control chars
       {
 	 char Buf[10];
 	 snprintf(Buf,sizeof(Buf),"%%%02x",static_cast<unsigned int>(*I));
@@ -1069,9 +1070,10 @@ void URI::CopyFrom(const string &U)
    else
    {
       Host = string(U,At - U.begin() + 1,SingleSlash - At - 1);
-      User = string(U,FirstColon - U.begin(),SecondColon - FirstColon);
+      // username and password must be encoded (RFC 3986)
+      User = DeQuoteString(std::string(U,FirstColon - U.begin(),SecondColon - FirstColon));
       if (SecondColon < At)
-	 Password = string(U,SecondColon - U.begin() + 1,At - SecondColon - 1);
+	 Password = DeQuoteString(std::string(U,SecondColon - U.begin() + 1,At - SecondColon - 1));
    }
 
    // Now we parse the RFC 2732 [] hostnames.
@@ -1130,9 +1132,12 @@ URI::operator string()
 
       if (User.empty() == false)
       {
-	 Res +=  User;
+	 // FIXME: Technically userinfo is permitted even less
+	 // characters than these, but this is not conveniently
+	 // expressed with a blacklist.
+	 Res += QuoteString(User, ":/?#[]@");
 	 if (Password.empty() == false)
-	    Res += ":" + Password;
+	    Res += ":" + QuoteString(Password, ":/?#[]@");
 	 Res += "@";
       }
 
@@ -1171,7 +1176,6 @@ string URI::SiteOnly(const string &URI)
    U.User.clear();
    U.Password.clear();
    U.Path.clear();
-   U.Port = 0;
    return U;
 }
 									/*}}}*/

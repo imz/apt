@@ -26,57 +26,6 @@ print_debug_connect()
 
 aptcdrom() { runapt apt-cdrom "${CDROM_OPTS[@]}" "$@"; }
 
-with_unset_proxy_for_http() {
-    local ret=0
-
-    # save current conf
-    local -r conf_before=$TMPWORKINGDIRECTORY/apt-proxy-for-http.conf
-    rm -f "$conf_before"
-    if [ -e "$APT_TEST_PROXY_FOR_HTTP_CONF" ]; then
-	mv "$APT_TEST_PROXY_FOR_HTTP_CONF" -T "$conf_before"
-    fi
-
-    # (here, we could insert another proxy conf into the file, the code is ready)
-    http_proxy= https_proxy= \
-	      "$@" ||
-	ret=$?
-
-    # clean up (restore the conf)
-    rm -f "$APT_TEST_PROXY_FOR_HTTP_CONF"
-    if [ -e "$conf_before" ]; then
-	mv "$conf_before" -T "$APT_TEST_PROXY_FOR_HTTP_CONF"
-    fi
-
-    return "$ret"
-}
-
-with_pinned() {
-    local -r another_crt="$1"; shift
-
-    local ret=0
-
-    # save current conf
-    local -r conf_before=$TMPWORKINGDIRECTORY/apt-pinning.conf
-    rm -f "$conf_before"
-    if [ -e "$APT_TEST_PINNING_CONF" ]; then
-	mv "$APT_TEST_PINNING_CONF" -T "$conf_before"
-    fi
-
-    cat >| "$APT_TEST_PINNING_CONF" <<- END
-	Acquire::https::PinnedCert	"$another_crt";
-	END
-    "$@" ||
-	ret=$?
-
-    # clean up (restore the conf)
-    rm "$APT_TEST_PINNING_CONF"
-    if [ -e "$conf_before" ]; then
-	mv "$conf_before" -T "$APT_TEST_PINNING_CONF"
-    fi
-
-    return "$ret"
-}
-
 # Input:
 # * args: orig_dir repo_dir [repo_date]
 #   (orig_dir may be empty if we just need to re-generate without copying rpms.)
@@ -219,31 +168,52 @@ generaterepository_and_switch_sources() {
 	#
 	# And set REPO_STORAGE accordingly.
 	case "$APT_TEST_METHOD" in
+	    http*)
+		local -a nginxsetup_opts=()
+		;;
+	esac
+	case "$APT_TEST_METHOD" in
+	    https*)
+	        nginxsetup_opts=("${nginxsetup_opts[@]}" https)
+		;;
+	esac
+	case "$APT_TEST_METHOD" in
+	    http*_localhost6*)
+	        nginxsetup_opts=("${nginxsetup_opts[@]}" ipv6)
+		;;
+	esac
+	case "$APT_TEST_METHOD" in
+	    http*_proxy*)
+	        nginxsetup_opts=("${nginxsetup_opts[@]}" only1ip)
+		;;
+	esac
+	case "$APT_TEST_METHOD" in
+	    http*_proxy*)
+		local -a tinyproxysetup_opts=()
+
+		case "$APT_TEST_METHOD" in
+		    http*_proxy6*)
+			tinyproxysetup_opts=("${tinyproxysetup_opts[@]}" ipv6)
+			;;
+		esac
+		case "$APT_TEST_METHOD" in
+		    http*_authproxy*)
+			tinyproxysetup_opts=("${tinyproxysetup_opts[@]}" auth)
+			;;
+		esac
+
+		tinyproxysetup "${tinyproxysetup_opts[@]}"
+		;;
+	esac
+
+	case "$APT_TEST_METHOD" in
 
 		file|copy)
 			REPO_STORAGE="$TMPWORKINGDIRECTORY/usr/src/RPM/REPO"
 			;;
 
-		https*_proxy*)
-			tinyproxysetup
-			nginxsetup https only1ip
-			REPO_STORAGE="$NGINX_STORAGE"
-			;;
-
-		http*_proxy*)
-			tinyproxysetup
-			nginxsetup only1ip
-			REPO_STORAGE="$NGINX_STORAGE"
-			;;
-
-		https|https_*)
-			nginxsetup https
-			REPO_STORAGE="$NGINX_STORAGE"
-			;;
-
-		# less specific than https*
-		http|http_*)
-			nginxsetup
+		http*)
+			nginxsetup "${nginxsetup_opts[@]}"
 			REPO_STORAGE="$NGINX_STORAGE"
 			;;
 
@@ -309,22 +279,23 @@ generaterepository_and_switch_sources() {
 			;;
 	esac
 
-	# set up proxy access; check that it's actually used by unsetting proxy
 	case "$APT_TEST_METHOD" in
 	    http*_proxy*)
-		cat >| "$APT_TEST_PROXY_FOR_HTTP_CONF" <<- END
-		// The prefix http:// seems to be required by apt.
-		Acquire::http::Proxy	"http://$TINYPROXY_HOST:$TINYPROXY_PORT";
-		END
-
-		# Redefine aptget() to test that the repo is actually
-		# accessed via proxy in any test where it's called.
-		# (Redefined here because it makes sense only after sources.list
-		# have been set up.) Doing it in every test seems like overdoing,
-		# but well, it doesn't hurt much.
-		aptget() {
-		    aptget_try_bad_then_normal with_unset_proxy_for_http "$@"
-		}
+		if [ -z "${TINYPROXY_USER-}" ]; then
+		    TINYPROXY_AUTH=
+		else
+		    TINYPROXY_AUTH="$(encode_auth_in_uri "$TINYPROXY_USER")":"$(encode_auth_in_uri "$TINYPROXY_PASS")"@
+		fi
+		# The prefix http:// seems to be required by apt.
+		case "$APT_TEST_METHOD" in
+		    http*_numeric*)
+			http_proxy="http://$TINYPROXY_AUTH$TINYPROXY_IP:$TINYPROXY_PORT"
+			;;
+		    *)
+			http_proxy="http://$TINYPROXY_AUTH$TINYPROXY_HOST:$TINYPROXY_PORT"
+			;;
+		esac
+		export http_proxy
 
 		# Doing HTTPS through proxy? (And if we are setting up the repo,
 		# I believe we are going to access it with apt-get.) So, remember
@@ -338,29 +309,12 @@ generaterepository_and_switch_sources() {
 		;;
 	esac
 
-	# pin the cert & use another one for checking pinning
-	# (We prioritize checking pinning over proxy-only access;
-	# so we override aptget() here after the http*_proxy* override.)
 	case "$APT_TEST_METHOD" in
 	    https*_pinned*)
 		cat >| "$APT_TEST_PINNING_CONF" <<- END
 		Acquire::https::PinnedCert	"$NGINX_CRT";
 		END
 
-		mk_intermediate cert/another@"$NGINX_HOST"/crt \
-				ssl_keygen
-
-		# Redefine aptget() to test that the repo is actually accessed
-		# with verifying the pinned cert in any test where it's called;
-		# pinning a wrong cert must lead to no access.
-		# (Redefined here because it makes sense only after sources.list
-		# have been set up.) Doing it in every test seems like overdoing,
-		# but well, it doesn't hurt much.
-		aptget() {
-		    aptget_try_bad_then_normal \
-			"with_pinned $APT_TEST_INTERMEDIATES/cert/another@$NGINX_HOST/crt" \
-			"$@"
-		}
 		;;
 	esac
 
@@ -415,13 +369,21 @@ generaterepository_and_switch_sources() {
 			;;
 
 		http|http_*|https|https_*)
-			APT_SOURCES_SITE="$NGINX_HOST"
+			case "$APT_TEST_METHOD" in
+			    http*_numeric*)
+				APT_SOURCES_SITE="$NGINX_IP"
+				;;
+			    *)
+				APT_SOURCES_SITE="$NGINX_HOST"
+				;;
+			esac
 			APT_SOURCES_URI="$APT_SOURCES_SITE:$NGINX_PORT"
 
 			cat >| rootdir/etc/apt/sources.list <<- END
 				rpm ${APT_TEST_METHOD%%_*}://$APT_SOURCES_URI/ $MYARCH_DISTRO $DISTRO_COMPONENT
 				rpm ${APT_TEST_METHOD%%_*}://$APT_SOURCES_URI/ $NOARCH_DISTRO $DISTRO_COMPONENT
 			END
+
 			;;
 
 		*)
@@ -434,8 +396,9 @@ generaterepository_and_switch_sources() {
 	addtrap 'prefix' \
 		'[ "$EXIT_CODE" = 0 ] || print_failed_lists >&6;'
 
-	NOARCH_PKGLIST_URI="$APT_SOURCES_URI/$NOARCH_DISTRO/base/pkglist.$DISTRO_COMPONENT"
-	MYARCH_PKGLIST_URI="$APT_SOURCES_URI/$MYARCH_DISTRO/base/pkglist.$DISTRO_COMPONENT"
+	# Here we delete the braces in [::1]:8080 to match apt's filenames.
+	NOARCH_PKGLIST_URI="${APT_SOURCES_URI//[][]}/$NOARCH_DISTRO/base/pkglist.$DISTRO_COMPONENT"
+	MYARCH_PKGLIST_URI="${APT_SOURCES_URI//[][]}/$MYARCH_DISTRO/base/pkglist.$DISTRO_COMPONENT"
 	local encoded_noarch_pkglist_uri encoded_myarch_pkglist_uri
 	encoded_noarch_pkglist_uri="$(encode_uri_for_apt_lists "$NOARCH_PKGLIST_URI")"
 	encoded_myarch_pkglist_uri=$(encode_uri_for_apt_lists "$MYARCH_PKGLIST_URI")
@@ -446,19 +409,60 @@ generaterepository_and_switch_sources() {
 	APT_FETCHED_PARTIAL_MYARCH_PKGLIST="$APT_LISTS_DIR/partial/$encoded_myarch_pkglist_uri"
 }
 
-readonly ALLOWED_FROM_IP=127.0.0.2
+readonly ALLOWED_FROM=127.0.0.2
+# FIXME: use an address different from localhost6 (for testing
+# proxy-only connections; now we should skip that part of the tests);
+# consider RFC 4193 addresses as a solution (https://serverfault.com/a/935274/68972).
+readonly ALLOWED_FROM6=::1
 
 # Output/effects:
 # * global vars representing the actual configuration of the server
 #   (convenient for use in other scripts):
-#   TINYPROXY_HOST, TINYPROXY_PORT, TINYPROXY_PIDFILE;
+#   TINYPROXY_HOST, TINYPROXY_IP, TINYPROXY_PORT, TINYPROXY_PIDFILE;
+#   if auth, also: TINYPROXY_USER, TINYPROXY_PASS
 # * the server configured, ready for tinyproxyrestart()
 tinyproxysetup() {
+	local opt ipv6= auth=
+	for opt; do
+	    case "$opt" in
+
+		ipv6)
+		    ipv6=yes
+		    ;;
+
+		auth)
+		    auth=yes
+		    ;;
+
+		*)
+		    msgdie "unknown tinyproxysetup opt: $opt"
+		    ;;
+
+	    esac
+	done
+	local -r ipv6
+	local -r auth
 
 	mkdir -p $TMPWORKINGDIRECTORY/tinyproxy
 
-        TINYPROXY_HOST=localhost
+	if [ -z "$ipv6" ]; then
+            TINYPROXY_HOST=localhost
+	    TINYPROXY_IP=127.0.0.1
+	else
+	    TINYPROXY_HOST=localhost6
+	    TINYPROXY_IP=[::1]
+	fi
         TINYPROXY_PORT=$((8580+${PARALLEL_SLOT:-0}))
+	if [ -n "$auth" ]; then
+	    # A colon (:) is prohibited (according to RFC2617 & RFC7617).
+	    TINYPROXY_USER='John my@user name'
+	    # https://bugzilla.altlinux.org/38277 , but tinyproxy
+	    # doesn't allow to set a password with @ (TODO: report!),
+	    # so we test with a colon (:) here and an @ in the
+	    # username. This would not have evoked the actual problem
+	    # on all code paths (and test cases: env var or config).
+	    TINYPROXY_PASS='P:ss w0rd'
+	fi
         TINYPROXY_PIDFILE=$TMPWORKINGDIRECTORY/tinyproxy/tinyproxy.pid
 	TINYPROXYLOG=$TMPWORKINGDIRECTORY/tinyproxy/tinyproxy.log
 
@@ -469,27 +473,54 @@ MaxClients 2
 
 Port $TINYPROXY_PORT
 # localhost (cannot be given by name)
-Listen 127.0.0.1
+Listen ${TINYPROXY_IP//[][]}
 
-Bind $ALLOWED_FROM_IP
+Bind $ALLOWED_FROM
+Bind $ALLOWED_FROM6
 
 # no other way to see the log than in a file; daemon cannot be made to use stdout:
 # https://github.com/tinyproxy/tinyproxy/pull/122/commits/894a0aab3babfbe7d68fbc446ba50a848413992b#diff-46b881d73b3e6407e73cdcc59cdaf1de4bb5a0122acf867cb88bdd28ca34ca45R73
 LogFile "$TINYPROXYLOG"
 
+# LogLevel: Warning
+#
+# Set the logging level. Allowed settings are:
+#	Critical	(least verbose)
+#	Error
+#	Warning
+#	Notice
+#	Connect		(to log connections without Info's noise)
+#	Info		(most verbose)
+#
+# The LogLevel logs from the set level and above. For example, if the
+# LogLevel was set to Warning, then all log messages from Warning to
+# Critical would be output, but Notice and below would be suppressed.
+#
+LogLevel Connect
+
+${auth:+
+# No double quotes can be used. It can split wrongly on a space in the password.
+BasicAuth $TINYPROXY_USER $TINYPROXY_PASS
+}
+
 ENDCONFIG
 }
 
 tinyproxyrestart() {
-	local -r TINYPROXYLOG=$TMPWORKINGDIRECTORY/tinyproxy/process-stderr.log
 
 	! [ -s "$TINYPROXY_PIDFILE" ] || {
-		echo 'Stopping tinyproxy with a signal (before a restart).'
-		kill -TERM "$(cat "$TINYPROXY_PIDFILE")"
+	    echo 'Stopping tinyproxy with a signal (before a restart).'
+	    local -r old_pid="$(cat "$TINYPROXY_PIDFILE")"
+	    kill "$old_pid"
+	    # we can't "wait" for pid, because the daemon is not a child
+	    wait_for_nofile "$TINYPROXY_PIDFILE" 5000 ||
+		kill -KILL "$old_pid" &>/dev/null ||:
+	    wait_until "! kill -0 $old_pid &>/dev/null" 5000 ||
+		msgdie 'Timeout, could not kill the old tinyproxy'
 	} &>>"$TINYPROXYLOG"
 	rm -f "$TINYPROXY_PIDFILE"
 
-	# The wait_for_file workaround is not be needed if tinyproxy fully conforms
+	# The wait_for_file workaround is not needed if tinyproxy fully conforms
 	# to the "traditional UNIX forking daemon" behavior described
 	# in systemd.service(5); we don't know whether it does. (Nginx doesn't.)
 	/usr/bin/tinyproxy -c $TMPWORKINGDIRECTORY/tinyproxy/tinyproxy.conf &&
@@ -500,6 +531,9 @@ tinyproxyrestart() {
 			  msgdie 'tinyproxy failed to start normally'
 			}
 
+	# If we have started it one more time, the old trap would output the same log
+	# one more time (FIXME: use unique files for each instance), and killing
+	# would output an error 'No such process', but that's not a problem.
 	addtrap 'prefix' \
 			'kill -TERM %q ||:; [ "$EXIT_CODE" = 0 ] || if [ -e %q ]; then echo TINYPROXYLOG:; cat %q ||:; fi >&6;' \
 			"$TINYPROXYPID" \
@@ -510,12 +544,12 @@ tinyproxyrestart() {
 # Output/effects:
 # * global vars representing the actual configuration of the server
 #   (convenient for use in other scripts):
-#   NGINX_HOST, NGINX_PORT, NGINX_STORAGE, NGINX_PIDFILE;
+#   NGINX_HOST, NGINX_IP, NGINX_PORT, NGINX_STORAGE, NGINX_PIDFILE;
 #   if https, also: NGINX_KEY, NGINX_CRT;
 # * the server configured, ready for nginxrestart()
 #   (if https: configured & ready except for the key)
 nginxsetup() {
-	local opt https only1ip
+	local opt https= only1ip= ipv6=
 	for opt; do
 	    case "$opt" in
 
@@ -527,6 +561,10 @@ nginxsetup() {
 		    only1ip=yes
 		    ;;
 
+		ipv6)
+		    ipv6=yes
+		    ;;
+
 		*)
 		    msgdie "unknown nginxsetup opt: $opt"
 		    ;;
@@ -535,13 +573,20 @@ nginxsetup() {
 	done
 	local -r https
 	local -r only1ip
+	local -r ipv6
 
 	mkdir -p $TMPWORKINGDIRECTORY/nginx
 	mkdir -p $TMPWORKINGDIRECTORY/nginx/tmp
 
-	NGINX_HOST=localhost
+	if [ -z "$ipv6" ]; then
+	    NGINX_HOST=localhost
+	    NGINX_IP=127.0.0.1
+	else
+	    NGINX_HOST=localhost6
+	    NGINX_IP=[::1]
+	fi
 	NGINX_PORT=$((8080+${PARALLEL_SLOT:-0}))
-	if [ -n "${https-}" ]; then
+	if [ -n "$https" ]; then
 	    NGINX_KEY=$TMPWORKINGDIRECTORY/nginx/cert.key
 	    NGINX_CRT=$TMPWORKINGDIRECTORY/nginx/cert.crt
 	fi
@@ -577,8 +622,8 @@ http {
 	error_log stderr;
 
 	server {
-		listen $NGINX_PORT ${https:+ssl};
-		server_name $NGINX_HOST localhost.localdomain;
+		listen ${ipv6:+[::]:}$NGINX_PORT ${https:+ssl};
+		server_name $NGINX_HOST localhost${ipv6:+6}.localdomain;
 
 	${https:+
 		ssl_certificate	$NGINX_CRT;
@@ -595,7 +640,8 @@ http {
 			autoindex on;
 
 		${only1ip:+
-			allow $ALLOWED_FROM_IP;
+			allow $ALLOWED_FROM;
+			allow $ALLOWED_FROM6;
 			deny all;
 		}
 
@@ -609,8 +655,14 @@ nginxrestart() {
 	local -r NGINXLOG=$TMPWORKINGDIRECTORY/nginx/process-stderr.log
 
 	! [ -s "$NGINX_PIDFILE" ] || {
-		echo 'Stopping nginx with a signal (before a restart).'
-		kill -TERM "$(cat "$NGINX_PIDFILE")"
+	    echo 'Stopping nginx with a signal (before a restart).'
+	    local -r old_pid="$(cat "$NGINX_PIDFILE")"
+	    kill "$old_pid"
+	    # we can't "wait" for pid, because the daemon is not a child
+	    wait_for_nofile "$NGINX_PIDFILE" 5000 ||
+		kill -KILL "$old_pid" &>/dev/null ||:
+	    wait_until "! kill -0 $old_pid &>/dev/null" 5000 ||
+		msgdie 'Timeout, could not kill the old nginx'
 	} &>>"$NGINXLOG"
 	rm -f "$NGINX_PIDFILE"
 
@@ -629,6 +681,9 @@ nginxrestart() {
 			  msgdie 'nginx failed to start normally'
 			}
 
+	# If we have started it one more time, the old trap would output the same log
+	# one more time (FIXME: use unique files for each instance), and killing
+	# would output an error 'No such process', but that's not a problem.
 	addtrap 'prefix' \
 			'kill -TERM %q ||:; [ "$EXIT_CODE" = 0 ] || if [ -e %q ]; then echo NGINXLOG:; cat %q ||:; fi >&6;' \
 			"$NGINXPID" \
