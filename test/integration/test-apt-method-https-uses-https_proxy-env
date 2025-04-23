@@ -20,6 +20,15 @@ prereq $TESTDIR/try-apt-method-http-when-allowed-only-proxy
 msgmsg "Setting https_proxy env: $APT_TEST_HTTP_PROXY"
 export https_proxy="$APT_TEST_HTTP_PROXY"
 
+# https_proxy is not honored by apt, just http_proxy.
+case "$APT_TEST_METHOD" in
+    http*_localhost6*)
+	echo 'SKIP on IPv6, shows nothing (direct access is not denied; https_proxy is not used)' >&2
+	exit 0
+	;;
+esac
+APT_TEST_XFAIL=yes
+
 testsuccess aptget update
 
 testpkgnotinstalled 'simple-package'
