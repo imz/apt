@@ -10,7 +10,8 @@
 # As for the _dbgconn modifier, tests with it are run first (to see more
 # debug info if it takes much time waiting in tests and so the time limit
 # is exceeded before all tests are complete).
-APT_TEST_ALL_METHODS=(file http{,s{,_pinned}}{,_localhost6}{,_numeric}{,_proxy{,6}{,_authproxy}}{_dbgconn,} copy cdrom)
+APT_TEST_ALL_METHODS=(file http{,s}{,_localhost6}{,_numeric}{,_proxy}{_dbgconn,} copy cdrom)
+APT_TEST_ALL_http_METHODS=(http{,s}{,_localhost6}{,_numeric}{,_proxy{,6}{,_authproxy}}{_dbgconn,} https_pinned{,_localhost6}{,_numeric}{,_proxy})
 
 # filter out
 filter_methods_to_skip() {
@@ -30,5 +31,7 @@ filter_methods_to_skip() {
     done
 }
 APT_TEST_ALL_METHODS=($(filter_methods_to_skip "${APT_TEST_ALL_METHODS[@]}"))
+APT_TEST_ALL_http_METHODS=($(filter_methods_to_skip "${APT_TEST_ALL_http_METHODS[@]}"))
 
 readonly -a APT_TEST_ALL_METHODS
+readonly -a APT_TEST_ALL_http_METHODS

@@ -11,11 +11,8 @@ DIR=$(readlink -f $(dirname $0))
 # Here we actually have much more "pseudo-methods", where the base methods are
 # further modified with various details about how the connection is set up
 # to be made by apt.
-if [ -n "${APT_TEST_METHODS:-}" ]; then
-    readonly -a APT_TEST_METHODS=($APT_TEST_METHODS)
-else
-    readonly -a APT_TEST_METHODS=("${APT_TEST_ALL_METHODS[@]}")
-fi
+readonly -a APT_TEST_METHODS=(${APT_TEST_METHODS-"${APT_TEST_ALL_METHODS[@]}"})
+readonly -a APT_TEST_http_METHODS=(${APT_TEST_http_METHODS-"${APT_TEST_ALL_http_METHODS[@]}"})
 
 FAIL=0
 XFAIL=0
@@ -179,6 +176,12 @@ forall_testcases() {
 
 	    test-without-repo-*)
 		"$cmd" "$testscript"
+		;;
+
+	    test-apt-method-http*)
+		for method in "${APT_TEST_http_METHODS[@]}"; do
+		    "$cmd" "$testscript" "$method"
+		done
 		;;
 
 	    *)

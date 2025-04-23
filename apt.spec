@@ -375,10 +375,10 @@ export APT_TEST_INTERMEDIATES
 		./run-tests -v
 
 # A quick test with just one method for the case without APT_TEST_GPGPUBKEY.
-APT_TEST_METHODS='file' %runtests
+APT_TEST_METHODS='file' APT_TEST_http_METHODS= %runtests
 
 # The same tests, but just via cdrom with a missing release:
-#APT_TEST_METHODS=cdrom_missing_release %%runtests
+#APT_TEST_METHODS=cdrom_missing_release APT_TEST_http_METHODS= %%runtests
 
 %package checkinstall
 Summary: Immediately test %name when installing this package (complete set of tests)
@@ -501,6 +501,7 @@ fi
 
 already_once=0
 for (( try = 0; try < TRIES; )); do
+    # FIXME: APT_TEST_ALL_http_METHODS are repeated too many times.
     for method in "${APT_TEST_ALL_METHODS[@]}"; do
 	# do the same method several times in parallel (to provoke races)
 	for (( repeat = 0; repeat < 2; ++repeat )); do
