@@ -625,7 +625,7 @@ exec 1>&2
   + %%-encode username and password when writing URIs (doesn't help alone with
     reading URIs as in the case of http_proxy above, but normalizes output);
   + include port in shortened URIs (e.g. with apt-cache policy).
-- testcases: Multiplied to test these kinds of HTTP(S) connections.
+- testcases: Multiplied http-related ones to test these kinds of connections.
 
 * Tue Apr  8 2025 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt91
 - Fixes for ShowEssential output (showing the essential to-be-removed packages):
