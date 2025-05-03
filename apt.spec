@@ -614,6 +614,7 @@ exec 1>&2
 * Sat May  3 2025 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt93
 - apt.conf(Allow-Duplicated): drop ^NVIDIA_ as outdated & confusing (ALT#53988).
   (There have been no such packages in ALT since a long time.)
+- e2k build: The used C++ features no longer need special treatment/lcc options.
 
 * Wed Apr 16 2025 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt92
 - Support encoded usernames and passwords in URIs (incl. http_proxy); it was
