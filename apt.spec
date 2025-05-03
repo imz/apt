@@ -613,6 +613,7 @@ exec 1>&2
 * Sat May  3 2025 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt93
 - apt.conf(Allow-Duplicated): drop ^NVIDIA_ as outdated & confusing (ALT#53988).
   (There have been no such packages in ALT since a long time.)
+- e2k build: The used C++ features no longer need special treatment/lcc options.
 - checkinstall subpkg (xxtra-heavy-load):
   + Fixed not to run the http-related tests (multiplied in 0.5.15lorg2-alt92)
     too many times; thereby reduced the time.
