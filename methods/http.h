@@ -74,7 +74,7 @@ class CircleBuf
    void Stats();
 
    CircleBuf(unsigned long Size);
-   ~CircleBuf() {delete [] Buf; delete Hash;}
+   ~CircleBuf();
 };
 
 struct ServerState

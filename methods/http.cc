@@ -2,7 +2,7 @@
 // $Id: http.cc,v 1.56 2003/02/12 15:33:36 doogie Exp $
 /* ######################################################################
 
-   HTTP Aquire Method - This is the HTTP aquire method for APT.
+   HTTP Acquire Method - This is the HTTP acquire method for APT.
 
    It uses HTTP/1.1 and many of the fancy options there-in, such as
    pipelining, range, if-range and so on.
@@ -31,6 +31,7 @@
 #include <apt-pkg/error.h>
 #include <apt-pkg/hashes.h>
 
+#include <cstring>
 #include <sys/stat.h>
 #include <sys/time.h>
 #include <utime.h>
@@ -38,7 +39,6 @@
 #include <signal.h>
 #include <stdio.h>
 #include <errno.h>
-#include <string.h>
 #include <iostream>
 #include <map>
 
@@ -75,7 +75,7 @@ bool Debug = false;
 // CircleBuf::CircleBuf - Circular input buffer				/*{{{*/
 // ---------------------------------------------------------------------
 /* */
-CircleBuf::CircleBuf(unsigned long Size) : Size(Size), Hash(0)
+CircleBuf::CircleBuf(unsigned long Size) : Size(Size), Hash(NULL)
 {
    Buf = new unsigned char[Size];
    Reset();
@@ -91,7 +91,7 @@ void CircleBuf::Reset()
    StrPos = 0;
    MaxGet = (unsigned int)-1;
    OutQueue = string();
-   if (Hash != 0)
+   if (Hash != NULL)
    {
       delete Hash;
       Hash = new Hashes;
@@ -102,7 +102,7 @@ void CircleBuf::Reset()
 // ---------------------------------------------------------------------
 /* This fills up the buffer with as much data as is in the FD, assuming it
    is non-blocking.. */
-bool CircleBuf::Read(const std::unique_ptr<MethodFd> &Fd)
+bool CircleBuf::Read(std::unique_ptr<MethodFd> const &Fd)
 {
    while (1)
    {
@@ -112,7 +112,7 @@ bool CircleBuf::Read(const std::unique_ptr<MethodFd> &Fd)
 
       // Write the buffer segment
       int Res;
-      Res = Fd->Read(Buf + (InP%Size),LeftRead());
+      Res = Fd->Read(Buf + (InP % Size), LeftRead());
 
       if (Res == 0)
 	 return false;
@@ -173,7 +173,7 @@ void CircleBuf::FillOut()
 // CircleBuf::Write - Write from the buffer into a FD			/*{{{*/
 // ---------------------------------------------------------------------
 /* This empties the buffer into the FD. */
-bool CircleBuf::Write(const std::unique_ptr<MethodFd> &Fd)
+bool CircleBuf::Write(std::unique_ptr<MethodFd> const &Fd)
 {
    while (1)
    {
@@ -188,7 +188,7 @@ bool CircleBuf::Write(const std::unique_ptr<MethodFd> &Fd)
 
       // Write the buffer segment
       int Res;
-      Res = Fd->Write(Buf + (OutP%Size), LeftWrite());
+      Res = Fd->Write(Buf + (OutP % Size), LeftWrite());
 
       if (Res == 0)
 	 return false;
@@ -200,7 +200,7 @@ bool CircleBuf::Write(const std::unique_ptr<MethodFd> &Fd)
 	 return false;
       }
 
-      if (Hash != 0)
+      if (Hash != NULL)
 	 Hash->Add(Buf + (OutP%Size),Res);
 
       OutP += Res;
@@ -262,6 +262,11 @@ void CircleBuf::Stats()
    clog << "Got " << InP << " in " << Diff << " at " << InP/Diff << endl;*/
 }
 									/*}}}*/
+CircleBuf::~CircleBuf()
+{
+   delete [] Buf;
+   delete Hash;
+}
 
 // ServerState::ServerState - Constructor				/*{{{*/
 // ---------------------------------------------------------------------
