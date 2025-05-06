@@ -142,15 +142,8 @@ unsigned long RegexChoice(RxChoiceList *Rxs,const char **ListBegin,
 namespace APT {
    namespace String {
 
-      inline bool Endswith(const std::string_view &s, const std::string_view &end)
-      {
-         return s.ends_with(end);
-      }
-
-      inline bool Startswith(const std::string_view &s, const std::string_view &start)
-      {
-         return s.starts_with(start);
-      }
+      bool Endswith(const std::string_view &s, const std::string_view &end);
+      bool Startswith(const std::string_view &s, const std::string_view &start);
 
    }
 }
