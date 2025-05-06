@@ -16,6 +16,14 @@
 #include <apt-pkg/error.h>
 #include <apt-pkg/fileutl.h>
 
+#ifdef USE_TLS
+#include "apt-pkg/scopeexit.h"
+
+#include <gnutls/gnutls.h>
+#include <gnutls/x509.h>
+#include <gnutls/pkcs11.h>
+#endif /* USE_TLS */
+
 #include <stdio.h>
 #include <errno.h>
 #include <unistd.h>
@@ -26,43 +34,37 @@
 #include <arpa/inet.h>
 #include <netdb.h>
 
-#ifdef USE_TLS
-#include <gnutls/gnutls.h>
-#include <gnutls/x509.h>
-#include <gnutls/pkcs11.h>
-
-#include "apt-pkg/scopeexit.h"
-#endif /* USE_TLS */
-
-// CNC:2003-02-20 - Moved header to fix compilation error when
-// 		    --disable-nls is used.
-#include <apti18n.h>
-
 #include "rfc2553emu.h"
 
 // for debugging
 #include "connect-debug.h"
 
+// CNC:2003-02-20 - Moved header to fix compilation error when
+// 		    --disable-nls is used.
+#include <apti18n.h>
+
 									/*}}}*/
 
-static string LastHost;
+// FIXME: upstream has got rid of this soon, but for now, for backporting:
+#define APT_OVERRIDE override
+
+static std::string LastHost;
 static int LastPort = 0;
 static struct addrinfo *LastHostAddr = 0;
 static struct addrinfo *LastUsed = 0;
 
 // File Descriptor based Fd /*{{{*/
-struct FdFd: public MethodFd
+struct FdFd : public MethodFd
 {
    int fd = -1;
-
-   int Fd() override { return fd; }
-   ssize_t Read(void *buf, size_t count) override { return ::read(fd, buf, count); }
-   ssize_t Write(const void *buf, size_t count) override { return ::write(fd, buf, count); }
-   int Close() override
+   int Fd() APT_OVERRIDE { return fd; }
+   ssize_t Read(void *buf, size_t count) APT_OVERRIDE { return ::read(fd, buf, count); }
+   ssize_t Write(const void *buf, size_t count) APT_OVERRIDE { return ::write(fd, buf, count); }
+   int Close() APT_OVERRIDE
    {
       int result = 0;
       if (fd != -1)
-         result = ::close(fd);
+	 result = ::close(fd);
       fd = -1;
       return result;
    }
@@ -95,8 +97,8 @@ void RotateDNS()
 // DoConnect - Attempt a connect operation				/*{{{*/
 // ---------------------------------------------------------------------
 /* This helper function attempts a connection to a single address. */
-static bool DoConnect(struct addrinfo *Addr,const string &Host,
-		      unsigned long TimeOut,std::unique_ptr<MethodFd> &Fd,pkgAcqMethod *Owner)
+static bool DoConnect(struct addrinfo *Addr, std::string const &Host,
+		      unsigned long TimeOut, std::unique_ptr<MethodFd> &Fd, pkgAcqMethod *Owner)
 {
    // Show a status indicator
    char Name[NI_MAXHOST];
@@ -126,22 +128,22 @@ static bool DoConnect(struct addrinfo *Addr,const string &Host,
       return _error->Errno("socket",_("Could not create a socket for %s (f=%u t=%u p=%u)"),
 			   Name,Addr->ai_family,Addr->ai_socktype,Addr->ai_protocol);
 
-   SetNonBlock(Fd->Fd(),true);
-   if (connect(Fd->Fd(),Addr->ai_addr,Addr->ai_addrlen) < 0 &&
+   SetNonBlock(Fd->Fd(), true);
+   if (connect(Fd->Fd(), Addr->ai_addr, Addr->ai_addrlen) < 0 &&
        errno != EINPROGRESS)
       return _error->Errno("connect",_("Cannot initiate the connection "
 			   "to %s:%s (%s)."),Host.c_str(),Service,Name);
 
    /* This implements a timeout for connect by opening the connection
       nonblocking */
-   if (WaitFd(Fd->Fd(),true,TimeOut) == false)
+   if (WaitFd(Fd->Fd(), true, TimeOut) == false)
       return _error->Error(_("Could not connect to %s:%s (%s), "
 			   "connection timed out"),Host.c_str(),Service,Name);
 
    // Check the socket for an error condition
    unsigned int Err;
    unsigned int Len = sizeof(Err);
-   if (getsockopt(Fd->Fd(),SOL_SOCKET,SO_ERROR,&Err,&Len) != 0)
+   if (getsockopt(Fd->Fd(), SOL_SOCKET, SO_ERROR, &Err, &Len) != 0)
       return _error->Errno("getsockopt",_("Failed"));
 
    if (Err != 0)
@@ -180,9 +182,9 @@ bool Connect(const string &Host,int Port,const char *Service,int DefPort,std::un
    // Convert the port name/number
    char ServStr[300];
    if (Port != 0)
-      snprintf(ServStr,sizeof(ServStr),"%u",Port);
+      snprintf(ServStr,sizeof(ServStr),"%u", Port);
    else
-      snprintf(ServStr,sizeof(ServStr),"%s",Service);
+      snprintf(ServStr,sizeof(ServStr),"%s", Service);
 
    /* We used a cached address record.. Yes this is against the spec but
       the way we have setup our rotating dns suggests that this is more
@@ -216,7 +218,7 @@ bool Connect(const string &Host,int Port,const char *Service,int DefPort,std::un
 	    {
 	       if (DefPort != 0)
 	       {
-		  snprintf(ServStr,sizeof(ServStr),"%u",DefPort);
+		  snprintf(ServStr, sizeof(ServStr), "%u", DefPort);
 		  DefPort = 0;
 		  continue;
 	       }
@@ -224,10 +226,15 @@ bool Connect(const string &Host,int Port,const char *Service,int DefPort,std::un
 	    }
 
 	    if (Res == EAI_AGAIN)
+	    {
 	       return _error->Error(_("Temporary failure resolving '%s'"),
 				    Host.c_str());
-	    return _error->Error(_("Something wicked happened resolving '%s:%s' (%i)"),
-				 Host.c_str(),ServStr,Res);
+	    }
+	    if (Res == EAI_SYSTEM)
+	       return _error->Errno("getaddrinfo", _("System error resolving '%s:%s'"),
+                                      Host.c_str(),ServStr);
+	    return _error->Error(_("Something wicked happened resolving '%s:%s' (%i - %s)"),
+				 Host.c_str(),ServStr,Res,gai_strerror(Res));
 	 }
 	 break;
       }
@@ -274,7 +281,7 @@ bool Connect(const string &Host,int Port,const char *Service,int DefPort,std::un
 
    if (_error->PendingError() == true)
       return false;
-   return _error->Error(_("Unable to connect to %s %s:"),Host.c_str(),ServStr);
+   return _error->Error(_("Unable to connect to %s:%s:"),Host.c_str(),ServStr);
 }
 									/*}}}*/
 
@@ -290,13 +297,13 @@ struct TlsFd : public MethodFd
    std::string hostname;
    bool session_need_shutdown;
 
-   int Fd() override { return UnderlyingFd->Fd(); }
+   int Fd() APT_OVERRIDE { return UnderlyingFd->Fd(); }
 
-   ssize_t Read(void *buf, size_t count) override
+   ssize_t Read(void *buf, size_t count) APT_OVERRIDE
    {
       return HandleError(gnutls_record_recv(session, buf, count));
    }
-   ssize_t Write(const void *buf, size_t count) override
+   ssize_t Write(const void *buf, size_t count) APT_OVERRIDE
    {
       return HandleError(gnutls_record_send(session, buf, count));
    }
@@ -313,7 +320,7 @@ struct TlsFd : public MethodFd
       return err;
    }
 
-   int Close() override
+   int Close() APT_OVERRIDE
    {
       int err = 0;
 
@@ -334,7 +341,7 @@ struct TlsFd : public MethodFd
       return (err < 0) ? HandleError(err) : lower;
    }
 
-   bool HasPending() override
+   bool HasPending() APT_OVERRIDE
    {
       return gnutls_record_check_pending(session) > 0;
    }
