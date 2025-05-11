@@ -29,6 +29,7 @@ saved log from DebugMethodFd.
 bool DebugMethodFdToFile(const string &FileName,
                          std::unique_ptr<MethodFd> &MFd);
 bool DebugMethodFd(const string &LogDir, std::unique_ptr<MethodFd> &MFd);
+bool DebugMethodFdIfRequired(std::unique_ptr<MethodFd> &MFd);
 
 /**
  * Wrapped MethodFd
