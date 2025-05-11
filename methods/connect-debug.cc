@@ -146,6 +146,9 @@ bool DebugMethodFdToFile(const string &FileName,
       // FIXME: We want that a failure to set up debugging doesn't go unnoticed,
       // however it wouldn't be correct to treat it as a connection error
       // by the calling code. So, we just bail out... (Could be an option.)
+      //
+      // Not to repeat the same exit code every time this function is used,
+      // we "factor out" the dying code from those places to this single place.
       const bool FatalDebugMethodFd = true;
       if (FatalDebugMethodFd)
       {
