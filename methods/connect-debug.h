@@ -28,8 +28,7 @@ saved log from DebugMethodFd.
 
 bool DebugMethodFdToFile(const string &FileName,
                          std::unique_ptr<MethodFd> &MFd);
-bool DebugMethodFd(const string &LogDir, const string &Label,
-                   std::unique_ptr<MethodFd> &MFd);
+bool DebugMethodFd(const string &LogDir, std::unique_ptr<MethodFd> &MFd);
 
 /**
  * Wrapped MethodFd
@@ -49,6 +48,7 @@ struct WMethodFd: MethodFd
    ssize_t Write(const void * const buf, size_t const count) override { return UnderlyingFd->Write(buf,count); }
    int Close() override { return UnderlyingFd->Close(); }
    bool HasPending() override { return UnderlyingFd->HasPending(); }
+   std::string Label() override { return UnderlyingFd->Label(); }
 };
 
 struct TracedMethodFd: WMethodFd

@@ -57,6 +57,7 @@ static struct addrinfo *LastUsed = 0;
 struct FdFd : public MethodFd
 {
    int fd = -1;
+   std::string label;
    int Fd() APT_OVERRIDE { return fd; }
    ssize_t Read(void *buf, size_t count) APT_OVERRIDE { return ::read(fd, buf, count); }
    ssize_t Write(const void *buf, size_t count) APT_OVERRIDE { return ::write(fd, buf, count); }
@@ -68,6 +69,7 @@ struct FdFd : public MethodFd
       fd = -1;
       return result;
    }
+   std::string Label() override { return label; }
 };
 
 bool MethodFd::HasPending()
@@ -75,10 +77,11 @@ bool MethodFd::HasPending()
    return false;
 }
 
-std::unique_ptr<MethodFd> MethodFd::FromFd(int iFd)
+std::unique_ptr<MethodFd> MethodFd::FromFd(int iFd, const std::string &label)
 {
    FdFd *fd = new FdFd();
    fd->fd = iFd;
+   fd->label = label;
    return std::unique_ptr<MethodFd>(fd);
 }
 
@@ -123,7 +126,8 @@ static bool DoConnect(struct addrinfo *Addr, std::string const &Host,
       Owner->SetFailExtraMsg("");
 
    // Get a socket
-   Fd = MethodFd::FromFd(socket(Addr->ai_family,Addr->ai_socktype, Addr->ai_protocol));
+   Fd = MethodFd::FromFd(socket(Addr->ai_family,Addr->ai_socktype, Addr->ai_protocol),
+                         Host + ":" + Service + "(" + Name + ")");
    if (Fd->Fd() < 0)
       return _error->Errno("socket",_("Could not create a socket for %s (f=%u t=%u p=%u)"),
 			   Name,Addr->ai_family,Addr->ai_socktype,Addr->ai_protocol);
@@ -157,9 +161,7 @@ static bool DoConnect(struct addrinfo *Addr, std::string const &Host,
    std::string const LogDir = _config->FindFile("Debug::Connect");
    if (! LogDir.empty())
    {
-      if (! DebugMethodFd(LogDir,
-                          Host + ":" + Service + "_" + Name,
-                          Fd))
+      if (! DebugMethodFd(LogDir, Fd))
          // A failure to set up debugging is not a connection error,
          // so don't report it as such, i.e., don't return false.
          _error->Warning(_("Could not set up debugging for "
@@ -344,6 +346,12 @@ struct TlsFd : public MethodFd
    bool HasPending() APT_OVERRIDE
    {
       return gnutls_record_check_pending(session) > 0;
+   }
+
+   std::string Label() override
+   {
+      return UnderlyingFd->Label()
+         + "_TLS_" + hostname;
    }
 };
 
