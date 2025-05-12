@@ -771,7 +771,10 @@ bool HttpMethod::Go(bool ToFile,ServerState *Srv)
       FD_SET(Srv->ServerFd->Fd(),&rfds);
 
    // Add the file
-   auto FileFD = MethodFd::FromFd((File != 0) ? File->Fd() : -1);
+   auto FileFD =
+      (File != 0)
+      ? MethodFd::FromFd(File->Fd(), File->Name())
+      : MethodFd::FromFd(-1, "_");
 
    if (Srv->In.WriteSpace() == true && ToFile == true && FileFD->Fd() != -1)
       FD_SET(FileFD->Fd(),&wfds);
@@ -848,7 +851,7 @@ bool HttpMethod::Flush(ServerState *Srv)
 
       while (Srv->In.WriteSpace() == true)
       {
-	 auto FileFD = MethodFd::FromFd(File->Fd());
+	 auto FileFD = MethodFd::FromFd(File->Fd(), File->Name());
 	 if (Srv->In.Write(FileFD) == false)
 	    return _error->Errno("write",_("Error writing to file"));
 	 if (Srv->In.IsLimit() == true)
@@ -874,7 +877,7 @@ bool HttpMethod::ServerDie(ServerState *Srv)
       SetNonBlock(File->Fd(),false);
       while (Srv->In.WriteSpace() == true)
       {
-	 auto FileFD = MethodFd::FromFd(File->Fd());
+	 auto FileFD = MethodFd::FromFd(File->Fd(), File->Name());
 	 if (Srv->In.Write(FileFD) == false)
 	    return _error->Errno("write",_("Error writing to the file"));
 

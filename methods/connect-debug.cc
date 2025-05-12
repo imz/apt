@@ -161,8 +161,7 @@ bool DebugMethodFdToFile(const string &FileName,
    return true;
 }
 
-bool DebugMethodFd(const string &LogDir, const string &Label,
-                   std::unique_ptr<MethodFd> &MFd)
+bool DebugMethodFd(const string &LogDir, std::unique_ptr<MethodFd> &MFd)
 {
    struct timeval Time;
    gettimeofday(&Time,0);
@@ -170,6 +169,6 @@ bool DebugMethodFd(const string &LogDir, const string &Label,
       DebugMethodFdToFile(LogDir
                           + "/" + std::to_string(Time.tv_sec)
                           + "." + std::to_string(Time.tv_usec) // FIXME: fixed width
-                          + "." + Label,
+                          + "." + QuoteString(MFd->Label(), "/"),
                           MFd);
 }
