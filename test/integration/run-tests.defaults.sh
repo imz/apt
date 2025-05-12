@@ -11,7 +11,7 @@
 # debug info if it takes much time waiting in tests and so the time limit
 # is exceeded before all tests are complete).
 APT_TEST_ALL_METHODS=(file http{,s}{,_localhost6}{,_numeric}{,_proxy}{_dbgconn,} copy cdrom)
-APT_TEST_ALL_http_METHODS=(http{,s}{,_localhost6}{,_numeric}{,_proxy{,6}{,_authproxy}}{_dbgconn,} https_pinned{,_localhost6}{,_numeric}{,_proxy})
+APT_TEST_ALL_http_METHODS=(http{,s}{,_localhost6}{,_numeric}{,_proxy{,6}{,_{auth,numer}proxy}}{_dbgconn,} https_pinned{,_localhost6}{,_numeric}{,_proxy})
 
 # filter out
 filter_methods_to_skip() {
