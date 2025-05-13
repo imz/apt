@@ -584,7 +584,7 @@ bool UnwrapTLS(const std::string &Host, std::unique_ptr<MethodFd> &Fd,
       }
    }
 
-   return true;
+   return DebugMethodFdIfRequired(Fd);
 }
 									/*}}}*/
 #endif /* USE_TLS */
