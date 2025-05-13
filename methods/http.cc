@@ -54,6 +54,9 @@
 #include "rfc2553emu.h"
 #include "http.h"
 
+// for debugging
+#include "connect-debug.h"
+
 									/*}}}*/
 // FIXME: upstream has got rid of this soon, but for now, for backporting:
 #define APT_OVERRIDE override
@@ -395,7 +398,7 @@ bool UnwrapHTTPConnect(std::string Host, int Port, URI Proxy, std::unique_ptr<Me
       Fd = std::move(NewFd);
    }
 
-   return true;
+   return DebugMethodFdIfRequired(Fd);
 }
 									/*}}}*/
 
