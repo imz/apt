@@ -157,19 +157,7 @@ static bool DoConnect(struct addrinfo *Addr, std::string const &Host,
 			   Service,Name);
    }
 
-   // FindDir never returns an empty string, so we can't use it as an indicator. 
-   std::string const LogDir = _config->FindFile("Debug::Connect");
-   if (! LogDir.empty())
-   {
-      if (! DebugMethodFd(LogDir, Fd))
-         // A failure to set up debugging is not a connection error,
-         // so don't report it as such, i.e., don't return false.
-         _error->Warning(_("Could not set up debugging for "
-                           "the connection to %s:%s (%s)"),
-                         Host.c_str(),Service,Name);
-   }
-
-   return true;
+   return DebugMethodFdIfRequired(Fd);
 }
 									/*}}}*/
 // Connect - Connect to a server					/*{{{*/
