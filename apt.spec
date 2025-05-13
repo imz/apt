@@ -611,6 +611,8 @@ exec 1>&2
 
 %changelog
 * Sat May  3 2025 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt93
+- Made Debug::Connect config also effective for unwrapped TLS connections.
+  (If set, the cleartext HTTP connections are logged into the specified dir.)
 - apt.conf(Allow-Duplicated): drop ^NVIDIA_ as outdated & confusing (ALT#53988).
   (There have been no such packages in ALT since a long time.)
 - e2k build: The used C++ features no longer need special treatment/lcc options.
