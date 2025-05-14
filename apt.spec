@@ -522,7 +522,7 @@ done |
 	  -c 'APT_RUN_TEST_ONLY_IF_METHOD_MATCHES={}
               APT_RUN_TEST_ONLY_IF_METHOD_MATCHES="${APT_RUN_TEST_ONLY_IF_METHOD_MATCHES#*:}"
               export APT_RUN_TEST_ONLY_IF_METHOD_MATCHES
-              %runtests '${NPROCS:+'|& sed --unbuffered -e "s/^/[$PARALLEL_SLOT {}] /"'}
+              %runtests '${NPROCS:+'|& sed --unbuffered -e "s/^/[$(printf %%2d $PARALLEL_SLOT) {}] /"'}
 
 %package under-pkdirect-checkinstall
 Summary: Immediately test %name+PK when installing this package (via packagekit-direct)
