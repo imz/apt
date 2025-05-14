@@ -520,13 +520,14 @@ done >jobs
 
 sed -i -Ee "s,^([^:]+):,\1/$try:," jobs
 
+export NPROCS # for the embedded script (to show the total number of slots)
 xargs <jobs \
       -d'\n' -I'{}' ${NPROCS:+-P$NPROCS --process-slot-var=PARALLEL_SLOT} \
       -- sh -efuo pipefail \
 	  -c 'APT_RUN_TEST_ONLY_IF_METHOD_MATCHES={}
               APT_RUN_TEST_ONLY_IF_METHOD_MATCHES="${APT_RUN_TEST_ONLY_IF_METHOD_MATCHES#*:}"
               export APT_RUN_TEST_ONLY_IF_METHOD_MATCHES
-              %runtests '${NPROCS:+'|& sed --unbuffered -e "s,^,[$(printf %%2d $PARALLEL_SLOT) {}] ,"'}
+              %runtests '${NPROCS:+'|& sed --unbuffered -e "s,^,[$(printf %%2d $PARALLEL_SLOT)/$NPROCS {}] ,"'}
 
 %package under-pkdirect-checkinstall
 Summary: Immediately test %name+PK when installing this package (via packagekit-direct)
