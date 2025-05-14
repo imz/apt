@@ -508,7 +508,8 @@ for (( try = 0; try < TRIES; )); do
 	# We could do the same method several times by increasing the number here
 	# (to provoke even more races), but there are already too many tests.
 	for (( repeat = 0; repeat < 1; ++repeat )); do
-	    echo "$((try++)):$method"
+	    # %%02d in order not to pass spaces in xargs' {} placeholder
+	    printf '%%02d:%%s\n' "$((try++))" "$method"
 	    if (( already_once && (try >= TRIES) )); then
 		break 2
 	    fi
