@@ -487,8 +487,7 @@ readonly -a all_unique_methods
 
 # Below we run the same tests many times in order to possibly catch
 # bad races. (It's more probable to catch a race under heavy load;
-# therefore, of the total specified number of tries, we do
-# simultaneously as many as reasonable and possibly even more than TRIES.)
+# so, we do simultaneously as many as reasonable, possibly more than real nprocs.)
 
 # To not run in parallel, build the pkg with --define 'nprocs_for_check %%nil'
 # Consider multiplying `nproc` by 2 for heavier load.
@@ -498,20 +497,20 @@ if ! [ "$NPROCS" -gt 0 ] 2>/dev/null; then
 fi
 NPROCS=$(( 2 * NPROCS )) # for heavier load
 %{?nprocs_for_check:NPROCS=%nprocs_for_check}
-TRIES=2
-if [ $TRIES -lt ${NPROCS:-0} ]; then
-	TRIES=$NPROCS
-fi
 
 already_once=0
-for (( try = 0; try < TRIES; )); do
+job=0
+# Repeat all, so that every one gets tested at least once under maximal load;
+# this is the purpose of extra_job counter.
+readonly EXTRA_JOBS=$((1 * NPROCS)) # just an arbitrary num of extra jobs at the end
+for (( extra_job = 0; extra_job < EXTRA_JOBS; )); do
     for method in "${all_unique_methods[@]}"; do
 	# We could do the same method several times by increasing the number here
 	# (to provoke even more races), but there are already too many tests.
 	for (( repeat = 0; repeat < 1; ++repeat )); do
 	    # %%02d in order not to pass spaces in xargs' {} placeholder
-	    printf '%%02d:%%s\n' "$((try++))" "$method"
-	    if (( already_once && (try >= TRIES) )); then
+	    printf '%%02d:%%s\n' "$((job++))" "$method"
+	    if (( already_once && (++extra_job >= EXTRA_JOBS) )); then
 		break 2
 	    fi
 	done
@@ -519,7 +518,7 @@ for (( try = 0; try < TRIES; )); do
     already_once=1
 done >jobs
 
-sed -i -Ee "s,^([^:]+):,\1/$try:," jobs
+sed -i -Ee "s,^([^:]+):,\1/$job:," jobs
 
 export NPROCS # for the embedded script (to show the total number of slots)
 xargs <jobs \
