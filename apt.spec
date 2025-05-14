@@ -502,8 +502,9 @@ fi
 
 already_once=0
 for (( try = 0; try < TRIES; )); do
-    # FIXME: APT_TEST_ALL_http_METHODS are repeated too many times.
-    for method in "${APT_TEST_ALL_METHODS[@]}"; do
+    # FIXME: Some methods will get repeated (but just 2 times) because they are
+    # both in APT_TEST_ALL_http_METHODS and APT_TEST_ALL_METHODS. Not a big deal.
+    for method in '' "${APT_TEST_ALL_METHODS[@]}" "${APT_TEST_ALL_http_METHODS[@]}"; do
 	# We could do the same method several times by increasing the number here
 	# (to provoke even more races), but there are already too many tests.
 	for (( repeat = 0; repeat < 1; ++repeat )); do
@@ -517,9 +518,9 @@ for (( try = 0; try < TRIES; )); do
 done |
     xargs -d'\n' -I'{}' ${NPROCS:+-P$NPROCS --process-slot-var=PARALLEL_SLOT} \
 	  -- sh -efuo pipefail \
-	  -c 'APT_TEST_METHODS={}
-              APT_TEST_METHODS="${APT_TEST_METHODS#*:}"
-              export APT_TEST_METHODS
+	  -c 'APT_RUN_TEST_ONLY_IF_METHOD_MATCHES={}
+              APT_RUN_TEST_ONLY_IF_METHOD_MATCHES="${APT_RUN_TEST_ONLY_IF_METHOD_MATCHES#*:}"
+              export APT_RUN_TEST_ONLY_IF_METHOD_MATCHES
               %runtests '${NPROCS:+'|& sed --unbuffered -e "s/^/[$PARALLEL_SLOT {}] /"'}
 
 %package under-pkdirect-checkinstall

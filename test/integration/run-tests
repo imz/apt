@@ -11,6 +11,11 @@ DIR=$(readlink -f $(dirname $0))
 # Here we actually have much more "pseudo-methods", where the base methods are
 # further modified with various details about how the connection is set up
 # to be made by apt.
+#
+# Of all the testcases to be run, you can select only those which employ specific
+# quasi-method(s) by setting APT_RUN_TEST_ONLY_IF_METHOD_MATCHES; it can be set
+# to the empty string to select only the testcases not "multiplied" by methods
+# (those without a repo). If unset, then the set of run tests is not affected.
 readonly -a APT_TEST_METHODS=(${APT_TEST_METHODS-"${APT_TEST_ALL_METHODS[@]}"})
 readonly -a APT_TEST_http_METHODS=(${APT_TEST_http_METHODS-"${APT_TEST_ALL_http_METHODS[@]}"})
 
@@ -175,18 +180,27 @@ forall_testcases() {
 	case "$testscript" in
 
 	    test-without-repo-*)
-		"$cmd" "$testscript"
+		if [[ '' == ${APT_RUN_TEST_ONLY_IF_METHOD_MATCHES-''} ]]
+		then
+		    "$cmd" "$testscript"
+		fi
 		;;
 
 	    test-apt-method-http*)
 		for method in "${APT_TEST_http_METHODS[@]}"; do
-		    "$cmd" "$testscript" "$method"
+		    if [[ "$method" == ${APT_RUN_TEST_ONLY_IF_METHOD_MATCHES-"$method"} ]]
+		    then
+			"$cmd" "$testscript" "$method"
+		    fi
 		done
 		;;
 
 	    *)
 		for method in "${APT_TEST_METHODS[@]}"; do
-		    "$cmd" "$testscript" "$method"
+		    if [[ "$method" == ${APT_RUN_TEST_ONLY_IF_METHOD_MATCHES-"$method"} ]]
+		    then
+			"$cmd" "$testscript" "$method"
+		    fi
 		done
 		;;
 
