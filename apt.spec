@@ -503,8 +503,9 @@ already_once=0
 for (( try = 0; try < TRIES; )); do
     # FIXME: APT_TEST_ALL_http_METHODS are repeated too many times.
     for method in "${APT_TEST_ALL_METHODS[@]}"; do
-	# do the same method several times in parallel (to provoke races)
-	for (( repeat = 0; repeat < 2; ++repeat )); do
+	# We could do the same method several times by increasing the number here
+	# (to provoke even more races), but there are already too many tests.
+	for (( repeat = 0; repeat < 1; ++repeat )); do
 	    echo "$((try++)):$method"
 	    if (( already_once && (try >= TRIES) )); then
 		break 2
