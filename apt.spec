@@ -493,6 +493,7 @@ NPROCS=`nproc`
 if ! [ "$NPROCS" -gt 0 ] 2>/dev/null; then
 	NPROCS=1
 fi
+NPROCS=$(( 2 * NPROCS )) # for heavier load
 %{?nprocs_for_check:NPROCS=%nprocs_for_check}
 TRIES=2
 if [ $TRIES -lt ${NPROCS:-0} ]; then
