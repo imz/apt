@@ -482,6 +482,9 @@ export APT_TEST_INTERMEDIATES
 
 . ./run-tests.defaults.sh
 
+all_unique_methods=('' $(for method in "${APT_TEST_ALL_METHODS[@]}" "${APT_TEST_ALL_http_METHODS[@]}"; do echo "$method"; done | sort -u))
+readonly -a all_unique_methods
+
 # Below we run the same tests many times in order to possibly catch
 # bad races. (It's more probable to catch a race under heavy load;
 # therefore, of the total specified number of tries, we do
@@ -502,9 +505,7 @@ fi
 
 already_once=0
 for (( try = 0; try < TRIES; )); do
-    # FIXME: Some methods will get repeated (but just 2 times) because they are
-    # both in APT_TEST_ALL_http_METHODS and APT_TEST_ALL_METHODS. Not a big deal.
-    for method in '' "${APT_TEST_ALL_METHODS[@]}" "${APT_TEST_ALL_http_METHODS[@]}"; do
+    for method in "${all_unique_methods[@]}"; do
 	# We could do the same method several times by increasing the number here
 	# (to provoke even more races), but there are already too many tests.
 	for (( repeat = 0; repeat < 1; ++repeat )); do
