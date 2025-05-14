@@ -625,6 +625,11 @@ exec 1>&2
 * Sat May  3 2025 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt93
 - apt.conf(Allow-Duplicated): drop ^NVIDIA_ as outdated & confusing (ALT#53988).
   (There have been no such packages in ALT since a long time.)
+- checkinstall subpkg (xxtra-heavy-load):
+  + Fixed not to run the http-related tests (multiplied in 0.5.15lorg2-alt92)
+    too many times; thereby reduced the time.
+  + Doubled the number of parallel slots for heavier load (to provoke races).
+  + Show the total number of parallel slots and jobs.
 
 * Wed Apr 16 2025 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt92
 - Support encoded usernames and passwords in URIs (incl. http_proxy); it was
