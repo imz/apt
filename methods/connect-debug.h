@@ -4,6 +4,22 @@
    Wrapping of MethodFd (for Connect) and its debugging by wrapping
 
    ##################################################################### */
+
+/*
+A wrapper class is a more convenient and appropriate tool for
+debugging connections in APT than an external utility like strace
+because there can be several layers of connections, all abstracted by
+MethodFd, e.g., inside TLS, TLS inside TLS to proxy, etc.
+
+The kind of bugs that depend on the amound of bytes read() etc. happen
+randomly and often rarely. (It's difficult to catch the same one or
+somehow reproduce it deterministically.)
+
+TODO: One approach to reproduce them might be to use a wrapper class
+around MethodFd (like this wrapper for debugging and just outputting
+the operations), which would inject the Read() responses replaying the
+saved log from DebugMethodFd.
+*/
 									/*}}}*/
 #ifndef CONNECT_DEBUG_H
 #define CONNECT_DEBUG_H
@@ -12,8 +28,8 @@
 
 bool DebugMethodFdToFile(const string &FileName,
                          std::unique_ptr<MethodFd> &MFd);
-bool DebugMethodFd(const string &LogDir, const string &Label,
-                   std::unique_ptr<MethodFd> &MFd);
+bool DebugMethodFd(const string &LogDir, std::unique_ptr<MethodFd> &MFd);
+bool DebugMethodFdIfRequired(std::unique_ptr<MethodFd> &MFd);
 
 /**
  * Wrapped MethodFd
@@ -33,6 +49,7 @@ struct WMethodFd: MethodFd
    ssize_t Write(const void * const buf, size_t const count) override { return UnderlyingFd->Write(buf,count); }
    int Close() override { return UnderlyingFd->Close(); }
    bool HasPending() override { return UnderlyingFd->HasPending(); }
+   std::string Label() override { return UnderlyingFd->Label(); }
 };
 
 struct TracedMethodFd: WMethodFd

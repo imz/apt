@@ -1179,3 +1179,13 @@ string URI::SiteOnly(const string &URI)
    return U;
 }
 									/*}}}*/
+
+bool APT::String::Endswith(const std::string_view &s, const std::string_view &end)
+{
+   return s.ends_with(end);
+}
+
+bool APT::String::Startswith(const std::string_view &s, const std::string_view &start)
+{
+   return s.starts_with(start);
+}

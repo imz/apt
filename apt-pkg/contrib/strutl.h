@@ -138,6 +138,16 @@ struct RxChoiceList
 unsigned long RegexChoice(RxChoiceList *Rxs,const char **ListBegin,
 		      const char **ListEnd);
 
+// Some stuff for compatibility with Debian backports
+namespace APT {
+   namespace String {
+
+      bool Endswith(const std::string_view &s, const std::string_view &end);
+      bool Startswith(const std::string_view &s, const std::string_view &start);
+
+   }
+}
+
 #undef APT_FORMAT2
 
 #endif

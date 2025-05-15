@@ -9,10 +9,13 @@
 
 #include "connect-debug.h"
 
+#include <apt-pkg/error.h>
 #include <apt-pkg/fileutl.h>
 
 #include <cassert>
 #include <sys/time.h>
+
+#include <apti18n.h>
 
 // not in header because of FileFd dep
 struct DebuggedMethodFd: TracedMethodFd
@@ -143,17 +146,6 @@ bool DebugMethodFdToFile(const string &FileName,
    {
       MFd = std::move(newFd->UnderlyingFd);
 
-      // FIXME: We want that a failure to set up debugging doesn't go unnoticed,
-      // however it wouldn't be correct to treat it as a connection error
-      // by the calling code. So, we just bail out... (Could be an option.)
-      const bool FatalDebugMethodFd = true;
-      if (FatalDebugMethodFd)
-      {
-         std::cerr << "FATAL -> failed to set up debugging of MethodFd"
-                   << std::endl;
-         exit(100);
-      }
-
       return false;
    }
 
@@ -161,15 +153,47 @@ bool DebugMethodFdToFile(const string &FileName,
    return true;
 }
 
-bool DebugMethodFd(const string &LogDir, const string &Label,
-                   std::unique_ptr<MethodFd> &MFd)
+bool DebugMethodFd(const string &LogDir, std::unique_ptr<MethodFd> &MFd)
 {
    struct timeval Time;
    gettimeofday(&Time,0);
    return
       DebugMethodFdToFile(LogDir
                           + "/" + std::to_string(Time.tv_sec)
-                          + "." + std::to_string(Time.tv_usec)
-                          + "." + Label,
+                          + "." + std::to_string(Time.tv_usec) // FIXME: fixed width
+                          + "." + QuoteString(MFd->Label(), "/"),
                           MFd);
+}
+
+bool DebugMethodFdIfRequired(std::unique_ptr<MethodFd> &MFd)
+{
+   // FindDir never returns an empty string, so we can't use it as an indicator. 
+   std::string const LogDir = _config->FindFile("Debug::Connect");
+   if (! LogDir.empty())
+   {
+      if (! DebugMethodFd(LogDir, MFd))
+      {
+         // A failure to set up debugging is not a connection error,
+         // so don't report it as such, i.e., don't return false.
+         _error->Warning(_("Could not set up debugging for "
+                           "the connection %s"),
+                         MFd->Label().c_str());
+
+         // FIXME: We want that a failure to set up debugging doesn't go unnoticed,
+         // however it wouldn't be correct to treat it as a connection error
+         // by the calling code. So, we just bail out... (Could be an option.)
+         //
+         // Not to repeat the same exit code every time this function is used,
+         // we "factor out" the dying code from those places to this single place.
+         const bool FatalDebugMethodFd = true;
+         if (FatalDebugMethodFd)
+         {
+            std::cerr << "FATAL -> failed to set up debugging of MethodFd"
+                      << std::endl;
+            exit(100);
+         }
+      }
+   }
+
+   return true;
 }

@@ -288,7 +288,7 @@ generaterepository_and_switch_sources() {
 		fi
 		# The prefix http:// seems to be required by apt.
 		case "$APT_TEST_METHOD" in
-		    http*_numeric*)
+		    http*_numerproxy*)
 			http_proxy="http://$TINYPROXY_AUTH$TINYPROXY_IP:$TINYPROXY_PORT"
 			;;
 		    *)
