@@ -7,13 +7,15 @@
 									/*}}}*/
 #include <config.h>
 
-#include "connect-debug.h"
-
 #include <apt-pkg/error.h>
 #include <apt-pkg/fileutl.h>
+#include <apt-pkg/strutl.h>
+#include <apt-pkg/configuration.h>
 
 #include <cassert>
 #include <sys/time.h>
+
+#include "connect-debug.h"
 
 #include <apti18n.h>
 
@@ -22,7 +24,7 @@ struct DebuggedMethodFd: TracedMethodFd
 {
    FileFd LogFd;
 
-   DebuggedMethodFd(std::unique_ptr<MethodFd> &MFd, const string &FileName);
+   DebuggedMethodFd(std::unique_ptr<MethodFd> &MFd, const std::string &FileName);
 
    bool Log(const std::string &s) { return LogFd.Write(s.c_str(), s.length()); }
 
@@ -130,14 +132,14 @@ bool DebuggedMethodFd::Close_enter()
 }
 
 DebuggedMethodFd::DebuggedMethodFd(std::unique_ptr<MethodFd> &MFd,
-                                   const string &FileName)
+                                   const std::string &FileName)
    : TracedMethodFd(MFd),
      LogFd(FileName, FileFd::WriteTemp /* implies O_EXCL */)
      /* This is a trivial way to avoid collisions/loss of output,
         or interference with unowned files. */
 {}
 
-bool DebugMethodFdToFile(const string &FileName,
+bool DebugMethodFdToFile(const std::string &FileName,
                          std::unique_ptr<MethodFd> &MFd)
 {
    std::unique_ptr<DebuggedMethodFd> newFd(new DebuggedMethodFd(MFd,FileName));
@@ -153,7 +155,7 @@ bool DebugMethodFdToFile(const string &FileName,
    return true;
 }
 
-bool DebugMethodFd(const string &LogDir, std::unique_ptr<MethodFd> &MFd)
+bool DebugMethodFd(const std::string &LogDir, std::unique_ptr<MethodFd> &MFd)
 {
    struct timeval Time;
    gettimeofday(&Time,0);

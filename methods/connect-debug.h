@@ -26,9 +26,9 @@ saved log from DebugMethodFd.
 
 #include "connect.h"
 
-bool DebugMethodFdToFile(const string &FileName,
+bool DebugMethodFdToFile(const std::string &FileName,
                          std::unique_ptr<MethodFd> &MFd);
-bool DebugMethodFd(const string &LogDir, std::unique_ptr<MethodFd> &MFd);
+bool DebugMethodFd(const std::string &LogDir, std::unique_ptr<MethodFd> &MFd);
 bool DebugMethodFdIfRequired(std::unique_ptr<MethodFd> &MFd);
 
 /**
