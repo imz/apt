@@ -12,9 +12,11 @@
 // Include Files							/*{{{*/
 #include <config.h>
 
-#include "connect.h"
 #include <apt-pkg/error.h>
 #include <apt-pkg/fileutl.h>
+#include <apt-pkg/strutl.h>
+#include <apt-pkg/acquire-method.h>
+#include <apt-pkg/configuration.h>
 
 #ifdef USE_TLS
 #include "apt-pkg/scopeexit.h"
@@ -34,6 +36,7 @@
 #include <arpa/inet.h>
 #include <netdb.h>
 
+#include "connect.h"
 #include "rfc2553emu.h"
 
 // for debugging
@@ -52,6 +55,19 @@ static std::string LastHost;
 static int LastPort = 0;
 static struct addrinfo *LastHostAddr = 0;
 static struct addrinfo *LastUsed = 0;
+
+// RotateDNS - Select a new server from a DNS rotation			/*{{{*/
+// ---------------------------------------------------------------------
+/* This is called during certain errors in order to recover by selecting a
+   new server */
+void RotateDNS()
+{
+   if (LastUsed != 0 && LastUsed->ai_next != 0)
+      LastUsed = LastUsed->ai_next;
+   else
+      LastUsed = LastHostAddr;
+}
+									/*}}}*/
 
 // File Descriptor based Fd /*{{{*/
 struct FdFd : public MethodFd
@@ -85,18 +101,6 @@ std::unique_ptr<MethodFd> MethodFd::FromFd(int iFd, const std::string &label)
    return std::unique_ptr<MethodFd>(fd);
 }
 
-// RotateDNS - Select a new server from a DNS rotation			/*{{{*/
-// ---------------------------------------------------------------------
-/* This is called during certain errors in order to recover by selecting a
-   new server */
-void RotateDNS()
-{
-   if (LastUsed != 0 && LastUsed->ai_next != 0)
-      LastUsed = LastUsed->ai_next;
-   else
-      LastUsed = LastHostAddr;
-}
-									/*}}}*/
 // DoConnect - Attempt a connect operation				/*{{{*/
 // ---------------------------------------------------------------------
 /* This helper function attempts a connection to a single address. */
@@ -163,8 +167,9 @@ static bool DoConnect(struct addrinfo *Addr, std::string const &Host,
 // Connect - Connect to a server					/*{{{*/
 // ---------------------------------------------------------------------
 /* Performs a connection to the server */
-bool Connect(const string &Host,int Port,const char *Service,int DefPort,std::unique_ptr<MethodFd> &Fd,
-	     unsigned long TimeOut,pkgAcqMethod *Owner)
+bool Connect(std::string const Host, int const Port,
+             const char * const Service, int DefPort, std::unique_ptr<MethodFd> &Fd,
+	     unsigned long const TimeOut, pkgAcqMethod * const Owner)
 {
    if (_error->PendingError() == true)
       return false;
@@ -343,8 +348,8 @@ struct TlsFd : public MethodFd
    }
 };
 
-bool UnwrapTLS(const std::string &Host, std::unique_ptr<MethodFd> &Fd,
-		      unsigned long Timeout, pkgAcqMethod *Owner)
+bool UnwrapTLS(std::string const Host, std::unique_ptr<MethodFd> &Fd,
+               unsigned long const Timeout, pkgAcqMethod * const Owner)
 {
    int err;
    TlsFd *tlsFd = nullptr;

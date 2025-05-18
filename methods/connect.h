@@ -10,8 +10,10 @@
 #define CONNECT_H
 
 #include <memory>
+#include <stddef.h>
 #include <string>
-#include <apt-pkg/acquire-method.h>
+
+class pkgAcqMethod;
 
 /**
  * \brief Small representation of a file descriptor for network traffic.
@@ -37,12 +39,13 @@ struct MethodFd
    virtual std::string Label() = 0;
 };
 
-bool Connect(const string &To,int Port,const char *Service,int DefPort,
-	     std::unique_ptr<MethodFd> &Fd,unsigned long TimeOut,pkgAcqMethod *Owner);
-void RotateDNS();
+bool Connect(std::string To, int Port, const char *Service, int DefPort,
+	     std::unique_ptr<MethodFd> &Fd, unsigned long TimeOut, pkgAcqMethod *Owner);
 
 #ifdef USE_TLS
-bool UnwrapTLS(const std::string &To, std::unique_ptr<MethodFd> &Fd, unsigned long Timeout, pkgAcqMethod *Owner);
+bool UnwrapTLS(std::string To, std::unique_ptr<MethodFd> &Fd, unsigned long Timeout, pkgAcqMethod *Owner);
 #endif /* USE_TLS */
+
+void RotateDNS();
 
 #endif
