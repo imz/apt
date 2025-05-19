@@ -3,7 +3,7 @@
 
 Name: apt
 Version: 0.5.15lorg2
-Release: alt93
+Release: alt94
 
 Summary: Debian's Advanced Packaging Tool with RPM support
 Summary(ru_RU.UTF-8): Debian APT - Усовершенствованное средство управления пакетами с поддержкой RPM
@@ -610,6 +610,10 @@ exec 1>&2
 %_datadir/%name/tests/
 
 %changelog
+* Mon May 19 2025 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt94
+- Adapted build for autoconf 2.72: don't rely on the internal var
+  ac_cv_sys_file_offset_bits to determine a suffix for the library version.
+
 * Sat May  3 2025 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt93
 - Made Debug::Connect config also effective for unwrapped TLS connections.
   (If set, the cleartext HTTP connections are logged into the specified dir.)
