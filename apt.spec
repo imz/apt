@@ -257,6 +257,9 @@ gettextize --force --quiet --no-changelog --symlink
 # support for std::optional (C++17), std::string::starts_with (C++20)
 # (We set a GNU dialect in -std= in order to minimally diverge
 # from GCC's default, which is also -std=gnu++NN.)
+# FIXME: perhaps move this option (for implementation) to configure.ac
+# as this is a property of the source code; put another option (for API)
+# to pkgconfig.
 %add_optflags -std=gnu++20
 %ifarch %e2k
 %remove_optflags -Wno-error
