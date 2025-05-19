@@ -1,8 +1,10 @@
+# the error message is so in order to break the build
+UNUSUAL_FILE_OFFSET_BITS_SUFFIX := $(shell set -x; $(COMPILE) -I../include ../buildlib/unusual_file_offset_bits_suffix.c && ./a.out || echo !/Error-checkiing-off_t-bits)
 
 lib_LTLIBRARIES = libapt-pkg.la
 
 libapt_pkg_la_LIBADD = @RPMLIBS@
-libapt_pkg_la_LDFLAGS = $(AM_LDFLAGS) -version-info 15:0:1 -release @GLIBC_VER@-@LIBSTDCPP_VER@@FILE_OFFSET_BITS_SUFFIX@
+libapt_pkg_la_LDFLAGS = $(AM_LDFLAGS) -version-info 15:0:1 -release @GLIBC_VER@-@LIBSTDCPP_VER@$(UNUSUAL_FILE_OFFSET_BITS_SUFFIX)
 
 # We care about warnings during LTO. They are like g++ warnings. The flags have
 # to be prefixed with "-Wc," for libtool to pass them to g++ invoked for linking.

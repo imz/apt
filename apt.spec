@@ -3,7 +3,7 @@
 
 Name: apt
 Version: 0.5.15lorg2
-Release: alt92.p10.1
+Release: alt93.p10.1
 
 Summary: Debian's Advanced Packaging Tool with RPM support
 Summary(ru_RU.UTF-8): Debian APT - Усовершенствованное средство управления пакетами с поддержкой RPM
@@ -257,6 +257,9 @@ gettextize --force --quiet --no-changelog --symlink
 # support for std::optional (C++17), std::string::starts_with (C++20)
 # (We set a GNU dialect in -std= in order to minimally diverge
 # from GCC's default, which is also -std=gnu++NN.)
+# FIXME: perhaps move this option (for implementation) to configure.ac
+# as this is a property of the source code; put another option (for API)
+# to pkgconfig.
 %add_optflags -std=gnu++20
 %ifarch %e2k
 %remove_optflags -Wno-error
@@ -283,11 +286,6 @@ mkdir -p %buildroot%_libdir/%name/tests
 
 install -pm644 apt.conf %buildroot%_sysconfdir/%name/
 install -pm644 apt.conf.d/* -t %buildroot%_sysconfdir/%name/apt.conf.d/
-
-# This is still needed.
-ln -sf rsh %buildroot%_libdir/%name/methods/ssh
-ln -sf gzip %buildroot%_libdir/%name/methods/bzip2
-ln -sf gzip %buildroot%_libdir/%name/methods/xz
 
 # Cleanup
 rm %buildroot%_libdir/*.la
@@ -610,9 +608,13 @@ exec 1>&2
 %_datadir/%name/tests/
 
 %changelog
-* Tue May 13 2025 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt92.p10.1
+* Mon May 19 2025 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt93.p10.1
 - Build for p10: with some fixes (corrupt downloads, IPv6 literals, etc.),
   but with the experimental columnar output turned off.
+
+* Mon May 19 2025 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt94
+- Adapted build for autoconf 2.72: don't rely on the internal var
+  ac_cv_sys_file_offset_bits to determine a suffix for the library version.
 
 * Sat May  3 2025 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt93
 - Made Debug::Connect config also effective for unwrapped TLS connections.

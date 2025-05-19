@@ -26,12 +26,6 @@ AC_LANG_PUSH([C++])
 apt_WARN_LANG_FLAGS
 AC_LANG_POP([C++])
 
-case "$ac_cv_sys_file_offset_bits" in
-	no | unknown) FILE_OFFSET_BITS_SUFFIX=;;
-	*) FILE_OFFSET_BITS_SUFFIX="-$ac_cv_sys_file_offset_bits";;
-esac
-AC_SUBST(FILE_OFFSET_BITS_SUFFIX)
-
 AC_PROG_LIBTOOL
 
 dnl Checks for sockets
@@ -162,6 +156,7 @@ AM_GNU_GETTEXT([external])
 
 rc_GLIBC_VER
 rc_LIBSTDCPP_VER
+AC_PROG_LN_S
 
 AC_OUTPUT([
 	  Makefile
