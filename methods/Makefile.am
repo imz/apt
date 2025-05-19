@@ -1,6 +1,15 @@
 
 methodsdir=${libdir}/apt/methods
-methods_PROGRAMS = cdrom copy file ftp gpg gzip bzip2 http https rsh ssh rsync
+methods_PROGRAMS = cdrom copy file ftp gpg gzip http https rsh rsync
+
+# It's better to cd below because LN_S can fallback on ln or cp.
+# The target dir already includes the installation prefix (due to libdir).
+install-data-local: | install-methodsPROGRAMS
+	(cd $(methodsdir) \
+	&& $(LN_S) rsh ssh \
+	&& $(LN_S) gzip bzip2 \
+	&& $(LN_S) gzip xz \
+	)
 
 # We care about warnings during LTO. They are like g++ warnings. The flags have
 # to be prefixed with "-Wc," for libtool to pass them to g++ invoked for linking.
@@ -25,9 +34,7 @@ copy_SOURCES = copy.cc
 file_SOURCES = file.cc
 gpg_SOURCES = gpg.cc
 gzip_SOURCES = gzip.cc
-bzip2_SOURCES = $(gzip_SOURCES)
 rsh_SOURCES = rsh.cc rsh.h
-ssh_SOURCES = $(rsh_SOURCES)
 rsync_SOURCES = rsync.cc rsync-method.h
 
 http_SOURCES = \

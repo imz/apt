@@ -287,11 +287,6 @@ mkdir -p %buildroot%_libdir/%name/tests
 install -pm644 apt.conf %buildroot%_sysconfdir/%name/
 install -pm644 apt.conf.d/* -t %buildroot%_sysconfdir/%name/apt.conf.d/
 
-# This is still needed.
-ln -sf rsh %buildroot%_libdir/%name/methods/ssh
-ln -sf gzip %buildroot%_libdir/%name/methods/bzip2
-ln -sf gzip %buildroot%_libdir/%name/methods/xz
-
 # Cleanup
 rm %buildroot%_libdir/*.la
 
