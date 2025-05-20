@@ -1,3 +1,13 @@
+# Helpers for checking the properties of the ABI of the built library:
+#
+# Having their sources in noinst_DATA is kinda correct description for automake
+# of the things we need for a build, so that they are put into a distro tarball.
+# TODO: Describe these helpers more cleanly as noinst_PROGRAMS, so that they are
+# just compiled the usual way, and perhaps put them also into BUILT_SOURCES
+# (used for other targets). I need to figure out the stage to get them into vars.
+noinst_DATA = \
+	../buildlib/unusual_file_offset_bits_suffix.c
+
 # the error message is so in order to break the build
 UNUSUAL_FILE_OFFSET_BITS_SUFFIX := $(shell set -x; $(COMPILE) -I../include ../buildlib/unusual_file_offset_bits_suffix.c && ./a.out || echo !/Error-checkiing-off_t-bits)
 
