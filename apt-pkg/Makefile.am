@@ -9,7 +9,15 @@ noinst_DATA = \
 	../buildlib/unusual_file_offset_bits_suffix.c
 
 # the error message is so in order to break the build
-UNUSUAL_FILE_OFFSET_BITS_SUFFIX := $(shell set -x; $(COMPILE) -I../include ../buildlib/unusual_file_offset_bits_suffix.c && ./a.out || echo !/Error-checkiing-off_t-bits)
+shell_or_err = $(shell $(1) || echo !/Error-checkiing-off_t-bits)
+# compile with our config.h and in just in the same way we compile the library
+# (maybe add some common options for includes etc here; special opts go in $(2))
+my_cc = $(COMPILE) $(2) $(1).c -o $(1)
+run_my_cc = $(call shell_or_err,set -x; $(call my_cc,$(1),$(2)) && $(1))
+
+UNUSUAL_FILE_OFFSET_BITS_SUFFIX := \
+	$(call run_my_cc,\
+		../buildlib/unusual_file_offset_bits_suffix)
 
 lib_LTLIBRARIES = libapt-pkg.la
 
