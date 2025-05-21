@@ -14,6 +14,7 @@
 
 #include <cassert>
 #include <sys/time.h>
+#include <fcntl.h>
 
 #include "connect-debug.h"
 
@@ -134,9 +135,12 @@ bool DebuggedMethodFd::Close_enter()
 DebuggedMethodFd::DebuggedMethodFd(std::unique_ptr<MethodFd> &MFd,
                                    const std::string &FileName)
    : TracedMethodFd(MFd),
-     LogFd(FileName, FileFd::WriteTemp /* implies O_EXCL */)
-     /* This is a trivial way to avoid collisions/loss of output,
-        or interference with unowned files. */
+     LogFd(FileName, FileFd::WriteTemp /* implies O_EXCL */, S_IRUSR)
+     /* O_EXCL is a trivial way to avoid collisions/loss of output,
+        or interference with unowned files.
+        S_IRUSR is to protect secret data such as auth (especially appropriate
+        if we are run set-UID and a user could control the output location).
+     */
 {}
 
 bool DebugMethodFdToFile(const std::string &FileName,
