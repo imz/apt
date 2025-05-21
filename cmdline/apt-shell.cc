@@ -3184,6 +3184,7 @@ bool ShowHelp(CommandLine &CmdL)
       "   status - Show the current selections\n"
       "   install - Install new packages\n"
       "   remove - Remove packages\n"
+      "   autoremove - Automatically remove orphaned packages\n"
       "   keep - Keep packages\n"
       "   upgrade - Perform a global upgrade\n"
       "   dist-upgrade - Perform a global distribution upgrade\n"
