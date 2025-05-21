@@ -15,35 +15,35 @@ msgstr ""
 "Last-Translator: Anton V. Denisov <avd@altlinux.org>\n"
 "Language-Team: ALT Linux Team <devel@altlinux.org>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=KOI8-R\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: KBabel 1.3.1\n"
 
 #: cmdline/acqprogress.cc:55
 msgid "Hit "
-msgstr "Найдено "
+msgstr "п²п╟п╧п╢п╣п╫п╬ "
 
 #: cmdline/acqprogress.cc:79
 msgid "Get:"
-msgstr "Получено: "
+msgstr "п÷п╬п╩я┐я┤п╣п╫п╬: "
 
 #: cmdline/acqprogress.cc:110
 msgid "Ign "
-msgstr "Пропущено "
+msgstr "п÷я─п╬п©я┐я┴п╣п╫п╬ "
 
 #: cmdline/acqprogress.cc:114
 msgid "Err "
-msgstr "Ошибка "
+msgstr "п·я┬п╦п╠п╨п╟ "
 
 #: cmdline/acqprogress.cc:135
 #, c-format
 msgid "Fetched %sB in %s (%sB/s)\n"
-msgstr "Получено %sB за %s (%sB/s).\n"
+msgstr "п÷п╬п╩я┐я┤п╣п╫п╬ %sB п╥п╟ %s (%sB/s).\n"
 
 #: cmdline/acqprogress.cc:225
 #, c-format
 msgid " [Working]"
-msgstr " [Подождите]"
+msgstr " [п÷п╬п╢п╬п╤п╢п╦я┌п╣]"
 
 #: cmdline/acqprogress.cc:271
 #, c-format
@@ -52,13 +52,13 @@ msgid ""
 " '%s'\n"
 "and press enter\n"
 msgstr ""
-"Смена носителя: Вставьте, пожалуйста, носитель с меткой '%s'\n"
-"и нажмите <Enter>.\n"
+"п║п╪п╣п╫п╟ п╫п╬я│п╦я┌п╣п╩я▐: п▓я│я┌п╟п╡я▄я┌п╣, п©п╬п╤п╟п╩я┐п╧я│я┌п╟, п╫п╬я│п╦я┌п╣п╩я▄ я│ п╪п╣я┌п╨п╬п╧ '%s'\n"
+"п╦ п╫п╟п╤п╪п╦я┌п╣ <Enter>.\n"
 
 #: cmdline/apt-cache.cc:157 cmdline/apt-shell.cc:3188
 #, c-format
 msgid "Package %s version %s has an unmet dep:\n"
-msgstr "Пакет %s версии %s имеет неудовлетворенные зависимости:\n"
+msgstr "п÷п╟п╨п╣я┌ %s п╡п╣я─я│п╦п╦ %s п╦п╪п╣п╣я┌ п╫п╣я┐п╢п╬п╡п╩п╣я┌п╡п╬я─п╣п╫п╫я▀п╣ п╥п╟п╡п╦я│п╦п╪п╬я│я┌п╦:\n"
 
 #: cmdline/apt-cache.cc:197 cmdline/apt-cache.cc:565 cmdline/apt-cache.cc:660
 #: cmdline/apt-cache.cc:750 cmdline/apt-cache.cc:1024
@@ -68,85 +68,85 @@ msgstr "Пакет %s версии %s имеет неудовлетворенные зависимости:\n"
 #: cmdline/apt-shell.cc:3231 cmdline/apt-shell.cc:3647
 #, c-format
 msgid "Unable to locate package %s"
-msgstr "Невозможно найти пакет %s"
+msgstr "п²п╣п╡п╬п╥п╪п╬п╤п╫п╬ п╫п╟п╧я┌п╦ п©п╟п╨п╣я┌ %s"
 
 #: cmdline/apt-cache.cc:254
 msgid "Total Package Names : "
-msgstr "Имён пакетов: "
+msgstr "п≤п╪я▒п╫ п©п╟п╨п╣я┌п╬п╡: "
 
 #: cmdline/apt-cache.cc:294
 msgid "  Normal Packages: "
-msgstr "  Нормальные пакеты: "
+msgstr "  п²п╬я─п╪п╟п╩я▄п╫я▀п╣ п©п╟п╨п╣я┌я▀: "
 
 #: cmdline/apt-cache.cc:295
 msgid "  Pure Virtual Packages: "
-msgstr "  Целиком виртуальные пакеты: "
+msgstr "  п╕п╣п╩п╦п╨п╬п╪ п╡п╦я─я┌я┐п╟п╩я▄п╫я▀п╣ п©п╟п╨п╣я┌я▀: "
 
 #: cmdline/apt-cache.cc:296
 msgid "  Single Virtual Packages: "
-msgstr "  Одиночные виртуальные пакеты: "
+msgstr "  п·п╢п╦п╫п╬я┤п╫я▀п╣ п╡п╦я─я┌я┐п╟п╩я▄п╫я▀п╣ п©п╟п╨п╣я┌я▀: "
 
 #: cmdline/apt-cache.cc:297
 msgid "  Mixed Virtual Packages: "
-msgstr "  Смешанные виртуальные пакеты: "
+msgstr "  п║п╪п╣я┬п╟п╫п╫я▀п╣ п╡п╦я─я┌я┐п╟п╩я▄п╫я▀п╣ п©п╟п╨п╣я┌я▀: "
 
 #: cmdline/apt-cache.cc:298
 msgid "  Missing: "
-msgstr "  Отсутствуют: "
+msgstr "  п·я┌я│я┐я┌я│я┌п╡я┐я▌я┌: "
 
 #: cmdline/apt-cache.cc:300
 msgid "Total Distinct Versions: "
-msgstr "Различных версий: "
+msgstr "п═п╟п╥п╩п╦я┤п╫я▀я┘ п╡п╣я─я│п╦п╧: "
 
 #: cmdline/apt-cache.cc:302
 msgid "Total Dependencies: "
-msgstr "Всего зависимостей: "
+msgstr "п▓я│п╣пЁп╬ п╥п╟п╡п╦я│п╦п╪п╬я│я┌п╣п╧: "
 
 #: cmdline/apt-cache.cc:305
 msgid "Total Ver/File relations: "
-msgstr "Всего отношений Версия/Файл: "
+msgstr "п▓я│п╣пЁп╬ п╬я┌п╫п╬я┬п╣п╫п╦п╧ п▓п╣я─я│п╦я▐/п╓п╟п╧п╩: "
 
 #: cmdline/apt-cache.cc:307
 msgid "Total Provides Mappings: "
-msgstr "Всего соответствий сервисов: "
+msgstr "п▓я│п╣пЁп╬ я│п╬п╬я┌п╡п╣я┌я│я┌п╡п╦п╧ я│п╣я─п╡п╦я│п╬п╡: "
 
 #: cmdline/apt-cache.cc:319
 msgid "Total Globbed Strings: "
-msgstr "Всего совпавших строк: "
+msgstr "п▓я│п╣пЁп╬ я│п╬п╡п©п╟п╡я┬п╦я┘ я│я┌я─п╬п╨: "
 
 #: cmdline/apt-cache.cc:333
 msgid "Total Dependency Version space: "
-msgstr "Всего зависимостей: "
+msgstr "п▓я│п╣пЁп╬ п╥п╟п╡п╦я│п╦п╪п╬я│я┌п╣п╧: "
 
 #: cmdline/apt-cache.cc:338
 msgid "Total Slack space: "
-msgstr "Всего занято места: "
+msgstr "п▓я│п╣пЁп╬ п╥п╟п╫я▐я┌п╬ п╪п╣я│я┌п╟: "
 
 #: cmdline/apt-cache.cc:346
 msgid "Total Space Accounted for: "
-msgstr "Всего будет занято места: "
+msgstr "п▓я│п╣пЁп╬ п╠я┐п╢п╣я┌ п╥п╟п╫я▐я┌п╬ п╪п╣я│я┌п╟: "
 
 #: cmdline/apt-cache.cc:484 cmdline/apt-cache.cc:1452
 #: cmdline/apt-shell.cc:3309
 #, c-format
 msgid "Package file %s is out of sync."
-msgstr "Файл пакета %s вышел из под контроля."
+msgstr "п╓п╟п╧п╩ п©п╟п╨п╣я┌п╟ %s п╡я▀я┬п╣п╩ п╦п╥ п©п╬п╢ п╨п╬п╫я┌я─п╬п╩я▐."
 
 #: cmdline/apt-cache.cc:1495 cmdline/apt-shell.cc:3355
 msgid "You must give exactly one pattern"
-msgstr "Необходимо указать только один образец"
+msgstr "п²п╣п╬п╠я┘п╬п╢п╦п╪п╬ я┐п╨п╟п╥п╟я┌я▄ я┌п╬п╩я▄п╨п╬ п╬п╢п╦п╫ п╬п╠я─п╟п╥п╣я├"
 
 #: cmdline/apt-cache.cc:1649 cmdline/apt-shell.cc:3675
 msgid "No packages found"
-msgstr "Не найдено ни одного пакета"
+msgstr "п²п╣ п╫п╟п╧п╢п╣п╫п╬ п╫п╦ п╬п╢п╫п╬пЁп╬ п©п╟п╨п╣я┌п╟"
 
 #: cmdline/apt-cache.cc:1726
 msgid "Package Files:"
-msgstr "Файлы пакетов:"
+msgstr "п╓п╟п╧п╩я▀ п©п╟п╨п╣я┌п╬п╡:"
 
 #: cmdline/apt-cache.cc:1733 cmdline/apt-cache.cc:1819
 msgid "Cache is out of sync, can't x-ref a package file"
-msgstr "Содержимое кэша устарело, невозможно получить данные о пакете."
+msgstr "п║п╬п╢п╣я─п╤п╦п╪п╬п╣ п╨я█я┬п╟ я┐я│я┌п╟я─п╣п╩п╬, п╫п╣п╡п╬п╥п╪п╬п╤п╫п╬ п©п╬п╩я┐я┤п╦я┌я▄ п╢п╟п╫п╫я▀п╣ п╬ п©п╟п╨п╣я┌п╣."
 
 #: cmdline/apt-cache.cc:1734
 #, c-format
@@ -155,31 +155,31 @@ msgstr "%4i %s\n"
 
 #: cmdline/apt-cache.cc:1746
 msgid "Pinned Packages:"
-msgstr "Предпочитаемые пакеты:"
+msgstr "п÷я─п╣п╢п©п╬я┤п╦я┌п╟п╣п╪я▀п╣ п©п╟п╨п╣я┌я▀:"
 
 #: cmdline/apt-cache.cc:1758 cmdline/apt-cache.cc:1799
 msgid "(not found)"
-msgstr "(не найдено)"
+msgstr "(п╫п╣ п╫п╟п╧п╢п╣п╫п╬)"
 
 #: cmdline/apt-cache.cc:1779
 msgid "  Installed: "
-msgstr "  Установлен: "
+msgstr "  пёя│я┌п╟п╫п╬п╡п╩п╣п╫: "
 
 #: cmdline/apt-cache.cc:1781 cmdline/apt-cache.cc:1789
 msgid "(none)"
-msgstr "(нет)"
+msgstr "(п╫п╣я┌)"
 
 #: cmdline/apt-cache.cc:1786
 msgid "  Candidate: "
-msgstr "  Кандидат: "
+msgstr "  п п╟п╫п╢п╦п╢п╟я┌: "
 
 #: cmdline/apt-cache.cc:1796
 msgid "  Package Pin: "
-msgstr "  Предпочтение: "
+msgstr "  п÷я─п╣п╢п©п╬я┤я┌п╣п╫п╦п╣: "
 
 #: cmdline/apt-cache.cc:1805
 msgid "  Version Table:"
-msgstr "  Таблица версий:"
+msgstr "  п╒п╟п╠п╩п╦я├п╟ п╡п╣я─я│п╦п╧:"
 
 #: cmdline/apt-cache.cc:1820
 #, c-format
@@ -190,7 +190,7 @@ msgstr "       %4i %s\n"
 #: cmdline/apt-get.cc:2983 cmdline/apt-shell.cc:3694
 #, c-format
 msgid "%s %s for %s %s compiled on %s %s\n"
-msgstr "%s %s для %s %s собран %s %s\n"
+msgstr "%s %s п╢п╩я▐ %s %s я│п╬п╠я─п╟п╫ %s %s\n"
 
 #: cmdline/apt-cache.cc:1854
 msgid ""
@@ -220,33 +220,33 @@ msgid ""
 "   xvcg - Generate package graphs for xvcg\n"
 "   policy - Show policy settings\n"
 msgstr ""
-"Использование: apt-cache [параметры] команда\n"
-"               apt-cache [параметры] add файл1 [файл2 ...]\n"
-"               apt-cache [параметры] showpkg пакет1 [пакет2 ...]\n"
-"               apt-cache [параметры] showsrc пакет1 [пакет2 ...]\n"
+"п≤я│п©п╬п╩я▄п╥п╬п╡п╟п╫п╦п╣: apt-cache [п©п╟я─п╟п╪п╣я┌я─я▀] п╨п╬п╪п╟п╫п╢п╟\n"
+"               apt-cache [п©п╟я─п╟п╪п╣я┌я─я▀] add я└п╟п╧п╩1 [я└п╟п╧п╩2 ...]\n"
+"               apt-cache [п©п╟я─п╟п╪п╣я┌я─я▀] showpkg п©п╟п╨п╣я┌1 [п©п╟п╨п╣я┌2 ...]\n"
+"               apt-cache [п©п╟я─п╟п╪п╣я┌я─я▀] showsrc п©п╟п╨п╣я┌1 [п©п╟п╨п╣я┌2 ...]\n"
 "\n"
-"apt-cache - низкоуровневое средство для работы с двоичными файлами кэша APT\n"
-"и получения из них информации.\n"
+"apt-cache - п╫п╦п╥п╨п╬я┐я─п╬п╡п╫п╣п╡п╬п╣ я│я─п╣п╢я│я┌п╡п╬ п╢п╩я▐ я─п╟п╠п╬я┌я▀ я│ п╢п╡п╬п╦я┤п╫я▀п╪п╦ я└п╟п╧п╩п╟п╪п╦ п╨я█я┬п╟ APT\n"
+"п╦ п©п╬п╩я┐я┤п╣п╫п╦я▐ п╦п╥ п╫п╦я┘ п╦п╫я└п╬я─п╪п╟я├п╦п╦.\n"
 "\n"
-"Команды:\n"
-"   add - Добавить пакет в кэш исходников\n"
-"   gencaches - Создать файлы кэшей пакетов и исходников\n"
-"   showpkg - Показать общие сведения о пакете\n"
-"   showsrc - Показать общие сведения об исходном пакете\n"
-"   stats - Показать общую статистику\n"
-"   dump - Выдать всё содержимое кэша в сжатой форме\n"
-"   dumpavail - Вывести список доступных пакетов на стандартный вывод\n"
-"   unmet - Получить список неудовлетворённых зависимостей\n"
-"   search - Искать в списке пакетов с использованием регулярных выражений\n"
-"   show - Показать сведения о пакете в удобной для чтения форме\n"
-"   depends - Показать сведения о зависимостях указанного пакета\n"
-"   whatdepends - Показать сведения о пакетах, зависящих от указанного "
-"пакета\n"
-"   pkgnames - Получить полный список имён пакетов с возможностью задания "
-"фильтров\n"
-"   dotty - Построить граф зависимостей в формате GraphVis\n"
-"   xvcg - Построить граф зависимостей в формате xvcg\n"
-"   policy - Сообщить сведения о приоритетности источников пакетов\n"
+"п п╬п╪п╟п╫п╢я▀:\n"
+"   add - п■п╬п╠п╟п╡п╦я┌я▄ п©п╟п╨п╣я┌ п╡ п╨я█я┬ п╦я│я┘п╬п╢п╫п╦п╨п╬п╡\n"
+"   gencaches - п║п╬п╥п╢п╟я┌я▄ я└п╟п╧п╩я▀ п╨я█я┬п╣п╧ п©п╟п╨п╣я┌п╬п╡ п╦ п╦я│я┘п╬п╢п╫п╦п╨п╬п╡\n"
+"   showpkg - п÷п╬п╨п╟п╥п╟я┌я▄ п╬п╠я┴п╦п╣ я│п╡п╣п╢п╣п╫п╦я▐ п╬ п©п╟п╨п╣я┌п╣\n"
+"   showsrc - п÷п╬п╨п╟п╥п╟я┌я▄ п╬п╠я┴п╦п╣ я│п╡п╣п╢п╣п╫п╦я▐ п╬п╠ п╦я│я┘п╬п╢п╫п╬п╪ п©п╟п╨п╣я┌п╣\n"
+"   stats - п÷п╬п╨п╟п╥п╟я┌я▄ п╬п╠я┴я┐я▌ я│я┌п╟я┌п╦я│я┌п╦п╨я┐\n"
+"   dump - п▓я▀п╢п╟я┌я▄ п╡я│я▒ я│п╬п╢п╣я─п╤п╦п╪п╬п╣ п╨я█я┬п╟ п╡ я│п╤п╟я┌п╬п╧ я└п╬я─п╪п╣\n"
+"   dumpavail - п▓я▀п╡п╣я│я┌п╦ я│п©п╦я│п╬п╨ п╢п╬я│я┌я┐п©п╫я▀я┘ п©п╟п╨п╣я┌п╬п╡ п╫п╟ я│я┌п╟п╫п╢п╟я─я┌п╫я▀п╧ п╡я▀п╡п╬п╢\n"
+"   unmet - п÷п╬п╩я┐я┤п╦я┌я▄ я│п©п╦я│п╬п╨ п╫п╣я┐п╢п╬п╡п╩п╣я┌п╡п╬я─я▒п╫п╫я▀я┘ п╥п╟п╡п╦я│п╦п╪п╬я│я┌п╣п╧\n"
+"   search - п≤я│п╨п╟я┌я▄ п╡ я│п©п╦я│п╨п╣ п©п╟п╨п╣я┌п╬п╡ я│ п╦я│п©п╬п╩я▄п╥п╬п╡п╟п╫п╦п╣п╪ я─п╣пЁя┐п╩я▐я─п╫я▀я┘ п╡я▀я─п╟п╤п╣п╫п╦п╧\n"
+"   show - п÷п╬п╨п╟п╥п╟я┌я▄ я│п╡п╣п╢п╣п╫п╦я▐ п╬ п©п╟п╨п╣я┌п╣ п╡ я┐п╢п╬п╠п╫п╬п╧ п╢п╩я▐ я┤я┌п╣п╫п╦я▐ я└п╬я─п╪п╣\n"
+"   depends - п÷п╬п╨п╟п╥п╟я┌я▄ я│п╡п╣п╢п╣п╫п╦я▐ п╬ п╥п╟п╡п╦я│п╦п╪п╬я│я┌я▐я┘ я┐п╨п╟п╥п╟п╫п╫п╬пЁп╬ п©п╟п╨п╣я┌п╟\n"
+"   whatdepends - п÷п╬п╨п╟п╥п╟я┌я▄ я│п╡п╣п╢п╣п╫п╦я▐ п╬ п©п╟п╨п╣я┌п╟я┘, п╥п╟п╡п╦я│я▐я┴п╦я┘ п╬я┌ я┐п╨п╟п╥п╟п╫п╫п╬пЁп╬ "
+"п©п╟п╨п╣я┌п╟\n"
+"   pkgnames - п÷п╬п╩я┐я┤п╦я┌я▄ п©п╬п╩п╫я▀п╧ я│п©п╦я│п╬п╨ п╦п╪я▒п╫ п©п╟п╨п╣я┌п╬п╡ я│ п╡п╬п╥п╪п╬п╤п╫п╬я│я┌я▄я▌ п╥п╟п╢п╟п╫п╦я▐ "
+"я└п╦п╩я▄я┌я─п╬п╡\n"
+"   dotty - п÷п╬я│я┌я─п╬п╦я┌я▄ пЁя─п╟я└ п╥п╟п╡п╦я│п╦п╪п╬я│я┌п╣п╧ п╡ я└п╬я─п╪п╟я┌п╣ GraphVis\n"
+"   xvcg - п÷п╬я│я┌я─п╬п╦я┌я▄ пЁя─п╟я└ п╥п╟п╡п╦я│п╦п╪п╬я│я┌п╣п╧ п╡ я└п╬я─п╪п╟я┌п╣ xvcg\n"
+"   policy - п║п╬п╬п╠я┴п╦я┌я▄ я│п╡п╣п╢п╣п╫п╦я▐ п╬ п©я─п╦п╬я─п╦я┌п╣я┌п╫п╬я│я┌п╦ п╦я│я┌п╬я┤п╫п╦п╨п╬п╡ п©п╟п╨п╣я┌п╬п╡\n"
 
 #: cmdline/apt-cache.cc:1886
 msgid ""
@@ -262,119 +262,119 @@ msgid ""
 "See the apt-cache(8) and apt.conf(5) manual pages for more information.\n"
 msgstr ""
 "\n"
-"Параметры:\n"
-"  -h   Краткая справка\n"
-"  -p=? Имя файла для хранения кэша пакетов\n"
-"  -s=? Имя файла для хранения кэша исходников\n"
-"  -q   Отключить индикатор процесса\n"
-"  -i   Показывать только самые важные зависимости для команды unmet\n"
-"  -c=? Использовать указанный файл конфигурации\n"
-"  -o=? Изменить любой из параметров настройки (например: -o dir::cache=/"
+"п÷п╟я─п╟п╪п╣я┌я─я▀:\n"
+"  -h   п я─п╟я┌п╨п╟я▐ я│п©я─п╟п╡п╨п╟\n"
+"  -p=? п≤п╪я▐ я└п╟п╧п╩п╟ п╢п╩я▐ я┘я─п╟п╫п╣п╫п╦я▐ п╨я█я┬п╟ п©п╟п╨п╣я┌п╬п╡\n"
+"  -s=? п≤п╪я▐ я└п╟п╧п╩п╟ п╢п╩я▐ я┘я─п╟п╫п╣п╫п╦я▐ п╨я█я┬п╟ п╦я│я┘п╬п╢п╫п╦п╨п╬п╡\n"
+"  -q   п·я┌п╨п╩я▌я┤п╦я┌я▄ п╦п╫п╢п╦п╨п╟я┌п╬я─ п©я─п╬я├п╣я│я│п╟\n"
+"  -i   п÷п╬п╨п╟п╥я▀п╡п╟я┌я▄ я┌п╬п╩я▄п╨п╬ я│п╟п╪я▀п╣ п╡п╟п╤п╫я▀п╣ п╥п╟п╡п╦я│п╦п╪п╬я│я┌п╦ п╢п╩я▐ п╨п╬п╪п╟п╫п╢я▀ unmet\n"
+"  -c=? п≤я│п©п╬п╩я▄п╥п╬п╡п╟я┌я▄ я┐п╨п╟п╥п╟п╫п╫я▀п╧ я└п╟п╧п╩ п╨п╬п╫я└п╦пЁя┐я─п╟я├п╦п╦\n"
+"  -o=? п≤п╥п╪п╣п╫п╦я┌я▄ п╩я▌п╠п╬п╧ п╦п╥ п©п╟я─п╟п╪п╣я┌я─п╬п╡ п╫п╟я│я┌я─п╬п╧п╨п╦ (п╫п╟п©я─п╦п╪п╣я─: -o dir::cache=/"
 "tmp)\n"
-"Для более полного описания см. страницы руководства: apt-cache(8) и apt.conf"
+"п■п╩я▐ п╠п╬п╩п╣п╣ п©п╬п╩п╫п╬пЁп╬ п╬п©п╦я│п╟п╫п╦я▐ я│п╪. я│я┌я─п╟п╫п╦я├я▀ я─я┐п╨п╬п╡п╬п╢я│я┌п╡п╟: apt-cache(8) п╦ apt.conf"
 "(5).\n"
 
 #: cmdline/apt-cdrom.cc:402 cmdline/apt-cdrom.cc:526
 #, c-format
 msgid "Failed to rename %s.new to %s"
-msgstr "Не удалось переименовать %s.new в %s"
+msgstr "п²п╣ я┐п╢п╟п╩п╬я│я▄ п©п╣я─п╣п╦п╪п╣п╫п╬п╡п╟я┌я▄ %s.new п╡ %s"
 
 #: cmdline/apt-cdrom.cc:425 apt-pkg/sourcelist.cc:297
 #, c-format
 msgid "Opening %s"
-msgstr "Открытие %s"
+msgstr "п·я┌п╨я─я▀я┌п╦п╣ %s"
 
 #: cmdline/apt-cdrom.cc:432
 #, c-format
 msgid "Failed to open %s.new"
-msgstr "Не удалось открыть %s.new"
+msgstr "п²п╣ я┐п╢п╟п╩п╬я│я▄ п╬я┌п╨я─я▀я┌я▄ %s.new"
 
 #: cmdline/apt-cdrom.cc:571 cmdline/apt-cdrom.cc:812
 msgid "Using Media mount point "
-msgstr "Используется точка монтирования носителя "
+msgstr "п≤я│п©п╬п╩я▄п╥я┐п╣я┌я│я▐ я┌п╬я┤п╨п╟ п╪п╬п╫я┌п╦я─п╬п╡п╟п╫п╦я▐ п╫п╬я│п╦я┌п╣п╩я▐ "
 
 #: cmdline/apt-cdrom.cc:579 cmdline/apt-cdrom.cc:834 methods/cdrom.cc:160
 #, c-format
 msgid "Unable to read the cdrom database %s"
-msgstr "Невозможно прочитать базу данных компакт-дисков в %s."
+msgstr "п²п╣п╡п╬п╥п╪п╬п╤п╫п╬ п©я─п╬я┤п╦я┌п╟я┌я▄ п╠п╟п╥я┐ п╢п╟п╫п╫я▀я┘ п╨п╬п╪п©п╟п╨я┌-п╢п╦я│п╨п╬п╡ п╡ %s."
 
 #: cmdline/apt-cdrom.cc:596
 msgid "Unmounting Media"
-msgstr "Размонтируется носитель"
+msgstr "п═п╟п╥п╪п╬п╫я┌п╦я─я┐п╣я┌я│я▐ п╫п╬я│п╦я┌п╣п╩я▄"
 
 #: cmdline/apt-cdrom.cc:600
 msgid "Please insert a Media and press enter"
-msgstr "Вставьте, пожалуйста, носитель в привод и нажмите <Enter>"
+msgstr "п▓я│я┌п╟п╡я▄я┌п╣, п©п╬п╤п╟п╩я┐п╧я│я┌п╟, п╫п╬я│п╦я┌п╣п╩я▄ п╡ п©я─п╦п╡п╬п╢ п╦ п╫п╟п╤п╪п╦я┌п╣ <Enter>"
 
 #: cmdline/apt-cdrom.cc:601 cmdline/apt-cdrom.cc:813
 msgid "Mounting Media"
-msgstr "Монтируется носитель"
+msgstr "п°п╬п╫я┌п╦я─я┐п╣я┌я│я▐ п╫п╬я│п╦я┌п╣п╩я▄"
 
 #: cmdline/apt-cdrom.cc:603 cmdline/apt-cdrom.cc:815
 msgid "Failed to mount the Media."
-msgstr "Не удалось смонтировать носитель."
+msgstr "п²п╣ я┐п╢п╟п╩п╬я│я▄ я│п╪п╬п╫я┌п╦я─п╬п╡п╟я┌я▄ п╫п╬я│п╦я┌п╣п╩я▄."
 
 #: cmdline/apt-cdrom.cc:607 cmdline/apt-cdrom.cc:818
 msgid "Identifying.. "
-msgstr "Распознаётся.. "
+msgstr "п═п╟я│п©п╬п╥п╫п╟я▒я┌я│я▐.. "
 
 #: cmdline/apt-cdrom.cc:627
 msgid "Scanning Media for index files..  "
-msgstr "Носитель сканируется в поисках индексных файлов..  "
+msgstr "п²п╬я│п╦я┌п╣п╩я▄ я│п╨п╟п╫п╦я─я┐п╣я┌я│я▐ п╡ п©п╬п╦я│п╨п╟я┘ п╦п╫п╢п╣п╨я│п╫я▀я┘ я└п╟п╧п╩п╬п╡..  "
 
 #: cmdline/apt-cdrom.cc:644
 msgid "I found (binary):"
-msgstr "Найдено (бинарных):"
+msgstr "п²п╟п╧п╢п╣п╫п╬ (п╠п╦п╫п╟я─п╫я▀я┘):"
 
 #: cmdline/apt-cdrom.cc:647
 msgid "I found (source):"
-msgstr "Найдено (исходных):"
+msgstr "п²п╟п╧п╢п╣п╫п╬ (п╦я│я┘п╬п╢п╫я▀я┘):"
 
 #: cmdline/apt-cdrom.cc:662
 msgid "Found "
-msgstr "Найдено "
+msgstr "п²п╟п╧п╢п╣п╫п╬ "
 
 #: cmdline/apt-cdrom.cc:662
 msgid " package indexes and "
-msgstr " индексов пакетов и "
+msgstr " п╦п╫п╢п╣п╨я│п╬п╡ п©п╟п╨п╣я┌п╬п╡ п╦ "
 
 #: cmdline/apt-cdrom.cc:663
 msgid " source indexes."
-msgstr " индексов исходных пакетов."
+msgstr " п╦п╫п╢п╣п╨я│п╬п╡ п╦я│я┘п╬п╢п╫я▀я┘ п©п╟п╨п╣я┌п╬п╡."
 
 #: cmdline/apt-cdrom.cc:670
 msgid "Unable to locate any package files, perhaps this is not an APT enabled disc"
 msgstr ""
-"Невозможно найти ни одного файла пакетов, возможно этот диск не предназначен "
-"для APT"
+"п²п╣п╡п╬п╥п╪п╬п╤п╫п╬ п╫п╟п╧я┌п╦ п╫п╦ п╬п╢п╫п╬пЁп╬ я└п╟п╧п╩п╟ п©п╟п╨п╣я┌п╬п╡, п╡п╬п╥п╪п╬п╤п╫п╬ я█я┌п╬я┌ п╢п╦я│п╨ п╫п╣ п©я─п╣п╢п╫п╟п╥п╫п╟я┤п╣п╫ "
+"п╢п╩я▐ APT"
 
 #: cmdline/apt-cdrom.cc:694
 msgid "Found label '"
-msgstr "Найдена метка '"
+msgstr "п²п╟п╧п╢п╣п╫п╟ п╪п╣я┌п╨п╟ '"
 
 #: cmdline/apt-cdrom.cc:703
 msgid "Please provide a name for this Media, such as 'ALT Linux Disk 1'"
-msgstr "Пожалуйста, задайте имя для этого носителя, например, 'ALT Linux Disk 1'"
+msgstr "п÷п╬п╤п╟п╩я┐п╧я│я┌п╟, п╥п╟п╢п╟п╧я┌п╣ п╦п╪я▐ п╢п╩я▐ я█я┌п╬пЁп╬ п╫п╬я│п╦я┌п╣п╩я▐, п╫п╟п©я─п╦п╪п╣я─, 'ALT Linux Disk 1'"
 
 #: cmdline/apt-cdrom.cc:712
 msgid "That is not a valid name, try again "
-msgstr "Это имя ошибочно, попробуйте снова "
+msgstr "п╜я┌п╬ п╦п╪я▐ п╬я┬п╦п╠п╬я┤п╫п╬, п©п╬п©я─п╬п╠я┐п╧я┌п╣ я│п╫п╬п╡п╟ "
 
 #: cmdline/apt-cdrom.cc:726
 msgid "This Media is called:"
-msgstr "Этот носитель назван:"
+msgstr "п╜я┌п╬я┌ п╫п╬я│п╦я┌п╣п╩я▄ п╫п╟п╥п╡п╟п╫:"
 
 #: cmdline/apt-cdrom.cc:759
 msgid "Source List entries for this Media are:"
-msgstr "Список исходных пакетов для этого носителя:"
+msgstr "п║п©п╦я│п╬п╨ п╦я│я┘п╬п╢п╫я▀я┘ п©п╟п╨п╣я┌п╬п╡ п╢п╩я▐ я█я┌п╬пЁп╬ п╫п╬я│п╦я┌п╣п╩я▐:"
 
 #: cmdline/apt-cdrom.cc:792
 msgid "Repeat this process for the rest of the Media in your set."
-msgstr "Повторите эту процедуру для оставшихся носителей из Вашего набора."
+msgstr "п÷п╬п╡я┌п╬я─п╦я┌п╣ я█я┌я┐ п©я─п╬я├п╣п╢я┐я─я┐ п╢п╩я▐ п╬я│я┌п╟п╡я┬п╦я┘я│я▐ п╫п╬я│п╦я┌п╣п╩п╣п╧ п╦п╥ п▓п╟я┬п╣пЁп╬ п╫п╟п╠п╬я─п╟."
 
 #: cmdline/apt-cdrom.cc:837
 msgid "Stored Label: '"
-msgstr "Сохранённая метка: '"
+msgstr "п║п╬я┘я─п╟п╫я▒п╫п╫п╟я▐ п╪п╣я┌п╨п╟: '"
 
 #: cmdline/apt-cdrom.cc:853
 msgid ""
@@ -399,32 +399,32 @@ msgid ""
 "  -o=? Set an arbitary configuration option, eg -o dir::cache=/tmp\n"
 "See fstab(5)\n"
 msgstr ""
-"Использование: apt-cdrom [параметры] команда\n"
+"п≤я│п©п╬п╩я▄п╥п╬п╡п╟п╫п╦п╣: apt-cdrom [п©п╟я─п╟п╪п╣я┌я─я▀] п╨п╬п╪п╟п╫п╢п╟\n"
 "\n"
-"apt-cdrom это утилита для добавления носителей в список источников APT. "
-"Точка\n"
-"монтирования и информация об устройстве извлекаются из apt.conf\n"
-"и /etc/fstab.\n"
+"apt-cdrom я█я┌п╬ я┐я┌п╦п╩п╦я┌п╟ п╢п╩я▐ п╢п╬п╠п╟п╡п╩п╣п╫п╦я▐ п╫п╬я│п╦я┌п╣п╩п╣п╧ п╡ я│п©п╦я│п╬п╨ п╦я│я┌п╬я┤п╫п╦п╨п╬п╡ APT. "
+"п╒п╬я┤п╨п╟\n"
+"п╪п╬п╫я┌п╦я─п╬п╡п╟п╫п╦я▐ п╦ п╦п╫я└п╬я─п╪п╟я├п╦я▐ п╬п╠ я┐я│я┌я─п╬п╧я│я┌п╡п╣ п╦п╥п╡п╩п╣п╨п╟я▌я┌я│я▐ п╦п╥ apt.conf\n"
+"п╦ /etc/fstab.\n"
 "\n"
-"Команды:\n"
-"   add - Добавить носитель\n"
-"   ident - Вывести идентификационную запись носителя\n"
+"п п╬п╪п╟п╫п╢я▀:\n"
+"   add - п■п╬п╠п╟п╡п╦я┌я▄ п╫п╬я│п╦я┌п╣п╩я▄\n"
+"   ident - п▓я▀п╡п╣я│я┌п╦ п╦п╢п╣п╫я┌п╦я└п╦п╨п╟я├п╦п╬п╫п╫я┐я▌ п╥п╟п©п╦я│я▄ п╫п╬я│п╦я┌п╣п╩я▐\n"
 "\n"
-"Параметры:\n"
-"  -h   Краткая справка \n"
-"  -d   Точка монтирования\n"
-"  -r   Переименовать уже распознанный носитель\n"
-"  -m   Не монтировать диск\n"
-"  -f   `Быстрый режим', не проверять файлы пакетов\n"
-"  -a   Тщательный режим сканирования\n"
-"  -c=? Использовать указанный файл конфигурации\n"
-"  -o=? Изменить любой из параметров настройки (например: -o dir::cache=/"
+"п÷п╟я─п╟п╪п╣я┌я─я▀:\n"
+"  -h   п я─п╟я┌п╨п╟я▐ я│п©я─п╟п╡п╨п╟ \n"
+"  -d   п╒п╬я┤п╨п╟ п╪п╬п╫я┌п╦я─п╬п╡п╟п╫п╦я▐\n"
+"  -r   п÷п╣я─п╣п╦п╪п╣п╫п╬п╡п╟я┌я▄ я┐п╤п╣ я─п╟я│п©п╬п╥п╫п╟п╫п╫я▀п╧ п╫п╬я│п╦я┌п╣п╩я▄\n"
+"  -m   п²п╣ п╪п╬п╫я┌п╦я─п╬п╡п╟я┌я▄ п╢п╦я│п╨\n"
+"  -f   `п▒я▀я│я┌я─я▀п╧ я─п╣п╤п╦п╪', п╫п╣ п©я─п╬п╡п╣я─я▐я┌я▄ я└п╟п╧п╩я▀ п©п╟п╨п╣я┌п╬п╡\n"
+"  -a   п╒я┴п╟я┌п╣п╩я▄п╫я▀п╧ я─п╣п╤п╦п╪ я│п╨п╟п╫п╦я─п╬п╡п╟п╫п╦я▐\n"
+"  -c=? п≤я│п©п╬п╩я▄п╥п╬п╡п╟я┌я▄ я┐п╨п╟п╥п╟п╫п╫я▀п╧ я└п╟п╧п╩ п╨п╬п╫я└п╦пЁя┐я─п╟я├п╦п╦\n"
+"  -o=? п≤п╥п╪п╣п╫п╦я┌я▄ п╩я▌п╠п╬п╧ п╦п╥ п©п╟я─п╟п╪п╣я┌я─п╬п╡ п╫п╟я│я┌я─п╬п╧п╨п╦ (п╫п╟п©я─п╦п╪п╣я─: -o dir::cache=/"
 "tmp)\n"
-"См. также fstab(5)\n"
+"п║п╪. я┌п╟п╨п╤п╣ fstab(5)\n"
 
 #: cmdline/apt-config.cc:43
 msgid "Arguments not in pairs"
-msgstr "Аргументы должны быть парными"
+msgstr "п░я─пЁя┐п╪п╣п╫я┌я▀ п╢п╬п╩п╤п╫я▀ п╠я▀я┌я▄ п©п╟я─п╫я▀п╪п╦"
 
 #: cmdline/apt-config.cc:78
 msgid ""
@@ -441,18 +441,18 @@ msgid ""
 "  -c=? Read this configuration file\n"
 "  -o=? Set an arbitary configuration option, eg -o dir::cache=/tmp\n"
 msgstr ""
-"Использование: apt-config [параметры] команда\n"
+"п≤я│п©п╬п╩я▄п╥п╬п╡п╟п╫п╦п╣: apt-config [п©п╟я─п╟п╪п╣я┌я─я▀] п╨п╬п╪п╟п╫п╢п╟\n"
 "\n"
-"apt-config - инструмент для чтения конфигурационного файла APT.\n"
+"apt-config - п╦п╫я│я┌я─я┐п╪п╣п╫я┌ п╢п╩я▐ я┤я┌п╣п╫п╦я▐ п╨п╬п╫я└п╦пЁя┐я─п╟я├п╦п╬п╫п╫п╬пЁп╬ я└п╟п╧п╩п╟ APT.\n"
 "\n"
-"Команды:\n"
-"   shell - Режим оболочки\n"
-"   dump - Показать настройки\n"
+"п п╬п╪п╟п╫п╢я▀:\n"
+"   shell - п═п╣п╤п╦п╪ п╬п╠п╬п╩п╬я┤п╨п╦\n"
+"   dump - п÷п╬п╨п╟п╥п╟я┌я▄ п╫п╟я│я┌я─п╬п╧п╨п╦\n"
 "\n"
-"Параметры:\n"
-"  -h   Краткая справка\n"
-"  -c=? Использовать указанный файл конфигурации\n"
-"  -o=? Изменить любой из параметров настройки (например: -o dir::cache=/"
+"п÷п╟я─п╟п╪п╣я┌я─я▀:\n"
+"  -h   п я─п╟я┌п╨п╟я▐ я│п©я─п╟п╡п╨п╟\n"
+"  -c=? п≤я│п©п╬п╩я▄п╥п╬п╡п╟я┌я▄ я┐п╨п╟п╥п╟п╫п╫я▀п╧ я└п╟п╧п╩ п╨п╬п╫я└п╦пЁя┐я─п╟я├п╦п╦\n"
+"  -o=? п≤п╥п╪п╣п╫п╦я┌я▄ п╩я▌п╠п╬п╧ п╦п╥ п©п╟я─п╟п╪п╣я┌я─п╬п╡ п╫п╟я│я┌я─п╬п╧п╨п╦ (п╫п╟п©я─п╦п╪п╣я─: -o dir::cache=/"
 "tmp)\n"
 
 #: cmdline/apt-get.cc:158 cmdline/apt-shell.cc:180
@@ -463,198 +463,198 @@ msgstr "Y"
 #: cmdline/apt-shell.cc:2057
 #, c-format
 msgid "Regex compilation error - %s"
-msgstr "Ошибка компиляции регулярного выражения - %s"
+msgstr "п·я┬п╦п╠п╨п╟ п╨п╬п╪п©п╦п╩я▐я├п╦п╦ я─п╣пЁя┐п╩я▐я─п╫п╬пЁп╬ п╡я▀я─п╟п╤п╣п╫п╦я▐ - %s"
 
 #: cmdline/apt-get.cc:275 cmdline/apt-shell.cc:297
 msgid "The following packages have unmet dependencies:"
-msgstr "Следующие пакеты имеют неудовлетворенные зависимости:"
+msgstr "п║п╩п╣п╢я┐я▌я┴п╦п╣ п©п╟п╨п╣я┌я▀ п╦п╪п╣я▌я┌ п╫п╣я┐п╢п╬п╡п╩п╣я┌п╡п╬я─п╣п╫п╫я▀п╣ п╥п╟п╡п╦я│п╦п╪п╬я│я┌п╦:"
 
 #: cmdline/apt-get.cc:373 cmdline/apt-shell.cc:395
 #, c-format
 msgid "but %s is installed"
-msgstr "но %s уже установлен"
+msgstr "п╫п╬ %s я┐п╤п╣ я┐я│я┌п╟п╫п╬п╡п╩п╣п╫"
 
 #: cmdline/apt-get.cc:375 cmdline/apt-shell.cc:397
 #, c-format
 msgid "but %s is to be installed"
-msgstr "но %s будет установлен"
+msgstr "п╫п╬ %s п╠я┐п╢п╣я┌ я┐я│я┌п╟п╫п╬п╡п╩п╣п╫"
 
 #: cmdline/apt-get.cc:382 cmdline/apt-shell.cc:404
 msgid "but it is not installable"
-msgstr "но пакет не может быть установлен"
+msgstr "п╫п╬ п©п╟п╨п╣я┌ п╫п╣ п╪п╬п╤п╣я┌ п╠я▀я┌я▄ я┐я│я┌п╟п╫п╬п╡п╩п╣п╫"
 
 #: cmdline/apt-get.cc:384 cmdline/apt-shell.cc:406
 msgid "but it is a virtual package"
-msgstr "но пакет является виртуальным пакетом"
+msgstr "п╫п╬ п©п╟п╨п╣я┌ я▐п╡п╩я▐п╣я┌я│я▐ п╡п╦я─я┌я┐п╟п╩я▄п╫я▀п╪ п©п╟п╨п╣я┌п╬п╪"
 
 #: cmdline/apt-get.cc:387 cmdline/apt-shell.cc:409
 msgid "but it is not installed"
-msgstr "но пакет не установлен"
+msgstr "п╫п╬ п©п╟п╨п╣я┌ п╫п╣ я┐я│я┌п╟п╫п╬п╡п╩п╣п╫"
 
 #: cmdline/apt-get.cc:387 cmdline/apt-shell.cc:409
 msgid "but it is not going to be installed"
-msgstr "но пакет не будет установлен"
+msgstr "п╫п╬ п©п╟п╨п╣я┌ п╫п╣ п╠я┐п╢п╣я┌ я┐я│я┌п╟п╫п╬п╡п╩п╣п╫"
 
 #: cmdline/apt-get.cc:392 cmdline/apt-shell.cc:414
 msgid " or"
-msgstr " или"
+msgstr " п╦п╩п╦"
 
 #: cmdline/apt-get.cc:421 cmdline/apt-shell.cc:444
 msgid "The following NEW packages will be installed:"
-msgstr "Следующие НОВЫЕ пакеты будут установлены:"
+msgstr "п║п╩п╣п╢я┐я▌я┴п╦п╣ п²п·п▓п╚п∙ п©п╟п╨п╣я┌я▀ п╠я┐п╢я┐я┌ я┐я│я┌п╟п╫п╬п╡п╩п╣п╫я▀:"
 
 #: cmdline/apt-get.cc:473 cmdline/apt-shell.cc:497
 msgid "The following packages will be REPLACED:"
-msgstr "Следующие пакеты будут ЗАМЕНЕНЫ:"
+msgstr "п║п╩п╣п╢я┐я▌я┴п╦п╣ п©п╟п╨п╣я┌я▀ п╠я┐п╢я┐я┌ п≈п░п°п∙п²п∙п²п╚:"
 
 #: cmdline/apt-get.cc:474 cmdline/apt-shell.cc:498
 msgid "The following packages will be REMOVED:"
-msgstr "Следующие пакеты будут УДАЛЕНЫ:"
+msgstr "п║п╩п╣п╢я┐я▌я┴п╦п╣ п©п╟п╨п╣я┌я▀ п╠я┐п╢я┐я┌ пёп■п░п⌡п∙п²п╚:"
 
 #: cmdline/apt-get.cc:496 cmdline/apt-shell.cc:527
 msgid "The following packages have been kept back"
-msgstr "Следующие пакеты будут СОХРАНЕНЫ:"
+msgstr "п║п╩п╣п╢я┐я▌я┴п╦п╣ п©п╟п╨п╣я┌я▀ п╠я┐п╢я┐я┌ п║п·п╔п═п░п²п∙п²п╚:"
 
 #: cmdline/apt-get.cc:517 cmdline/apt-shell.cc:555
 msgid "The following packages will be upgraded"
-msgstr "Следующие пакеты будут ОБНОВЛЕНЫ:"
+msgstr "п║п╩п╣п╢я┐я▌я┴п╦п╣ п©п╟п╨п╣я┌я▀ п╠я┐п╢я┐я┌ п·п▒п²п·п▓п⌡п∙п²п╚:"
 
 #: cmdline/apt-get.cc:538 cmdline/apt-shell.cc:583
 msgid "The following packages will be DOWNGRADED"
-msgstr "Следующие пакеты будут ЗАМЕНЕНЫ БОЛЕЕ СТАРЫМИ ВЕРСИЯМИ:"
+msgstr "п║п╩п╣п╢я┐я▌я┴п╦п╣ п©п╟п╨п╣я┌я▀ п╠я┐п╢я┐я┌ п≈п░п°п∙п²п∙п²п╚ п▒п·п⌡п∙п∙ п║п╒п░п═п╚п°п≤ п▓п∙п═п║п≤п╞п°п≤:"
 
 #: cmdline/apt-get.cc:558 cmdline/apt-shell.cc:605
 msgid "The following held packages will be changed:"
-msgstr "Следующие удерживаемые пакеты будут изменены:"
+msgstr "п║п╩п╣п╢я┐я▌я┴п╦п╣ я┐п╢п╣я─п╤п╦п╡п╟п╣п╪я▀п╣ п©п╟п╨п╣я┌я▀ п╠я┐п╢я┐я┌ п╦п╥п╪п╣п╫п╣п╫я▀:"
 
 #: cmdline/apt-get.cc:647 cmdline/apt-shell.cc:696
 #, c-format
 msgid "%s (due to %s) "
-msgstr "%s (по причине %s) "
+msgstr "%s (п©п╬ п©я─п╦я┤п╦п╫п╣ %s) "
 
 #: cmdline/apt-get.cc:655 cmdline/apt-shell.cc:704
 msgid ""
 "WARNING: The following essential packages will be removed\n"
 "This should NOT be done unless you know exactly what you are doing!"
 msgstr ""
-"ВНИМАНИЕ: Будут удалены важные для работы системы пакеты\n"
-"Обычно этого делать не следует. Вы должны точно понимать возможные "
-"последствия!"
+"п▓п²п≤п°п░п²п≤п∙: п▒я┐п╢я┐я┌ я┐п╢п╟п╩п╣п╫я▀ п╡п╟п╤п╫я▀п╣ п╢п╩я▐ я─п╟п╠п╬я┌я▀ я│п╦я│я┌п╣п╪я▀ п©п╟п╨п╣я┌я▀\n"
+"п·п╠я▀я┤п╫п╬ я█я┌п╬пЁп╬ п╢п╣п╩п╟я┌я▄ п╫п╣ я│п╩п╣п╢я┐п╣я┌. п▓я▀ п╢п╬п╩п╤п╫я▀ я┌п╬я┤п╫п╬ п©п╬п╫п╦п╪п╟я┌я▄ п╡п╬п╥п╪п╬п╤п╫я▀п╣ "
+"п©п╬я│п╩п╣п╢я│я┌п╡п╦я▐!"
 
 #: cmdline/apt-get.cc:709 cmdline/apt-shell.cc:770
 #, c-format
 msgid "%lu upgraded, %lu newly installed, "
-msgstr "%lu будет обновлено, %lu новых установлено, "
+msgstr "%lu п╠я┐п╢п╣я┌ п╬п╠п╫п╬п╡п╩п╣п╫п╬, %lu п╫п╬п╡я▀я┘ я┐я│я┌п╟п╫п╬п╡п╩п╣п╫п╬, "
 
 #: cmdline/apt-get.cc:713 cmdline/apt-shell.cc:774
 #, c-format
 msgid "%lu reinstalled, "
-msgstr "%lu пакетов будет переустановлено, "
+msgstr "%lu п©п╟п╨п╣я┌п╬п╡ п╠я┐п╢п╣я┌ п©п╣я─п╣я┐я│я┌п╟п╫п╬п╡п╩п╣п╫п╬, "
 
 #: cmdline/apt-get.cc:715 cmdline/apt-shell.cc:776
 #, c-format
 msgid "%lu downgraded, "
-msgstr "%lu пакетов будет заменено на старые версии, "
+msgstr "%lu п©п╟п╨п╣я┌п╬п╡ п╠я┐п╢п╣я┌ п╥п╟п╪п╣п╫п╣п╫п╬ п╫п╟ я│я┌п╟я─я▀п╣ п╡п╣я─я│п╦п╦, "
 
 #: cmdline/apt-get.cc:718 cmdline/apt-shell.cc:779
 #, c-format
 msgid "%lu replaced, "
-msgstr "%lu пакетов будет заменено, "
+msgstr "%lu п©п╟п╨п╣я┌п╬п╡ п╠я┐п╢п╣я┌ п╥п╟п╪п╣п╫п╣п╫п╬, "
 
 #: cmdline/apt-get.cc:721 cmdline/apt-shell.cc:783
 #, c-format
 msgid "%lu removed and %lu not upgraded.\n"
-msgstr "%lu пакетов будет удалено и %lu не будет обновлено.\n"
+msgstr "%lu п©п╟п╨п╣я┌п╬п╡ п╠я┐п╢п╣я┌ я┐п╢п╟п╩п╣п╫п╬ п╦ %lu п╫п╣ п╠я┐п╢п╣я┌ п╬п╠п╫п╬п╡п╩п╣п╫п╬.\n"
 
 #: cmdline/apt-get.cc:725 cmdline/apt-shell.cc:790
 #, c-format
 msgid "%lu not fully installed or removed.\n"
-msgstr "%lu не установлено или не удалено целиком.\n"
+msgstr "%lu п╫п╣ я┐я│я┌п╟п╫п╬п╡п╩п╣п╫п╬ п╦п╩п╦ п╫п╣ я┐п╢п╟п╩п╣п╫п╬ я├п╣п╩п╦п╨п╬п╪.\n"
 
 #: cmdline/apt-get.cc:747
 msgid "There are changes to be made"
-msgstr "Есть изменения, которые будут сделаны"
+msgstr "п∙я│я┌я▄ п╦п╥п╪п╣п╫п╣п╫п╦я▐, п╨п╬я┌п╬я─я▀п╣ п╠я┐п╢я┐я┌ я│п╢п╣п╩п╟п╫я▀"
 
 #: cmdline/apt-get.cc:813 cmdline/apt-shell.cc:918
 msgid "Correcting dependencies..."
-msgstr "Исправление зависимостей..."
+msgstr "п≤я│п©я─п╟п╡п╩п╣п╫п╦п╣ п╥п╟п╡п╦я│п╦п╪п╬я│я┌п╣п╧..."
 
 #: cmdline/apt-get.cc:816 cmdline/apt-shell.cc:921
 msgid " failed."
-msgstr " невозможно."
+msgstr " п╫п╣п╡п╬п╥п╪п╬п╤п╫п╬."
 
 #: cmdline/apt-get.cc:819 cmdline/apt-shell.cc:924
 msgid "Unable to correct dependencies"
-msgstr "Невозможно исправить зависимости"
+msgstr "п²п╣п╡п╬п╥п╪п╬п╤п╫п╬ п╦я│п©я─п╟п╡п╦я┌я▄ п╥п╟п╡п╦я│п╦п╪п╬я│я┌п╦"
 
 #: cmdline/apt-get.cc:822 cmdline/apt-shell.cc:927
 msgid "Unable to minimize the upgrade set"
-msgstr "Невозможно уменьшить количество обновлений"
+msgstr "п²п╣п╡п╬п╥п╪п╬п╤п╫п╬ я┐п╪п╣п╫я▄я┬п╦я┌я▄ п╨п╬п╩п╦я┤п╣я│я┌п╡п╬ п╬п╠п╫п╬п╡п╩п╣п╫п╦п╧"
 
 #: cmdline/apt-get.cc:824 cmdline/apt-shell.cc:929
 msgid " Done"
-msgstr " Завершено"
+msgstr " п≈п╟п╡п╣я─я┬п╣п╫п╬"
 
 #: cmdline/apt-get.cc:828
 msgid "You might want to run `apt-get -f install' to correct these."
-msgstr "Возможно, Вам потребуется запустить `apt-get -f install' для исправления."
+msgstr "п▓п╬п╥п╪п╬п╤п╫п╬, п▓п╟п╪ п©п╬я┌я─п╣п╠я┐п╣я┌я│я▐ п╥п╟п©я┐я│я┌п╦я┌я▄ `apt-get -f install' п╢п╩я▐ п╦я│п©я─п╟п╡п╩п╣п╫п╦я▐."
 
 #: cmdline/apt-get.cc:831 cmdline/apt-shell.cc:936
 msgid "Unmet dependencies. Try using -f."
-msgstr "Неудовлетворенные зависимости. Попробуйте добавить параметр -f."
+msgstr "п²п╣я┐п╢п╬п╡п╩п╣я┌п╡п╬я─п╣п╫п╫я▀п╣ п╥п╟п╡п╦я│п╦п╪п╬я│я┌п╦. п÷п╬п©я─п╬п╠я┐п╧я┌п╣ п╢п╬п╠п╟п╡п╦я┌я▄ п©п╟я─п╟п╪п╣я┌я─ -f."
 
 #: cmdline/apt-get.cc:889 cmdline/apt-shell.cc:994
 msgid "Packages need to be removed but Remove is disabled."
 msgstr ""
-"Необходимо удалить некоторые пакеты, но это было запрещено параметром No "
-"Remove (не удалять)."
+"п²п╣п╬п╠я┘п╬п╢п╦п╪п╬ я┐п╢п╟п╩п╦я┌я▄ п╫п╣п╨п╬я┌п╬я─я▀п╣ п©п╟п╨п╣я┌я▀, п╫п╬ я█я┌п╬ п╠я▀п╩п╬ п╥п╟п©я─п╣я┴п╣п╫п╬ п©п╟я─п╟п╪п╣я┌я─п╬п╪ No "
+"Remove (п╫п╣ я┐п╢п╟п╩я▐я┌я▄)."
 
 #: cmdline/apt-get.cc:915 cmdline/apt-get.cc:2350 cmdline/apt-get.cc:2383
 #: cmdline/apt-shell.cc:1020 cmdline/apt-shell.cc:2319
 #: cmdline/apt-shell.cc:2355
 msgid "Unable to lock the download directory"
-msgstr "Невозможно разблокировать временный каталог для скачиваемых файлов"
+msgstr "п²п╣п╡п╬п╥п╪п╬п╤п╫п╬ я─п╟п╥п╠п╩п╬п╨п╦я─п╬п╡п╟я┌я▄ п╡я─п╣п╪п╣п╫п╫я▀п╧ п╨п╟я┌п╟п╩п╬пЁ п╢п╩я▐ я│п╨п╟я┤п╦п╡п╟п╣п╪я▀я┘ я└п╟п╧п╩п╬п╡"
 
 #: cmdline/apt-get.cc:925 cmdline/apt-get.cc:2431 cmdline/apt-get.cc:2676
 #: cmdline/apt-shell.cc:1030 cmdline/apt-shell.cc:2414 apt-pkg/cachefile.cc:71
 msgid "The list of sources could not be read."
-msgstr "Невозможно прочитать список исходных пакетов."
+msgstr "п²п╣п╡п╬п╥п╪п╬п╤п╫п╬ п©я─п╬я┤п╦я┌п╟я┌я▄ я│п©п╦я│п╬п╨ п╦я│я┘п╬п╢п╫я▀я┘ п©п╟п╨п╣я┌п╬п╡."
 
 #: cmdline/apt-get.cc:945 cmdline/apt-shell.cc:1050
 #, c-format
 msgid "Need to get %sB/%sB of archives.\n"
-msgstr "Необходимо получить %sB/%sB архивов.\n"
+msgstr "п²п╣п╬п╠я┘п╬п╢п╦п╪п╬ п©п╬п╩я┐я┤п╦я┌я▄ %sB/%sB п╟я─я┘п╦п╡п╬п╡.\n"
 
 #: cmdline/apt-get.cc:948 cmdline/apt-shell.cc:1053
 #, c-format
 msgid "Need to get %sB of archives.\n"
-msgstr "Необходимо получить %sB архивов.\n"
+msgstr "п²п╣п╬п╠я┘п╬п╢п╦п╪п╬ п©п╬п╩я┐я┤п╦я┌я▄ %sB п╟я─я┘п╦п╡п╬п╡.\n"
 
 #: cmdline/apt-get.cc:953 cmdline/apt-shell.cc:837 cmdline/apt-shell.cc:1058
 #, c-format
 msgid "After unpacking %sB of additional disk space will be used.\n"
-msgstr "После распаковки потребуется дополнительно %sB дискового пространства.\n"
+msgstr "п÷п╬я│п╩п╣ я─п╟я│п©п╟п╨п╬п╡п╨п╦ п©п╬я┌я─п╣п╠я┐п╣я┌я│я▐ п╢п╬п©п╬п╩п╫п╦я┌п╣п╩я▄п╫п╬ %sB п╢п╦я│п╨п╬п╡п╬пЁп╬ п©я─п╬я│я┌я─п╟п╫я│я┌п╡п╟.\n"
 
 #: cmdline/apt-get.cc:956 cmdline/apt-shell.cc:840 cmdline/apt-shell.cc:1061
 #, c-format
 msgid "After unpacking %sB disk space will be freed.\n"
-msgstr "После распаковки будет освобождено %sB дискового пространства.\n"
+msgstr "п÷п╬я│п╩п╣ я─п╟я│п©п╟п╨п╬п╡п╨п╦ п╠я┐п╢п╣я┌ п╬я│п╡п╬п╠п╬п╤п╢п╣п╫п╬ %sB п╢п╦я│п╨п╬п╡п╬пЁп╬ п©я─п╬я│я┌я─п╟п╫я│я┌п╡п╟.\n"
 
 #: cmdline/apt-get.cc:974 cmdline/apt-shell.cc:1079
 #, c-format
 msgid "You don't have enough free space in %s."
-msgstr "Недостаточно свободного места в %s"
+msgstr "п²п╣п╢п╬я│я┌п╟я┌п╬я┤п╫п╬ я│п╡п╬п╠п╬п╢п╫п╬пЁп╬ п╪п╣я│я┌п╟ п╡ %s"
 
 #: cmdline/apt-get.cc:983 cmdline/apt-shell.cc:1088
 msgid "There are problems and -y was used without --force-yes"
-msgstr "Обнаружены проблемы, а параметр -y был использован без --force-yes"
+msgstr "п·п╠п╫п╟я─я┐п╤п╣п╫я▀ п©я─п╬п╠п╩п╣п╪я▀, п╟ п©п╟я─п╟п╪п╣я┌я─ -y п╠я▀п╩ п╦я│п©п╬п╩я▄п╥п╬п╡п╟п╫ п╠п╣п╥ --force-yes"
 
 #: cmdline/apt-get.cc:989 cmdline/apt-get.cc:1009 cmdline/apt-shell.cc:1094
 #: cmdline/apt-shell.cc:1114
 msgid "Trivial Only specified but this is not a trivial operation."
 msgstr ""
-"Был указан параметр Trivial Only, но совершаемое действие не относится к "
-"разряду тривиальных."
+"п▒я▀п╩ я┐п╨п╟п╥п╟п╫ п©п╟я─п╟п╪п╣я┌я─ Trivial Only, п╫п╬ я│п╬п╡п╣я─я┬п╟п╣п╪п╬п╣ п╢п╣п╧я│я┌п╡п╦п╣ п╫п╣ п╬я┌п╫п╬я│п╦я┌я│я▐ п╨ "
+"я─п╟п╥я─я▐п╢я┐ я┌я─п╦п╡п╦п╟п╩я▄п╫я▀я┘."
 
 #: cmdline/apt-get.cc:991 cmdline/apt-shell.cc:1096
 msgid "Yes, do as I say!"
@@ -667,101 +667,101 @@ msgid ""
 "To continue type in the phrase '%s'\n"
 " ?] "
 msgstr ""
-"Вы делаете нечто потенциально опасное!\n"
-"Введите фразу '%s' чтобы продолжить.\n"
+"п▓я▀ п╢п╣п╩п╟п╣я┌п╣ п╫п╣я┤я┌п╬ п©п╬я┌п╣п╫я├п╦п╟п╩я▄п╫п╬ п╬п©п╟я│п╫п╬п╣!\n"
+"п▓п╡п╣п╢п╦я┌п╣ я└я─п╟п╥я┐ '%s' я┤я┌п╬п╠я▀ п©я─п╬п╢п╬п╩п╤п╦я┌я▄.\n"
 " "
 
 #: cmdline/apt-get.cc:999 cmdline/apt-get.cc:1018 cmdline/apt-shell.cc:855
 #: cmdline/apt-shell.cc:1104 cmdline/apt-shell.cc:1123
 msgid "Abort."
-msgstr "Прервано."
+msgstr "п÷я─п╣я─п╡п╟п╫п╬."
 
 #: cmdline/apt-get.cc:1014 cmdline/apt-shell.cc:853 cmdline/apt-shell.cc:1119
 msgid "Do you want to continue? [Y/n] "
-msgstr "Продолжить? [Y/n] "
+msgstr "п÷я─п╬п╢п╬п╩п╤п╦я┌я▄? [Y/n] "
 
 #: cmdline/apt-get.cc:1092 cmdline/apt-get.cc:1197 cmdline/apt-get.cc:1730
 #: cmdline/apt-get.cc:2545 cmdline/apt-shell.cc:1196 cmdline/apt-shell.cc:1777
 #, c-format
 msgid "Failed to fetch %s  %s\n"
-msgstr "Невозможно получить %s  %s\n"
+msgstr "п²п╣п╡п╬п╥п╪п╬п╤п╫п╬ п©п╬п╩я┐я┤п╦я┌я▄ %s  %s\n"
 
 #: cmdline/apt-get.cc:1110 cmdline/apt-shell.cc:1214
 msgid "Some files failed to download"
-msgstr "Некоторые файлы не удалось получить"
+msgstr "п²п╣п╨п╬я┌п╬я─я▀п╣ я└п╟п╧п╩я▀ п╫п╣ я┐п╢п╟п╩п╬я│я▄ п©п╬п╩я┐я┤п╦я┌я▄"
 
 #: cmdline/apt-get.cc:1111 cmdline/apt-get.cc:2554 cmdline/apt-shell.cc:1215
 msgid "Download complete and in download only mode"
-msgstr "Скачивание пакетов завершено в режиме 'только скачать'."
+msgstr "п║п╨п╟я┤п╦п╡п╟п╫п╦п╣ п©п╟п╨п╣я┌п╬п╡ п╥п╟п╡п╣я─я┬п╣п╫п╬ п╡ я─п╣п╤п╦п╪п╣ 'я┌п╬п╩я▄п╨п╬ я│п╨п╟я┤п╟я┌я▄'."
 
 #: cmdline/apt-get.cc:1117 cmdline/apt-shell.cc:1221
 msgid ""
 "Unable to fetch some archives, maybe run apt-get update or try with --fix-"
 "missing?"
 msgstr ""
-"Получить некоторые архивы невозможно. Попробуйте ввести команду apt-get "
-"update или добавить параметр --fix-missing."
+"п÷п╬п╩я┐я┤п╦я┌я▄ п╫п╣п╨п╬я┌п╬я─я▀п╣ п╟я─я┘п╦п╡я▀ п╫п╣п╡п╬п╥п╪п╬п╤п╫п╬. п÷п╬п©я─п╬п╠я┐п╧я┌п╣ п╡п╡п╣я│я┌п╦ п╨п╬п╪п╟п╫п╢я┐ apt-get "
+"update п╦п╩п╦ п╢п╬п╠п╟п╡п╦я┌я▄ п©п╟я─п╟п╪п╣я┌я─ --fix-missing."
 
 #: cmdline/apt-get.cc:1121 cmdline/apt-shell.cc:1225
 msgid "--fix-missing and media swapping is not currently supported"
-msgstr "Параметр --fix-missing и смена носителей с архивами сейчас не поддерживаются."
+msgstr "п÷п╟я─п╟п╪п╣я┌я─ --fix-missing п╦ я│п╪п╣п╫п╟ п╫п╬я│п╦я┌п╣п╩п╣п╧ я│ п╟я─я┘п╦п╡п╟п╪п╦ я│п╣п╧я┤п╟я│ п╫п╣ п©п╬п╢п╢п╣я─п╤п╦п╡п╟я▌я┌я│я▐."
 
 #: cmdline/apt-get.cc:1126 cmdline/apt-shell.cc:1230
 msgid "Unable to correct missing packages."
-msgstr "Невозможно исправить отсутствующие пакеты."
+msgstr "п²п╣п╡п╬п╥п╪п╬п╤п╫п╬ п╦я│п©я─п╟п╡п╦я┌я▄ п╬я┌я│я┐я┌я│я┌п╡я┐я▌я┴п╦п╣ п©п╟п╨п╣я┌я▀."
 
 #: cmdline/apt-get.cc:1127 cmdline/apt-shell.cc:1231
 msgid "Aborting Install."
-msgstr "Прерывание установки."
+msgstr "п÷я─п╣я─я▀п╡п╟п╫п╦п╣ я┐я│я┌п╟п╫п╬п╡п╨п╦."
 
 #: cmdline/apt-get.cc:1202 cmdline/apt-get.cc:2550
 msgid "Failed to fetch some archives."
-msgstr "Невозможно скачать некоторые архивы."
+msgstr "п²п╣п╡п╬п╥п╪п╬п╤п╫п╬ я│п╨п╟я┤п╟я┌я▄ п╫п╣п╨п╬я┌п╬я─я▀п╣ п╟я─я┘п╦п╡я▀."
 
 #: cmdline/apt-get.cc:1314 cmdline/apt-get.cc:1916 cmdline/apt-get.cc:1979
 #: cmdline/apt-get.cc:2014 cmdline/apt-shell.cc:1365 cmdline/apt-shell.cc:2033
 #: cmdline/apt-shell.cc:2068
 #, c-format
 msgid "Selecting %s for '%s'\n"
-msgstr "Выбрано %s для '%s'\n"
+msgstr "п▓я▀п╠я─п╟п╫п╬ %s п╢п╩я▐ '%s'\n"
 
 #: cmdline/apt-get.cc:1320 cmdline/apt-shell.cc:1371
 #, c-format
 msgid "Package %s is a virtual package with no good providers.\n"
 msgstr ""
-"Пакет %s это виртуальный пакет, который не предоставляется ни одним "
-"пакетом.\n"
+"п÷п╟п╨п╣я┌ %s я█я┌п╬ п╡п╦я─я┌я┐п╟п╩я▄п╫я▀п╧ п©п╟п╨п╣я┌, п╨п╬я┌п╬я─я▀п╧ п╫п╣ п©я─п╣п╢п╬я│я┌п╟п╡п╩я▐п╣я┌я│я▐ п╫п╦ п╬п╢п╫п╦п╪ "
+"п©п╟п╨п╣я┌п╬п╪.\n"
 
 #: cmdline/apt-get.cc:1326 cmdline/apt-get.cc:1382 cmdline/apt-shell.cc:1377
 #: cmdline/apt-shell.cc:1433
 #, c-format
 msgid "Package %s is a virtual package provided by:\n"
-msgstr "Виртуальный пакет %s предоставляется следующими пакетами:\n"
+msgstr "п▓п╦я─я┌я┐п╟п╩я▄п╫я▀п╧ п©п╟п╨п╣я┌ %s п©я─п╣п╢п╬я│я┌п╟п╡п╩я▐п╣я┌я│я▐ я│п╩п╣п╢я┐я▌я┴п╦п╪п╦ п©п╟п╨п╣я┌п╟п╪п╦:\n"
 
 #: cmdline/apt-get.cc:1334 cmdline/apt-get.cc:1394 cmdline/apt-shell.cc:1385
 #: cmdline/apt-shell.cc:1445
 msgid " [Installed]"
-msgstr " [Установлено]"
+msgstr " [пёя│я┌п╟п╫п╬п╡п╩п╣п╫п╬]"
 
 #: cmdline/apt-get.cc:1339 cmdline/apt-get.cc:1399 cmdline/apt-shell.cc:1390
 #: cmdline/apt-shell.cc:1450
 msgid "You should explicitly select one to install."
-msgstr "Необходимо точно указать, какой из пакетов должен быть установлен."
+msgstr "п²п╣п╬п╠я┘п╬п╢п╦п╪п╬ я┌п╬я┤п╫п╬ я┐п╨п╟п╥п╟я┌я▄, п╨п╟п╨п╬п╧ п╦п╥ п©п╟п╨п╣я┌п╬п╡ п╢п╬п╩п╤п╣п╫ п╠я▀я┌я▄ я┐я│я┌п╟п╫п╬п╡п╩п╣п╫."
 
 #: cmdline/apt-get.cc:1340 cmdline/apt-shell.cc:1391
 #, c-format
 msgid "Package %s is a virtual package with multiple good providers.\n"
-msgstr "Виртуальный пакет %s предоставляется многими пакетами.\n"
+msgstr "п▓п╦я─я┌я┐п╟п╩я▄п╫я▀п╧ п©п╟п╨п╣я┌ %s п©я─п╣п╢п╬я│я┌п╟п╡п╩я▐п╣я┌я│я▐ п╪п╫п╬пЁп╦п╪п╦ п©п╟п╨п╣я┌п╟п╪п╦.\n"
 
 #: cmdline/apt-get.cc:1351 cmdline/apt-shell.cc:1402
 #, c-format
 msgid "Skipping %s, it is already installed and upgrade is not set.\n"
-msgstr "Пакет %s пропущен, так как он уже установлен, а команды обновления не было.\n"
+msgstr "п÷п╟п╨п╣я┌ %s п©я─п╬п©я┐я┴п╣п╫, я┌п╟п╨ п╨п╟п╨ п╬п╫ я┐п╤п╣ я┐я│я┌п╟п╫п╬п╡п╩п╣п╫, п╟ п╨п╬п╪п╟п╫п╢я▀ п╬п╠п╫п╬п╡п╩п╣п╫п╦я▐ п╫п╣ п╠я▀п╩п╬.\n"
 
 #: cmdline/apt-get.cc:1369 cmdline/apt-shell.cc:1420
 #, c-format
 msgid "Package %s is not installed, so not removed\n"
-msgstr "Пакет %s не установлен, и не может быть удалён.\n"
+msgstr "п÷п╟п╨п╣я┌ %s п╫п╣ я┐я│я┌п╟п╫п╬п╡п╩п╣п╫, п╦ п╫п╣ п╪п╬п╤п╣я┌ п╠я▀я┌я▄ я┐п╢п╟п╩я▒п╫.\n"
 
 #: cmdline/apt-get.cc:1405 cmdline/apt-shell.cc:1456
 #, c-format
@@ -771,111 +771,111 @@ msgid ""
 "never uploaded, has been obsoleted or is not available with the contents\n"
 "of sources.list\n"
 msgstr ""
-"Пакет %s присутствует в базе данных, но не имеет доступной версии.\n"
-"Как правило это означает, что хотя пакет упоминается в списке зависимостей,\n"
-"он отсутствует в репозитории, был вытеснен, либо в sources.list нет адреса\n"
-"репозитория, содержащего пакет.\n"
+"п÷п╟п╨п╣я┌ %s п©я─п╦я│я┐я┌я│я┌п╡я┐п╣я┌ п╡ п╠п╟п╥п╣ п╢п╟п╫п╫я▀я┘, п╫п╬ п╫п╣ п╦п╪п╣п╣я┌ п╢п╬я│я┌я┐п©п╫п╬п╧ п╡п╣я─я│п╦п╦.\n"
+"п п╟п╨ п©я─п╟п╡п╦п╩п╬ я█я┌п╬ п╬п╥п╫п╟я┤п╟п╣я┌, я┤я┌п╬ я┘п╬я┌я▐ п©п╟п╨п╣я┌ я┐п©п╬п╪п╦п╫п╟п╣я┌я│я▐ п╡ я│п©п╦я│п╨п╣ п╥п╟п╡п╦я│п╦п╪п╬я│я┌п╣п╧,\n"
+"п╬п╫ п╬я┌я│я┐я┌я│я┌п╡я┐п╣я┌ п╡ я─п╣п©п╬п╥п╦я┌п╬я─п╦п╦, п╠я▀п╩ п╡я▀я┌п╣я│п╫п╣п╫, п╩п╦п╠п╬ п╡ sources.list п╫п╣я┌ п╟п╢я─п╣я│п╟\n"
+"я─п╣п©п╬п╥п╦я┌п╬я─п╦я▐, я│п╬п╢п╣я─п╤п╟я┴п╣пЁп╬ п©п╟п╨п╣я┌.\n"
 
 #: cmdline/apt-get.cc:1427 cmdline/apt-shell.cc:1478
 msgid "However the following packages replace it:"
-msgstr "Тем не менее, следующие пакеты заменяют его:"
+msgstr "п╒п╣п╪ п╫п╣ п╪п╣п╫п╣п╣, я│п╩п╣п╢я┐я▌я┴п╦п╣ п©п╟п╨п╣я┌я▀ п╥п╟п╪п╣п╫я▐я▌я┌ п╣пЁп╬:"
 
 #: cmdline/apt-get.cc:1430 cmdline/apt-shell.cc:1481
 #, c-format
 msgid "Package %s has no installation candidate"
-msgstr "Для пакета %s не найдено подходящего кандидата для установки"
+msgstr "п■п╩я▐ п©п╟п╨п╣я┌п╟ %s п╫п╣ п╫п╟п╧п╢п╣п╫п╬ п©п╬п╢я┘п╬п╢я▐я┴п╣пЁп╬ п╨п╟п╫п╢п╦п╢п╟я┌п╟ п╢п╩я▐ я┐я│я┌п╟п╫п╬п╡п╨п╦"
 
 #: cmdline/apt-get.cc:1450 cmdline/apt-shell.cc:1507
 #, c-format
 msgid "Reinstallation of %s is not possible, it cannot be downloaded.\n"
-msgstr "Переустановить %s невозможно, потому что этот пакет нельзя скачать.\n"
+msgstr "п÷п╣я─п╣я┐я│я┌п╟п╫п╬п╡п╦я┌я▄ %s п╫п╣п╡п╬п╥п╪п╬п╤п╫п╬, п©п╬я┌п╬п╪я┐ я┤я┌п╬ я█я┌п╬я┌ п©п╟п╨п╣я┌ п╫п╣п╩я▄п╥я▐ я│п╨п╟я┤п╟я┌я▄.\n"
 
 #: cmdline/apt-get.cc:1458 cmdline/apt-shell.cc:1515
 #, c-format
 msgid "%s is already the newest version.\n"
-msgstr "Последняя версия %s уже установлена.\n"
+msgstr "п÷п╬я│п╩п╣п╢п╫я▐я▐ п╡п╣я─я│п╦я▐ %s я┐п╤п╣ я┐я│я┌п╟п╫п╬п╡п╩п╣п╫п╟.\n"
 
 #: cmdline/apt-get.cc:1504 cmdline/apt-shell.cc:1561
 #, c-format
 msgid "Release %s'%s' for '%s' was not found"
-msgstr "Описание %s'%s' для '%s' не найдено."
+msgstr "п·п©п╦я│п╟п╫п╦п╣ %s'%s' п╢п╩я▐ '%s' п╫п╣ п╫п╟п╧п╢п╣п╫п╬."
 
 #: cmdline/apt-get.cc:1506 cmdline/apt-shell.cc:1563
 #, c-format
 msgid "Version %s'%s' for '%s' was not found"
-msgstr "Версия %s'%s' для '%s' не найдена"
+msgstr "п▓п╣я─я│п╦я▐ %s'%s' п╢п╩я▐ '%s' п╫п╣ п╫п╟п╧п╢п╣п╫п╟"
 
 #: cmdline/apt-get.cc:1514 cmdline/apt-shell.cc:1571
 #, c-format
 msgid "Selected version %s (%s) for %s\n"
-msgstr "Выбрана версия %s (%s) для %s\n"
+msgstr "п▓я▀п╠я─п╟п╫п╟ п╡п╣я─я│п╦я▐ %s (%s) п╢п╩я▐ %s\n"
 
 #: cmdline/apt-get.cc:1517 cmdline/apt-shell.cc:1574
 #, c-format
 msgid "Selected version %s for %s\n"
-msgstr "Выбрана версия %s для %s\n"
+msgstr "п▓я▀п╠я─п╟п╫п╟ п╡п╣я─я│п╦я▐ %s п╢п╩я▐ %s\n"
 
 #: cmdline/apt-get.cc:1631
 msgid "The update command takes no arguments"
-msgstr "Для команды обновления не требуются аргументы"
+msgstr "п■п╩я▐ п╨п╬п╪п╟п╫п╢я▀ п╬п╠п╫п╬п╡п╩п╣п╫п╦я▐ п╫п╣ я┌я─п╣п╠я┐я▌я┌я│я▐ п╟я─пЁя┐п╪п╣п╫я┌я▀"
 
 #: cmdline/apt-get.cc:1654 cmdline/apt-shell.cc:1704
 #, c-format
 msgid "Sources list %s could not be read"
-msgstr "Невозможно прочитать список источников из %s"
+msgstr "п²п╣п╡п╬п╥п╪п╬п╤п╫п╬ п©я─п╬я┤п╦я┌п╟я┌я▄ я│п©п╦я│п╬п╨ п╦я│я┌п╬я┤п╫п╦п╨п╬п╡ п╦п╥ %s"
 
 #: cmdline/apt-get.cc:1657 cmdline/apt-shell.cc:1707
 #, c-format
 msgid "Sources list %s doesn't exist"
-msgstr "Список источников %s отсутствует."
+msgstr "п║п©п╦я│п╬п╨ п╦я│я┌п╬я┤п╫п╦п╨п╬п╡ %s п╬я┌я│я┐я┌я│я┌п╡я┐п╣я┌."
 
 #: cmdline/apt-get.cc:1670 cmdline/apt-shell.cc:1719
 msgid "Unable to lock the list directory"
-msgstr "Невозможно заблокировать каталог"
+msgstr "п²п╣п╡п╬п╥п╪п╬п╤п╫п╬ п╥п╟п╠п╩п╬п╨п╦я─п╬п╡п╟я┌я▄ п╨п╟я┌п╟п╩п╬пЁ"
 
 #: cmdline/apt-get.cc:1702 cmdline/apt-shell.cc:1749
 msgid ""
 "Release files for some repositories could not be retrieved or authenticated. "
 "Such repositories are being ignored."
 msgstr ""
-"Невозможно получить или проверить файлы описания некоторых репозиториев. Эти "
-"репозитории будут игнорироваться."
+"п²п╣п╡п╬п╥п╪п╬п╤п╫п╬ п©п╬п╩я┐я┤п╦я┌я▄ п╦п╩п╦ п©я─п╬п╡п╣я─п╦я┌я▄ я└п╟п╧п╩я▀ п╬п©п╦я│п╟п╫п╦я▐ п╫п╣п╨п╬я┌п╬я─я▀я┘ я─п╣п©п╬п╥п╦я┌п╬я─п╦п╣п╡. п╜я┌п╦ "
+"я─п╣п©п╬п╥п╦я┌п╬я─п╦п╦ п╠я┐п╢я┐я┌ п╦пЁп╫п╬я─п╦я─п╬п╡п╟я┌я▄я│я▐."
 
 #: cmdline/apt-get.cc:1761 cmdline/apt-shell.cc:1802
 msgid ""
 "Some index files failed to download, they have been ignored, or old ones "
 "used instead."
 msgstr ""
-"Некоторые индексные файлы не удалось скачать, они либо были проигнорированы, "
-"либо вместо них были использованы старые версии."
+"п²п╣п╨п╬я┌п╬я─я▀п╣ п╦п╫п╢п╣п╨я│п╫я▀п╣ я└п╟п╧п╩я▀ п╫п╣ я┐п╢п╟п╩п╬я│я▄ я│п╨п╟я┤п╟я┌я▄, п╬п╫п╦ п╩п╦п╠п╬ п╠я▀п╩п╦ п©я─п╬п╦пЁп╫п╬я─п╦я─п╬п╡п╟п╫я▀, "
+"п╩п╦п╠п╬ п╡п╪п╣я│я┌п╬ п╫п╦я┘ п╠я▀п╩п╦ п╦я│п©п╬п╩я▄п╥п╬п╡п╟п╫я▀ я│я┌п╟я─я▀п╣ п╡п╣я─я│п╦п╦."
 
 #: cmdline/apt-get.cc:1780 cmdline/apt-shell.cc:1831
 msgid "Internal Error, AllUpgrade broke stuff"
-msgstr "Внутренняя ошибка, результат работы AllUpgrade все испортил"
+msgstr "п▓п╫я┐я┌я─п╣п╫п╫я▐я▐ п╬я┬п╦п╠п╨п╟, я─п╣п╥я┐п╩я▄я┌п╟я┌ я─п╟п╠п╬я┌я▀ AllUpgrade п╡я│п╣ п╦я│п©п╬я─я┌п╦п╩"
 
 #: cmdline/apt-get.cc:1877 cmdline/apt-get.cc:1894 cmdline/apt-shell.cc:1933
 #: cmdline/apt-shell.cc:1950
 #, c-format
 msgid "Couldn't parse name '%s'"
-msgstr "Невозможно разобрать имя '%s'"
+msgstr "п²п╣п╡п╬п╥п╪п╬п╤п╫п╬ я─п╟п╥п╬п╠я─п╟я┌я▄ п╦п╪я▐ '%s'"
 
 #: cmdline/apt-get.cc:1989 cmdline/apt-get.cc:2028 cmdline/apt-shell.cc:2043
 #: cmdline/apt-shell.cc:2083
 #, c-format
 msgid "Couldn't find package %s"
-msgstr "Невозможно найти пакет %s"
+msgstr "п²п╣п╡п╬п╥п╪п╬п╤п╫п╬ п╫п╟п╧я┌п╦ п©п╟п╨п╣я┌ %s"
 
 #: cmdline/apt-get.cc:2058
 msgid "You might want to run `apt-get -f install' to correct these:"
-msgstr "Возможно, Вам потребуется запустить `apt-get -f install' для исправления:"
+msgstr "п▓п╬п╥п╪п╬п╤п╫п╬, п▓п╟п╪ п©п╬я┌я─п╣п╠я┐п╣я┌я│я▐ п╥п╟п©я┐я│я┌п╦я┌я▄ `apt-get -f install' п╢п╩я▐ п╦я│п©я─п╟п╡п╩п╣п╫п╦я▐:"
 
 #: cmdline/apt-get.cc:2061
 msgid ""
 "Unmet dependencies. Try 'apt-get -f install' with no packages (or specify a "
 "solution)."
 msgstr ""
-"Некоторые зависимости не были найдены. Попробуйте `apt-get -f install' без "
-"указания пакетов или укажите пакет-решение."
+"п²п╣п╨п╬я┌п╬я─я▀п╣ п╥п╟п╡п╦я│п╦п╪п╬я│я┌п╦ п╫п╣ п╠я▀п╩п╦ п╫п╟п╧п╢п╣п╫я▀. п÷п╬п©я─п╬п╠я┐п╧я┌п╣ `apt-get -f install' п╠п╣п╥ "
+"я┐п╨п╟п╥п╟п╫п╦я▐ п©п╟п╨п╣я┌п╬п╡ п╦п╩п╦ я┐п╨п╟п╤п╦я┌п╣ п©п╟п╨п╣я┌-я─п╣я┬п╣п╫п╦п╣."
 
 #: cmdline/apt-get.cc:2083 cmdline/apt-shell.cc:2146
 msgid ""
@@ -884,10 +884,10 @@ msgid ""
 "distribution that some required packages have not yet been created\n"
 "or been moved out of Incoming."
 msgstr ""
-"Некоторые пакеты установить невозможно. Это может означать, что Вы\n"
-"потребовали невозможного, либо пользуетесь нестабильным репозиторием.\n"
-"Часть необходимых пакетов либо ещё не создана, либо была удалена\n"
-"из каталога 'Входящие'."
+"п²п╣п╨п╬я┌п╬я─я▀п╣ п©п╟п╨п╣я┌я▀ я┐я│я┌п╟п╫п╬п╡п╦я┌я▄ п╫п╣п╡п╬п╥п╪п╬п╤п╫п╬. п╜я┌п╬ п╪п╬п╤п╣я┌ п╬п╥п╫п╟я┤п╟я┌я▄, я┤я┌п╬ п▓я▀\n"
+"п©п╬я┌я─п╣п╠п╬п╡п╟п╩п╦ п╫п╣п╡п╬п╥п╪п╬п╤п╫п╬пЁп╬, п╩п╦п╠п╬ п©п╬п╩я▄п╥я┐п╣я┌п╣я│я▄ п╫п╣я│я┌п╟п╠п╦п╩я▄п╫я▀п╪ я─п╣п©п╬п╥п╦я┌п╬я─п╦п╣п╪.\n"
+"п╖п╟я│я┌я▄ п╫п╣п╬п╠я┘п╬п╢п╦п╪я▀я┘ п©п╟п╨п╣я┌п╬п╡ п╩п╦п╠п╬ п╣я┴я▒ п╫п╣ я│п╬п╥п╢п╟п╫п╟, п╩п╦п╠п╬ п╠я▀п╩п╟ я┐п╢п╟п╩п╣п╫п╟\n"
+"п╦п╥ п╨п╟я┌п╟п╩п╬пЁп╟ 'п▓я┘п╬п╢я▐я┴п╦п╣'."
 
 #: cmdline/apt-get.cc:2091 cmdline/apt-shell.cc:2154
 msgid ""
@@ -895,104 +895,104 @@ msgid ""
 "the package is simply not installable and a bug report against\n"
 "that package should be filed."
 msgstr ""
-"Так как для выполнения Вашего запроса достаточно одной операции, то\n"
-"скорее всего этот пакет просто невозможно установить. Сообщите, пожалуйста,\n"
-"об этом как о найденной ошибке в пакете."
+"п╒п╟п╨ п╨п╟п╨ п╢п╩я▐ п╡я▀п©п╬п╩п╫п╣п╫п╦я▐ п▓п╟я┬п╣пЁп╬ п╥п╟п©я─п╬я│п╟ п╢п╬я│я┌п╟я┌п╬я┤п╫п╬ п╬п╢п╫п╬п╧ п╬п©п╣я─п╟я├п╦п╦, я┌п╬\n"
+"я│п╨п╬я─п╣п╣ п╡я│п╣пЁп╬ я█я┌п╬я┌ п©п╟п╨п╣я┌ п©я─п╬я│я┌п╬ п╫п╣п╡п╬п╥п╪п╬п╤п╫п╬ я┐я│я┌п╟п╫п╬п╡п╦я┌я▄. п║п╬п╬п╠я┴п╦я┌п╣, п©п╬п╤п╟п╩я┐п╧я│я┌п╟,\n"
+"п╬п╠ я█я┌п╬п╪ п╨п╟п╨ п╬ п╫п╟п╧п╢п╣п╫п╫п╬п╧ п╬я┬п╦п╠п╨п╣ п╡ п©п╟п╨п╣я┌п╣."
 
 #: cmdline/apt-get.cc:2096 cmdline/apt-shell.cc:2159
 msgid "The following information may help to resolve the situation:"
-msgstr "Эти сведения могут помочь найти выход из ситуации:"
+msgstr "п╜я┌п╦ я│п╡п╣п╢п╣п╫п╦я▐ п╪п╬пЁя┐я┌ п©п╬п╪п╬я┤я▄ п╫п╟п╧я┌п╦ п╡я▀я┘п╬п╢ п╦п╥ я│п╦я┌я┐п╟я├п╦п╦:"
 
 #: cmdline/apt-get.cc:2099 cmdline/apt-shell.cc:2163
 msgid "Broken packages"
-msgstr "Извините, `битые' пакеты"
+msgstr "п≤п╥п╡п╦п╫п╦я┌п╣, `п╠п╦я┌я▀п╣' п©п╟п╨п╣я┌я▀"
 
 #: cmdline/apt-get.cc:2125
 msgid "The following extra packages will be installed:"
-msgstr "Следующие дополнительные пакеты будут установлены:"
+msgstr "п║п╩п╣п╢я┐я▌я┴п╦п╣ п╢п╬п©п╬п╩п╫п╦я┌п╣п╩я▄п╫я▀п╣ п©п╟п╨п╣я┌я▀ п╠я┐п╢я┐я┌ я┐я│я┌п╟п╫п╬п╡п╩п╣п╫я▀:"
 
 #: cmdline/apt-get.cc:2205
 msgid "Suggested packages:"
-msgstr "Предпочитаемые пакеты:"
+msgstr "п÷я─п╣п╢п©п╬я┤п╦я┌п╟п╣п╪я▀п╣ п©п╟п╨п╣я┌я▀:"
 
 #: cmdline/apt-get.cc:2206
 msgid "Recommended packages:"
-msgstr "Рекомендуемые пакеты"
+msgstr "п═п╣п╨п╬п╪п╣п╫п╢я┐п╣п╪я▀п╣ п©п╟п╨п╣я┌я▀"
 
 #: cmdline/apt-get.cc:2230 cmdline/apt-shell.cc:2190
 msgid "Calculating Upgrade... "
-msgstr "Подсчет обновлений... "
+msgstr "п÷п╬п╢я│я┤п╣я┌ п╬п╠п╫п╬п╡п╩п╣п╫п╦п╧... "
 
 #: cmdline/apt-get.cc:2233 cmdline/apt-shell.cc:2193 methods/connect.cc:102
 #: methods/ftp.cc:706
 msgid "Failed"
-msgstr "Ошибка"
+msgstr "п·я┬п╦п╠п╨п╟"
 
 #: cmdline/apt-get.cc:2249 cmdline/apt-shell.cc:2205
 msgid "Done"
-msgstr "Завершено"
+msgstr "п≈п╟п╡п╣я─я┬п╣п╫п╬"
 
 #: cmdline/apt-get.cc:2426
 msgid "Must specify at least one package to fetch source for"
-msgstr "Для скачивания исходника необходимо указать хотя бы один пакет."
+msgstr "п■п╩я▐ я│п╨п╟я┤п╦п╡п╟п╫п╦я▐ п╦я│я┘п╬п╢п╫п╦п╨п╟ п╫п╣п╬п╠я┘п╬п╢п╦п╪п╬ я┐п╨п╟п╥п╟я┌я▄ я┘п╬я┌я▐ п╠я▀ п╬п╢п╦п╫ п©п╟п╨п╣я┌."
 
 #: cmdline/apt-get.cc:2453 cmdline/apt-get.cc:2694 cmdline/apt-shell.cc:2432
 #, c-format
 msgid "Unable to find a source package for %s"
-msgstr "Невозможно найти исходный пакет для %s"
+msgstr "п²п╣п╡п╬п╥п╪п╬п╤п╫п╬ п╫п╟п╧я┌п╦ п╦я│я┘п╬п╢п╫я▀п╧ п©п╟п╨п╣я┌ п╢п╩я▐ %s"
 
 #: cmdline/apt-get.cc:2505
 #, c-format
 msgid "You don't have enough free space in %s"
-msgstr "Недостаточно свободного места в %s"
+msgstr "п²п╣п╢п╬я│я┌п╟я┌п╬я┤п╫п╬ я│п╡п╬п╠п╬п╢п╫п╬пЁп╬ п╪п╣я│я┌п╟ п╡ %s"
 
 #: cmdline/apt-get.cc:2510
 #, c-format
 msgid "Need to get %sB/%sB of source archives.\n"
-msgstr "Необходимо получить %sB/%sB исходных архивов.\n"
+msgstr "п²п╣п╬п╠я┘п╬п╢п╦п╪п╬ п©п╬п╩я┐я┤п╦я┌я▄ %sB/%sB п╦я│я┘п╬п╢п╫я▀я┘ п╟я─я┘п╦п╡п╬п╡.\n"
 
 #: cmdline/apt-get.cc:2513
 #, c-format
 msgid "Need to get %sB of source archives.\n"
-msgstr "Необходимо получить %sB исходных архивов.\n"
+msgstr "п²п╣п╬п╠я┘п╬п╢п╦п╪п╬ п©п╬п╩я┐я┤п╦я┌я▄ %sB п╦я│я┘п╬п╢п╫я▀я┘ п╟я─я┘п╦п╡п╬п╡.\n"
 
 #: cmdline/apt-get.cc:2519
 #, c-format
 msgid "Fetch Source %s\n"
-msgstr "Получение исходника пакета %s\n"
+msgstr "п÷п╬п╩я┐я┤п╣п╫п╦п╣ п╦я│я┘п╬п╢п╫п╦п╨п╟ п©п╟п╨п╣я┌п╟ %s\n"
 
 #: cmdline/apt-get.cc:2584 cmdline/apt-get.cc:2635
 #, c-format
 msgid "Build command '%s' failed.\n"
-msgstr "Команда сборки пакета '%s' вызвала ошибку.\n"
+msgstr "п п╬п╪п╟п╫п╢п╟ я│п╠п╬я─п╨п╦ п©п╟п╨п╣я┌п╟ '%s' п╡я▀п╥п╡п╟п╩п╟ п╬я┬п╦п╠п╨я┐.\n"
 
 #: cmdline/apt-get.cc:2596 cmdline/apt-get.cc:2618
 #, c-format
 msgid "Unpack command '%s' failed.\n"
-msgstr "Команда распаковки '%s' вызвала ошибку.\n"
+msgstr "п п╬п╪п╟п╫п╢п╟ я─п╟я│п©п╟п╨п╬п╡п╨п╦ '%s' п╡я▀п╥п╡п╟п╩п╟ п╬я┬п╦п╠п╨я┐.\n"
 
 #: cmdline/apt-get.cc:2606
 #, c-format
 msgid "Skipping unpack of already unpacked source in %s\n"
-msgstr "Пропуск распаковки уже распакованных исходников пакета в %s\n"
+msgstr "п÷я─п╬п©я┐я│п╨ я─п╟я│п©п╟п╨п╬п╡п╨п╦ я┐п╤п╣ я─п╟я│п©п╟п╨п╬п╡п╟п╫п╫я▀я┘ п╦я│я┘п╬п╢п╫п╦п╨п╬п╡ п©п╟п╨п╣я┌п╟ п╡ %s\n"
 
 #: cmdline/apt-get.cc:2655
 msgid "Child process failed"
-msgstr "Вспомогательный процесс завершился с ошибкой"
+msgstr "п▓я│п©п╬п╪п╬пЁп╟я┌п╣п╩я▄п╫я▀п╧ п©я─п╬я├п╣я│я│ п╥п╟п╡п╣я─я┬п╦п╩я│я▐ я│ п╬я┬п╦п╠п╨п╬п╧"
 
 #: cmdline/apt-get.cc:2671 cmdline/apt-shell.cc:2409
 msgid "Must specify at least one package to check builddeps for"
-msgstr "Укажите хотя бы один пакет для проверки его сборочных зависимостей."
+msgstr "пёп╨п╟п╤п╦я┌п╣ я┘п╬я┌я▐ п╠я▀ п╬п╢п╦п╫ п©п╟п╨п╣я┌ п╢п╩я▐ п©я─п╬п╡п╣я─п╨п╦ п╣пЁп╬ я│п╠п╬я─п╬я┤п╫я▀я┘ п╥п╟п╡п╦я│п╦п╪п╬я│я┌п╣п╧."
 
 #: cmdline/apt-get.cc:2699 cmdline/apt-shell.cc:2437
 #, c-format
 msgid "Unable to get build-dependency information for %s"
-msgstr "Невозможно определить сборочные зависимости для %s."
+msgstr "п²п╣п╡п╬п╥п╪п╬п╤п╫п╬ п╬п©я─п╣п╢п╣п╩п╦я┌я▄ я│п╠п╬я─п╬я┤п╫я▀п╣ п╥п╟п╡п╦я│п╦п╪п╬я│я┌п╦ п╢п╩я▐ %s."
 
 #: cmdline/apt-get.cc:2719 cmdline/apt-shell.cc:2457
 #, c-format
 msgid "%s has no build depends.\n"
-msgstr "%s не имеет сборочных зависимостей.\n"
+msgstr "%s п╫п╣ п╦п╪п╣п╣я┌ я│п╠п╬я─п╬я┤п╫я▀я┘ п╥п╟п╡п╦я│п╦п╪п╬я│я┌п╣п╧.\n"
 
 #: cmdline/apt-get.cc:2790 cmdline/apt-shell.cc:2528
 #, c-format
@@ -1000,8 +1000,8 @@ msgid ""
 "%s dependency for %s cannot be satisfied because the package %s cannot be "
 "found"
 msgstr ""
-"зависимость %s для %s не может быть удовлетворена, потому что отсутствует "
-"пакет %s."
+"п╥п╟п╡п╦я│п╦п╪п╬я│я┌я▄ %s п╢п╩я▐ %s п╫п╣ п╪п╬п╤п╣я┌ п╠я▀я┌я▄ я┐п╢п╬п╡п╩п╣я┌п╡п╬я─п╣п╫п╟, п©п╬я┌п╬п╪я┐ я┤я┌п╬ п╬я┌я│я┐я┌я│я┌п╡я┐п╣я┌ "
+"п©п╟п╨п╣я┌ %s."
 
 #: cmdline/apt-get.cc:2842 cmdline/apt-shell.cc:2580
 #, c-format
@@ -1009,20 +1009,20 @@ msgid ""
 "%s dependency for %s cannot be satisfied because no available versions of "
 "package %s can satisfy version requirements"
 msgstr ""
-"зависимость %s для %s не может быть удовлетворена, потому что ни одна из "
-"доступных версий пакета %s, не может её удовлетворить."
+"п╥п╟п╡п╦я│п╦п╪п╬я│я┌я▄ %s п╢п╩я▐ %s п╫п╣ п╪п╬п╤п╣я┌ п╠я▀я┌я▄ я┐п╢п╬п╡п╩п╣я┌п╡п╬я─п╣п╫п╟, п©п╬я┌п╬п╪я┐ я┤я┌п╬ п╫п╦ п╬п╢п╫п╟ п╦п╥ "
+"п╢п╬я│я┌я┐п©п╫я▀я┘ п╡п╣я─я│п╦п╧ п©п╟п╨п╣я┌п╟ %s, п╫п╣ п╪п╬п╤п╣я┌ п╣я▒ я┐п╢п╬п╡п╩п╣я┌п╡п╬я─п╦я┌я▄."
 
 #: cmdline/apt-get.cc:2877 cmdline/apt-shell.cc:2614
 #, c-format
 msgid "Failed to satisfy %s dependency for %s: Installed package %s is too new"
 msgstr ""
-"Невозможно удовлетворить %s зависимость для %s: Установленный пакет %s "
-"слишком нов."
+"п²п╣п╡п╬п╥п╪п╬п╤п╫п╬ я┐п╢п╬п╡п╩п╣я┌п╡п╬я─п╦я┌я▄ %s п╥п╟п╡п╦я│п╦п╪п╬я│я┌я▄ п╢п╩я▐ %s: пёя│я┌п╟п╫п╬п╡п╩п╣п╫п╫я▀п╧ п©п╟п╨п╣я┌ %s "
+"я│п╩п╦я┬п╨п╬п╪ п╫п╬п╡."
 
 #: cmdline/apt-get.cc:2902 cmdline/apt-shell.cc:2639
 #, c-format
 msgid "Failed to satisfy %s dependency for %s: %s"
-msgstr "Невозможно удовлетворить %s зависимость для %s: %s"
+msgstr "п²п╣п╡п╬п╥п╪п╬п╤п╫п╬ я┐п╢п╬п╡п╩п╣я┌п╡п╬я─п╦я┌я▄ %s п╥п╟п╡п╦я│п╦п╪п╬я│я┌я▄ п╢п╩я▐ %s: %s"
 
 #: cmdline/apt-get.cc:2916 cmdline/apt-shell.cc:2653
 #, c-format
@@ -1031,16 +1031,16 @@ msgid ""
 "for %s.\n"
 "You might want to run `apt-get -f install' to correct these."
 msgstr ""
-"Обнаружены повреждённые пакеты при обработке сборочных зависимостей для %s.\n"
-"Возможно, потребуется запустить `apt-get -f install' для исправления."
+"п·п╠п╫п╟я─я┐п╤п╣п╫я▀ п©п╬п╡я─п╣п╤п╢я▒п╫п╫я▀п╣ п©п╟п╨п╣я┌я▀ п©я─п╦ п╬п╠я─п╟п╠п╬я┌п╨п╣ я│п╠п╬я─п╬я┤п╫я▀я┘ п╥п╟п╡п╦я│п╦п╪п╬я│я┌п╣п╧ п╢п╩я▐ %s.\n"
+"п▓п╬п╥п╪п╬п╤п╫п╬, п©п╬я┌я─п╣п╠я┐п╣я┌я│я▐ п╥п╟п©я┐я│я┌п╦я┌я▄ `apt-get -f install' п╢п╩я▐ п╦я│п©я─п╟п╡п╩п╣п╫п╦я▐."
 
 #: cmdline/apt-get.cc:2921
 msgid "Failed to process build dependencies"
-msgstr "Ошибка обработки сборочных зависимостей"
+msgstr "п·я┬п╦п╠п╨п╟ п╬п╠я─п╟п╠п╬я┌п╨п╦ я│п╠п╬я─п╬я┤п╫я▀я┘ п╥п╟п╡п╦я│п╦п╪п╬я│я┌п╣п╧"
 
 #: cmdline/apt-get.cc:2988 cmdline/apt-shell.cc:3699
 msgid "Supported Modules:"
-msgstr "Поддерживаемые модули:"
+msgstr "п÷п╬п╢п╢п╣я─п╤п╦п╡п╟п╣п╪я▀п╣ п╪п╬п╢я┐п╩п╦:"
 
 #: cmdline/apt-get.cc:3029
 msgid ""
@@ -1064,25 +1064,25 @@ msgid ""
 "   autoclean - Erase old downloaded archive files\n"
 "   check - Verify that there are no broken dependencies\n"
 msgstr ""
-"Использование: apt-get [параметры] команда\n"
-"               apt-get [параметры] install|remove пакет1 [пакет2 ...]\n"
-"               apt-get [параметры] source пакет1 [пакет2 ...]\n"
+"п≤я│п©п╬п╩я▄п╥п╬п╡п╟п╫п╦п╣: apt-get [п©п╟я─п╟п╪п╣я┌я─я▀] п╨п╬п╪п╟п╫п╢п╟\n"
+"               apt-get [п©п╟я─п╟п╪п╣я┌я─я▀] install|remove п©п╟п╨п╣я┌1 [п©п╟п╨п╣я┌2 ...]\n"
+"               apt-get [п©п╟я─п╟п╪п╣я┌я─я▀] source п©п╟п╨п╣я┌1 [п©п╟п╨п╣я┌2 ...]\n"
 "\n"
-"apt-get предоставляет простой командный интерфейс для получения и\n"
-"установки пакетов. Чаще других используются команды update (обновить)\n"
-"и install (установить).\n"
+"apt-get п©я─п╣п╢п╬я│я┌п╟п╡п╩я▐п╣я┌ п©я─п╬я│я┌п╬п╧ п╨п╬п╪п╟п╫п╢п╫я▀п╧ п╦п╫я┌п╣я─я└п╣п╧я│ п╢п╩я▐ п©п╬п╩я┐я┤п╣п╫п╦я▐ п╦\n"
+"я┐я│я┌п╟п╫п╬п╡п╨п╦ п©п╟п╨п╣я┌п╬п╡. п╖п╟я┴п╣ п╢я─я┐пЁп╦я┘ п╦я│п©п╬п╩я▄п╥я┐я▌я┌я│я▐ п╨п╬п╪п╟п╫п╢я▀ update (п╬п╠п╫п╬п╡п╦я┌я▄)\n"
+"п╦ install (я┐я│я┌п╟п╫п╬п╡п╦я┌я▄).\n"
 "\n"
-"Команды:\n"
-"   update - Получить обновлённые списки пакетов\n"
-"   upgrade - Произвести обновление\n"
-"   install - Установить новые пакеты\n"
-"   remove - Удалить пакеты\n"
-"   source - Скачать архивы исходников\n"
-"   build-dep - Установить всё необходимое для сборки исходных пакетов\n"
-"   dist-upgrade - Обновление системы в целом, см. apt-get(8)\n"
-"   clean - Удалить скачанные ранее архивные файлы\n"
-"   autoclean - Удалить давно скачанные архивные файлы\n"
-"   check - Удостовериться в отсутствии неудовлетворённых зависимостей\n"
+"п п╬п╪п╟п╫п╢я▀:\n"
+"   update - п÷п╬п╩я┐я┤п╦я┌я▄ п╬п╠п╫п╬п╡п╩я▒п╫п╫я▀п╣ я│п©п╦я│п╨п╦ п©п╟п╨п╣я┌п╬п╡\n"
+"   upgrade - п÷я─п╬п╦п╥п╡п╣я│я┌п╦ п╬п╠п╫п╬п╡п╩п╣п╫п╦п╣\n"
+"   install - пёя│я┌п╟п╫п╬п╡п╦я┌я▄ п╫п╬п╡я▀п╣ п©п╟п╨п╣я┌я▀\n"
+"   remove - пёп╢п╟п╩п╦я┌я▄ п©п╟п╨п╣я┌я▀\n"
+"   source - п║п╨п╟я┤п╟я┌я▄ п╟я─я┘п╦п╡я▀ п╦я│я┘п╬п╢п╫п╦п╨п╬п╡\n"
+"   build-dep - пёя│я┌п╟п╫п╬п╡п╦я┌я▄ п╡я│я▒ п╫п╣п╬п╠я┘п╬п╢п╦п╪п╬п╣ п╢п╩я▐ я│п╠п╬я─п╨п╦ п╦я│я┘п╬п╢п╫я▀я┘ п©п╟п╨п╣я┌п╬п╡\n"
+"   dist-upgrade - п·п╠п╫п╬п╡п╩п╣п╫п╦п╣ я│п╦я│я┌п╣п╪я▀ п╡ я├п╣п╩п╬п╪, я│п╪. apt-get(8)\n"
+"   clean - пёп╢п╟п╩п╦я┌я▄ я│п╨п╟я┤п╟п╫п╫я▀п╣ я─п╟п╫п╣п╣ п╟я─я┘п╦п╡п╫я▀п╣ я└п╟п╧п╩я▀\n"
+"   autoclean - пёп╢п╟п╩п╦я┌я▄ п╢п╟п╡п╫п╬ я│п╨п╟я┤п╟п╫п╫я▀п╣ п╟я─я┘п╦п╡п╫я▀п╣ я└п╟п╧п╩я▀\n"
+"   check - пёп╢п╬я│я┌п╬п╡п╣я─п╦я┌я▄я│я▐ п╡ п╬я┌я│я┐я┌я│я┌п╡п╦п╦ п╫п╣я┐п╢п╬п╡п╩п╣я┌п╡п╬я─я▒п╫п╫я▀я┘ п╥п╟п╡п╦я│п╦п╪п╬я│я┌п╣п╧\n"
 
 #: cmdline/apt-get.cc:3057
 msgid ""
@@ -1107,107 +1107,107 @@ msgid ""
 "                       This APT has Super Cow Powers.\n"
 msgstr ""
 "\n"
-"Параметры:\n"
-"  -h  Краткая справка\n"
-"  -q  Скрыть индикатор процесса\n"
-"  -qq Не показывать ничего кроме сообщений об ошибках\n"
-"  -d  Получить пакеты и выйти БЕЗ их установки или распаковки\n"
-"  -s  Симулировать упорядочение вместо реального исполнения\n"
-"  -y  Автоматически отвечать 'ДА' на все вопросы\n"
-"  -f  Пытаться исправить положение если найдены неудовлетворённые "
-"зависимости\n"
-"  -m  Пытаться продолжить если часть архивов недоступна\n"
-"  -u  Показать список обновляемых пакетов\n"
-"  -b  Собрать пакет после получения его исходника\n"
-"  -D  При удалении пакета стремиться удалить компоненты, от которых он "
-"зависит\n"
-"  -V  Подробно показывать номера версий\n"
-"  -c=? Использовать указанный файл конфигурации\n"
-"  -o=? Изменить любой из параметров настройки (например: -o dir::cache=/"
+"п÷п╟я─п╟п╪п╣я┌я─я▀:\n"
+"  -h  п я─п╟я┌п╨п╟я▐ я│п©я─п╟п╡п╨п╟\n"
+"  -q  п║п╨я─я▀я┌я▄ п╦п╫п╢п╦п╨п╟я┌п╬я─ п©я─п╬я├п╣я│я│п╟\n"
+"  -qq п²п╣ п©п╬п╨п╟п╥я▀п╡п╟я┌я▄ п╫п╦я┤п╣пЁп╬ п╨я─п╬п╪п╣ я│п╬п╬п╠я┴п╣п╫п╦п╧ п╬п╠ п╬я┬п╦п╠п╨п╟я┘\n"
+"  -d  п÷п╬п╩я┐я┤п╦я┌я▄ п©п╟п╨п╣я┌я▀ п╦ п╡я▀п╧я┌п╦ п▒п∙п≈ п╦я┘ я┐я│я┌п╟п╫п╬п╡п╨п╦ п╦п╩п╦ я─п╟я│п©п╟п╨п╬п╡п╨п╦\n"
+"  -s  п║п╦п╪я┐п╩п╦я─п╬п╡п╟я┌я▄ я┐п©п╬я─я▐п╢п╬я┤п╣п╫п╦п╣ п╡п╪п╣я│я┌п╬ я─п╣п╟п╩я▄п╫п╬пЁп╬ п╦я│п©п╬п╩п╫п╣п╫п╦я▐\n"
+"  -y  п░п╡я┌п╬п╪п╟я┌п╦я┤п╣я│п╨п╦ п╬я┌п╡п╣я┤п╟я┌я▄ 'п■п░' п╫п╟ п╡я│п╣ п╡п╬п©я─п╬я│я▀\n"
+"  -f  п÷я▀я┌п╟я┌я▄я│я▐ п╦я│п©я─п╟п╡п╦я┌я▄ п©п╬п╩п╬п╤п╣п╫п╦п╣ п╣я│п╩п╦ п╫п╟п╧п╢п╣п╫я▀ п╫п╣я┐п╢п╬п╡п╩п╣я┌п╡п╬я─я▒п╫п╫я▀п╣ "
+"п╥п╟п╡п╦я│п╦п╪п╬я│я┌п╦\n"
+"  -m  п÷я▀я┌п╟я┌я▄я│я▐ п©я─п╬п╢п╬п╩п╤п╦я┌я▄ п╣я│п╩п╦ я┤п╟я│я┌я▄ п╟я─я┘п╦п╡п╬п╡ п╫п╣п╢п╬я│я┌я┐п©п╫п╟\n"
+"  -u  п÷п╬п╨п╟п╥п╟я┌я▄ я│п©п╦я│п╬п╨ п╬п╠п╫п╬п╡п╩я▐п╣п╪я▀я┘ п©п╟п╨п╣я┌п╬п╡\n"
+"  -b  п║п╬п╠я─п╟я┌я▄ п©п╟п╨п╣я┌ п©п╬я│п╩п╣ п©п╬п╩я┐я┤п╣п╫п╦я▐ п╣пЁп╬ п╦я│я┘п╬п╢п╫п╦п╨п╟\n"
+"  -D  п÷я─п╦ я┐п╢п╟п╩п╣п╫п╦п╦ п©п╟п╨п╣я┌п╟ я│я┌я─п╣п╪п╦я┌я▄я│я▐ я┐п╢п╟п╩п╦я┌я▄ п╨п╬п╪п©п╬п╫п╣п╫я┌я▀, п╬я┌ п╨п╬я┌п╬я─я▀я┘ п╬п╫ "
+"п╥п╟п╡п╦я│п╦я┌\n"
+"  -V  п÷п╬п╢я─п╬п╠п╫п╬ п©п╬п╨п╟п╥я▀п╡п╟я┌я▄ п╫п╬п╪п╣я─п╟ п╡п╣я─я│п╦п╧\n"
+"  -c=? п≤я│п©п╬п╩я▄п╥п╬п╡п╟я┌я▄ я┐п╨п╟п╥п╟п╫п╫я▀п╧ я└п╟п╧п╩ п╨п╬п╫я└п╦пЁя┐я─п╟я├п╦п╦\n"
+"  -o=? п≤п╥п╪п╣п╫п╦я┌я▄ п╩я▌п╠п╬п╧ п╦п╥ п©п╟я─п╟п╪п╣я┌я─п╬п╡ п╫п╟я│я┌я─п╬п╧п╨п╦ (п╫п╟п©я─п╦п╪п╣я─: -o dir::cache=/"
 "tmp)\n"
-"Более полное описание доступно на страницах руководства man:\n"
-"apt-get(8), sources.list(5) и apt.conf(5).\n"
+"п▒п╬п╩п╣п╣ п©п╬п╩п╫п╬п╣ п╬п©п╦я│п╟п╫п╦п╣ п╢п╬я│я┌я┐п©п╫п╬ п╫п╟ я│я┌я─п╟п╫п╦я├п╟я┘ я─я┐п╨п╬п╡п╬п╢я│я┌п╡п╟ man:\n"
+"apt-get(8), sources.list(5) п╦ apt.conf(5).\n"
 "\n"
 
 #: cmdline/apt-shell.cc:151 cmdline/apt-shell.cc:4421
 msgid "There are broken packages. "
-msgstr "Присутствуют пакеты с нарушенными зависимостями."
+msgstr "п÷я─п╦я│я┐я┌я│я┌п╡я┐я▌я┌ п©п╟п╨п╣я┌я▀ я│ п╫п╟я─я┐я┬п╣п╫п╫я▀п╪п╦ п╥п╟п╡п╦я│п╦п╪п╬я│я┌я▐п╪п╦."
 
 #: cmdline/apt-shell.cc:152 cmdline/apt-shell.cc:2116
 #: cmdline/apt-shell.cc:4422
 msgid "Run `check' to see them."
-msgstr "Запустите команду `check', чтобы увидеть их."
+msgstr "п≈п╟п©я┐я│я┌п╦я┌п╣ п╨п╬п╪п╟п╫п╢я┐ `check', я┤я┌п╬п╠я▀ я┐п╡п╦п╢п╣я┌я▄ п╦я┘."
 
 #: cmdline/apt-shell.cc:153 cmdline/apt-shell.cc:2117
 #: cmdline/apt-shell.cc:4423
 msgid "You can try to fix them automatically with `install -f'."
 msgstr ""
-"Вы можете попробовать исправить их автоматически, используя команду `install "
+"п▓я▀ п╪п╬п╤п╣я┌п╣ п©п╬п©я─п╬п╠п╬п╡п╟я┌я▄ п╦я│п©я─п╟п╡п╦я┌я▄ п╦я┘ п╟п╡я┌п╬п╪п╟я┌п╦я┤п╣я│п╨п╦, п╦я│п©п╬п╩я▄п╥я┐я▐ п╨п╬п╪п╟п╫п╢я┐ `install "
 "-f'."
 
 #: cmdline/apt-shell.cc:163
 msgid "Excessive arguments"
-msgstr "Заданы лишние аргументы"
+msgstr "п≈п╟п╢п╟п╫я▀ п╩п╦я┬п╫п╦п╣ п╟я─пЁя┐п╪п╣п╫я┌я▀"
 
 #: cmdline/apt-shell.cc:786
 #, c-format
 msgid "%lu removed and %lu kept.\n"
-msgstr "%lu пакетов будет удалено и %lu будет сохранено.\n"
+msgstr "%lu п©п╟п╨п╣я┌п╬п╡ п╠я┐п╢п╣я┌ я┐п╢п╟п╩п╣п╫п╬ п╦ %lu п╠я┐п╢п╣я┌ я│п╬я┘я─п╟п╫п╣п╫п╬.\n"
 
 #: cmdline/apt-shell.cc:815
 #, c-format
 msgid "Will need more %sB of archives.\n"
-msgstr "Понадобится получить более %sB архивов.\n"
+msgstr "п÷п╬п╫п╟п╢п╬п╠п╦я┌я│я▐ п©п╬п╩я┐я┤п╦я┌я▄ п╠п╬п╩п╣п╣ %sB п╟я─я┘п╦п╡п╬п╡.\n"
 
 #: cmdline/apt-shell.cc:818
 #, c-format
 msgid "Will need less %sB of archives.\n"
-msgstr "Понадобится получить менее %sB архивов.\n"
+msgstr "п÷п╬п╫п╟п╢п╬п╠п╦я┌я│я▐ п©п╬п╩я┐я┤п╦я┌я▄ п╪п╣п╫п╣п╣ %sB п╟я─я┘п╦п╡п╬п╡.\n"
 
 #: cmdline/apt-shell.cc:824
 #, c-format
 msgid "After unpacking will need more %sB of disk space.\n"
-msgstr "После распаковки понадобится более %sB дискового пространства.\n"
+msgstr "п÷п╬я│п╩п╣ я─п╟я│п©п╟п╨п╬п╡п╨п╦ п©п╬п╫п╟п╢п╬п╠п╦я┌я│я▐ п╠п╬п╩п╣п╣ %sB п╢п╦я│п╨п╬п╡п╬пЁп╬ п©я─п╬я│я┌я─п╟п╫я│я┌п╡п╟.\n"
 
 #: cmdline/apt-shell.cc:827
 #, c-format
 msgid "After unpacking will need less %sB of disk space.\n"
-msgstr "После распаковки понадобится менее %sB дискового пространства.\n"
+msgstr "п÷п╬я│п╩п╣ я─п╟я│п©п╟п╨п╬п╡п╨п╦ п©п╬п╫п╟п╢п╬п╠п╦я┌я│я▐ п╪п╣п╫п╣п╣ %sB п╢п╦я│п╨п╬п╡п╬пЁп╬ п©я─п╬я│я┌я─п╟п╫я│я┌п╡п╟.\n"
 
 #: cmdline/apt-shell.cc:832
 #, c-format
 msgid "Will need %sB of archives.\n"
-msgstr "Понадобится получить %sB архивов.\n"
+msgstr "п÷п╬п╫п╟п╢п╬п╠п╦я┌я│я▐ п©п╬п╩я┐я┤п╦я┌я▄ %sB п╟я─я┘п╦п╡п╬п╡.\n"
 
 #: cmdline/apt-shell.cc:850
 msgid "Unrequested changes are needed to execute this operation."
-msgstr "Чтобы выполнить эту операцию необходимы изменения, которые не были запрошены."
+msgstr "п╖я┌п╬п╠я▀ п╡я▀п©п╬п╩п╫п╦я┌я▄ я█я┌я┐ п╬п©п╣я─п╟я├п╦я▌ п╫п╣п╬п╠я┘п╬п╢п╦п╪я▀ п╦п╥п╪п╣п╫п╣п╫п╦я▐, п╨п╬я┌п╬я─я▀п╣ п╫п╣ п╠я▀п╩п╦ п╥п╟п©я─п╬я┬п╣п╫я▀."
 
 #: cmdline/apt-shell.cc:933
 msgid "You might want to run `install -f' to correct these."
-msgstr "Возможно, Вам потребуется запустить `install -f' для исправления."
+msgstr "п▓п╬п╥п╪п╬п╤п╫п╬, п▓п╟п╪ п©п╬я┌я─п╣п╠я┐п╣я┌я│я▐ п╥п╟п©я┐я│я┌п╦я┌я▄ `install -f' п╢п╩я▐ п╦я│п©я─п╟п╡п╩п╣п╫п╦я▐."
 
 #: cmdline/apt-shell.cc:1818 cmdline/apt-shell.cc:1856
 #: cmdline/apt-shell.cc:2181 cmdline/apt-shell.cc:2222
 #: cmdline/apt-shell.cc:2399 cmdline/apt-shell.cc:4011
 msgid "You have no permissions for that"
-msgstr "Вы не имеете необходимых разрешений для этого"
+msgstr "п▓я▀ п╫п╣ п╦п╪п╣п╣я┌п╣ п╫п╣п╬п╠я┘п╬п╢п╦п╪я▀я┘ я─п╟п╥я─п╣я┬п╣п╫п╦п╧ п╢п╩я▐ я█я┌п╬пЁп╬"
 
 #: cmdline/apt-shell.cc:2115
 msgid "There are still broken packages. "
-msgstr "Всё ещё есть пакеты с нарушенными зависимостями."
+msgstr "п▓я│я▒ п╣я┴я▒ п╣я│я┌я▄ п©п╟п╨п╣я┌я▀ я│ п╫п╟я─я┐я┬п╣п╫п╫я▀п╪п╦ п╥п╟п╡п╦я│п╦п╪п╬я│я┌я▐п╪п╦."
 
 #: cmdline/apt-shell.cc:3528
 msgid "Name"
-msgstr "Имя"
+msgstr "п≤п╪я▐"
 
 #: cmdline/apt-shell.cc:3529
 msgid "Installed"
-msgstr "Установлено"
+msgstr "пёя│я┌п╟п╫п╬п╡п╩п╣п╫п╬"
 
 #: cmdline/apt-shell.cc:3530
 msgid "Candidate"
-msgstr "Кандидат"
+msgstr "п п╟п╫п╢п╦п╢п╟я┌"
 
 #: cmdline/apt-shell.cc:3740
 msgid ""
@@ -1242,34 +1242,34 @@ msgid ""
 "                       This APT has Super Cow Powers.\n"
 msgstr ""
 "\n"
-"Главные команды:\n"
-"   status - Отобразить текущий выбор\n"
-"   install - Установить новые пакеты\n"
-"   remove - Удалить пакеты\n"
-"   keep - Сохранить пакеты\n"
-"   upgrade - Произвести обновление\n"
-"   dist-upgrade - Произвести обновление системы в целом\n"
-"   build-dep - Установить всё необходимое для сборки исходных пакетов\n"
-"   update - Получить обновлённые списки пакетов\n"
-"   commit - Применить изменения к системе\n"
-"   quit - Покинуть APT shell\n"
+"п⌠п╩п╟п╡п╫я▀п╣ п╨п╬п╪п╟п╫п╢я▀:\n"
+"   status - п·я┌п╬п╠я─п╟п╥п╦я┌я▄ я┌п╣п╨я┐я┴п╦п╧ п╡я▀п╠п╬я─\n"
+"   install - пёя│я┌п╟п╫п╬п╡п╦я┌я▄ п╫п╬п╡я▀п╣ п©п╟п╨п╣я┌я▀\n"
+"   remove - пёп╢п╟п╩п╦я┌я▄ п©п╟п╨п╣я┌я▀\n"
+"   keep - п║п╬я┘я─п╟п╫п╦я┌я▄ п©п╟п╨п╣я┌я▀\n"
+"   upgrade - п÷я─п╬п╦п╥п╡п╣я│я┌п╦ п╬п╠п╫п╬п╡п╩п╣п╫п╦п╣\n"
+"   dist-upgrade - п÷я─п╬п╦п╥п╡п╣я│я┌п╦ п╬п╠п╫п╬п╡п╩п╣п╫п╦п╣ я│п╦я│я┌п╣п╪я▀ п╡ я├п╣п╩п╬п╪\n"
+"   build-dep - пёя│я┌п╟п╫п╬п╡п╦я┌я▄ п╡я│я▒ п╫п╣п╬п╠я┘п╬п╢п╦п╪п╬п╣ п╢п╩я▐ я│п╠п╬я─п╨п╦ п╦я│я┘п╬п╢п╫я▀я┘ п©п╟п╨п╣я┌п╬п╡\n"
+"   update - п÷п╬п╩я┐я┤п╦я┌я▄ п╬п╠п╫п╬п╡п╩я▒п╫п╫я▀п╣ я│п©п╦я│п╨п╦ п©п╟п╨п╣я┌п╬п╡\n"
+"   commit - п÷я─п╦п╪п╣п╫п╦я┌я▄ п╦п╥п╪п╣п╫п╣п╫п╦я▐ п╨ я│п╦я│я┌п╣п╪п╣\n"
+"   quit - п÷п╬п╨п╦п╫я┐я┌я▄ APT shell\n"
 "\n"
-"Дополнительные команды:\n"
-"   show - Показать сведения о пакете в удобной для чтения форме\n"
-"   showpkg - Показать общие сведения о пакете\n"
-"   list/ls - Вывести список пакетов\n"
-"   search - Искать в списке с использованием регулярных выражений\n"
-"   script - Выполнить скрипты.\n"
-"   depends - Показать сведения о зависимостях указанного пакета\n"
-"   whatdepends - Показать сведения о пакетах, зависящих от указанного "
-"пакета\n"
-"   check - Удостовериться в отсутствии неудовлетворённых зависимостей\n"
-"   unmet - Получить список неудовлетворённых зависимостей\n"
-"   clean - Удалить скачанные ранее архивные файлы\n"
-"   autoclean - Удалить давно скачанные архивные файлы\n"
+"п■п╬п©п╬п╩п╫п╦я┌п╣п╩я▄п╫я▀п╣ п╨п╬п╪п╟п╫п╢я▀:\n"
+"   show - п÷п╬п╨п╟п╥п╟я┌я▄ я│п╡п╣п╢п╣п╫п╦я▐ п╬ п©п╟п╨п╣я┌п╣ п╡ я┐п╢п╬п╠п╫п╬п╧ п╢п╩я▐ я┤я┌п╣п╫п╦я▐ я└п╬я─п╪п╣\n"
+"   showpkg - п÷п╬п╨п╟п╥п╟я┌я▄ п╬п╠я┴п╦п╣ я│п╡п╣п╢п╣п╫п╦я▐ п╬ п©п╟п╨п╣я┌п╣\n"
+"   list/ls - п▓я▀п╡п╣я│я┌п╦ я│п©п╦я│п╬п╨ п©п╟п╨п╣я┌п╬п╡\n"
+"   search - п≤я│п╨п╟я┌я▄ п╡ я│п©п╦я│п╨п╣ я│ п╦я│п©п╬п╩я▄п╥п╬п╡п╟п╫п╦п╣п╪ я─п╣пЁя┐п╩я▐я─п╫я▀я┘ п╡я▀я─п╟п╤п╣п╫п╦п╧\n"
+"   script - п▓я▀п©п╬п╩п╫п╦я┌я▄ я│п╨я─п╦п©я┌я▀.\n"
+"   depends - п÷п╬п╨п╟п╥п╟я┌я▄ я│п╡п╣п╢п╣п╫п╦я▐ п╬ п╥п╟п╡п╦я│п╦п╪п╬я│я┌я▐я┘ я┐п╨п╟п╥п╟п╫п╫п╬пЁп╬ п©п╟п╨п╣я┌п╟\n"
+"   whatdepends - п÷п╬п╨п╟п╥п╟я┌я▄ я│п╡п╣п╢п╣п╫п╦я▐ п╬ п©п╟п╨п╣я┌п╟я┘, п╥п╟п╡п╦я│я▐я┴п╦я┘ п╬я┌ я┐п╨п╟п╥п╟п╫п╫п╬пЁп╬ "
+"п©п╟п╨п╣я┌п╟\n"
+"   check - пёп╢п╬я│я┌п╬п╡п╣я─п╦я┌я▄я│я▐ п╡ п╬я┌я│я┐я┌я│я┌п╡п╦п╦ п╫п╣я┐п╢п╬п╡п╩п╣я┌п╡п╬я─я▒п╫п╫я▀я┘ п╥п╟п╡п╦я│п╦п╪п╬я│я┌п╣п╧\n"
+"   unmet - п÷п╬п╩я┐я┤п╦я┌я▄ я│п©п╦я│п╬п╨ п╫п╣я┐п╢п╬п╡п╩п╣я┌п╡п╬я─я▒п╫п╫я▀я┘ п╥п╟п╡п╦я│п╦п╪п╬я│я┌п╣п╧\n"
+"   clean - пёп╢п╟п╩п╦я┌я▄ я│п╨п╟я┤п╟п╫п╫я▀п╣ я─п╟п╫п╣п╣ п╟я─я┘п╦п╡п╫я▀п╣ я└п╟п╧п╩я▀\n"
+"   autoclean - пёп╢п╟п╩п╦я┌я▄ п╢п╟п╡п╫п╬ я│п╨п╟я┤п╟п╫п╫я▀п╣ п╟я─я┘п╦п╡п╫я▀п╣ я└п╟п╧п╩я▀\n"
 "\n"
-"Для получения дополнительной информации, используйте команды \"help <cmd>\" "
-"или \"<cmd> [-h|--help]\".\n"
+"п■п╩я▐ п©п╬п╩я┐я┤п╣п╫п╦я▐ п╢п╬п©п╬п╩п╫п╦я┌п╣п╩я▄п╫п╬п╧ п╦п╫я└п╬я─п╪п╟я├п╦п╦, п╦я│п©п╬п╩я▄п╥я┐п╧я┌п╣ п╨п╬п╪п╟п╫п╢я▀ \"help <cmd>\" "
+"п╦п╩п╦ \"<cmd> [-h|--help]\".\n"
 "\n"
 "                       This APT has Super Cow Powers.\n"
 
@@ -1289,21 +1289,21 @@ msgid ""
 "  -o=? Set an arbitary configuration option, eg -o dir::cache=/tmp\n"
 "\n"
 msgstr ""
-"Использование: install [параметры] пакет1[=версия] [пакет2 ...]\n"
+"п≤я│п©п╬п╩я▄п╥п╬п╡п╟п╫п╦п╣: install [п©п╟я─п╟п╪п╣я┌я─я▀] п©п╟п╨п╣я┌1[=п╡п╣я─я│п╦я▐] [п©п╟п╨п╣я┌2 ...]\n"
 "\n"
-"Попытаться пометить указанные пакеты для установки (новые пакеты,\n"
-"обновления или замены старыми версиями), изменяя другие пакеты, если "
-"потребуется.\n"
+"п÷п╬п©я▀я┌п╟я┌я▄я│я▐ п©п╬п╪п╣я┌п╦я┌я▄ я┐п╨п╟п╥п╟п╫п╫я▀п╣ п©п╟п╨п╣я┌я▀ п╢п╩я▐ я┐я│я┌п╟п╫п╬п╡п╨п╦ (п╫п╬п╡я▀п╣ п©п╟п╨п╣я┌я▀,\n"
+"п╬п╠п╫п╬п╡п╩п╣п╫п╦я▐ п╦п╩п╦ п╥п╟п╪п╣п╫я▀ я│я┌п╟я─я▀п╪п╦ п╡п╣я─я│п╦я▐п╪п╦), п╦п╥п╪п╣п╫я▐я▐ п╢я─я┐пЁп╦п╣ п©п╟п╨п╣я┌я▀, п╣я│п╩п╦ "
+"п©п╬я┌я─п╣п╠я┐п╣я┌я│я▐.\n"
 "\n"
-"Параметры:\n"
-"  -h  Краткая справка.\n"
-"  -y  Автоматически отвечать 'ДА' на все вопросы\n"
-"  -f  Пытаться исправить положение, если найдены неудовлетворённые "
-"зависимости\n"
-"  -m  Пытаться продолжить, если часть архивов недоступна\n"
-"  -D  При удалении пакетов стремиться удалить компоненты, от которых они "
-"зависят\n"
-"  -o=? Изменить любой из параметров настройки (например: -o dir::cache=/"
+"п÷п╟я─п╟п╪п╣я┌я─я▀:\n"
+"  -h  п я─п╟я┌п╨п╟я▐ я│п©я─п╟п╡п╨п╟.\n"
+"  -y  п░п╡я┌п╬п╪п╟я┌п╦я┤п╣я│п╨п╦ п╬я┌п╡п╣я┤п╟я┌я▄ 'п■п░' п╫п╟ п╡я│п╣ п╡п╬п©я─п╬я│я▀\n"
+"  -f  п÷я▀я┌п╟я┌я▄я│я▐ п╦я│п©я─п╟п╡п╦я┌я▄ п©п╬п╩п╬п╤п╣п╫п╦п╣, п╣я│п╩п╦ п╫п╟п╧п╢п╣п╫я▀ п╫п╣я┐п╢п╬п╡п╩п╣я┌п╡п╬я─я▒п╫п╫я▀п╣ "
+"п╥п╟п╡п╦я│п╦п╪п╬я│я┌п╦\n"
+"  -m  п÷я▀я┌п╟я┌я▄я│я▐ п©я─п╬п╢п╬п╩п╤п╦я┌я▄, п╣я│п╩п╦ я┤п╟я│я┌я▄ п╟я─я┘п╦п╡п╬п╡ п╫п╣п╢п╬я│я┌я┐п©п╫п╟\n"
+"  -D  п÷я─п╦ я┐п╢п╟п╩п╣п╫п╦п╦ п©п╟п╨п╣я┌п╬п╡ я│я┌я─п╣п╪п╦я┌я▄я│я▐ я┐п╢п╟п╩п╦я┌я▄ п╨п╬п╪п©п╬п╫п╣п╫я┌я▀, п╬я┌ п╨п╬я┌п╬я─я▀я┘ п╬п╫п╦ "
+"п╥п╟п╡п╦я│я▐я┌\n"
+"  -o=? п≤п╥п╪п╣п╫п╦я┌я▄ п╩я▌п╠п╬п╧ п╦п╥ п©п╟я─п╟п╪п╣я┌я─п╬п╡ п╫п╟я│я┌я─п╬п╧п╨п╦ (п╫п╟п©я─п╦п╪п╣я─: -o dir::cache=/"
 "tmp)\n"
 "\n"
 
@@ -1323,20 +1323,20 @@ msgid ""
 "  -o=? Set an arbitary configuration option, eg -o dir::cache=/tmp\n"
 "\n"
 msgstr ""
-"Использование: remove [параметры] пакет1 [пакет2 ...]\n"
+"п≤я│п©п╬п╩я▄п╥п╬п╡п╟п╫п╦п╣: remove [п©п╟я─п╟п╪п╣я┌я─я▀] п©п╟п╨п╣я┌1 [п©п╟п╨п╣я┌2 ...]\n"
 "\n"
-"Попытаться пометить указанные пакеты для удаления, изменяя другие\n"
-"пакеты, если потребуется.\n"
+"п÷п╬п©я▀я┌п╟я┌я▄я│я▐ п©п╬п╪п╣я┌п╦я┌я▄ я┐п╨п╟п╥п╟п╫п╫я▀п╣ п©п╟п╨п╣я┌я▀ п╢п╩я▐ я┐п╢п╟п╩п╣п╫п╦я▐, п╦п╥п╪п╣п╫я▐я▐ п╢я─я┐пЁп╦п╣\n"
+"п©п╟п╨п╣я┌я▀, п╣я│п╩п╦ п©п╬я┌я─п╣п╠я┐п╣я┌я│я▐.\n"
 "\n"
-"Параметры:\n"
-"  -h  Краткая справка.\n"
-"  -y  Автоматически отвечать 'ДА' на все вопросы\n"
-"  -f  Пытаться исправить положение, если найдены неудовлетворённые "
-"зависимости\n"
-"  -m  Пытаться продолжить, если часть архивов недоступна\n"
-"  -D  При удалении пакетов стремиться удалить компоненты, от которых они "
-"зависят\n"
-"  -o=? Изменить любой из параметров настройки (например: -o dir::cache=/"
+"п÷п╟я─п╟п╪п╣я┌я─я▀:\n"
+"  -h  п я─п╟я┌п╨п╟я▐ я│п©я─п╟п╡п╨п╟.\n"
+"  -y  п░п╡я┌п╬п╪п╟я┌п╦я┤п╣я│п╨п╦ п╬я┌п╡п╣я┤п╟я┌я▄ 'п■п░' п╫п╟ п╡я│п╣ п╡п╬п©я─п╬я│я▀\n"
+"  -f  п÷я▀я┌п╟я┌я▄я│я▐ п╦я│п©я─п╟п╡п╦я┌я▄ п©п╬п╩п╬п╤п╣п╫п╦п╣, п╣я│п╩п╦ п╫п╟п╧п╢п╣п╫я▀ п╫п╣я┐п╢п╬п╡п╩п╣я┌п╡п╬я─я▒п╫п╫я▀п╣ "
+"п╥п╟п╡п╦я│п╦п╪п╬я│я┌п╦\n"
+"  -m  п÷я▀я┌п╟я┌я▄я│я▐ п©я─п╬п╢п╬п╩п╤п╦я┌я▄, п╣я│п╩п╦ я┤п╟я│я┌я▄ п╟я─я┘п╦п╡п╬п╡ п╫п╣п╢п╬я│я┌я┐п©п╫п╟\n"
+"  -D  п÷я─п╦ я┐п╢п╟п╩п╣п╫п╦п╦ п©п╟п╨п╣я┌п╬п╡ я│я┌я─п╣п╪п╦я┌я▄я│я▐ я┐п╢п╟п╩п╦я┌я▄ п╨п╬п╪п©п╬п╫п╣п╫я┌я▀, п╬я┌ п╨п╬я┌п╬я─я▀я┘ п╬п╫п╦ "
+"п╥п╟п╡п╦я│я▐я┌\n"
+"  -o=? п≤п╥п╪п╣п╫п╦я┌я▄ п╩я▌п╠п╬п╧ п╦п╥ п©п╟я─п╟п╪п╣я┌я─п╬п╡ п╫п╟я│я┌я─п╬п╧п╨п╦ (п╫п╟п©я─п╦п╪п╣я─: -o dir::cache=/"
 "tmp)\n"
 "\n"
 
@@ -1357,20 +1357,20 @@ msgid ""
 "  -o=? Set an arbitary configuration option, eg -o dir::cache=/tmp\n"
 "\n"
 msgstr ""
-"Использование: keep [параметры] пакет1 [пакет2 ...]\n"
+"п≤я│п©п╬п╩я▄п╥п╬п╡п╟п╫п╦п╣: keep [п©п╟я─п╟п╪п╣я┌я─я▀] п©п╟п╨п╣я┌1 [п©п╟п╨п╣я┌2 ...]\n"
 "\n"
-"Попытаться сохранить указанные пакеты, помеченные в системе для удаления\n"
-"или установки, изменяя другие пакеты, если это необходимо.\n"
+"п÷п╬п©я▀я┌п╟я┌я▄я│я▐ я│п╬я┘я─п╟п╫п╦я┌я▄ я┐п╨п╟п╥п╟п╫п╫я▀п╣ п©п╟п╨п╣я┌я▀, п©п╬п╪п╣я┤п╣п╫п╫я▀п╣ п╡ я│п╦я│я┌п╣п╪п╣ п╢п╩я▐ я┐п╢п╟п╩п╣п╫п╦я▐\n"
+"п╦п╩п╦ я┐я│я┌п╟п╫п╬п╡п╨п╦, п╦п╥п╪п╣п╫я▐я▐ п╢я─я┐пЁп╦п╣ п©п╟п╨п╣я┌я▀, п╣я│п╩п╦ я█я┌п╬ п╫п╣п╬п╠я┘п╬п╢п╦п╪п╬.\n"
 "\n"
-"Параметры:\n"
-"  -h  Краткая справка.\n"
-"  -y  Автоматически отвечать 'ДА' на все вопросы\n"
-"  -f  Пытаться исправить положение, если найдены неудовлетворённые "
-"зависимости\n"
-"  -m  Пытаться продолжить, если часть архивов недоступна\n"
-"  -D  При удалении пакетов стремиться удалить компоненты, от которых они "
-"зависят\n"
-"  -o=? Изменить любой из параметров настройки (например: -o dir::cache=/"
+"п÷п╟я─п╟п╪п╣я┌я─я▀:\n"
+"  -h  п я─п╟я┌п╨п╟я▐ я│п©я─п╟п╡п╨п╟.\n"
+"  -y  п░п╡я┌п╬п╪п╟я┌п╦я┤п╣я│п╨п╦ п╬я┌п╡п╣я┤п╟я┌я▄ 'п■п░' п╫п╟ п╡я│п╣ п╡п╬п©я─п╬я│я▀\n"
+"  -f  п÷я▀я┌п╟я┌я▄я│я▐ п╦я│п©я─п╟п╡п╦я┌я▄ п©п╬п╩п╬п╤п╣п╫п╦п╣, п╣я│п╩п╦ п╫п╟п╧п╢п╣п╫я▀ п╫п╣я┐п╢п╬п╡п╩п╣я┌п╡п╬я─я▒п╫п╫я▀п╣ "
+"п╥п╟п╡п╦я│п╦п╪п╬я│я┌п╦\n"
+"  -m  п÷я▀я┌п╟я┌я▄я│я▐ п©я─п╬п╢п╬п╩п╤п╦я┌я▄, п╣я│п╩п╦ я┤п╟я│я┌я▄ п╟я─я┘п╦п╡п╬п╡ п╫п╣п╢п╬я│я┌я┐п©п╫п╟\n"
+"  -D  п÷я─п╦ я┐п╢п╟п╩п╣п╫п╦п╦ п©п╟п╨п╣я┌п╬п╡ я│я┌я─п╣п╪п╦я┌я▄я│я▐ я┐п╢п╟п╩п╦я┌я▄ п╨п╬п╪п©п╬п╫п╣п╫я┌я▀, п╬я┌ п╨п╬я┌п╬я─я▀я┘ п╬п╫п╦ "
+"п╥п╟п╡п╦я│я▐я┌\n"
+"  -o=? п≤п╥п╪п╣п╫п╦я┌я▄ п╩я▌п╠п╬п╧ п╦п╥ п©п╟я─п╟п╪п╣я┌я─п╬п╡ п╫п╟я│я┌я─п╬п╧п╨п╦ (п╫п╟п©я─п╦п╪п╣я─: -o dir::cache=/"
 "tmp)\n"
 "\n"
 
@@ -1389,19 +1389,19 @@ msgid ""
 "  -o=? Set an arbitary configuration option, eg -o dir::cache=/tmp\n"
 "\n"
 msgstr ""
-"Использование: upgrade [параметры]\n"
+"п≤я│п©п╬п╩я▄п╥п╬п╡п╟п╫п╦п╣: upgrade [п©п╟я─п╟п╪п╣я┌я─я▀]\n"
 "\n"
-"Произвести обновление.\n"
+"п÷я─п╬п╦п╥п╡п╣я│я┌п╦ п╬п╠п╫п╬п╡п╩п╣п╫п╦п╣.\n"
 "\n"
-"Параметры:\n"
-"  -h  Краткая справка.\n"
-"  -y  Автоматически отвечать 'ДА' на все вопросы\n"
-"  -f  Пытаться исправить положение, если найдены неудовлетворённые "
-"зависимости\n"
-"  -m  Пытаться продолжить, если часть архивов недоступна\n"
-"  -D  При удалении пакетов стремиться удалить компоненты, от которых они "
-"зависят\n"
-"  -o=? Изменить любой из параметров настройки (например: -o dir::cache=/"
+"п÷п╟я─п╟п╪п╣я┌я─я▀:\n"
+"  -h  п я─п╟я┌п╨п╟я▐ я│п©я─п╟п╡п╨п╟.\n"
+"  -y  п░п╡я┌п╬п╪п╟я┌п╦я┤п╣я│п╨п╦ п╬я┌п╡п╣я┤п╟я┌я▄ 'п■п░' п╫п╟ п╡я│п╣ п╡п╬п©я─п╬я│я▀\n"
+"  -f  п÷я▀я┌п╟я┌я▄я│я▐ п╦я│п©я─п╟п╡п╦я┌я▄ п©п╬п╩п╬п╤п╣п╫п╦п╣, п╣я│п╩п╦ п╫п╟п╧п╢п╣п╫я▀ п╫п╣я┐п╢п╬п╡п╩п╣я┌п╡п╬я─я▒п╫п╫я▀п╣ "
+"п╥п╟п╡п╦я│п╦п╪п╬я│я┌п╦\n"
+"  -m  п÷я▀я┌п╟я┌я▄я│я▐ п©я─п╬п╢п╬п╩п╤п╦я┌я▄, п╣я│п╩п╦ я┤п╟я│я┌я▄ п╟я─я┘п╦п╡п╬п╡ п╫п╣п╢п╬я│я┌я┐п©п╫п╟\n"
+"  -D  п÷я─п╦ я┐п╢п╟п╩п╣п╫п╦п╦ п©п╟п╨п╣я┌п╬п╡ я│я┌я─п╣п╪п╦я┌я▄я│я▐ я┐п╢п╟п╩п╦я┌я▄ п╨п╬п╪п©п╬п╫п╣п╫я┌я▀, п╬я┌ п╨п╬я┌п╬я─я▀я┘ п╬п╫п╦ "
+"п╥п╟п╡п╦я│я▐я┌\n"
+"  -o=? п≤п╥п╪п╣п╫п╦я┌я▄ п╩я▌п╠п╬п╧ п╦п╥ п©п╟я─п╟п╪п╣я┌я─п╬п╡ п╫п╟я│я┌я─п╬п╧п╨п╦ (п╫п╟п©я─п╦п╪п╣я─: -o dir::cache=/"
 "tmp)\n"
 "\n"
 
@@ -1420,19 +1420,19 @@ msgid ""
 "  -o=? Set an arbitary configuration option, eg -o dir::cache=/tmp\n"
 "\n"
 msgstr ""
-"Использование: dist-upgrade [параметры]\n"
+"п≤я│п©п╬п╩я▄п╥п╬п╡п╟п╫п╦п╣: dist-upgrade [п©п╟я─п╟п╪п╣я┌я─я▀]\n"
 "\n"
-"Произвести обновление системы в целом.\n"
+"п÷я─п╬п╦п╥п╡п╣я│я┌п╦ п╬п╠п╫п╬п╡п╩п╣п╫п╦п╣ я│п╦я│я┌п╣п╪я▀ п╡ я├п╣п╩п╬п╪.\n"
 "\n"
-"Параметры:\n"
-"  -h  Краткая справка.\n"
-"  -y  Автоматически отвечать 'ДА' на все вопросы\n"
-"  -f  Пытаться исправить положение, если найдены неудовлетворённые "
-"зависимости\n"
-"  -m  Пытаться продолжить, если часть архивов недоступна\n"
-"  -D  При удалении пакетов стремиться удалить компоненты, от которых они "
-"зависят\n"
-"  -o=? Изменить любой из параметров настройки (например: -o dir::cache=/"
+"п÷п╟я─п╟п╪п╣я┌я─я▀:\n"
+"  -h  п я─п╟я┌п╨п╟я▐ я│п©я─п╟п╡п╨п╟.\n"
+"  -y  п░п╡я┌п╬п╪п╟я┌п╦я┤п╣я│п╨п╦ п╬я┌п╡п╣я┤п╟я┌я▄ 'п■п░' п╫п╟ п╡я│п╣ п╡п╬п©я─п╬я│я▀\n"
+"  -f  п÷я▀я┌п╟я┌я▄я│я▐ п╦я│п©я─п╟п╡п╦я┌я▄ п©п╬п╩п╬п╤п╣п╫п╦п╣, п╣я│п╩п╦ п╫п╟п╧п╢п╣п╫я▀ п╫п╣я┐п╢п╬п╡п╩п╣я┌п╡п╬я─я▒п╫п╫я▀п╣ "
+"п╥п╟п╡п╦я│п╦п╪п╬я│я┌п╦\n"
+"  -m  п÷я▀я┌п╟я┌я▄я│я▐ п©я─п╬п╢п╬п╩п╤п╦я┌я▄, п╣я│п╩п╦ я┤п╟я│я┌я▄ п╟я─я┘п╦п╡п╬п╡ п╫п╣п╢п╬я│я┌я┐п©п╫п╟\n"
+"  -D  п÷я─п╦ я┐п╢п╟п╩п╣п╫п╦п╦ п©п╟п╨п╣я┌п╬п╡ я│я┌я─п╣п╪п╦я┌я▄я│я▐ я┐п╢п╟п╩п╦я┌я▄ п╨п╬п╪п©п╬п╫п╣п╫я┌я▀, п╬я┌ п╨п╬я┌п╬я─я▀я┘ п╬п╫п╦ "
+"п╥п╟п╡п╦я│я▐я┌\n"
+"  -o=? п≤п╥п╪п╣п╫п╦я┌я▄ п╩я▌п╠п╬п╧ п╦п╥ п©п╟я─п╟п╪п╣я┌я─п╬п╡ п╫п╟я│я┌я─п╬п╧п╨п╦ (п╫п╟п©я─п╦п╪п╣я─: -o dir::cache=/"
 "tmp)\n"
 "\n"
 
@@ -1447,13 +1447,13 @@ msgid ""
 "  -o=? Set an arbitary configuration option, eg -o dir::cache=/tmp\n"
 "\n"
 msgstr ""
-"Использование: showpkg [параметры] пакет1 [пакет2 ...]\n"
+"п≤я│п©п╬п╩я▄п╥п╬п╡п╟п╫п╦п╣: showpkg [п©п╟я─п╟п╪п╣я┌я─я▀] п©п╟п╨п╣я┌1 [п©п╟п╨п╣я┌2 ...]\n"
 "\n"
-"Показать общие сведения о пакете.\n"
+"п÷п╬п╨п╟п╥п╟я┌я▄ п╬п╠я┴п╦п╣ я│п╡п╣п╢п╣п╫п╦я▐ п╬ п©п╟п╨п╣я┌п╣.\n"
 "\n"
-"Параметры:\n"
-"  -h   Краткая справка\n"
-"  -o=? Изменить любой из параметров настройки (например: -o dir::cache=/"
+"п÷п╟я─п╟п╪п╣я┌я─я▀:\n"
+"  -h   п я─п╟я┌п╨п╟я▐ я│п©я─п╟п╡п╨п╟\n"
+"  -o=? п≤п╥п╪п╣п╫п╦я┌я▄ п╩я▌п╠п╬п╧ п╦п╥ п©п╟я─п╟п╪п╣я┌я─п╬п╡ п╫п╟я│я┌я─п╬п╧п╨п╦ (п╫п╟п©я─п╦п╪п╣я─: -o dir::cache=/"
 "tmp)\n"
 "\n"
 
@@ -1469,14 +1469,14 @@ msgid ""
 "  -o=? Set an arbitary configuration option, eg -o dir::cache=/tmp\n"
 "\n"
 msgstr ""
-"Использование: show [параметры] пакет1 [пакет2 ...]\n"
+"п≤я│п©п╬п╩я▄п╥п╬п╡п╟п╫п╦п╣: show [п©п╟я─п╟п╪п╣я┌я─я▀] п©п╟п╨п╣я┌1 [п©п╟п╨п╣я┌2 ...]\n"
 "\n"
-"Показать сведения о пакете в удобной для чтения форме.\n"
+"п÷п╬п╨п╟п╥п╟я┌я▄ я│п╡п╣п╢п╣п╫п╦я▐ п╬ п©п╟п╨п╣я┌п╣ п╡ я┐п╢п╬п╠п╫п╬п╧ п╢п╩я▐ я┤я┌п╣п╫п╦я▐ я└п╬я─п╪п╣.\n"
 "\n"
-"Параметры:\n"
-"  -h  Краткая справка\n"
-"  -a  Показать информацию обо всех версиях.\n"
-"  -o=? Изменить любой из параметров настройки (например: -o dir::cache=/"
+"п÷п╟я─п╟п╪п╣я┌я─я▀:\n"
+"  -h  п я─п╟я┌п╨п╟я▐ я│п©я─п╟п╡п╨п╟\n"
+"  -a  п÷п╬п╨п╟п╥п╟я┌я▄ п╦п╫я└п╬я─п╪п╟я├п╦я▌ п╬п╠п╬ п╡я│п╣я┘ п╡п╣я─я│п╦я▐я┘.\n"
+"  -o=? п≤п╥п╪п╣п╫п╦я┌я▄ п╩я▌п╠п╬п╧ п╦п╥ п©п╟я─п╟п╪п╣я┌я─п╬п╡ п╫п╟я│я┌я─п╬п╧п╨п╦ (п╫п╟п©я─п╦п╪п╣я─: -o dir::cache=/"
 "tmp)\n"
 "\n"
 
@@ -1491,13 +1491,13 @@ msgid ""
 "  -o=? Set an arbitary configuration option, eg -o dir::cache=/tmp\n"
 "\n"
 msgstr ""
-"Использование: depends [параметры] пакет1 [пакет2 ...]\n"
+"п≤я│п©п╬п╩я▄п╥п╬п╡п╟п╫п╦п╣: depends [п©п╟я─п╟п╪п╣я┌я─я▀] п©п╟п╨п╣я┌1 [п©п╟п╨п╣я┌2 ...]\n"
 "\n"
-"Показать сведения о зависимостях указанного пакета.\n"
+"п÷п╬п╨п╟п╥п╟я┌я▄ я│п╡п╣п╢п╣п╫п╦я▐ п╬ п╥п╟п╡п╦я│п╦п╪п╬я│я┌я▐я┘ я┐п╨п╟п╥п╟п╫п╫п╬пЁп╬ п©п╟п╨п╣я┌п╟.\n"
 "\n"
-"Параметры:\n"
-"  -h  Краткая справка\n"
-"  -o=? Изменить любой из параметров настройки (например: -o dir::cache=/"
+"п÷п╟я─п╟п╪п╣я┌я─я▀:\n"
+"  -h  п я─п╟я┌п╨п╟я▐ я│п©я─п╟п╡п╨п╟\n"
+"  -o=? п≤п╥п╪п╣п╫п╦я┌я▄ п╩я▌п╠п╬п╧ п╦п╥ п©п╟я─п╟п╪п╣я┌я─п╬п╡ п╫п╟я│я┌я─п╬п╧п╨п╦ (п╫п╟п©я─п╦п╪п╣я─: -o dir::cache=/"
 "tmp)\n"
 "\n"
 
@@ -1512,13 +1512,13 @@ msgid ""
 "  -o=? Set an arbitary configuration option, eg -o dir::cache=/tmp\n"
 "\n"
 msgstr ""
-"Использование: whatdepends [параметры] пакет1 [пакет2 ...]\n"
+"п≤я│п©п╬п╩я▄п╥п╬п╡п╟п╫п╦п╣: whatdepends [п©п╟я─п╟п╪п╣я┌я─я▀] п©п╟п╨п╣я┌1 [п©п╟п╨п╣я┌2 ...]\n"
 "\n"
-"Показать сведения о пакетах, зависящих от указанного пакета.\n"
+"п÷п╬п╨п╟п╥п╟я┌я▄ я│п╡п╣п╢п╣п╫п╦я▐ п╬ п©п╟п╨п╣я┌п╟я┘, п╥п╟п╡п╦я│я▐я┴п╦я┘ п╬я┌ я┐п╨п╟п╥п╟п╫п╫п╬пЁп╬ п©п╟п╨п╣я┌п╟.\n"
 "\n"
-"Параметры:\n"
-"  -h  Краткая справка.\n"
-"  -o=? Изменить любой из параметров настройки (например: -o dir::cache=/"
+"п÷п╟я─п╟п╪п╣я┌я─я▀:\n"
+"  -h  п я─п╟я┌п╨п╟я▐ я│п©я─п╟п╡п╨п╟.\n"
+"  -o=? п≤п╥п╪п╣п╫п╦я┌я▄ п╩я▌п╠п╬п╧ п╦п╥ п©п╟я─п╟п╪п╣я┌я─п╬п╡ п╫п╟я│я┌я─п╬п╧п╨п╦ (п╫п╟п©я─п╦п╪п╣я─: -o dir::cache=/"
 "tmp)\n"
 "\n"
 
@@ -1533,13 +1533,13 @@ msgid ""
 "  -o=? Set an arbitary configuration option, eg -o dir::cache=/tmp\n"
 "\n"
 msgstr ""
-"Использование: unmet [параметры]\n"
+"п≤я│п©п╬п╩я▄п╥п╬п╡п╟п╫п╦п╣: unmet [п©п╟я─п╟п╪п╣я┌я─я▀]\n"
 "\n"
-"Получить список неудовлетворённых зависимостей.\n"
+"п÷п╬п╩я┐я┤п╦я┌я▄ я│п©п╦я│п╬п╨ п╫п╣я┐п╢п╬п╡п╩п╣я┌п╡п╬я─я▒п╫п╫я▀я┘ п╥п╟п╡п╦я│п╦п╪п╬я│я┌п╣п╧.\n"
 "\n"
-"Параметры:\n"
-"  -h  Краткая справка\n"
-"  -o=? Изменить любой из параметров настройки (например: -o dir::cache=/"
+"п÷п╟я─п╟п╪п╣я┌я─я▀:\n"
+"  -h  п я─п╟я┌п╨п╟я▐ я│п©я─п╟п╡п╨п╟\n"
+"  -o=? п≤п╥п╪п╣п╫п╦я┌я▄ п╩я▌п╠п╬п╧ п╦п╥ п©п╟я─п╟п╪п╣я┌я─п╬п╡ п╫п╟я│я┌я─п╬п╧п╨п╦ (п╫п╟п©я─п╦п╪п╣я─: -o dir::cache=/"
 "tmp)\n"
 "\n"
 
@@ -1557,15 +1557,15 @@ msgid ""
 "  -o=? Set an arbitary configuration option, eg -o dir::cache=/tmp\n"
 "\n"
 msgstr ""
-"Использование: search [параметры] <регулярное выражение>\n"
+"п≤я│п©п╬п╩я▄п╥п╬п╡п╟п╫п╦п╣: search [п©п╟я─п╟п╪п╣я┌я─я▀] <я─п╣пЁя┐п╩я▐я─п╫п╬п╣ п╡я▀я─п╟п╤п╣п╫п╦п╣>\n"
 "\n"
-"Искать заданное регулярное выражение в именах пакетов и их описаниях.\n"
+"п≤я│п╨п╟я┌я▄ п╥п╟п╢п╟п╫п╫п╬п╣ я─п╣пЁя┐п╩я▐я─п╫п╬п╣ п╡я▀я─п╟п╤п╣п╫п╦п╣ п╡ п╦п╪п╣п╫п╟я┘ п©п╟п╨п╣я┌п╬п╡ п╦ п╦я┘ п╬п©п╦я│п╟п╫п╦я▐я┘.\n"
 "\n"
-"Параметры:\n"
-"  -h  Краткая справка.\n"
-"  -n  Искать только в именах пакетов.\n"
-"  -f  Показать полную информацию о найденных пакетах.\n"
-"  -o=? Изменить любой из параметров настройки (например: -o dir::cache=/"
+"п÷п╟я─п╟п╪п╣я┌я─я▀:\n"
+"  -h  п я─п╟я┌п╨п╟я▐ я│п©я─п╟п╡п╨п╟.\n"
+"  -n  п≤я│п╨п╟я┌я▄ я┌п╬п╩я▄п╨п╬ п╡ п╦п╪п╣п╫п╟я┘ п©п╟п╨п╣я┌п╬п╡.\n"
+"  -f  п÷п╬п╨п╟п╥п╟я┌я▄ п©п╬п╩п╫я┐я▌ п╦п╫я└п╬я─п╪п╟я├п╦я▌ п╬ п╫п╟п╧п╢п╣п╫п╫я▀я┘ п©п╟п╨п╣я┌п╟я┘.\n"
+"  -o=? п≤п╥п╪п╣п╫п╦я┌я▄ п╩я▌п╠п╬п╧ п╦п╥ п©п╟я─п╟п╪п╣я┌я─п╬п╡ п╫п╟я│я┌я─п╬п╧п╨п╦ (п╫п╟п©я─п╦п╪п╣я─: -o dir::cache=/"
 "tmp)\n"
 "\n"
 
@@ -1587,20 +1587,20 @@ msgid ""
 "  -o=? Set an arbitary configuration option, eg -o dir::cache=/tmp\n"
 "\n"
 msgstr ""
-"Использование: list/ls [параметры] [шаблон ...]\n"
+"п≤я│п©п╬п╩я▄п╥п╬п╡п╟п╫п╦п╣: list/ls [п©п╟я─п╟п╪п╣я┌я─я▀] [я┬п╟п╠п╩п╬п╫ ...]\n"
 "\n"
-"Вывести список пакетов, удовлетворяющих шаблону, или все пакеты, если\n"
-"шаблон не был указан. Wildcards are accepted.\n"
+"п▓я▀п╡п╣я│я┌п╦ я│п©п╦я│п╬п╨ п©п╟п╨п╣я┌п╬п╡, я┐п╢п╬п╡п╩п╣я┌п╡п╬я─я▐я▌я┴п╦я┘ я┬п╟п╠п╩п╬п╫я┐, п╦п╩п╦ п╡я│п╣ п©п╟п╨п╣я┌я▀, п╣я│п╩п╦\n"
+"я┬п╟п╠п╩п╬п╫ п╫п╣ п╠я▀п╩ я┐п╨п╟п╥п╟п╫. Wildcards are accepted.\n"
 "\n"
-"Параметры:\n"
-"  -h  Краткая справка.\n"
-"  -i  Показать только установленные пакеты.\n"
-"  -u  Показать только установленные пакеты, которые могут быть обновлены.\n"
-"  -v  Показать версии установленного пакета и пакета-кандидата.\n"
-"  -s  Показать краткие описания пакетов.\n"
-"  -g  Показать пакеты с группами.\n"
-"  -G=? Показать пакеты в указанной группе.\n"
-"  -o=? Изменить любой из параметров настройки (например: -o dir::cache=/"
+"п÷п╟я─п╟п╪п╣я┌я─я▀:\n"
+"  -h  п я─п╟я┌п╨п╟я▐ я│п©я─п╟п╡п╨п╟.\n"
+"  -i  п÷п╬п╨п╟п╥п╟я┌я▄ я┌п╬п╩я▄п╨п╬ я┐я│я┌п╟п╫п╬п╡п╩п╣п╫п╫я▀п╣ п©п╟п╨п╣я┌я▀.\n"
+"  -u  п÷п╬п╨п╟п╥п╟я┌я▄ я┌п╬п╩я▄п╨п╬ я┐я│я┌п╟п╫п╬п╡п╩п╣п╫п╫я▀п╣ п©п╟п╨п╣я┌я▀, п╨п╬я┌п╬я─я▀п╣ п╪п╬пЁя┐я┌ п╠я▀я┌я▄ п╬п╠п╫п╬п╡п╩п╣п╫я▀.\n"
+"  -v  п÷п╬п╨п╟п╥п╟я┌я▄ п╡п╣я─я│п╦п╦ я┐я│я┌п╟п╫п╬п╡п╩п╣п╫п╫п╬пЁп╬ п©п╟п╨п╣я┌п╟ п╦ п©п╟п╨п╣я┌п╟-п╨п╟п╫п╢п╦п╢п╟я┌п╟.\n"
+"  -s  п÷п╬п╨п╟п╥п╟я┌я▄ п╨я─п╟я┌п╨п╦п╣ п╬п©п╦я│п╟п╫п╦я▐ п©п╟п╨п╣я┌п╬п╡.\n"
+"  -g  п÷п╬п╨п╟п╥п╟я┌я▄ п©п╟п╨п╣я┌я▀ я│ пЁя─я┐п©п©п╟п╪п╦.\n"
+"  -G=? п÷п╬п╨п╟п╥п╟я┌я▄ п©п╟п╨п╣я┌я▀ п╡ я┐п╨п╟п╥п╟п╫п╫п╬п╧ пЁя─я┐п©п©п╣.\n"
+"  -o=? п≤п╥п╪п╣п╫п╦я┌я▄ п╩я▌п╠п╬п╧ п╦п╥ п©п╟я─п╟п╪п╣я┌я─п╬п╡ п╫п╟я│я┌я─п╬п╧п╨п╦ (п╫п╟п©я─п╦п╪п╣я─: -o dir::cache=/"
 "tmp)\n"
 "\n"
 
@@ -1615,13 +1615,13 @@ msgid ""
 "  -o=? Set an arbitary configuration option, eg -o dir::cache=/tmp\n"
 "\n"
 msgstr ""
-"Использование: commit [параметры]\n"
+"п≤я│п©п╬п╩я▄п╥п╬п╡п╟п╫п╦п╣: commit [п©п╟я─п╟п╪п╣я┌я─я▀]\n"
 "\n"
-"Применить изменения к системе.\n"
+"п÷я─п╦п╪п╣п╫п╦я┌я▄ п╦п╥п╪п╣п╫п╣п╫п╦я▐ п╨ я│п╦я│я┌п╣п╪п╣.\n"
 "\n"
-"Параметры:\n"
-"  -h  Краткая справка\n"
-"  -o=? Изменить любой из параметров настройки (например: -o dir::cache=/"
+"п÷п╟я─п╟п╪п╣я┌я─я▀:\n"
+"  -h  п я─п╟я┌п╨п╟я▐ я│п©я─п╟п╡п╨п╟\n"
+"  -o=? п≤п╥п╪п╣п╫п╦я┌я▄ п╩я▌п╠п╬п╧ п╦п╥ п©п╟я─п╟п╪п╣я┌я─п╬п╡ п╫п╟я│я┌я─п╬п╧п╨п╦ (п╫п╟п©я─п╦п╪п╣я─: -o dir::cache=/"
 "tmp)\n"
 "\n"
 
@@ -1636,307 +1636,307 @@ msgid ""
 "  -o=? Set an arbitary configuration option, eg -o dir::cache=/tmp\n"
 "\n"
 msgstr ""
-"Использование: script [параметры] скрипт1 [скрипт2]\n"
+"п≤я│п©п╬п╩я▄п╥п╬п╡п╟п╫п╦п╣: script [п©п╟я─п╟п╪п╣я┌я─я▀] я│п╨я─п╦п©я┌1 [я│п╨я─п╦п©я┌2]\n"
 "\n"
-"Выполнить указанные скрипты.\n"
+"п▓я▀п©п╬п╩п╫п╦я┌я▄ я┐п╨п╟п╥п╟п╫п╫я▀п╣ я│п╨я─п╦п©я┌я▀.\n"
 "\n"
-"Параметры:\n"
-"  -h  Краткая справка\n"
-"  -o=? Изменить любой из параметров настройки (например: -o dir::cache=/"
+"п÷п╟я─п╟п╪п╣я┌я─я▀:\n"
+"  -h  п я─п╟я┌п╨п╟я▐ я│п©я─п╟п╡п╨п╟\n"
+"  -o=? п≤п╥п╪п╣п╫п╦я┌я▄ п╩я▌п╠п╬п╧ п╦п╥ п©п╟я─п╟п╪п╣я┌я─п╬п╡ п╫п╟я│я┌я─п╬п╧п╨п╦ (п╫п╟п©я─п╦п╪п╣я─: -o dir::cache=/"
 "tmp)\n"
 "\n"
 
 #: cmdline/apt-shell.cc:3994
 msgid "No help for that"
-msgstr "Нет справки для этого"
+msgstr "п²п╣я┌ я│п©я─п╟п╡п╨п╦ п╢п╩я▐ я█я┌п╬пЁп╬"
 
 #: cmdline/apt-shell.cc:4431
 msgid "Welcome to the APT shell. Type \"help\" for more information."
 msgstr ""
-"Добро пожаловать в APT shell. Используйте команду \"help\" для "
-"дополнительной информации."
+"п■п╬п╠я─п╬ п©п╬п╤п╟п╩п╬п╡п╟я┌я▄ п╡ APT shell. п≤я│п©п╬п╩я▄п╥я┐п╧я┌п╣ п╨п╬п╪п╟п╫п╢я┐ \"help\" п╢п╩я▐ "
+"п╢п╬п©п╬п╩п╫п╦я┌п╣п╩я▄п╫п╬п╧ п╦п╫я└п╬я─п╪п╟я├п╦п╦."
 
 #: cmdline/apt-shell.cc:4471
 msgid "Exceeded maximum number of command arguments"
-msgstr "Превышено максимальное количество аргументов команды"
+msgstr "п÷я─п╣п╡я▀я┬п╣п╫п╬ п╪п╟п╨я│п╦п╪п╟п╩я▄п╫п╬п╣ п╨п╬п╩п╦я┤п╣я│я┌п╡п╬ п╟я─пЁя┐п╪п╣п╫я┌п╬п╡ п╨п╬п╪п╟п╫п╢я▀"
 
 #: apt-pkg/contrib/cdromutl.cc:60
 #, c-format
 msgid "Unable to stat the mount point %s"
-msgstr "Не найдена точка монтирования %s диска"
+msgstr "п²п╣ п╫п╟п╧п╢п╣п╫п╟ я┌п╬я┤п╨п╟ п╪п╬п╫я┌п╦я─п╬п╡п╟п╫п╦я▐ %s п╢п╦я│п╨п╟"
 
 #: apt-pkg/contrib/cdromutl.cc:174 apt-pkg/acquire.cc:418 apt-pkg/clean.cc:44
 #, c-format
 msgid "Unable to change to %s"
-msgstr "Невозможно перейти к %s"
+msgstr "п²п╣п╡п╬п╥п╪п╬п╤п╫п╬ п©п╣я─п╣п╧я┌п╦ п╨ %s"
 
 #: apt-pkg/contrib/cdromutl.cc:178 apt-pkg/contrib/configuration.cc:735
 #: apt-pkg/acquire.cc:412 apt-pkg/clean.cc:38 apt-pkg/sourcelist.cc:424
 #, c-format
 msgid "Unable to read %s"
-msgstr "Невозможно прочитать %s"
+msgstr "п²п╣п╡п╬п╥п╪п╬п╤п╫п╬ п©я─п╬я┤п╦я┌п╟я┌я▄ %s"
 
 #: apt-pkg/contrib/cdromutl.cc:215
 msgid "Failed to stat the cdrom"
-msgstr "Не найден CD-ROM."
+msgstr "п²п╣ п╫п╟п╧п╢п╣п╫ CD-ROM."
 
 #: apt-pkg/contrib/cmndline.cc:80
 #, c-format
 msgid "Command line option '%c' [from %s] is not known."
-msgstr "Неизвестный параметр '%c' [из %s]."
+msgstr "п²п╣п╦п╥п╡п╣я│я┌п╫я▀п╧ п©п╟я─п╟п╪п╣я┌я─ '%c' [п╦п╥ %s]."
 
 #: apt-pkg/contrib/cmndline.cc:106 apt-pkg/contrib/cmndline.cc:114
 #: apt-pkg/contrib/cmndline.cc:122
 #, c-format
 msgid "Command line option %s is not understood"
-msgstr "Неизвестный параметр %s."
+msgstr "п²п╣п╦п╥п╡п╣я│я┌п╫я▀п╧ п©п╟я─п╟п╪п╣я┌я─ %s."
 
 #: apt-pkg/contrib/cmndline.cc:127
 #, c-format
 msgid "Command line option %s is not boolean"
-msgstr "Параметр командной строки %s должен иметь логическое значение."
+msgstr "п÷п╟я─п╟п╪п╣я┌я─ п╨п╬п╪п╟п╫п╢п╫п╬п╧ я│я┌я─п╬п╨п╦ %s п╢п╬п╩п╤п╣п╫ п╦п╪п╣я┌я▄ п╩п╬пЁп╦я┤п╣я│п╨п╬п╣ п╥п╫п╟я┤п╣п╫п╦п╣."
 
 #: apt-pkg/contrib/cmndline.cc:166 apt-pkg/contrib/cmndline.cc:187
 #, c-format
 msgid "Option %s requires an argument."
-msgstr "Параметр %s нуждается в аргументе."
+msgstr "п÷п╟я─п╟п╪п╣я┌я─ %s п╫я┐п╤п╢п╟п╣я┌я│я▐ п╡ п╟я─пЁя┐п╪п╣п╫я┌п╣."
 
 #: apt-pkg/contrib/cmndline.cc:201 apt-pkg/contrib/cmndline.cc:207
 #, c-format
 msgid "Option %s: Configuration item specification must have an =<val>."
-msgstr "Параметр %s: Запись параметра настройки должна оканчиваться на =<значение>."
+msgstr "п÷п╟я─п╟п╪п╣я┌я─ %s: п≈п╟п©п╦я│я▄ п©п╟я─п╟п╪п╣я┌я─п╟ п╫п╟я│я┌я─п╬п╧п╨п╦ п╢п╬п╩п╤п╫п╟ п╬п╨п╟п╫я┤п╦п╡п╟я┌я▄я│я▐ п╫п╟ =<п╥п╫п╟я┤п╣п╫п╦п╣>."
 
 #: apt-pkg/contrib/cmndline.cc:237
 #, c-format
 msgid "Option %s requires an integer argument, not '%s'"
-msgstr "Параметр %s требует численного аргумента вместо '%s'"
+msgstr "п÷п╟я─п╟п╪п╣я┌я─ %s я┌я─п╣п╠я┐п╣я┌ я┤п╦я│п╩п╣п╫п╫п╬пЁп╬ п╟я─пЁя┐п╪п╣п╫я┌п╟ п╡п╪п╣я│я┌п╬ '%s'"
 
 #: apt-pkg/contrib/cmndline.cc:268
 #, c-format
 msgid "Option '%s' is too long"
-msgstr "Слишком длинный параметр '%s'"
+msgstr "п║п╩п╦я┬п╨п╬п╪ п╢п╩п╦п╫п╫я▀п╧ п©п╟я─п╟п╪п╣я┌я─ '%s'"
 
 #: apt-pkg/contrib/cmndline.cc:301
 #, c-format
 msgid "Sense %s is not understood, try true or false."
-msgstr "Нераспознаваемое значение %s, используйте true или false."
+msgstr "п²п╣я─п╟я│п©п╬п╥п╫п╟п╡п╟п╣п╪п╬п╣ п╥п╫п╟я┤п╣п╫п╦п╣ %s, п╦я│п©п╬п╩я▄п╥я┐п╧я┌п╣ true п╦п╩п╦ false."
 
 #: apt-pkg/contrib/cmndline.cc:351
 #, c-format
 msgid "Invalid operation %s"
-msgstr "Ошибочная операция %s"
+msgstr "п·я┬п╦п╠п╬я┤п╫п╟я▐ п╬п©п╣я─п╟я├п╦я▐ %s"
 
 #: apt-pkg/contrib/configuration.cc:425
 #, c-format
 msgid "Unrecognized type abbreviation: '%c'"
-msgstr "Нераспознаваемый тип сокращения: '%c'"
+msgstr "п²п╣я─п╟я│п©п╬п╥п╫п╟п╡п╟п╣п╪я▀п╧ я┌п╦п© я│п╬п╨я─п╟я┴п╣п╫п╦я▐: '%c'"
 
 #: apt-pkg/contrib/configuration.cc:483
 #, c-format
 msgid "Opening configuration file %s"
-msgstr "Открытие конфигурационного файла %s"
+msgstr "п·я┌п╨я─я▀я┌п╦п╣ п╨п╬п╫я└п╦пЁя┐я─п╟я├п╦п╬п╫п╫п╬пЁп╬ я└п╟п╧п╩п╟ %s"
 
 #: apt-pkg/contrib/configuration.cc:593
 #, c-format
 msgid "Syntax error %s:%u: Block starts with no name."
-msgstr "Синтаксическая ошибка %s:%u: Начало блока без имени."
+msgstr "п║п╦п╫я┌п╟п╨я│п╦я┤п╣я│п╨п╟я▐ п╬я┬п╦п╠п╨п╟ %s:%u: п²п╟я┤п╟п╩п╬ п╠п╩п╬п╨п╟ п╠п╣п╥ п╦п╪п╣п╫п╦."
 
 #: apt-pkg/contrib/configuration.cc:612
 #, c-format
 msgid "Syntax error %s:%u: Malformed Tag"
-msgstr "Синтаксическая ошибка %s:%u: Ошибочная метка."
+msgstr "п║п╦п╫я┌п╟п╨я│п╦я┤п╣я│п╨п╟я▐ п╬я┬п╦п╠п╨п╟ %s:%u: п·я┬п╦п╠п╬я┤п╫п╟я▐ п╪п╣я┌п╨п╟."
 
 #: apt-pkg/contrib/configuration.cc:629
 #, c-format
 msgid "Syntax error %s:%u: Extra junk after value"
-msgstr "Синтаксическая ошибка %s:%u: Лишние символы после значения."
+msgstr "п║п╦п╫я┌п╟п╨я│п╦я┤п╣я│п╨п╟я▐ п╬я┬п╦п╠п╨п╟ %s:%u: п⌡п╦я┬п╫п╦п╣ я│п╦п╪п╡п╬п╩я▀ п©п╬я│п╩п╣ п╥п╫п╟я┤п╣п╫п╦я▐."
 
 #: apt-pkg/contrib/configuration.cc:669
 #, c-format
 msgid "Syntax error %s:%u: Directives can only be done at the top level"
 msgstr ""
-"Синтаксическая ошибка %s:%u: Директивы могут задаваться только на высшем "
-"уровне."
+"п║п╦п╫я┌п╟п╨я│п╦я┤п╣я│п╨п╟я▐ п╬я┬п╦п╠п╨п╟ %s:%u: п■п╦я─п╣п╨я┌п╦п╡я▀ п╪п╬пЁя┐я┌ п╥п╟п╢п╟п╡п╟я┌я▄я│я▐ я┌п╬п╩я▄п╨п╬ п╫п╟ п╡я▀я│я┬п╣п╪ "
+"я┐я─п╬п╡п╫п╣."
 
 #: apt-pkg/contrib/configuration.cc:676
 #, c-format
 msgid "Syntax error %s:%u: Too many nested includes"
-msgstr "Синтаксическая ошибка %s:%u: Слишком много вложенных включений."
+msgstr "п║п╦п╫я┌п╟п╨я│п╦я┤п╣я│п╨п╟я▐ п╬я┬п╦п╠п╨п╟ %s:%u: п║п╩п╦я┬п╨п╬п╪ п╪п╫п╬пЁп╬ п╡п╩п╬п╤п╣п╫п╫я▀я┘ п╡п╨п╩я▌я┤п╣п╫п╦п╧."
 
 #: apt-pkg/contrib/configuration.cc:680 apt-pkg/contrib/configuration.cc:685
 #, c-format
 msgid "Syntax error %s:%u: Included from here"
-msgstr "Синтаксическая ошибка %s:%u: Включение из указанного места."
+msgstr "п║п╦п╫я┌п╟п╨я│п╦я┤п╣я│п╨п╟я▐ п╬я┬п╦п╠п╨п╟ %s:%u: п▓п╨п╩я▌я┤п╣п╫п╦п╣ п╦п╥ я┐п╨п╟п╥п╟п╫п╫п╬пЁп╬ п╪п╣я│я┌п╟."
 
 #: apt-pkg/contrib/configuration.cc:689
 #, c-format
 msgid "Syntax error %s:%u: Unsupported directive '%s'"
-msgstr "Синтаксическая ошибка %s:%u: Неизвестная директива '%s'."
+msgstr "п║п╦п╫я┌п╟п╨я│п╦я┤п╣я│п╨п╟я▐ п╬я┬п╦п╠п╨п╟ %s:%u: п²п╣п╦п╥п╡п╣я│я┌п╫п╟я▐ п╢п╦я─п╣п╨я┌п╦п╡п╟ '%s'."
 
 #: apt-pkg/contrib/configuration.cc:723
 #, c-format
 msgid "Syntax error %s:%u: Extra junk at end of file"
-msgstr "Синтаксическая ошибка %s:%u: Лишние данные в конце файла."
+msgstr "п║п╦п╫я┌п╟п╨я│п╦я┤п╣я│п╨п╟я▐ п╬я┬п╦п╠п╨п╟ %s:%u: п⌡п╦я┬п╫п╦п╣ п╢п╟п╫п╫я▀п╣ п╡ п╨п╬п╫я├п╣ я└п╟п╧п╩п╟."
 
 #: apt-pkg/contrib/fileutl.cc:83
 #, c-format
 msgid "Not using locking for read only lock file %s"
-msgstr "Блокировка отключена в связи с недоступностью файла %s по записи"
+msgstr "п▒п╩п╬п╨п╦я─п╬п╡п╨п╟ п╬я┌п╨п╩я▌я┤п╣п╫п╟ п╡ я│п╡я▐п╥п╦ я│ п╫п╣п╢п╬я│я┌я┐п©п╫п╬я│я┌я▄я▌ я└п╟п╧п╩п╟ %s п©п╬ п╥п╟п©п╦я│п╦"
 
 #: apt-pkg/contrib/fileutl.cc:88
 #, c-format
 msgid "Could not open lock file %s"
-msgstr "Невозможно открыть файл блокировки %s"
+msgstr "п²п╣п╡п╬п╥п╪п╬п╤п╫п╬ п╬я┌п╨я─я▀я┌я▄ я└п╟п╧п╩ п╠п╩п╬п╨п╦я─п╬п╡п╨п╦ %s"
 
 #: apt-pkg/contrib/fileutl.cc:106
 #, c-format
 msgid "Not using locking for nfs mounted lock file %s"
 msgstr ""
-"Блокировка отключена, так как файл блокировки %s находится на сетевом "
-"разделе nfs"
+"п▒п╩п╬п╨п╦я─п╬п╡п╨п╟ п╬я┌п╨п╩я▌я┤п╣п╫п╟, я┌п╟п╨ п╨п╟п╨ я└п╟п╧п╩ п╠п╩п╬п╨п╦я─п╬п╡п╨п╦ %s п╫п╟я┘п╬п╢п╦я┌я│я▐ п╫п╟ я│п╣я┌п╣п╡п╬п╪ "
+"я─п╟п╥п╢п╣п╩п╣ nfs"
 
 #: apt-pkg/contrib/fileutl.cc:110
 #, c-format
 msgid "Could not get lock %s"
-msgstr "Невозможно заблокировать %s"
+msgstr "п²п╣п╡п╬п╥п╪п╬п╤п╫п╬ п╥п╟п╠п╩п╬п╨п╦я─п╬п╡п╟я┌я▄ %s"
 
 #: apt-pkg/contrib/fileutl.cc:361
 #, c-format
 msgid "Waited, for %s but it wasn't there"
-msgstr "Подпроцесс %s не отвечает."
+msgstr "п÷п╬п╢п©я─п╬я├п╣я│я│ %s п╫п╣ п╬я┌п╡п╣я┤п╟п╣я┌."
 
 #: apt-pkg/contrib/fileutl.cc:371
 #, c-format
 msgid "Sub-process %s received a segmentation fault."
-msgstr "Подпроцесс %s выполнил недопустимую операцию."
+msgstr "п÷п╬п╢п©я─п╬я├п╣я│я│ %s п╡я▀п©п╬п╩п╫п╦п╩ п╫п╣п╢п╬п©я┐я│я┌п╦п╪я┐я▌ п╬п©п╣я─п╟я├п╦я▌."
 
 #: apt-pkg/contrib/fileutl.cc:374 apt-pkg/rpm/rpmpm.cc:638
 #, c-format
 msgid "Sub-process %s returned an error code (%u)"
-msgstr "Подпроцесс %s завершился с ошибкой (%u)."
+msgstr "п÷п╬п╢п©я─п╬я├п╣я│я│ %s п╥п╟п╡п╣я─я┬п╦п╩я│я▐ я│ п╬я┬п╦п╠п╨п╬п╧ (%u)."
 
 #: apt-pkg/contrib/fileutl.cc:376 apt-pkg/rpm/rpmpm.cc:641
 #, c-format
 msgid "Sub-process %s exited unexpectedly"
-msgstr "Подпроцесс %s завершился непредусмотренным образом."
+msgstr "п÷п╬п╢п©я─п╬я├п╣я│я│ %s п╥п╟п╡п╣я─я┬п╦п╩я│я▐ п╫п╣п©я─п╣п╢я┐я│п╪п╬я┌я─п╣п╫п╫я▀п╪ п╬п╠я─п╟п╥п╬п╪."
 
 #: apt-pkg/contrib/fileutl.cc:420
 #, c-format
 msgid "Could not open file %s"
-msgstr "Невозможно открыть файл %s."
+msgstr "п²п╣п╡п╬п╥п╪п╬п╤п╫п╬ п╬я┌п╨я─я▀я┌я▄ я└п╟п╧п╩ %s."
 
 #: apt-pkg/contrib/fileutl.cc:455 methods/ftp.cc:342 methods/rsh.cc:193
 msgid "Read error"
-msgstr "Ошибка чтения"
+msgstr "п·я┬п╦п╠п╨п╟ я┤я┌п╣п╫п╦я▐"
 
 #: apt-pkg/contrib/fileutl.cc:476
 #, c-format
 msgid "read, still have %lu to read but none left"
-msgstr "Осталось прочесть %lu, но был достигнут конец файла."
+msgstr "п·я│я┌п╟п╩п╬я│я▄ п©я─п╬я┤п╣я│я┌я▄ %lu, п╫п╬ п╠я▀п╩ п╢п╬я│я┌п╦пЁп╫я┐я┌ п╨п╬п╫п╣я├ я└п╟п╧п╩п╟."
 
 #: apt-pkg/contrib/fileutl.cc:494
 msgid "Write error"
-msgstr "Ошибка записи"
+msgstr "п·я┬п╦п╠п╨п╟ п╥п╟п©п╦я│п╦"
 
 #: apt-pkg/contrib/fileutl.cc:506
 #, c-format
 msgid "write, still have %lu to write but couldn't"
-msgstr "Невозможно записать %lu."
+msgstr "п²п╣п╡п╬п╥п╪п╬п╤п╫п╬ п╥п╟п©п╦я│п╟я┌я▄ %lu."
 
 #: apt-pkg/contrib/fileutl.cc:581
 msgid "Problem closing the file"
-msgstr "Ошибка закрытия файла."
+msgstr "п·я┬п╦п╠п╨п╟ п╥п╟п╨я─я▀я┌п╦я▐ я└п╟п╧п╩п╟."
 
 #: apt-pkg/contrib/fileutl.cc:587
 msgid "Problem unlinking the file"
-msgstr "Ошибка отсоединения файла."
+msgstr "п·я┬п╦п╠п╨п╟ п╬я┌я│п╬п╣п╢п╦п╫п╣п╫п╦я▐ я└п╟п╧п╩п╟."
 
 #: apt-pkg/contrib/fileutl.cc:598
 msgid "Problem syncing the file"
-msgstr "Ошибка синхронизации файла."
+msgstr "п·я┬п╦п╠п╨п╟ я│п╦п╫я┘я─п╬п╫п╦п╥п╟я├п╦п╦ я└п╟п╧п╩п╟."
 
 #: apt-pkg/contrib/mmap.cc:82
 msgid "Can't mmap an empty file"
-msgstr "Невозможно выполнить mmap для пустого файла"
+msgstr "п²п╣п╡п╬п╥п╪п╬п╤п╫п╬ п╡я▀п©п╬п╩п╫п╦я┌я▄ mmap п╢п╩я▐ п©я┐я│я┌п╬пЁп╬ я└п╟п╧п╩п╟"
 
 #: apt-pkg/contrib/mmap.cc:87
 #, c-format
 msgid "Couldn't make mmap of %lu bytes"
-msgstr "Невозможно выполнить mmap для %lu байт"
+msgstr "п²п╣п╡п╬п╥п╪п╬п╤п╫п╬ п╡я▀п©п╬п╩п╫п╦я┌я▄ mmap п╢п╩я▐ %lu п╠п╟п╧я┌"
 
 #: apt-pkg/contrib/progress.cc:154
 #, c-format
 msgid "%c%s... Error!"
-msgstr "%c%s... Ошибка!"
+msgstr "%c%s... п·я┬п╦п╠п╨п╟!"
 
 #: apt-pkg/contrib/progress.cc:156
 #, c-format
 msgid "%c%s... Done"
-msgstr "%c%s... Завершено"
+msgstr "%c%s... п≈п╟п╡п╣я─я┬п╣п╫п╬"
 
 #: apt-pkg/contrib/strutl.cc:941
 #, c-format
 msgid "Selection %s not found"
-msgstr "Строк, соответствующих %s, не найдено."
+msgstr "п║я┌я─п╬п╨, я│п╬п╬я┌п╡п╣я┌я│я┌п╡я┐я▌я┴п╦я┘ %s, п╫п╣ п╫п╟п╧п╢п╣п╫п╬."
 
 #: apt-pkg/rpm/rpmhandler.cc:101
 msgid "could not rewind RPMFileHandler"
-msgstr "откат RPMFileHandler невозможен"
+msgstr "п╬я┌п╨п╟я┌ RPMFileHandler п╫п╣п╡п╬п╥п╪п╬п╤п╣п╫"
 
 #: apt-pkg/rpm/rpmhandler.cc:160 apt-pkg/rpm/rpmhandler.cc:167
 #: apt-pkg/rpm/rpmpm.cc:699 apt-pkg/rpm/rpmpm.cc:704
 #, c-format
 msgid "Failed reading file %s"
-msgstr "Ошибка чтения файла %s"
+msgstr "п·я┬п╦п╠п╨п╟ я┤я┌п╣п╫п╦я▐ я└п╟п╧п╩п╟ %s"
 
 #: apt-pkg/rpm/rpmhandler.cc:327
 msgid "Unable to determine the file size"
-msgstr "Невозможно определить размер файла"
+msgstr "п²п╣п╡п╬п╥п╪п╬п╤п╫п╬ п╬п©я─п╣п╢п╣п╩п╦я┌я▄ я─п╟п╥п╪п╣я─ я└п╟п╧п╩п╟"
 
 #: apt-pkg/rpm/rpmhandler.cc:372 apt-pkg/rpm/rpmhandler.cc:381
 msgid "could not open RPM database"
-msgstr "невозможно открыть базу данных RPM"
+msgstr "п╫п╣п╡п╬п╥п╪п╬п╤п╫п╬ п╬я┌п╨я─я▀я┌я▄ п╠п╟п╥я┐ п╢п╟п╫п╫я▀я┘ RPM"
 
 #: apt-pkg/rpm/rpmhandler.cc:388
 msgid "could not create RPM database iterator"
-msgstr "невозможно создать итератор базы данных RPM"
+msgstr "п╫п╣п╡п╬п╥п╪п╬п╤п╫п╬ я│п╬п╥п╢п╟я┌я▄ п╦я┌п╣я─п╟я┌п╬я─ п╠п╟п╥я▀ п╢п╟п╫п╫я▀я┘ RPM"
 
 #: apt-pkg/rpm/rpmindexfile.cc:374
 #, c-format
 msgid "Problem with SelectFile %s"
-msgstr "Ошибка SelectFile %s"
+msgstr "п·я┬п╦п╠п╨п╟ SelectFile %s"
 
 #: apt-pkg/rpm/rpmindexfile.cc:383 apt-pkg/rpm/rpmindexfile.cc:578
 #, c-format
 msgid "Failed to stat %s"
-msgstr "Невозможно получить сведения о %s"
+msgstr "п²п╣п╡п╬п╥п╪п╬п╤п╫п╬ п©п╬п╩я┐я┤п╦я┌я▄ я│п╡п╣п╢п╣п╫п╦я▐ п╬ %s"
 
 #: apt-pkg/rpm/rpmindexfile.cc:392 apt-pkg/rpm/rpmindexfile.cc:428
 #, c-format
 msgid "Problem opening %s"
-msgstr "Ошибка открытия %s"
+msgstr "п·я┬п╦п╠п╨п╟ п╬я┌п╨я─я▀я┌п╦я▐ %s"
 
 #: apt-pkg/rpm/rpmindexfile.cc:398 apt-pkg/rpm/rpmindexfile.cc:583
 #, c-format
 msgid "Problem with MergeList %s"
-msgstr "Ошибка с MergeList %s"
+msgstr "п·я┬п╦п╠п╨п╟ я│ MergeList %s"
 
 #: apt-pkg/rpm/rpmindexfile.cc:433 apt-pkg/rpm/rpmindexfile.cc:601
 #, c-format
 msgid "Problem with MergeFileProvides %s"
-msgstr "Ошибка с MergeFileProvides %s"
+msgstr "п·я┬п╦п╠п╨п╟ я│ MergeFileProvides %s"
 
 #: apt-pkg/rpm/rpmindexfile.cc:568 apt-pkg/rpm/rpmindexfile.cc:597
 msgid "Problem opening RPM database"
-msgstr "Ошибка открытия базы данных RPM"
+msgstr "п·я┬п╦п╠п╨п╟ п╬я┌п╨я─я▀я┌п╦я▐ п╠п╟п╥я▀ п╢п╟п╫п╫я▀я┘ RPM"
 
 #: apt-pkg/rpm/rpmindexfile.cc:572
 msgid "Problem with SelectFile RPM Database"
-msgstr "Ошибка SelectFile базы данных RPM."
+msgstr "п·я┬п╦п╠п╨п╟ SelectFile п╠п╟п╥я▀ п╢п╟п╫п╫я▀я┘ RPM."
 
 #: apt-pkg/rpm/rpmlistparser.cc:111
 msgid "Corrupt pkglist: no RPMTAG_NAME in header entry"
-msgstr "Повреждённый pkglist: отсутствует RPMTAG_NAME в заголовке"
+msgstr "п÷п╬п╡я─п╣п╤п╢я▒п╫п╫я▀п╧ pkglist: п╬я┌я│я┐я┌я│я┌п╡я┐п╣я┌ RPMTAG_NAME п╡ п╥п╟пЁп╬п╩п╬п╡п╨п╣"
 
 #: apt-pkg/rpm/rpmlistparser.cc:130
 #, c-format
@@ -1954,203 +1954,203 @@ msgid ""
 "\n"
 "RPM::Allow-Duplicated-Warning \"false\";\n"
 msgstr ""
-"В Вашей системе установлено несколько версий пакета \"%s\".\n"
+"п▓ п▓п╟я┬п╣п╧ я│п╦я│я┌п╣п╪п╣ я┐я│я┌п╟п╫п╬п╡п╩п╣п╫п╬ п╫п╣я│п╨п╬п╩я▄п╨п╬ п╡п╣я─я│п╦п╧ п©п╟п╨п╣я┌п╟ \"%s\".\n"
 "\n"
-"Этот пакет не может быть обновлён обычным путём до тех пор, пока Вы не\n"
-"оставите только одну его версию. Чтобы оставить установленными несколько "
-"версий,\n"
-"и не получать больше этого предупреждения, Вы можете установить следующий "
-"параметр\n"
-"в Вашем файле конфигурации:\n"
+"п╜я┌п╬я┌ п©п╟п╨п╣я┌ п╫п╣ п╪п╬п╤п╣я┌ п╠я▀я┌я▄ п╬п╠п╫п╬п╡п╩я▒п╫ п╬п╠я▀я┤п╫я▀п╪ п©я┐я┌я▒п╪ п╢п╬ я┌п╣я┘ п©п╬я─, п©п╬п╨п╟ п▓я▀ п╫п╣\n"
+"п╬я│я┌п╟п╡п╦я┌п╣ я┌п╬п╩я▄п╨п╬ п╬п╢п╫я┐ п╣пЁп╬ п╡п╣я─я│п╦я▌. п╖я┌п╬п╠я▀ п╬я│я┌п╟п╡п╦я┌я▄ я┐я│я┌п╟п╫п╬п╡п╩п╣п╫п╫я▀п╪п╦ п╫п╣я│п╨п╬п╩я▄п╨п╬ "
+"п╡п╣я─я│п╦п╧,\n"
+"п╦ п╫п╣ п©п╬п╩я┐я┤п╟я┌я▄ п╠п╬п╩я▄я┬п╣ я█я┌п╬пЁп╬ п©я─п╣п╢я┐п©я─п╣п╤п╢п╣п╫п╦я▐, п▓я▀ п╪п╬п╤п╣я┌п╣ я┐я│я┌п╟п╫п╬п╡п╦я┌я▄ я│п╩п╣п╢я┐я▌я┴п╦п╧ "
+"п©п╟я─п╟п╪п╣я┌я─\n"
+"п╡ п▓п╟я┬п╣п╪ я└п╟п╧п╩п╣ п╨п╬п╫я└п╦пЁя┐я─п╟я├п╦п╦:\n"
 "\n"
 "RPM::Allow-Duplicated { \"^%s$\"; };\n"
 "\n"
-"Чтобы полностью запретить это предупреждение, установите параметр:\n"
+"п╖я┌п╬п╠я▀ п©п╬п╩п╫п╬я│я┌я▄я▌ п╥п╟п©я─п╣я┌п╦я┌я▄ я█я┌п╬ п©я─п╣п╢я┐п©я─п╣п╤п╢п╣п╫п╦п╣, я┐я│я┌п╟п╫п╬п╡п╦я┌п╣ п©п╟я─п╟п╪п╣я┌я─:\n"
 "\n"
 "RPM::Allow-Duplicated-Warning \"false\";\n"
 
 #: apt-pkg/rpm/rpmlistparser.cc:680
 msgid "Bad NotAutomatic flag"
-msgstr "Плохой NotAutomatic флаг"
+msgstr "п÷п╩п╬я┘п╬п╧ NotAutomatic я└п╩п╟пЁ"
 
 #: apt-pkg/rpm/rpmpackagedata.cc:28
 #, c-format
 msgid "could not open package priority file %s"
-msgstr "невозможно открыть файл c описанием приоритетов пакетов %s"
+msgstr "п╫п╣п╡п╬п╥п╪п╬п╤п╫п╬ п╬я┌п╨я─я▀я┌я▄ я└п╟п╧п╩ c п╬п©п╦я│п╟п╫п╦п╣п╪ п©я─п╦п╬я─п╦я┌п╣я┌п╬п╡ п©п╟п╨п╣я┌п╬п╡ %s"
 
 #: apt-pkg/rpm/rpmpackagedata.cc:37
 #, c-format
 msgid "no data in %s"
-msgstr "нет данных в %s"
+msgstr "п╫п╣я┌ п╢п╟п╫п╫я▀я┘ п╡ %s"
 
 #: apt-pkg/rpm/rpmpackagedata.cc:87
 #, c-format
 msgid "Bad regular expression '%s' in option RPM::Hold."
-msgstr "Недопустимое регулярное выражение '%s' в параметре RPM::Hold."
+msgstr "п²п╣п╢п╬п©я┐я│я┌п╦п╪п╬п╣ я─п╣пЁя┐п╩я▐я─п╫п╬п╣ п╡я▀я─п╟п╤п╣п╫п╦п╣ '%s' п╡ п©п╟я─п╟п╪п╣я┌я─п╣ RPM::Hold."
 
 #: apt-pkg/rpm/rpmpackagedata.cc:107
 #, c-format
 msgid "Bad regular expression '%s' in option RPM::Allow-Duplicated."
-msgstr "Недопустимое регулярное выражение '%s' в параметре RPM::Allow-Duplicated."
+msgstr "п²п╣п╢п╬п©я┐я│я┌п╦п╪п╬п╣ я─п╣пЁя┐п╩я▐я─п╫п╬п╣ п╡я▀я─п╟п╤п╣п╫п╦п╣ '%s' п╡ п©п╟я─п╟п╪п╣я┌я─п╣ RPM::Allow-Duplicated."
 
 #: apt-pkg/rpm/rpmpackagedata.cc:124
 #, c-format
 msgid "Bad entry '%s' in option RPM::FakeProvides."
-msgstr "Недопустимая запись '%s' в параметре RPM::FakeProvides."
+msgstr "п²п╣п╢п╬п©я┐я│я┌п╦п╪п╟я▐ п╥п╟п©п╦я│я▄ '%s' п╡ п©п╟я─п╟п╪п╣я┌я─п╣ RPM::FakeProvides."
 
 #: apt-pkg/rpm/rpmpackagedata.cc:178
 #, c-format
 msgid "Bad regular expression '%s' in URI translation"
-msgstr "Недопустимое регулярное выражение '%s' в URI translation"
+msgstr "п²п╣п╢п╬п©я┐я│я┌п╦п╪п╬п╣ я─п╣пЁя┐п╩я▐я─п╫п╬п╣ п╡я▀я─п╟п╤п╣п╫п╦п╣ '%s' п╡ URI translation"
 
 #: apt-pkg/rpm/rpmpm.cc:71
 #, c-format
 msgid "Internal Error, No file name for %s"
-msgstr "Внутренняя ошибка, Не указано имя файла для пакета %s"
+msgstr "п▓п╫я┐я┌я─п╣п╫п╫я▐я▐ п╬я┬п╦п╠п╨п╟, п²п╣ я┐п╨п╟п╥п╟п╫п╬ п╦п╪я▐ я└п╟п╧п╩п╟ п╢п╩я▐ п©п╟п╨п╣я┌п╟ %s"
 
 #: apt-pkg/rpm/rpmpm.cc:140
 #, c-format
 msgid "Problem executing scripts %s '%s'"
-msgstr "Ошибка выполнения скриптов %s '%s'"
+msgstr "п·я┬п╦п╠п╨п╟ п╡я▀п©п╬п╩п╫п╣п╫п╦я▐ я│п╨я─п╦п©я┌п╬п╡ %s '%s'"
 
 #: apt-pkg/rpm/rpmpm.cc:151
 msgid "Sub-process returned an error code"
-msgstr "Подпроцесс завершился с ошибкой"
+msgstr "п÷п╬п╢п©я─п╬я├п╣я│я│ п╥п╟п╡п╣я─я┬п╦п╩я│я▐ я│ п╬я┬п╦п╠п╨п╬п╧"
 
 #: apt-pkg/rpm/rpmpm.cc:177 methods/rsh.cc:94
 msgid "Failed to create IPC pipe to subprocess"
-msgstr "Невозможно создать IPC канал для подпроцесса"
+msgstr "п²п╣п╡п╬п╥п╪п╬п╤п╫п╬ я│п╬п╥п╢п╟я┌я▄ IPC п╨п╟п╫п╟п╩ п╢п╩я▐ п©п╬п╢п©я─п╬я├п╣я│я│п╟"
 
 #: apt-pkg/rpm/rpmpm.cc:221 apt-pkg/rpm/rpmpm.cc:228
 #, c-format
 msgid "Failure running script %s"
-msgstr "Ошибка выполнения скрипта %s"
+msgstr "п·я┬п╦п╠п╨п╟ п╡я▀п©п╬п╩п╫п╣п╫п╦я▐ я│п╨я─п╦п©я┌п╟ %s"
 
 #: apt-pkg/rpm/rpmpm.cc:309
 msgid "Unknown pkgRPMPM operation."
-msgstr "Неизвестная pkgRPMPM операция."
+msgstr "п²п╣п╦п╥п╡п╣я│я┌п╫п╟я▐ pkgRPMPM п╬п©п╣я─п╟я├п╦я▐."
 
 #: apt-pkg/rpm/rpmpm.cc:564
 msgid "Executing RPM ("
-msgstr "Запуск RPM ("
+msgstr "п≈п╟п©я┐я│п╨ RPM ("
 
 #: apt-pkg/rpm/rpmpm.cc:604
 msgid "Could not exec "
-msgstr "Невозможно выполнить"
+msgstr "п²п╣п╡п╬п╥п╪п╬п╤п╫п╬ п╡я▀п©п╬п╩п╫п╦я┌я▄"
 
 #: apt-pkg/rpm/rpmpm.cc:619
 msgid "Couldn't wait for subprocess"
-msgstr "Невозможно дождаться подпроцесса"
+msgstr "п²п╣п╡п╬п╥п╪п╬п╤п╫п╬ п╢п╬п╤п╢п╟я┌я▄я│я▐ п©п╬п╢п©я─п╬я├п╣я│я│п╟"
 
 #: apt-pkg/rpm/rpmpm.cc:635
 #, c-format
 msgid "Sub-process %s recieved a segmentation fault."
-msgstr "Подпроцесс %s выполнил недопустимую операцию."
+msgstr "п÷п╬п╢п©я─п╬я├п╣я│я│ %s п╡я▀п©п╬п╩п╫п╦п╩ п╫п╣п╢п╬п©я┐я│я┌п╦п╪я┐я▌ п╬п©п╣я─п╟я├п╦я▌."
 
 #: apt-pkg/rpm/rpmpm.cc:645 apt-pkg/rpm/rpmpm.cc:904
 msgid "Done."
-msgstr "Завершено."
+msgstr "п≈п╟п╡п╣я─я┬п╣п╫п╬."
 
 #: apt-pkg/rpm/rpmpm.cc:695
 #, c-format
 msgid "Failed opening %s"
-msgstr "Ошибка открытия %s"
+msgstr "п·я┬п╦п╠п╨п╟ п╬я┌п╨я─я▀я┌п╦я▐ %s"
 
 #: apt-pkg/rpm/rpmpm.cc:708 apt-pkg/rpm/rpmpm.cc:732
 #, c-format
 msgid "Failed adding %s to transaction %s"
-msgstr "Ошибка добавления %s в транзакцию %s"
+msgstr "п·я┬п╦п╠п╨п╟ п╢п╬п╠п╟п╡п╩п╣п╫п╦я▐ %s п╡ я┌я─п╟п╫п╥п╟п╨я├п╦я▌ %s"
 
 #: apt-pkg/rpm/rpmpm.cc:784 apt-pkg/rpm/rpmpm.cc:794
 msgid "Could not open RPM database"
-msgstr "Невозможно открыть базу данных RPM"
+msgstr "п²п╣п╡п╬п╥п╪п╬п╤п╫п╬ п╬я┌п╨я─я▀я┌я▄ п╠п╟п╥я┐ п╢п╟п╫п╫я▀я┘ RPM"
 
 #: apt-pkg/rpm/rpmpm.cc:842 apt-pkg/rpm/rpmpm.cc:855
 msgid "Transaction set check failed"
-msgstr "Проверка группы транзакций не удалась"
+msgstr "п÷я─п╬п╡п╣я─п╨п╟ пЁя─я┐п©п©я▀ я┌я─п╟п╫п╥п╟п╨я├п╦п╧ п╫п╣ я┐п╢п╟п╩п╟я│я▄"
 
 #: apt-pkg/rpm/rpmpm.cc:875
 #, c-format
 msgid "Ordering failed for %d packages"
-msgstr "Упорядочивание не удалось для %d пакетов"
+msgstr "пёп©п╬я─я▐п╢п╬я┤п╦п╡п╟п╫п╦п╣ п╫п╣ я┐п╢п╟п╩п╬я│я▄ п╢п╩я▐ %d п©п╟п╨п╣я┌п╬п╡"
 
 #: apt-pkg/rpm/rpmpm.cc:880
 msgid "Committing changes..."
-msgstr "Совершаем изменения..."
+msgstr "п║п╬п╡п╣я─я┬п╟п╣п╪ п╦п╥п╪п╣п╫п╣п╫п╦я▐..."
 
 #: apt-pkg/rpm/rpmpm.cc:896
 msgid "Error while running transaction"
-msgstr "Ошибка во время исполнения транзакции"
+msgstr "п·я┬п╦п╠п╨п╟ п╡п╬ п╡я─п╣п╪я▐ п╦я│п©п╬п╩п╫п╣п╫п╦я▐ я┌я─п╟п╫п╥п╟п╨я├п╦п╦"
 
 #: apt-pkg/rpm/rpmpm.cc:902
 msgid "Some errors occurred while running transaction"
-msgstr "Произошли ошибки при выполнении транзакции"
+msgstr "п÷я─п╬п╦п╥п╬я┬п╩п╦ п╬я┬п╦п╠п╨п╦ п©я─п╦ п╡я▀п©п╬п╩п╫п╣п╫п╦п╦ я┌я─п╟п╫п╥п╟п╨я├п╦п╦"
 
 #: apt-pkg/rpm/rpmrecords.cc:206 apt-pkg/rpm/rpmsrcrecords.cc:229
 msgid "Could not allocate buffer for record text"
-msgstr "Невозможно выделить буфер для записи текста"
+msgstr "п²п╣п╡п╬п╥п╪п╬п╤п╫п╬ п╡я▀п╢п╣п╩п╦я┌я▄ п╠я┐я└п╣я─ п╢п╩я▐ п╥п╟п©п╦я│п╦ я┌п╣п╨я│я┌п╟"
 
 #: apt-pkg/rpm/rpmsrcrecords.cc:160 apt-pkg/rpm/rpmsrcrecords.cc:167
 #, c-format
 msgid "error parsing source list %s"
-msgstr "ошибка обработки списка источников %s"
+msgstr "п╬я┬п╦п╠п╨п╟ п╬п╠я─п╟п╠п╬я┌п╨п╦ я│п©п╦я│п╨п╟ п╦я│я┌п╬я┤п╫п╦п╨п╬п╡ %s"
 
 #: apt-pkg/rpm/rpmsystem.cc:409 apt-pkg/pkgcachegen.cc:714
 #: apt-pkg/pkgcachegen.cc:741 apt-pkg/pkgcachegen.cc:783
 #: apt-pkg/pkgcachegen.cc:788 apt-pkg/pkgcachegen.cc:992
 msgid "Reading Package Lists"
-msgstr "Чтение списков пакетов"
+msgstr "п╖я┌п╣п╫п╦п╣ я│п©п╦я│п╨п╬п╡ п©п╟п╨п╣я┌п╬п╡"
 
 #: apt-pkg/acquire.cc:61
 #, c-format
 msgid "Lists directory %spartial is missing."
-msgstr "Директория со списками пакетов %spartial отсутствует."
+msgstr "п■п╦я─п╣п╨я┌п╬я─п╦я▐ я│п╬ я│п©п╦я│п╨п╟п╪п╦ п©п╟п╨п╣я┌п╬п╡ %spartial п╬я┌я│я┐я┌я│я┌п╡я┐п╣я┌."
 
 #: apt-pkg/acquire.cc:65
 #, c-format
 msgid "Archive directory %spartial is missing."
-msgstr "Директория с архивными пакетами %spartial отсутствует."
+msgstr "п■п╦я─п╣п╨я┌п╬я─п╦я▐ я│ п╟я─я┘п╦п╡п╫я▀п╪п╦ п©п╟п╨п╣я┌п╟п╪п╦ %spartial п╬я┌я│я┐я┌я│я┌п╡я┐п╣я┌."
 
 #: apt-pkg/acquire-item.cc:169
 #, c-format
 msgid "rename failed, %s (%s -> %s)."
-msgstr "Ошибка переименования, %s (%s -> %s)."
+msgstr "п·я┬п╦п╠п╨п╟ п©п╣я─п╣п╦п╪п╣п╫п╬п╡п╟п╫п╦я▐, %s (%s -> %s)."
 
 #: apt-pkg/acquire-item.cc:213 apt-pkg/acquire-item.cc:406
 #, c-format
 msgid "%s is not listed in the checksum list for its repository"
-msgstr "%s отсутствует в списке контрольных сумм своего репозитория."
+msgstr "%s п╬я┌я│я┐я┌я│я┌п╡я┐п╣я┌ п╡ я│п©п╦я│п╨п╣ п╨п╬п╫я┌я─п╬п╩я▄п╫я▀я┘ я│я┐п╪п╪ я│п╡п╬п╣пЁп╬ я─п╣п©п╬п╥п╦я┌п╬я─п╦я▐."
 
 #: apt-pkg/acquire-item.cc:233 apt-pkg/acquire-item.cc:426
 #, c-format
 msgid "Release information not available for %s"
-msgstr "Описание %s не найдено."
+msgstr "п·п©п╦я│п╟п╫п╦п╣ %s п╫п╣ п╫п╟п╧п╢п╣п╫п╬."
 
 #: apt-pkg/acquire-item.cc:283 apt-pkg/acquire-item.cc:559
 #: apt-pkg/acquire-item.cc:818
 msgid "Size mismatch"
-msgstr "Несовпадение размера"
+msgstr "п²п╣я│п╬п╡п©п╟п╢п╣п╫п╦п╣ я─п╟п╥п╪п╣я─п╟"
 
 #: apt-pkg/acquire-item.cc:294 apt-pkg/acquire-item.cc:569
 #: apt-pkg/acquire-item.cc:831
 msgid "MD5Sum mismatch"
-msgstr "Несовпадение контрольной суммы MD5"
+msgstr "п²п╣я│п╬п╡п©п╟п╢п╣п╫п╦п╣ п╨п╬п╫я┌я─п╬п╩я▄п╫п╬п╧ я│я┐п╪п╪я▀ MD5"
 
 #: apt-pkg/acquire-item.cc:475
 msgid "No valid signatures found in Release file"
-msgstr "Не найдено пригодных подписей в файле описания"
+msgstr "п²п╣ п╫п╟п╧п╢п╣п╫п╬ п©я─п╦пЁп╬п╢п╫я▀я┘ п©п╬п╢п©п╦я│п╣п╧ п╡ я└п╟п╧п╩п╣ п╬п©п╦я│п╟п╫п╦я▐"
 
 #: apt-pkg/acquire-item.cc:483
 msgid "Signature fingerprint of Release file does not match (expected "
-msgstr "Неверная подпись файла описания (должно быть "
+msgstr "п²п╣п╡п╣я─п╫п╟я▐ п©п╬п╢п©п╦я│я▄ я└п╟п╧п╩п╟ п╬п©п╦я│п╟п╫п╦я▐ (п╢п╬п╩п╤п╫п╬ п╠я▀я┌я▄ "
 
 #: apt-pkg/acquire-item.cc:484
 msgid ", got "
-msgstr ", а получено "
+msgstr ", п╟ п©п╬п╩я┐я┤п╣п╫п╬ "
 
 #: apt-pkg/acquire-item.cc:509
 msgid "Could not read checksum list from Release file"
-msgstr "Невозможно прочитать список контрольных сумм из файла описания."
+msgstr "п²п╣п╡п╬п╥п╪п╬п╤п╫п╬ п©я─п╬я┤п╦я┌п╟я┌я▄ я│п©п╦я│п╬п╨ п╨п╬п╫я┌я─п╬п╩я▄п╫я▀я┘ я│я┐п╪п╪ п╦п╥ я└п╟п╧п╩п╟ п╬п©п╦я│п╟п╫п╦я▐."
 
 #: apt-pkg/acquire-item.cc:643
 #, c-format
@@ -2158,8 +2158,8 @@ msgid ""
 "I wasn't able to locate a file for the %s package. This might mean you need "
 "to manually fix this package. (due to missing arch)"
 msgstr ""
-"Невозможно найти файл пакета %s. Возможно, потребуется исправить пакет "
-"вручную (в связи с отсутствием нужной платформы)."
+"п²п╣п╡п╬п╥п╪п╬п╤п╫п╬ п╫п╟п╧я┌п╦ я└п╟п╧п╩ п©п╟п╨п╣я┌п╟ %s. п▓п╬п╥п╪п╬п╤п╫п╬, п©п╬я┌я─п╣п╠я┐п╣я┌я│я▐ п╦я│п©я─п╟п╡п╦я┌я▄ п©п╟п╨п╣я┌ "
+"п╡я─я┐я┤п╫я┐я▌ (п╡ я│п╡я▐п╥п╦ я│ п╬я┌я│я┐я┌я│я┌п╡п╦п╣п╪ п╫я┐п╤п╫п╬п╧ п©п╩п╟я┌я└п╬я─п╪я▀)."
 
 #: apt-pkg/acquire-item.cc:678
 #, c-format
@@ -2167,76 +2167,76 @@ msgid ""
 "I wasn't able to locate file for the %s package. This might mean you need to "
 "manually fix this package."
 msgstr ""
-"Невозможно найти файл пакета %s. Возможно, потребуется исправить пакет "
-"вручную."
+"п²п╣п╡п╬п╥п╪п╬п╤п╫п╬ п╫п╟п╧я┌п╦ я└п╟п╧п╩ п©п╟п╨п╣я┌п╟ %s. п▓п╬п╥п╪п╬п╤п╫п╬, п©п╬я┌я─п╣п╠я┐п╣я┌я│я▐ п╦я│п©я─п╟п╡п╦я┌я▄ п©п╟п╨п╣я┌ "
+"п╡я─я┐я┤п╫я┐я▌."
 
 #: apt-pkg/acquire-item.cc:709
 #, c-format
 msgid "The package index files are corrupted. No Filename: field for package %s."
-msgstr "Повреждены индексные файлы. Отсутствует поле Filename: для пакета %s."
+msgstr "п÷п╬п╡я─п╣п╤п╢п╣п╫я▀ п╦п╫п╢п╣п╨я│п╫я▀п╣ я└п╟п╧п╩я▀. п·я┌я│я┐я┌я│я┌п╡я┐п╣я┌ п©п╬п╩п╣ Filename: п╢п╩я▐ п©п╟п╨п╣я┌п╟ %s."
 
 #: apt-pkg/acquire-worker.cc:112
 #, c-format
 msgid "The method driver %s could not be found."
-msgstr "Программа обработки метода %s не найдена."
+msgstr "п÷я─п╬пЁя─п╟п╪п╪п╟ п╬п╠я─п╟п╠п╬я┌п╨п╦ п╪п╣я┌п╬п╢п╟ %s п╫п╣ п╫п╟п╧п╢п╣п╫п╟."
 
 #: apt-pkg/acquire-worker.cc:161
 #, c-format
 msgid "Method %s did not start correctly"
-msgstr "Программа обработки метода %s не смогла правильно запуститься"
+msgstr "п÷я─п╬пЁя─п╟п╪п╪п╟ п╬п╠я─п╟п╠п╬я┌п╨п╦ п╪п╣я┌п╬п╢п╟ %s п╫п╣ я│п╪п╬пЁп╩п╟ п©я─п╟п╡п╦п╩я▄п╫п╬ п╥п╟п©я┐я│я┌п╦я┌я▄я│я▐"
 
 #: apt-pkg/algorithms.cc:251
 #, c-format
 msgid "The package %s needs to be reinstalled, but I can't find an archive for it."
-msgstr "Необходимо переустановить пакет %s, но найти его архивную копию невозможно."
+msgstr "п²п╣п╬п╠я┘п╬п╢п╦п╪п╬ п©п╣я─п╣я┐я│я┌п╟п╫п╬п╡п╦я┌я▄ п©п╟п╨п╣я┌ %s, п╫п╬ п╫п╟п╧я┌п╦ п╣пЁп╬ п╟я─я┘п╦п╡п╫я┐я▌ п╨п╬п©п╦я▌ п╫п╣п╡п╬п╥п╪п╬п╤п╫п╬."
 
 #: apt-pkg/algorithms.cc:1170
 msgid ""
 "Error, pkgProblemResolver::Resolve generated breaks, this may be caused by "
 "held packages."
 msgstr ""
-"Ошибка. Процедура pkgProblemResolver::Resolve вызвала остановку. Это может "
-"быть вызвано сохраняемыми пакетами."
+"п·я┬п╦п╠п╨п╟. п÷я─п╬я├п╣п╢я┐я─п╟ pkgProblemResolver::Resolve п╡я▀п╥п╡п╟п╩п╟ п╬я│я┌п╟п╫п╬п╡п╨я┐. п╜я┌п╬ п╪п╬п╤п╣я┌ "
+"п╠я▀я┌я▄ п╡я▀п╥п╡п╟п╫п╬ я│п╬я┘я─п╟п╫я▐п╣п╪я▀п╪п╦ п©п╟п╨п╣я┌п╟п╪п╦."
 
 #: apt-pkg/algorithms.cc:1172
 msgid "Unable to correct problems, you have held broken packages."
 msgstr ""
-"Решить проблему невозможно. Вы потребовали сохранить пакеты с нарушенными "
-"зависимостями."
+"п═п╣я┬п╦я┌я▄ п©я─п╬п╠п╩п╣п╪я┐ п╫п╣п╡п╬п╥п╪п╬п╤п╫п╬. п▓я▀ п©п╬я┌я─п╣п╠п╬п╡п╟п╩п╦ я│п╬я┘я─п╟п╫п╦я┌я▄ п©п╟п╨п╣я┌я▀ я│ п╫п╟я─я┐я┬п╣п╫п╫я▀п╪п╦ "
+"п╥п╟п╡п╦я│п╦п╪п╬я│я┌я▐п╪п╦."
 
 #: apt-pkg/cachefile.cc:77
 msgid "The package lists or status file could not be parsed or opened."
-msgstr "Невозможно прочитать список пакетов или файл статуса."
+msgstr "п²п╣п╡п╬п╥п╪п╬п╤п╫п╬ п©я─п╬я┤п╦я┌п╟я┌я▄ я│п©п╦я│п╬п╨ п©п╟п╨п╣я┌п╬п╡ п╦п╩п╦ я└п╟п╧п╩ я│я┌п╟я┌я┐я│п╟."
 
 #: apt-pkg/cachefile.cc:81
 msgid "You may want to run apt-get update to correct these problems"
-msgstr "Возможно, Вам потребуется запустить `apt-get update' для исправления."
+msgstr "п▓п╬п╥п╪п╬п╤п╫п╬, п▓п╟п╪ п©п╬я┌я─п╣п╠я┐п╣я┌я│я▐ п╥п╟п©я┐я│я┌п╦я┌я▄ `apt-get update' п╢п╩я▐ п╦я│п©я─п╟п╡п╩п╣п╫п╦я▐."
 
 #: apt-pkg/clean.cc:61
 #, c-format
 msgid "Unable to stat %s."
-msgstr "Невозможно прочитать %s."
+msgstr "п²п╣п╡п╬п╥п╪п╬п╤п╫п╬ п©я─п╬я┤п╦я┌п╟я┌я▄ %s."
 
 #: apt-pkg/depcache.cc:67 apt-pkg/depcache.cc:96
 msgid "Building Dependency Tree"
-msgstr "Построение дерева зависимостей"
+msgstr "п÷п╬я│я┌я─п╬п╣п╫п╦п╣ п╢п╣я─п╣п╡п╟ п╥п╟п╡п╦я│п╦п╪п╬я│я┌п╣п╧"
 
 #: apt-pkg/depcache.cc:68
 msgid "Candidate Versions"
-msgstr "Определение необходимых версий"
+msgstr "п·п©я─п╣п╢п╣п╩п╣п╫п╦п╣ п╫п╣п╬п╠я┘п╬п╢п╦п╪я▀я┘ п╡п╣я─я│п╦п╧"
 
 #: apt-pkg/depcache.cc:97
 msgid "Dependency Generation"
-msgstr "Создание зависимостей"
+msgstr "п║п╬п╥п╢п╟п╫п╦п╣ п╥п╟п╡п╦я│п╦п╪п╬я│я┌п╣п╧"
 
 #: apt-pkg/init.cc:142
 #, c-format
 msgid "Packaging system '%s' is not supported"
-msgstr "Пакетная система '%s' не поддерживается."
+msgstr "п÷п╟п╨п╣я┌п╫п╟я▐ я│п╦я│я┌п╣п╪п╟ '%s' п╫п╣ п©п╬п╢п╢п╣я─п╤п╦п╡п╟п╣я┌я│я▐."
 
 #: apt-pkg/init.cc:158
 msgid "Unable to determine a suitable system type"
-msgstr "Невозможно определить тип системы."
+msgstr "п²п╣п╡п╬п╥п╪п╬п╤п╫п╬ п╬п©я─п╣п╢п╣п╩п╦я┌я▄ я┌п╦п© я│п╦я│я┌п╣п╪я▀."
 
 #: apt-pkg/packagemanager.cc:402
 #, c-format
@@ -2245,287 +2245,287 @@ msgid ""
 "package %s due to a Conflicts/Pre-Depends loop. This is often bad, but if "
 "you really want to do it, activate the APT::Force-LoopBreak option."
 msgstr ""
-"Этот сеанс установки требует временного удаления системного пакета %s в "
-"связи с конфликтом или зацикливанием предварительных зависимостей. Чаще "
-"всего это неправильно, но если вы действительно этого хотите, то "
-"активизируйте параметр APT::Force-LoopBreak."
+"п╜я┌п╬я┌ я│п╣п╟п╫я│ я┐я│я┌п╟п╫п╬п╡п╨п╦ я┌я─п╣п╠я┐п╣я┌ п╡я─п╣п╪п╣п╫п╫п╬пЁп╬ я┐п╢п╟п╩п╣п╫п╦я▐ я│п╦я│я┌п╣п╪п╫п╬пЁп╬ п©п╟п╨п╣я┌п╟ %s п╡ "
+"я│п╡я▐п╥п╦ я│ п╨п╬п╫я└п╩п╦п╨я┌п╬п╪ п╦п╩п╦ п╥п╟я├п╦п╨п╩п╦п╡п╟п╫п╦п╣п╪ п©я─п╣п╢п╡п╟я─п╦я┌п╣п╩я▄п╫я▀я┘ п╥п╟п╡п╦я│п╦п╪п╬я│я┌п╣п╧. п╖п╟я┴п╣ "
+"п╡я│п╣пЁп╬ я█я┌п╬ п╫п╣п©я─п╟п╡п╦п╩я▄п╫п╬, п╫п╬ п╣я│п╩п╦ п╡я▀ п╢п╣п╧я│я┌п╡п╦я┌п╣п╩я▄п╫п╬ я█я┌п╬пЁп╬ я┘п╬я┌п╦я┌п╣, я┌п╬ "
+"п╟п╨я┌п╦п╡п╦п╥п╦я─я┐п╧я┌п╣ п©п╟я─п╟п╪п╣я┌я─ APT::Force-LoopBreak."
 
 #: apt-pkg/pkgcache.cc:133
 msgid "Empty package cache"
-msgstr "Буфер пакетов пуст."
+msgstr "п▒я┐я└п╣я─ п©п╟п╨п╣я┌п╬п╡ п©я┐я│я┌."
 
 #: apt-pkg/pkgcache.cc:139
 msgid "The package cache file is corrupted"
-msgstr "Файл с кэшем пакетов поврежден"
+msgstr "п╓п╟п╧п╩ я│ п╨я█я┬п╣п╪ п©п╟п╨п╣я┌п╬п╡ п©п╬п╡я─п╣п╤п╢п╣п╫"
 
 #: apt-pkg/pkgcache.cc:144
 msgid "The package cache file is an incompatible version"
-msgstr "Файл с кэшем пакетов сформирован несовместимой версией APT"
+msgstr "п╓п╟п╧п╩ я│ п╨я█я┬п╣п╪ п©п╟п╨п╣я┌п╬п╡ я│я└п╬я─п╪п╦я─п╬п╡п╟п╫ п╫п╣я│п╬п╡п╪п╣я│я┌п╦п╪п╬п╧ п╡п╣я─я│п╦п╣п╧ APT"
 
 #: apt-pkg/pkgcache.cc:149
 #, c-format
 msgid "This APT does not support the Versioning System '%s'"
-msgstr "Данная версия APT не поддерживает систему версий '%s'."
+msgstr "п■п╟п╫п╫п╟я▐ п╡п╣я─я│п╦я▐ APT п╫п╣ п©п╬п╢п╢п╣я─п╤п╦п╡п╟п╣я┌ я│п╦я│я┌п╣п╪я┐ п╡п╣я─я│п╦п╧ '%s'."
 
 #: apt-pkg/pkgcache.cc:154
 msgid "The package cache was built for a different architecture"
-msgstr "Кэш пакетов был собран для другой платформы"
+msgstr "п я█я┬ п©п╟п╨п╣я┌п╬п╡ п╠я▀п╩ я│п╬п╠я─п╟п╫ п╢п╩я▐ п╢я─я┐пЁп╬п╧ п©п╩п╟я┌я└п╬я─п╪я▀"
 
 #: apt-pkg/pkgcache.cc:252
 msgid "Depends"
-msgstr "Требует"
+msgstr "п╒я─п╣п╠я┐п╣я┌"
 
 #: apt-pkg/pkgcache.cc:252
 msgid "PreDepends"
-msgstr "Для установки требует"
+msgstr "п■п╩я▐ я┐я│я┌п╟п╫п╬п╡п╨п╦ я┌я─п╣п╠я┐п╣я┌"
 
 #: apt-pkg/pkgcache.cc:252
 msgid "Suggests"
-msgstr "Предлагает"
+msgstr "п÷я─п╣п╢п╩п╟пЁп╟п╣я┌"
 
 #: apt-pkg/pkgcache.cc:253
 msgid "Recommends"
-msgstr "Рекомендует"
+msgstr "п═п╣п╨п╬п╪п╣п╫п╢я┐п╣я┌"
 
 #: apt-pkg/pkgcache.cc:253
 msgid "Conflicts"
-msgstr "Конфликтует"
+msgstr "п п╬п╫я└п╩п╦п╨я┌я┐п╣я┌"
 
 #: apt-pkg/pkgcache.cc:253
 msgid "Replaces"
-msgstr "Заменяет"
+msgstr "п≈п╟п╪п╣п╫я▐п╣я┌"
 
 #: apt-pkg/pkgcache.cc:254
 msgid "Obsoletes"
-msgstr "Вытесняет"
+msgstr "п▓я▀я┌п╣я│п╫я▐п╣я┌"
 
 #: apt-pkg/pkgcache.cc:265
 msgid "important"
-msgstr "важно"
+msgstr "п╡п╟п╤п╫п╬"
 
 #: apt-pkg/pkgcache.cc:265
 msgid "required"
-msgstr "требуется"
+msgstr "я┌я─п╣п╠я┐п╣я┌я│я▐"
 
 #: apt-pkg/pkgcache.cc:265
 msgid "standard"
-msgstr "обычно"
+msgstr "п╬п╠я▀я┤п╫п╬"
 
 #: apt-pkg/pkgcache.cc:266
 msgid "optional"
-msgstr "необязательно"
+msgstr "п╫п╣п╬п╠я▐п╥п╟я┌п╣п╩я▄п╫п╬"
 
 #: apt-pkg/pkgcache.cc:266
 msgid "extra"
-msgstr "дополнительно"
+msgstr "п╢п╬п©п╬п╩п╫п╦я┌п╣п╩я▄п╫п╬"
 
 #: apt-pkg/pkgcachegen.cc:74
 msgid "Cache has an incompatible versioning system"
-msgstr "В кэше использована несовместимая система версий"
+msgstr "п▓ п╨я█я┬п╣ п╦я│п©п╬п╩я▄п╥п╬п╡п╟п╫п╟ п╫п╣я│п╬п╡п╪п╣я│я┌п╦п╪п╟я▐ я│п╦я│я┌п╣п╪п╟ п╡п╣я─я│п╦п╧"
 
 #: apt-pkg/pkgcachegen.cc:123
 #, c-format
 msgid "Error occured while processing %s (NewPackage)"
-msgstr "При обработке %s (NewPackage) произошла ошибка"
+msgstr "п÷я─п╦ п╬п╠я─п╟п╠п╬я┌п╨п╣ %s (NewPackage) п©я─п╬п╦п╥п╬я┬п╩п╟ п╬я┬п╦п╠п╨п╟"
 
 #: apt-pkg/pkgcachegen.cc:140
 #, c-format
 msgid "Error occured while processing %s (UsePackage1)"
-msgstr "При обработке %s (UsePackage1) произошла ошибка"
+msgstr "п÷я─п╦ п╬п╠я─п╟п╠п╬я┌п╨п╣ %s (UsePackage1) п©я─п╬п╦п╥п╬я┬п╩п╟ п╬я┬п╦п╠п╨п╟"
 
 #: apt-pkg/pkgcachegen.cc:171
 #, c-format
 msgid "Error occured while processing %s (UsePackage2)"
-msgstr "При обработке %s (UsePackage2) возникла ошибка"
+msgstr "п÷я─п╦ п╬п╠я─п╟п╠п╬я┌п╨п╣ %s (UsePackage2) п╡п╬п╥п╫п╦п╨п╩п╟ п╬я┬п╦п╠п╨п╟"
 
 #: apt-pkg/pkgcachegen.cc:175
 #, c-format
 msgid "Error occured while processing %s (NewFileVer1)"
-msgstr "При обработке %s (NewFileVer1) возникла ошибка"
+msgstr "п÷я─п╦ п╬п╠я─п╟п╠п╬я┌п╨п╣ %s (NewFileVer1) п╡п╬п╥п╫п╦п╨п╩п╟ п╬я┬п╦п╠п╨п╟"
 
 #: apt-pkg/pkgcachegen.cc:209
 #, c-format
 msgid "Error occured while processing %s (NewVersion%d)"
-msgstr "При обработке %s (NewVersion%d) возникла ошибка"
+msgstr "п÷я─п╦ п╬п╠я─п╟п╠п╬я┌п╨п╣ %s (NewVersion%d) п╡п╬п╥п╫п╦п╨п╩п╟ п╬я┬п╦п╠п╨п╟"
 
 #: apt-pkg/pkgcachegen.cc:213
 #, c-format
 msgid "Error occured while processing %s (UsePackage3)"
-msgstr "При обработке %s (UsePackage2) возникла ошибка"
+msgstr "п÷я─п╦ п╬п╠я─п╟п╠п╬я┌п╨п╣ %s (UsePackage2) п╡п╬п╥п╫п╦п╨п╩п╟ п╬я┬п╦п╠п╨п╟"
 
 #: apt-pkg/pkgcachegen.cc:232
 msgid "Wow, you exceeded the number of package names this APT is capable of."
 msgstr ""
-"Количество имён пакетов превышает максимально допустимое для данной версии "
+"п п╬п╩п╦я┤п╣я│я┌п╡п╬ п╦п╪я▒п╫ п©п╟п╨п╣я┌п╬п╡ п©я─п╣п╡я▀я┬п╟п╣я┌ п╪п╟п╨я│п╦п╪п╟п╩я▄п╫п╬ п╢п╬п©я┐я│я┌п╦п╪п╬п╣ п╢п╩я▐ п╢п╟п╫п╫п╬п╧ п╡п╣я─я│п╦п╦ "
 "APT!"
 
 #: apt-pkg/pkgcachegen.cc:235
 msgid "Wow, you exceeded the number of versions this APT is capable of."
 msgstr ""
-"Количество различных версий превышает максимально допустимое для данной "
-"версии APT!"
+"п п╬п╩п╦я┤п╣я│я┌п╡п╬ я─п╟п╥п╩п╦я┤п╫я▀я┘ п╡п╣я─я│п╦п╧ п©я─п╣п╡я▀я┬п╟п╣я┌ п╪п╟п╨я│п╦п╪п╟п╩я▄п╫п╬ п╢п╬п©я┐я│я┌п╦п╪п╬п╣ п╢п╩я▐ п╢п╟п╫п╫п╬п╧ "
+"п╡п╣я─я│п╦п╦ APT!"
 
 #: apt-pkg/pkgcachegen.cc:238
 msgid "Wow, you exceeded the number of dependencies this APT is capable of."
 msgstr ""
-"Количество зависимостей превышает максимально допустимое для данной версии "
+"п п╬п╩п╦я┤п╣я│я┌п╡п╬ п╥п╟п╡п╦я│п╦п╪п╬я│я┌п╣п╧ п©я─п╣п╡я▀я┬п╟п╣я┌ п╪п╟п╨я│п╦п╪п╟п╩я▄п╫п╬ п╢п╬п©я┐я│я┌п╦п╪п╬п╣ п╢п╩я▐ п╢п╟п╫п╫п╬п╧ п╡п╣я─я│п╦п╦ "
 "APT!"
 
 #: apt-pkg/pkgcachegen.cc:272
 #, c-format
 msgid "Error occured while processing %s (FindPkg)"
-msgstr "При обработке %s (FindPkg) произошла ошибка."
+msgstr "п÷я─п╦ п╬п╠я─п╟п╠п╬я┌п╨п╣ %s (FindPkg) п©я─п╬п╦п╥п╬я┬п╩п╟ п╬я┬п╦п╠п╨п╟."
 
 #: apt-pkg/pkgcachegen.cc:295
 #, c-format
 msgid "Error occured while processing %s (CollectFileProvides)"
-msgstr "При обработке %s (CollectFileProvides) произошла ошибка."
+msgstr "п÷я─п╦ п╬п╠я─п╟п╠п╬я┌п╨п╣ %s (CollectFileProvides) п©я─п╬п╦п╥п╬я┬п╩п╟ п╬я┬п╦п╠п╨п╟."
 
 #: apt-pkg/pkgcachegen.cc:307
 #, c-format
 msgid "Package %s %s was not found while processing file dependencies"
-msgstr "Не найден пакет %s %s при обработке файловых зависимостей."
+msgstr "п²п╣ п╫п╟п╧п╢п╣п╫ п©п╟п╨п╣я┌ %s %s п©я─п╦ п╬п╠я─п╟п╠п╬я┌п╨п╣ я└п╟п╧п╩п╬п╡я▀я┘ п╥п╟п╡п╦я│п╦п╪п╬я│я┌п╣п╧."
 
 #: apt-pkg/pkgcachegen.cc:781
 #, c-format
 msgid "Unable to write to %s"
-msgstr "Запись в %s невозможна"
+msgstr "п≈п╟п©п╦я│я▄ п╡ %s п╫п╣п╡п╬п╥п╪п╬п╤п╫п╟"
 
 #: apt-pkg/pkgcachegen.cc:796
 msgid "Error pre-processing package lists"
-msgstr "Во время предварительной обработки списков пакетов произошла ошибка."
+msgstr "п▓п╬ п╡я─п╣п╪я▐ п©я─п╣п╢п╡п╟я─п╦я┌п╣п╩я▄п╫п╬п╧ п╬п╠я─п╟п╠п╬я┌п╨п╦ я│п©п╦я│п╨п╬п╡ п©п╟п╨п╣я┌п╬п╡ п©я─п╬п╦п╥п╬я┬п╩п╟ п╬я┬п╦п╠п╨п╟."
 
 #: apt-pkg/pkgcachegen.cc:913 apt-pkg/pkgcachegen.cc:920
 msgid "IO Error saving source cache"
-msgstr "Ошибка ввода-вывода в момент сохранения кэша репозитория"
+msgstr "п·я┬п╦п╠п╨п╟ п╡п╡п╬п╢п╟-п╡я▀п╡п╬п╢п╟ п╡ п╪п╬п╪п╣п╫я┌ я│п╬я┘я─п╟п╫п╣п╫п╦я▐ п╨я█я┬п╟ я─п╣п©п╬п╥п╦я┌п╬я─п╦я▐"
 
 #: apt-pkg/pkgrecords.cc:37
 #, c-format
 msgid "Index file type '%s' is not supported"
-msgstr "Тип индексного файла '%s' не поддерживается"
+msgstr "п╒п╦п© п╦п╫п╢п╣п╨я│п╫п╬пЁп╬ я└п╟п╧п╩п╟ '%s' п╫п╣ п©п╬п╢п╢п╣я─п╤п╦п╡п╟п╣я┌я│я▐"
 
 #: apt-pkg/policy.cc:312
 msgid "Invalid record in the preferences file %s, no Package header"
-msgstr "Ошибочная запись в конфигурационном файле %s. Отсутствует заголовок пакета."
+msgstr "п·я┬п╦п╠п╬я┤п╫п╟я▐ п╥п╟п©п╦я│я▄ п╡ п╨п╬п╫я└п╦пЁя┐я─п╟я├п╦п╬п╫п╫п╬п╪ я└п╟п╧п╩п╣ %s. п·я┌я│я┐я┌я│я┌п╡я┐п╣я┌ п╥п╟пЁп╬п╩п╬п╡п╬п╨ п©п╟п╨п╣я┌п╟."
 
 #: apt-pkg/policy.cc:334
 #, c-format
 msgid "Did not understand pin type %s"
-msgstr "Непригодный критерий отбора предпочитаемых пакетов %s."
+msgstr "п²п╣п©я─п╦пЁп╬п╢п╫я▀п╧ п╨я─п╦я┌п╣я─п╦п╧ п╬я┌п╠п╬я─п╟ п©я─п╣п╢п©п╬я┤п╦я┌п╟п╣п╪я▀я┘ п©п╟п╨п╣я┌п╬п╡ %s."
 
 #: apt-pkg/policy.cc:342
 msgid "No priority (or zero) specified for pin"
-msgstr "Не указан (или указан нулевой) приоритет для предпочтения"
+msgstr "п²п╣ я┐п╨п╟п╥п╟п╫ (п╦п╩п╦ я┐п╨п╟п╥п╟п╫ п╫я┐п╩п╣п╡п╬п╧) п©я─п╦п╬я─п╦я┌п╣я┌ п╢п╩я▐ п©я─п╣п╢п©п╬я┤я┌п╣п╫п╦я▐"
 
 #: apt-pkg/repository.cc:40
 #, c-format
 msgid "could not open Release file '%s'"
-msgstr "Невозможно открыть файл описания '%s'."
+msgstr "п²п╣п╡п╬п╥п╪п╬п╤п╫п╬ п╬я┌п╨я─я▀я┌я▄ я└п╟п╧п╩ п╬п©п╦я│п╟п╫п╦я▐ '%s'."
 
 #: apt-pkg/repository.cc:55
 #, c-format
 msgid "No MD5Sum data in Release file '%s'"
-msgstr "В файле описания '%s' нет контрольной суммы MD5."
+msgstr "п▓ я└п╟п╧п╩п╣ п╬п©п╦я│п╟п╫п╦я▐ '%s' п╫п╣я┌ п╨п╬п╫я┌я─п╬п╩я▄п╫п╬п╧ я│я┐п╪п╪я▀ MD5."
 
 #: apt-pkg/repository.cc:72
 #, c-format
 msgid "Error parsing MD5Sum hash record on Release file '%s'"
-msgstr "Ошибка получения хэш записи MD5 из файла описания '%s'."
+msgstr "п·я┬п╦п╠п╨п╟ п©п╬п╩я┐я┤п╣п╫п╦я▐ я┘я█я┬ п╥п╟п©п╦я│п╦ MD5 п╦п╥ я└п╟п╧п╩п╟ п╬п©п╦я│п╟п╫п╦я▐ '%s'."
 
 #: apt-pkg/sourcelist.cc:98
 #, c-format
 msgid "Malformed line %lu in source list %s (URI)"
-msgstr "Неправильная строка %lu в списке источников %s (URI)"
+msgstr "п²п╣п©я─п╟п╡п╦п╩я▄п╫п╟я▐ я│я┌я─п╬п╨п╟ %lu п╡ я│п©п╦я│п╨п╣ п╦я│я┌п╬я┤п╫п╦п╨п╬п╡ %s (URI)"
 
 #: apt-pkg/sourcelist.cc:100
 #, c-format
 msgid "Malformed line %lu in source list %s (dist)"
-msgstr "Неправильная строка %lu в списке источников %s (дистрибутив)"
+msgstr "п²п╣п©я─п╟п╡п╦п╩я▄п╫п╟я▐ я│я┌я─п╬п╨п╟ %lu п╡ я│п©п╦я│п╨п╣ п╦я│я┌п╬я┤п╫п╦п╨п╬п╡ %s (п╢п╦я│я┌я─п╦п╠я┐я┌п╦п╡)"
 
 #: apt-pkg/sourcelist.cc:103
 #, c-format
 msgid "Malformed line %lu in source list %s (URI parse)"
-msgstr "Неправильная строка %lu в списке источников %s (обработка URI)"
+msgstr "п²п╣п©я─п╟п╡п╦п╩я▄п╫п╟я▐ я│я┌я─п╬п╨п╟ %lu п╡ я│п©п╦я│п╨п╣ п╦я│я┌п╬я┤п╫п╦п╨п╬п╡ %s (п╬п╠я─п╟п╠п╬я┌п╨п╟ URI)"
 
 #: apt-pkg/sourcelist.cc:109
 #, c-format
 msgid "Malformed line %lu in source list %s (Absolute dist)"
-msgstr "Неправильная строка %lu в списке источников %s (абсолютный дистрибутив)"
+msgstr "п²п╣п©я─п╟п╡п╦п╩я▄п╫п╟я▐ я│я┌я─п╬п╨п╟ %lu п╡ я│п©п╦я│п╨п╣ п╦я│я┌п╬я┤п╫п╦п╨п╬п╡ %s (п╟п╠я│п╬п╩я▌я┌п╫я▀п╧ п╢п╦я│я┌я─п╦п╠я┐я┌п╦п╡)"
 
 #: apt-pkg/sourcelist.cc:116
 #, c-format
 msgid "Malformed line %lu in source list %s (dist parse)"
-msgstr "Неправильная строка %lu в списке источников %s (обработка дистрибутива)"
+msgstr "п²п╣п©я─п╟п╡п╦п╩я▄п╫п╟я▐ я│я┌я─п╬п╨п╟ %lu п╡ я│п©п╦я│п╨п╣ п╦я│я┌п╬я┤п╫п╦п╨п╬п╡ %s (п╬п╠я─п╟п╠п╬я┌п╨п╟ п╢п╦я│я┌я─п╦п╠я┐я┌п╦п╡п╟)"
 
 #: apt-pkg/sourcelist.cc:206 apt-pkg/sourcelist.cc:230
 #, c-format
 msgid "Vendor block %s is invalid"
-msgstr "Неверный блок данных поставщика %s."
+msgstr "п²п╣п╡п╣я─п╫я▀п╧ п╠п╩п╬п╨ п╢п╟п╫п╫я▀я┘ п©п╬я│я┌п╟п╡я┴п╦п╨п╟ %s."
 
 #: apt-pkg/sourcelist.cc:314
 #, c-format
 msgid "Line %u too long in source list %s."
-msgstr "Слишком длинная запись %u в списке источников %s."
+msgstr "п║п╩п╦я┬п╨п╬п╪ п╢п╩п╦п╫п╫п╟я▐ п╥п╟п©п╦я│я▄ %u п╡ я│п©п╦я│п╨п╣ п╦я│я┌п╬я┤п╫п╦п╨п╬п╡ %s."
 
 #: apt-pkg/sourcelist.cc:334
 #, c-format
 msgid "Malformed line %u in source list %s (type)"
-msgstr "Ошибочная запись в строке %u в списке источников %s (тип источника)"
+msgstr "п·я┬п╦п╠п╬я┤п╫п╟я▐ п╥п╟п©п╦я│я▄ п╡ я│я┌я─п╬п╨п╣ %u п╡ я│п©п╦я│п╨п╣ п╦я│я┌п╬я┤п╫п╦п╨п╬п╡ %s (я┌п╦п© п╦я│я┌п╬я┤п╫п╦п╨п╟)"
 
 #: apt-pkg/sourcelist.cc:338
 #, c-format
 msgid "Type '%s' is not known in on line %u in source list %s"
-msgstr "Неизвестный тип '%s' в строке %u списка источников %s."
+msgstr "п²п╣п╦п╥п╡п╣я│я┌п╫я▀п╧ я┌п╦п© '%s' п╡ я│я┌я─п╬п╨п╣ %u я│п©п╦я│п╨п╟ п╦я│я┌п╬я┤п╫п╦п╨п╬п╡ %s."
 
 #: apt-pkg/sourcelist.cc:347 apt-pkg/sourcelist.cc:350
 #, c-format
 msgid "Malformed line %u in source list %s (vendor id)"
-msgstr "Неправильная строка %u в списке источников %s (ID поставщика)"
+msgstr "п²п╣п©я─п╟п╡п╦п╩я▄п╫п╟я▐ я│я┌я─п╬п╨п╟ %u п╡ я│п©п╦я│п╨п╣ п╦я│я┌п╬я┤п╫п╦п╨п╬п╡ %s (ID п©п╬я│я┌п╟п╡я┴п╦п╨п╟)"
 
 #: apt-pkg/sourcelist.cc:364
 #, c-format
 msgid "Unknown vendor ID '%s' in line %u of source list %s"
-msgstr "Неизвестный ID поставщика '%s' в строке %u списка источников %s."
+msgstr "п²п╣п╦п╥п╡п╣я│я┌п╫я▀п╧ ID п©п╬я│я┌п╟п╡я┴п╦п╨п╟ '%s' п╡ я│я┌я─п╬п╨п╣ %u я│п©п╦я│п╨п╟ п╦я│я┌п╬я┤п╫п╦п╨п╬п╡ %s."
 
 #: apt-pkg/srcrecords.cc:49
 msgid "You must put some 'source' URIs in your sources.list"
-msgstr "В sources.list должны быть указаны адреса репозиториев."
+msgstr "п▓ sources.list п╢п╬п╩п╤п╫я▀ п╠я▀я┌я▄ я┐п╨п╟п╥п╟п╫я▀ п╟п╢я─п╣я│п╟ я─п╣п©п╬п╥п╦я┌п╬я─п╦п╣п╡."
 
 #: apt-pkg/tagfile.cc:71
 #, c-format
 msgid "Unable to parse package file %s (1)"
-msgstr "Невозможно прочитать пакетный файл %s (1)"
+msgstr "п²п╣п╡п╬п╥п╪п╬п╤п╫п╬ п©я─п╬я┤п╦я┌п╟я┌я▄ п©п╟п╨п╣я┌п╫я▀п╧ я└п╟п╧п╩ %s (1)"
 
 #: apt-pkg/tagfile.cc:158
 #, c-format
 msgid "Unable to parse package file %s (2)"
-msgstr "Невозможно прочитать пакетный файл %s (2)"
+msgstr "п²п╣п╡п╬п╥п╪п╬п╤п╫п╬ п©я─п╬я┤п╦я┌п╟я┌я▄ п©п╟п╨п╣я┌п╫я▀п╧ я└п╟п╧п╩ %s (2)"
 
 #: methods/cdrom.cc:169
 msgid ""
 "Please use apt-cdrom to make this media recognized by APT. apt-get update "
 "cannot be used to add new media"
 msgstr ""
-"Пожалуйста, используйте apt-cdrom, чтобы сделать этот носитель доступным APT. apt-"
-"get update не может быть использован для добавления новых носителей"
+"п÷п╬п╤п╟п╩я┐п╧я│я┌п╟, п╦я│п©п╬п╩я▄п╥я┐п╧я┌п╣ apt-cdrom, я┤я┌п╬п╠я▀ я│п╢п╣п╩п╟я┌я▄ я█я┌п╬я┌ п╫п╬я│п╦я┌п╣п╩я▄ п╢п╬я│я┌я┐п©п╫я▀п╪ APT. apt-"
+"get update п╫п╣ п╪п╬п╤п╣я┌ п╠я▀я┌я▄ п╦я│п©п╬п╩я▄п╥п╬п╡п╟п╫ п╢п╩я▐ п╢п╬п╠п╟п╡п╩п╣п╫п╦я▐ п╫п╬п╡я▀я┘ п╫п╬я│п╦я┌п╣п╩п╣п╧"
 
 #: methods/cdrom.cc:177 methods/cdrom.cc:215
 msgid "Wrong media"
-msgstr "Неправильный носитель"
+msgstr "п²п╣п©я─п╟п╡п╦п╩я▄п╫я▀п╧ п╫п╬я│п╦я┌п╣п╩я▄"
 
 #: methods/cdrom.cc:210
 #, c-format
 msgid "Unable to unmount media in %s, it may still be in use."
-msgstr "Невозможно размонтировать носитель в %s, наверное он все еще используется"
+msgstr "п²п╣п╡п╬п╥п╪п╬п╤п╫п╬ я─п╟п╥п╪п╬п╫я┌п╦я─п╬п╡п╟я┌я▄ п╫п╬я│п╦я┌п╣п╩я▄ п╡ %s, п╫п╟п╡п╣я─п╫п╬п╣ п╬п╫ п╡я│п╣ п╣я┴п╣ п╦я│п©п╬п╩я▄п╥я┐п╣я┌я│я▐"
 
 #: methods/cdrom.cc:233 methods/file.cc:82
 msgid "File not found"
-msgstr "Файл не найден"
+msgstr "п╓п╟п╧п╩ п╫п╣ п╫п╟п╧п╢п╣п╫"
 
 #: methods/connect.cc:67
 #, c-format
 msgid "Connecting to %s (%s)"
-msgstr "Соединение с %s (%s)"
+msgstr "п║п╬п╣п╢п╦п╫п╣п╫п╦п╣ я│ %s (%s)"
 
 #: methods/connect.cc:74
 #, c-format
@@ -2535,341 +2535,341 @@ msgstr "[IP: %s %s]"
 #: methods/connect.cc:83
 #, c-format
 msgid "Could not create a socket for %s (f=%u t=%u p=%u)"
-msgstr "Невозможно создать сокет для %s (f=%u t=%u p=%u)"
+msgstr "п²п╣п╡п╬п╥п╪п╬п╤п╫п╬ я│п╬п╥п╢п╟я┌я▄ я│п╬п╨п╣я┌ п╢п╩я▐ %s (f=%u t=%u p=%u)"
 
 #: methods/connect.cc:89
 #, c-format
 msgid "Cannot initiate the connection to %s:%s (%s)."
-msgstr "Невозможно начать соединение с %s:%s (%s)."
+msgstr "п²п╣п╡п╬п╥п╪п╬п╤п╫п╬ п╫п╟я┤п╟я┌я▄ я│п╬п╣п╢п╦п╫п╣п╫п╦п╣ я│ %s:%s (%s)."
 
 #: methods/connect.cc:95
 #, c-format
 msgid "Could not connect to %s:%s (%s), connection timed out"
-msgstr "Невозможно соединиться с %s:%s (%s), время соединения истекло"
+msgstr "п²п╣п╡п╬п╥п╪п╬п╤п╫п╬ я│п╬п╣п╢п╦п╫п╦я┌я▄я│я▐ я│ %s:%s (%s), п╡я─п╣п╪я▐ я│п╬п╣п╢п╦п╫п╣п╫п╦я▐ п╦я│я┌п╣п╨п╩п╬"
 
 #: methods/connect.cc:107
 #, c-format
 msgid "Could not connect to %s:%s (%s)."
-msgstr "Невозможно соединиться с %s:%s (%s)."
+msgstr "п²п╣п╡п╬п╥п╪п╬п╤п╫п╬ я│п╬п╣п╢п╦п╫п╦я┌я▄я│я▐ я│ %s:%s (%s)."
 
 #: methods/connect.cc:135 methods/rsh.cc:428
 #, c-format
 msgid "Connecting to %s"
-msgstr "Соединяемся с %s"
+msgstr "п║п╬п╣п╢п╦п╫я▐п╣п╪я│я▐ я│ %s"
 
 #: methods/connect.cc:166
 #, c-format
 msgid "Could not resolve '%s'"
-msgstr "Невозможно узнать адрес для '%s'"
+msgstr "п²п╣п╡п╬п╥п╪п╬п╤п╫п╬ я┐п╥п╫п╟я┌я▄ п╟п╢я─п╣я│ п╢п╩я▐ '%s'"
 
 #: methods/connect.cc:170
 #, c-format
 msgid "Temporary failure resolving '%s'"
-msgstr "Временный сбой при определении адреса для '%s'"
+msgstr "п▓я─п╣п╪п╣п╫п╫я▀п╧ я│п╠п╬п╧ п©я─п╦ п╬п©я─п╣п╢п╣п╩п╣п╫п╦п╦ п╟п╢я─п╣я│п╟ п╢п╩я▐ '%s'"
 
 #: methods/connect.cc:172
 #, c-format
 msgid "Something wicked happened resolving '%s:%s' (%i)"
-msgstr "Нечто странно случилось при определении адреса для '%s:%s' (%i)"
+msgstr "п²п╣я┤я┌п╬ я│я┌я─п╟п╫п╫п╬ я│п╩я┐я┤п╦п╩п╬я│я▄ п©я─п╦ п╬п©я─п╣п╢п╣п╩п╣п╫п╦п╦ п╟п╢я─п╣я│п╟ п╢п╩я▐ '%s:%s' (%i)"
 
 #: methods/connect.cc:219
 #, c-format
 msgid "Unable to connect to %s %s:"
-msgstr "Невозможно соединиться с  %s %s:"
+msgstr "п²п╣п╡п╬п╥п╪п╬п╤п╫п╬ я│п╬п╣п╢п╦п╫п╦я┌я▄я│я▐ я│  %s %s:"
 
 #: methods/copy.cc:45 methods/gzip.cc:136 methods/gzip.cc:145
 msgid "Failed to stat"
-msgstr "Невозможно получить информацию"
+msgstr "п²п╣п╡п╬п╥п╪п╬п╤п╫п╬ п©п╬п╩я┐я┤п╦я┌я▄ п╦п╫я└п╬я─п╪п╟я├п╦я▌"
 
 #: methods/copy.cc:82 methods/gzip.cc:142
 msgid "Failed to set modification time"
-msgstr "Невозможно установить время модификации"
+msgstr "п²п╣п╡п╬п╥п╪п╬п╤п╫п╬ я┐я│я┌п╟п╫п╬п╡п╦я┌я▄ п╡я─п╣п╪я▐ п╪п╬п╢п╦я└п╦п╨п╟я├п╦п╦"
 
 #: methods/file.cc:45
 msgid "Invalid URI, local URIS must not start with //"
-msgstr "Неправильный URI, локальные URIS не должны начинаться с //"
+msgstr "п²п╣п©я─п╟п╡п╦п╩я▄п╫я▀п╧ URI, п╩п╬п╨п╟п╩я▄п╫я▀п╣ URIS п╫п╣ п╢п╬п╩п╤п╫я▀ п╫п╟я┤п╦п╫п╟я┌я▄я│я▐ я│ //"
 
 #: methods/ftp.cc:165
 msgid "Logging in"
-msgstr "Входим"
+msgstr "п▓я┘п╬п╢п╦п╪"
 
 #: methods/ftp.cc:171
 msgid "Unable to determine the peer name"
-msgstr "Невозможно определить имя удалённой системы"
+msgstr "п²п╣п╡п╬п╥п╪п╬п╤п╫п╬ п╬п©я─п╣п╢п╣п╩п╦я┌я▄ п╦п╪я▐ я┐п╢п╟п╩я▒п╫п╫п╬п╧ я│п╦я│я┌п╣п╪я▀"
 
 #: methods/ftp.cc:176
 msgid "Unable to determine the local name"
-msgstr "Невозможно определить имя локальной системы."
+msgstr "п²п╣п╡п╬п╥п╪п╬п╤п╫п╬ п╬п©я─п╣п╢п╣п╩п╦я┌я▄ п╦п╪я▐ п╩п╬п╨п╟п╩я▄п╫п╬п╧ я│п╦я│я┌п╣п╪я▀."
 
 #: methods/ftp.cc:208 methods/ftp.cc:236
 #, c-format
 msgid "Server refused our connection and said: %s"
-msgstr "Сервер не принял наше соединение и ответил: %s"
+msgstr "п║п╣я─п╡п╣я─ п╫п╣ п©я─п╦п╫я▐п╩ п╫п╟я┬п╣ я│п╬п╣п╢п╦п╫п╣п╫п╦п╣ п╦ п╬я┌п╡п╣я┌п╦п╩: %s"
 
 #: methods/ftp.cc:214
 #, c-format
 msgid "USER failed, server said: %s"
-msgstr "Команда USER завершилась неудачно, сервер ответил: %s"
+msgstr "п п╬п╪п╟п╫п╢п╟ USER п╥п╟п╡п╣я─я┬п╦п╩п╟я│я▄ п╫п╣я┐п╢п╟я┤п╫п╬, я│п╣я─п╡п╣я─ п╬я┌п╡п╣я┌п╦п╩: %s"
 
 #: methods/ftp.cc:221
 #, c-format
 msgid "PASS failed, server said: %s"
-msgstr "Команда PASS завершилась неудачно, сервер ответил: %s"
+msgstr "п п╬п╪п╟п╫п╢п╟ PASS п╥п╟п╡п╣я─я┬п╦п╩п╟я│я▄ п╫п╣я┐п╢п╟я┤п╫п╬, я│п╣я─п╡п╣я─ п╬я┌п╡п╣я┌п╦п╩: %s"
 
 #: methods/ftp.cc:241
 msgid ""
 "A proxy server was specified but no login script, Acquire::ftp::ProxyLogin "
 "is empty."
 msgstr ""
-"Прокси сервер был указан, но отсутствует login скрипт, параметр Acquire::"
-"ftp::ProxyLogin пуст"
+"п÷я─п╬п╨я│п╦ я│п╣я─п╡п╣я─ п╠я▀п╩ я┐п╨п╟п╥п╟п╫, п╫п╬ п╬я┌я│я┐я┌я│я┌п╡я┐п╣я┌ login я│п╨я─п╦п©я┌, п©п╟я─п╟п╪п╣я┌я─ Acquire::"
+"ftp::ProxyLogin п©я┐я│я┌"
 
 #: methods/ftp.cc:269
 #, c-format
 msgid "Login script command '%s' failed, server said: %s"
-msgstr "Команда '%s' login скрипта завершилась неудачно, сервер ответил: %s"
+msgstr "п п╬п╪п╟п╫п╢п╟ '%s' login я│п╨я─п╦п©я┌п╟ п╥п╟п╡п╣я─я┬п╦п╩п╟я│я▄ п╫п╣я┐п╢п╟я┤п╫п╬, я│п╣я─п╡п╣я─ п╬я┌п╡п╣я┌п╦п╩: %s"
 
 #: methods/ftp.cc:295
 #, c-format
 msgid "TYPE failed, server said: %s"
-msgstr "Команда TYPE завершилась неудачно, сервер ответил: %s"
+msgstr "п п╬п╪п╟п╫п╢п╟ TYPE п╥п╟п╡п╣я─я┬п╦п╩п╟я│я▄ п╫п╣я┐п╢п╟я┤п╫п╬, я│п╣я─п╡п╣я─ п╬я┌п╡п╣я┌п╦п╩: %s"
 
 #: methods/ftp.cc:333 methods/ftp.cc:444 methods/rsh.cc:186 methods/rsh.cc:229
 msgid "Connection timeout"
-msgstr "Время соединения истекло"
+msgstr "п▓я─п╣п╪я▐ я│п╬п╣п╢п╦п╫п╣п╫п╦я▐ п╦я│я┌п╣п╨п╩п╬"
 
 #: methods/ftp.cc:339
 msgid "Server closed the connection"
-msgstr "Сервер закрыл соединение"
+msgstr "п║п╣я─п╡п╣я─ п╥п╟п╨я─я▀п╩ я│п╬п╣п╢п╦п╫п╣п╫п╦п╣"
 
 #: methods/ftp.cc:349 methods/rsh.cc:200
 msgid "A response overflowed the buffer."
-msgstr "Ответ переполнил буфер."
+msgstr "п·я┌п╡п╣я┌ п©п╣я─п╣п©п╬п╩п╫п╦п╩ п╠я┐я└п╣я─."
 
 #: methods/ftp.cc:366 methods/ftp.cc:378
 msgid "Protocol corruption"
-msgstr "Сбой протокола"
+msgstr "п║п╠п╬п╧ п©я─п╬я┌п╬п╨п╬п╩п╟"
 
 #: methods/ftp.cc:450 methods/rsh.cc:235
 msgid "Write Error"
-msgstr "Ошибка записи"
+msgstr "п·я┬п╦п╠п╨п╟ п╥п╟п©п╦я│п╦"
 
 #: methods/ftp.cc:691 methods/ftp.cc:697 methods/ftp.cc:733
 msgid "Could not create a socket"
-msgstr "Невозможно создать сокет"
+msgstr "п²п╣п╡п╬п╥п╪п╬п╤п╫п╬ я│п╬п╥п╢п╟я┌я▄ я│п╬п╨п╣я┌"
 
 #: methods/ftp.cc:702
 msgid "Could not connect data socket, connection timed out"
-msgstr "Невозможно присоединить сокет данных, время соединения истекло"
+msgstr "п²п╣п╡п╬п╥п╪п╬п╤п╫п╬ п©я─п╦я│п╬п╣п╢п╦п╫п╦я┌я▄ я│п╬п╨п╣я┌ п╢п╟п╫п╫я▀я┘, п╡я─п╣п╪я▐ я│п╬п╣п╢п╦п╫п╣п╫п╦я▐ п╦я│я┌п╣п╨п╩п╬"
 
 #: methods/ftp.cc:708
 msgid "Could not connect passive socket."
-msgstr "Невозможно присоединить пассивный сокет."
+msgstr "п²п╣п╡п╬п╥п╪п╬п╤п╫п╬ п©я─п╦я│п╬п╣п╢п╦п╫п╦я┌я▄ п©п╟я│я│п╦п╡п╫я▀п╧ я│п╬п╨п╣я┌."
 
 #: methods/ftp.cc:726
 msgid "getaddrinfo was unable to get a listening socket"
-msgstr "функция getaddrinfo не смогла получить сокет"
+msgstr "я└я┐п╫п╨я├п╦я▐ getaddrinfo п╫п╣ я│п╪п╬пЁп╩п╟ п©п╬п╩я┐я┤п╦я┌я▄ я│п╬п╨п╣я┌"
 
 #: methods/ftp.cc:740
 msgid "Could not bind a socket"
-msgstr "Невозможно занять сокет"
+msgstr "п²п╣п╡п╬п╥п╪п╬п╤п╫п╬ п╥п╟п╫я▐я┌я▄ я│п╬п╨п╣я┌"
 
 #: methods/ftp.cc:744
 msgid "Could not listen on the socket"
-msgstr "Невозможно прослушивать на сокете"
+msgstr "п²п╣п╡п╬п╥п╪п╬п╤п╫п╬ п©я─п╬я│п╩я┐я┬п╦п╡п╟я┌я▄ п╫п╟ я│п╬п╨п╣я┌п╣"
 
 #: methods/ftp.cc:751
 msgid "Could not determine the socket's name"
-msgstr "Невозможно определить имя сокета"
+msgstr "п²п╣п╡п╬п╥п╪п╬п╤п╫п╬ п╬п©я─п╣п╢п╣п╩п╦я┌я▄ п╦п╪я▐ я│п╬п╨п╣я┌п╟"
 
 #: methods/ftp.cc:783
 msgid "Unable to send PORT command"
-msgstr "Невозможно послать PORT команду"
+msgstr "п²п╣п╡п╬п╥п╪п╬п╤п╫п╬ п©п╬я│п╩п╟я┌я▄ PORT п╨п╬п╪п╟п╫п╢я┐"
 
 #: methods/ftp.cc:793
 #, c-format
 msgid "Unknown address family %u (AF_*)"
-msgstr "Неизвестное семейство адресов %u (AF_*)"
+msgstr "п²п╣п╦п╥п╡п╣я│я┌п╫п╬п╣ я│п╣п╪п╣п╧я│я┌п╡п╬ п╟п╢я─п╣я│п╬п╡ %u (AF_*)"
 
 #: methods/ftp.cc:802
 #, c-format
 msgid "EPRT failed, server said: %s"
-msgstr "Команда EPRT завершилась неудачно, сервер ответил: %s"
+msgstr "п п╬п╪п╟п╫п╢п╟ EPRT п╥п╟п╡п╣я─я┬п╦п╩п╟я│я▄ п╫п╣я┐п╢п╟я┤п╫п╬, я│п╣я─п╡п╣я─ п╬я┌п╡п╣я┌п╦п╩: %s"
 
 #: methods/ftp.cc:822
 msgid "Data socket connect timed out"
-msgstr "Время соединения с сокетом данных истекло"
+msgstr "п▓я─п╣п╪я▐ я│п╬п╣п╢п╦п╫п╣п╫п╦я▐ я│ я│п╬п╨п╣я┌п╬п╪ п╢п╟п╫п╫я▀я┘ п╦я│я┌п╣п╨п╩п╬"
 
 #: methods/ftp.cc:829
 msgid "Unable to accept connection"
-msgstr "Невозможно принять соединение"
+msgstr "п²п╣п╡п╬п╥п╪п╬п╤п╫п╬ п©я─п╦п╫я▐я┌я▄ я│п╬п╣п╢п╦п╫п╣п╫п╦п╣"
 
 #: methods/ftp.cc:868 methods/http.cc:919 methods/rsh.cc:306
 msgid "Problem hashing file"
-msgstr "Ошибка получения хэша файла"
+msgstr "п·я┬п╦п╠п╨п╟ п©п╬п╩я┐я┤п╣п╫п╦я▐ я┘я█я┬п╟ я└п╟п╧п╩п╟"
 
 #: methods/ftp.cc:881
 #, c-format
 msgid "Unable to fetch file, server said '%s'"
-msgstr "Невозможно скачать файл, сервер ответил '%s'"
+msgstr "п²п╣п╡п╬п╥п╪п╬п╤п╫п╬ я│п╨п╟я┤п╟я┌я▄ я└п╟п╧п╩, я│п╣я─п╡п╣я─ п╬я┌п╡п╣я┌п╦п╩ '%s'"
 
 #: methods/ftp.cc:896 methods/rsh.cc:325
 msgid "Data socket timed out"
-msgstr "Время сокета данных истекло"
+msgstr "п▓я─п╣п╪я▐ я│п╬п╨п╣я┌п╟ п╢п╟п╫п╫я▀я┘ п╦я│я┌п╣п╨п╩п╬"
 
 #: methods/ftp.cc:926
 #, c-format
 msgid "Data transfer failed, server said '%s'"
-msgstr "Передача данных закончилась неудачно, сервер ответил '%s'"
+msgstr "п÷п╣я─п╣п╢п╟я┤п╟ п╢п╟п╫п╫я▀я┘ п╥п╟п╨п╬п╫я┤п╦п╩п╟я│я▄ п╫п╣я┐п╢п╟я┤п╫п╬, я│п╣я─п╡п╣я─ п╬я┌п╡п╣я┌п╦п╩ '%s'"
 
 #: methods/ftp.cc:1001
 msgid "Query"
-msgstr "Запрос"
+msgstr "п≈п╟п©я─п╬я│"
 
 #: methods/ftp.cc:1108
 msgid "Unable to invoke "
-msgstr "Невозможно прочитать "
+msgstr "п²п╣п╡п╬п╥п╪п╬п╤п╫п╬ п©я─п╬я┤п╦я┌п╟я┌я▄ "
 
 #: methods/gpg.cc:306
 msgid "Could not allocate memory"
-msgstr "Невозможно выделить память"
+msgstr "п²п╣п╡п╬п╥п╪п╬п╤п╫п╬ п╡я▀п╢п╣п╩п╦я┌я▄ п©п╟п╪я▐я┌я▄"
 
 #: methods/gpg.cc:310
 msgid "Could not create temporary directory"
-msgstr "Невозможно создать временную директорию"
+msgstr "п²п╣п╡п╬п╥п╪п╬п╤п╫п╬ я│п╬п╥п╢п╟я┌я▄ п╡я─п╣п╪п╣п╫п╫я┐я▌ п╢п╦я─п╣п╨я┌п╬я─п╦я▌"
 
 #: methods/gzip.cc:60
 #, c-format
 msgid "Couldn't open pipe for %s"
-msgstr "Невозможно открыть канал для %s."
+msgstr "п²п╣п╡п╬п╥п╪п╬п╤п╫п╬ п╬я┌п╨я─я▀я┌я▄ п╨п╟п╫п╟п╩ п╢п╩я▐ %s."
 
 #: methods/gzip.cc:105
 #, c-format
 msgid "Read error from %s process"
-msgstr "Ошибка чтения из %s процесса"
+msgstr "п·я┬п╦п╠п╨п╟ я┤я┌п╣п╫п╦я▐ п╦п╥ %s п©я─п╬я├п╣я│я│п╟"
 
 #: methods/http.cc:343
 msgid "Waiting for headers"
-msgstr "Ожидаем заголовки"
+msgstr "п·п╤п╦п╢п╟п╣п╪ п╥п╟пЁп╬п╩п╬п╡п╨п╦"
 
 #: methods/http.cc:489
 #, c-format
 msgid "Got a single header line over %u chars"
-msgstr "Получена единичная строка заголовка больше, чем %u символов"
+msgstr "п÷п╬п╩я┐я┤п╣п╫п╟ п╣п╢п╦п╫п╦я┤п╫п╟я▐ я│я┌я─п╬п╨п╟ п╥п╟пЁп╬п╩п╬п╡п╨п╟ п╠п╬п╩я▄я┬п╣, я┤п╣п╪ %u я│п╦п╪п╡п╬п╩п╬п╡"
 
 #: methods/http.cc:497
 msgid "Bad header line"
-msgstr "Плохая строка заголовка"
+msgstr "п÷п╩п╬я┘п╟я▐ я│я┌я─п╬п╨п╟ п╥п╟пЁп╬п╩п╬п╡п╨п╟"
 
 #: methods/http.cc:516 methods/http.cc:523
 msgid "The http server sent an invalid reply header"
-msgstr "От http сервера получен неправильный ответный заголовок"
+msgstr "п·я┌ http я│п╣я─п╡п╣я─п╟ п©п╬п╩я┐я┤п╣п╫ п╫п╣п©я─п╟п╡п╦п╩я▄п╫я▀п╧ п╬я┌п╡п╣я┌п╫я▀п╧ п╥п╟пЁп╬п╩п╬п╡п╬п╨"
 
 #: methods/http.cc:552
 msgid "The http server sent an invalid Content-Length header"
-msgstr "От http сервера получен неправильный Content-Length заголовок"
+msgstr "п·я┌ http я│п╣я─п╡п╣я─п╟ п©п╬п╩я┐я┤п╣п╫ п╫п╣п©я─п╟п╡п╦п╩я▄п╫я▀п╧ Content-Length п╥п╟пЁп╬п╩п╬п╡п╬п╨"
 
 #: methods/http.cc:567
 msgid "The http server sent an invalid Content-Range header"
-msgstr "От http сервера получен неправильный Content-Range заголовок"
+msgstr "п·я┌ http я│п╣я─п╡п╣я─п╟ п©п╬п╩я┐я┤п╣п╫ п╫п╣п©я─п╟п╡п╦п╩я▄п╫я▀п╧ Content-Range п╥п╟пЁп╬п╩п╬п╡п╬п╨"
 
 #: methods/http.cc:569
 msgid "This http server has broken range support"
-msgstr "Этот http сервер имеет неправильную поддержку диапазонов"
+msgstr "п╜я┌п╬я┌ http я│п╣я─п╡п╣я─ п╦п╪п╣п╣я┌ п╫п╣п©я─п╟п╡п╦п╩я▄п╫я┐я▌ п©п╬п╢п╢п╣я─п╤п╨я┐ п╢п╦п╟п©п╟п╥п╬п╫п╬п╡"
 
 #: methods/http.cc:593
 msgid "Unknown date format"
-msgstr "Неизвестный формат даты"
+msgstr "п²п╣п╦п╥п╡п╣я│я┌п╫я▀п╧ я└п╬я─п╪п╟я┌ п╢п╟я┌я▀"
 
 #: methods/http.cc:740
 msgid "Select failed"
-msgstr "Выбор невозможен"
+msgstr "п▓я▀п╠п╬я─ п╫п╣п╡п╬п╥п╪п╬п╤п╣п╫"
 
 #: methods/http.cc:745
 msgid "Connection timed out"
-msgstr "Время соединение истекло"
+msgstr "п▓я─п╣п╪я▐ я│п╬п╣п╢п╦п╫п╣п╫п╦п╣ п╦я│я┌п╣п╨п╩п╬"
 
 #: methods/http.cc:768
 msgid "Error writing to output file"
-msgstr "Ошибка записи в выходной файл"
+msgstr "п·я┬п╦п╠п╨п╟ п╥п╟п©п╦я│п╦ п╡ п╡я▀я┘п╬п╢п╫п╬п╧ я└п╟п╧п╩"
 
 #: methods/http.cc:796
 msgid "Error writing to file"
-msgstr "Ошибка записи в файл"
+msgstr "п·я┬п╦п╠п╨п╟ п╥п╟п©п╦я│п╦ п╡ я└п╟п╧п╩"
 
 #: methods/http.cc:821
 msgid "Error writing to the file"
-msgstr "Ошибка записи в файл"
+msgstr "п·я┬п╦п╠п╨п╟ п╥п╟п©п╦я│п╦ п╡ я└п╟п╧п╩"
 
 #: methods/http.cc:835
 msgid "Error reading from server Remote end closed connection"
-msgstr "Ошибка чтения с сервера, удаленная сторона закрыла соединение"
+msgstr "п·я┬п╦п╠п╨п╟ я┤я┌п╣п╫п╦я▐ я│ я│п╣я─п╡п╣я─п╟, я┐п╢п╟п╩п╣п╫п╫п╟я▐ я│я┌п╬я─п╬п╫п╟ п╥п╟п╨я─я▀п╩п╟ я│п╬п╣п╢п╦п╫п╣п╫п╦п╣"
 
 #: methods/http.cc:837
 msgid "Error reading from server"
-msgstr "Ошибка чтения с сервера"
+msgstr "п·я┬п╦п╠п╨п╟ я┤я┌п╣п╫п╦я▐ я│ я│п╣я─п╡п╣я─п╟"
 
 #: methods/http.cc:1068
 msgid "Bad header Data"
-msgstr "Плохие данные заголовка"
+msgstr "п÷п╩п╬я┘п╦п╣ п╢п╟п╫п╫я▀п╣ п╥п╟пЁп╬п╩п╬п╡п╨п╟"
 
 #: methods/http.cc:1085
 msgid "Connection failed"
-msgstr "Соединение завершилось неудачно"
+msgstr "п║п╬п╣п╢п╦п╫п╣п╫п╦п╣ п╥п╟п╡п╣я─я┬п╦п╩п╬я│я▄ п╫п╣я┐п╢п╟я┤п╫п╬"
 
 #: methods/http.cc:1176
 msgid "Internal error"
-msgstr "Внутренняя ошибка"
+msgstr "п▓п╫я┐я┌я─п╣п╫п╫я▐я▐ п╬я┬п╦п╠п╨п╟"
 
 #: methods/rsh.cc:267
 msgid "File Not Found"
-msgstr "Файл не найден"
+msgstr "п╓п╟п╧п╩ п╫п╣ п╫п╟п╧п╢п╣п╫"
 
 #: methods/rsh.cc:333
 msgid "Connection closed prematurely"
-msgstr "Соединение закрылось prematurely"
+msgstr "п║п╬п╣п╢п╦п╫п╣п╫п╦п╣ п╥п╟п╨я─я▀п╩п╬я│я▄ prematurely"
 
 #~ msgid "Internal error. Package %s doesn't provide %s\n"
-#~ msgstr "Внутренняя ошибка. Пакет %s не предоставляет %s\n"
+#~ msgstr "п▓п╫я┐я┌я─п╣п╫п╫я▐я▐ п╬я┬п╦п╠п╨п╟. п÷п╟п╨п╣я┌ %s п╫п╣ п©я─п╣п╢п╬я│я┌п╟п╡п╩я▐п╣я┌ %s\n"
 
 #~ msgid "Note, selecting %s instead of %s\n"
-#~ msgstr "Обратите внимание: пакет %s выбран вместо %s.\n"
+#~ msgstr "п·п╠я─п╟я┌п╦я┌п╣ п╡п╫п╦п╪п╟п╫п╦п╣: п©п╟п╨п╣я┌ %s п╡я▀п╠я─п╟п╫ п╡п╪п╣я│я┌п╬ %s.\n"
 
 #~ msgid "Note, selecting %s for regex '%s'\n"
-#~ msgstr "Обратите внимание: %s соответствует регулярному выражению '%s'\n"
+#~ msgstr "п·п╠я─п╟я┌п╦я┌п╣ п╡п╫п╦п╪п╟п╫п╦п╣: %s я│п╬п╬я┌п╡п╣я┌я│я┌п╡я┐п╣я┌ я─п╣пЁя┐п╩я▐я─п╫п╬п╪я┐ п╡я▀я─п╟п╤п╣п╫п╦я▌ '%s'\n"
 
 #~ msgid "Release '%s' for '%s' was not found"
-#~ msgstr "Описание '%s' для '%s' не найдено."
+#~ msgstr "п·п©п╦я│п╟п╫п╦п╣ '%s' п╢п╩я▐ '%s' п╫п╣ п╫п╟п╧п╢п╣п╫п╬."
 
 #~ msgid "Version '%s' for '%s' was not found"
-#~ msgstr "Версия '%s' для '%s' не найдена"
+#~ msgstr "п▓п╣я─я│п╦я▐ '%s' п╢п╩я▐ '%s' п╫п╣ п╫п╟п╧п╢п╣п╫п╟"
 
 #~ msgid "error parsing file record %s"
-#~ msgstr "ошибка обработки файловой записи %s"
+#~ msgstr "п╬я┬п╦п╠п╨п╟ п╬п╠я─п╟п╠п╬я┌п╨п╦ я└п╟п╧п╩п╬п╡п╬п╧ п╥п╟п©п╦я│п╦ %s"
 
 #~ msgid "%s %s'%s' for '%s' was not found"
-#~ msgstr "%s %s'%s' для '%s' не найден(а)"
+#~ msgstr "%s %s'%s' п╢п╩я▐ '%s' п╫п╣ п╫п╟п╧п╢п╣п╫(п╟)"
 
 #~ msgid "Release"
-#~ msgstr "Релиз"
+#~ msgstr "п═п╣п╩п╦п╥"
 
 #~ msgid "Version"
-#~ msgstr "Версия"
+#~ msgstr "п▓п╣я─я│п╦я▐"
 
 #~ msgid "Selected %s %s (%s) for %s\n"
-#~ msgstr "Выбран(а) %s %s (%s) для %s\n"
+#~ msgstr "п▓я▀п╠я─п╟п╫(п╟) %s %s (%s) п╢п╩я▐ %s\n"
 
 #~ msgid "release"
-#~ msgstr "релиз"
+#~ msgstr "я─п╣п╩п╦п╥"
 
 #~ msgid "version"
-#~ msgstr "версия"
+#~ msgstr "п╡п╣я─я│п╦я▐"
 
 #~ msgid "The following packages will be kept back"
-#~ msgstr "Следующие пакеты будут СОХРАНЕНЫ:"
+#~ msgstr "п║п╩п╣п╢я┐я▌я┴п╦п╣ п©п╟п╨п╣я┌я▀ п╠я┐п╢я┐я┌ п║п·п╔п═п░п²п∙п²п╚:"
 
 #~ msgid "The list of sources from %s could not be read."
-#~ msgstr "Невозможно прочитать список источников из %s."
+#~ msgstr "п²п╣п╡п╬п╥п╪п╬п╤п╫п╬ п©я─п╬я┤п╦я┌п╟я┌я▄ я│п©п╦я│п╬п╨ п╦я│я┌п╬я┤п╫п╦п╨п╬п╡ п╦п╥ %s."
 
 #~ msgid "Collecting File Provides"
-#~ msgstr "Создание списка имён"
+#~ msgstr "п║п╬п╥п╢п╟п╫п╦п╣ я│п©п╦я│п╨п╟ п╦п╪я▒п╫"
