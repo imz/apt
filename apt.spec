@@ -608,7 +608,8 @@ exec 1>&2
 %_datadir/%name/tests/
 
 %changelog
-* Thu May 22 2025 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt95
+* Wed May 21 2025 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt95
+- Restricted access to files output by Debug::Connect (to protect secrets).
 - Updated Russian help message (missing commands were: autoremove, changelog);
   updated the manpage with "autoremove" docs (thx Leonid Znamenok respublica@).
 
