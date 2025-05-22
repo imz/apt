@@ -181,6 +181,8 @@ bool DebugMethodFdIfRequired(std::unique_ptr<MethodFd> &MFd)
                            "the connection %s"),
                          MFd->Label().c_str());
 
+         // Note that an errno-based explanation was already put into _error.
+
          // FIXME: We want that a failure to set up debugging doesn't go unnoticed,
          // however it wouldn't be correct to treat it as a connection error
          // by the calling code. So, we just bail out... (Could be an option.)
@@ -190,6 +192,7 @@ bool DebugMethodFdIfRequired(std::unique_ptr<MethodFd> &MFd)
          const bool FatalDebugMethodFd = true;
          if (FatalDebugMethodFd)
          {
+            _error->DumpErrors();
             std::cerr << "FATAL -> failed to set up debugging of MethodFd"
                       << std::endl;
             exit(100);
