@@ -3,7 +3,7 @@
 
 Name: apt
 Version: 0.5.15lorg2
-Release: alt93.p10.1
+Release: alt94.p10.1
 
 Summary: Debian's Advanced Packaging Tool with RPM support
 Summary(ru_RU.UTF-8): Debian APT - Усовершенствованное средство управления пакетами с поддержкой RPM
@@ -608,9 +608,14 @@ exec 1>&2
 %_datadir/%name/tests/
 
 %changelog
-* Mon May 19 2025 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt93.p10.1
+* Wed May 21 2025 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt94.p10.1
 - Build for p10: with some fixes (corrupt downloads, IPv6 literals, etc.),
   but with the experimental columnar output turned off.
+
+* Wed May 21 2025 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt95
+- Restricted access to files output by Debug::Connect (to protect secrets).
+- Updated Russian help message (missing commands were: autoremove, changelog);
+  updated the manpage with "autoremove" docs (thx Leonid Znamenok respublica@).
 
 * Mon May 19 2025 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt94
 - Adapted build for autoconf 2.72: don't rely on the internal var

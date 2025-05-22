@@ -33,6 +33,7 @@
          <arg>dselect-upgrade</>
          <arg>install <arg choice="plain" rep="repeat"><replaceable>pkg</replaceable></arg></arg>
          <arg>remove <arg choice="plain" rep="repeat"><replaceable>pkg</replaceable></arg></arg>
+         <arg>autoremove</>
          <arg>source <arg choice="plain" rep="repeat"><replaceable>pkg</replaceable></arg></arg>
          <arg>build-dep <arg choice="plain" rep="repeat"><replaceable>pkg</replaceable></arg></arg>
          <arg>check</>
@@ -152,6 +153,15 @@
      removed instead of installed. If a plus sign is appended to the package
      name (with no intervening space), the identified package will be
      installed instead of removed.
+     </Para></ListItem>
+     </VarListEntry>
+
+     <VarListEntry><Term>autoremove</Term>
+     <ListItem><Para>
+     autoremove is used to remove packages that were automatically
+     installed to satisfy dependencies for other packages and are
+     now no longer needed as dependencies changed or the package(s)
+     needing them were removed in the meantime.
      </Para></ListItem>
      </VarListEntry>
 

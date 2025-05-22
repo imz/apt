@@ -14,6 +14,7 @@
 
 #include <cassert>
 #include <sys/time.h>
+#include <fcntl.h>
 
 #include "connect-debug.h"
 
@@ -134,9 +135,12 @@ bool DebuggedMethodFd::Close_enter()
 DebuggedMethodFd::DebuggedMethodFd(std::unique_ptr<MethodFd> &MFd,
                                    const std::string &FileName)
    : TracedMethodFd(MFd),
-     LogFd(FileName, FileFd::WriteTemp /* implies O_EXCL */)
-     /* This is a trivial way to avoid collisions/loss of output,
-        or interference with unowned files. */
+     LogFd(FileName, FileFd::WriteTemp /* implies O_EXCL */, S_IRUSR)
+     /* O_EXCL is a trivial way to avoid collisions/loss of output,
+        or interference with unowned files.
+        S_IRUSR is to protect secret data such as auth (especially appropriate
+        if we are run set-UID and a user could control the output location).
+     */
 {}
 
 bool DebugMethodFdToFile(const std::string &FileName,
@@ -181,6 +185,8 @@ bool DebugMethodFdIfRequired(std::unique_ptr<MethodFd> &MFd)
                            "the connection %s"),
                          MFd->Label().c_str());
 
+         // Note that an errno-based explanation was already put into _error.
+
          // FIXME: We want that a failure to set up debugging doesn't go unnoticed,
          // however it wouldn't be correct to treat it as a connection error
          // by the calling code. So, we just bail out... (Could be an option.)
@@ -190,6 +196,7 @@ bool DebugMethodFdIfRequired(std::unique_ptr<MethodFd> &MFd)
          const bool FatalDebugMethodFd = true;
          if (FatalDebugMethodFd)
          {
+            _error->DumpErrors();
             std::cerr << "FATAL -> failed to set up debugging of MethodFd"
                       << std::endl;
             exit(100);

@@ -4,7 +4,7 @@ methods_PROGRAMS = cdrom copy file ftp gpg gzip http https rsh rsync
 
 # It's better to cd below because LN_S can fallback on ln or cp.
 # The target dir already includes the installation prefix (due to libdir).
-install-data-local: | install-methodsPROGRAMS
+install-data-hook: | install-methodsPROGRAMS
 	(cd $(methodsdir) \
 	&& $(LN_S) rsh ssh \
 	&& $(LN_S) gzip bzip2 \

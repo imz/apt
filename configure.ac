@@ -72,7 +72,7 @@ fi
 dnl CNC:2003-03-20
 AC_MSG_CHECKING(for --disable-scripts)
 AC_ARG_ENABLE([scripts],
-	      AC_HELP_STRING(--disable-scripts, disable the extension system),
+	      AS_HELP_STRING(--disable-scripts, disable the extension system),
 	      [enable_scripts="$enableval"],[enable_scripts="yes"])
 if test "$enable_scripts" != "no"; then
   AC_MSG_RESULT(no)
@@ -86,7 +86,7 @@ AM_CONDITIONAL(WITH_LUA, test "$enable_scripts" != "no")
 dnl Before configuring libtool check for --enable-static-progs option
 AC_MSG_CHECKING(for --enable-static-progs)
 AC_ARG_ENABLE(static-progs,
-	      AC_HELP_STRING([--enable-static-progs],
+	      AS_HELP_STRING([--enable-static-progs],
 			     [Build completely static (standalone) binaries.]),
 	      [enable_static_progs="$enableval"],[enable_static_progs="no"])
 AM_CONDITIONAL(COMPILE_STATIC, test "$enable_static_progs" = "yes")
@@ -142,7 +142,7 @@ dnl Check for the SGML tools needed to build man pages
 AC_PATH_PROG(DOCBOOK2MAN,docbook2man)
 AC_MSG_CHECKING([for --disable-docs])
 AC_ARG_ENABLE([docs],
-	      AC_HELP_STRING([--disable-docs],
+	      AS_HELP_STRING([--disable-docs],
 			     [do not compile documentation]),
 	      [enable_docs="$enableval"], [enable_docs="yes"])
 if test "$enable_docs" != "no"; then
@@ -158,7 +158,7 @@ rc_GLIBC_VER
 rc_LIBSTDCPP_VER
 AC_PROG_LN_S
 
-AC_OUTPUT([
+AC_CONFIG_FILES([
 	  Makefile
 	  buildlib/Makefile
 	  apt-pkg/Makefile
@@ -167,3 +167,4 @@ AC_OUTPUT([
 	  wrapper/Makefile
 	  doc/Makefile
 	  ])
+AC_OUTPUT
