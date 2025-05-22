@@ -10,6 +10,11 @@ Summary(ru_RU.UTF-8): Debian APT - Усовершенствованное сре
 License: GPL-2.0-or-later
 Group: System/Configuration/Packaging
 URL: http://apt-rpm.org
+
+Obsoletes: %name-https
+# not to break any existing deps (although a separate entity doesn't make sense)
+Provides: %name-https = %EVR
+
 # Known upstream "apt-rpm" Git repos:
 # -----------------------------------
 #
@@ -128,12 +133,6 @@ Summary(ru_RU.UTF-8): Поддержка метода rsync для APT
 Group: Development/Other
 Requires: %name = %EVR, rsync >= 2.5.5-alt3
 
-%package https
-Summary: https method support for APT
-Summary(ru_RU.UTF-8): Поддержка метода https для APT
-Group: Other
-Requires: %name = %EVR
-
 %package tests
 Summary: Test suite for APT
 Summary(ru_RU.UTF-8): Набор тестов для APT
@@ -142,8 +141,8 @@ BuildArch: noarch
 Requires: rpm-build
 Requires: /usr/bin/genbasedir
 # optional
-%global complete_reqs_of_tests %name-https /usr/sbin/nginx tinyproxy /usr/bin/openssl
-%global reqs_of_tests_to_filter_out \\(%name-https\\|/usr/sbin/nginx\\|nginx\\|/usr/bin/openssl\\|openssl\\|/usr/bin/tinyproxy\\|tinyproxy\\)
+%global complete_reqs_of_tests /usr/sbin/nginx tinyproxy /usr/bin/openssl
+%global reqs_of_tests_to_filter_out \\(/usr/sbin/nginx\\|nginx\\|/usr/bin/openssl\\|openssl\\|/usr/bin/tinyproxy\\|tinyproxy\\)
 %filter_from_requires \,^%reqs_of_tests_to_filter_out\($\|[[:blank:]]\),d
 
 # {{{ descriptions
@@ -193,11 +192,6 @@ This package contains method 'rsync' for APT.
 
 %risk_usage_en
 
-%description https
-This package contains method 'https' for APT.
-
-%risk_usage_en
-
 %description tests
 This package contains test suite for APT.
 
@@ -226,11 +220,6 @@ This package contains test suite for APT.
 
 %description rsync -l ru_RU.UTF-8
 В этом пакете находится метод 'rsync' для APT
-
-%risk_usage
-
-%description https -l ru_RU.UTF-8
-В этом пакете находится метод 'https' для APT
 
 %risk_usage
 
@@ -563,7 +552,6 @@ exec 1>&2
 %_libexecdir/apt
 %_libdir/%name
 %exclude %_libdir/%name/methods/rsync
-%exclude %_libdir/%name/methods/https
 %dir %_sysconfdir/%name
 %config(noreplace) %_sysconfdir/%name/%name.conf
 %dir %_sysconfdir/%name/*.d
@@ -597,11 +585,6 @@ exec 1>&2
 %dir %_libdir/%name/methods
 %_libdir/%name/methods/rsync
 # Probably %%doc with README.rsync?
-
-%files https
-%dir %_libdir/%name
-%dir %_libdir/%name/methods
-%_libdir/%name/methods/https
 
 %files tests
 %dir %_datadir/%name
