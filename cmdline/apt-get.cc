@@ -2584,6 +2584,7 @@ bool ShowHelp(CommandLine &CmdL)
 // CNC:2003-02-20 - Use .rpm extension in documentation.
       "   install - Install new packages (pkg is libc6 not libc6.rpm)\n"
       "   remove - Remove packages\n"
+      "   autoremove - Automatically remove orphaned packages\n"
       "   source - Download source archives\n"
       "   build-dep - Configure build-dependencies for source packages\n"
       "   dist-upgrade - Distribution upgrade, see apt-get(8)\n"
