@@ -452,6 +452,12 @@ bool ServerState::Open()
    }
 
    bool const tls = (ServerName.Access == "https" || APT::String::Endswith(ServerName.Access, "+https"));
+#ifndef USE_TLS
+   if (tls)
+      return _error->Error("Wrong method (without TLS) invoked for %s connection to: %s",
+                           Proxy.Access.c_str(),
+                           URI::SiteOnly(Proxy).c_str());
+#endif /* !USE_TLS */
    auto const DefaultService = tls ? "https" : "http";
    auto const DefaultPort = tls ? 443 : 80;
 
@@ -487,8 +493,13 @@ bool ServerState::Open()
 	 return false;
    }
 
+#ifdef USE_TLS
    if (tls && UnwrapTLS(ServerName.Host, ServerFd, TimeOut, Owner) == false)
       return false;
+#else
+   if (tls)
+      return false;
+#endif /* USE_TLS */
 
    return true;
 }
@@ -1125,8 +1136,10 @@ int HttpMethod::DealWithHeaders(FetchResult &Res,ServerState *Srv)
       {
 	 Description = ParsedURI.Host;
 
+#ifdef USE_TLS
 	 if (ParsedURI.Access == "https")
 	    Description += string(" (secure)");
+#endif
 
 	 if (NeedAuth(Description, AuthUser, AuthPass) == true)
 	 {
