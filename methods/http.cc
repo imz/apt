@@ -40,6 +40,7 @@
 #include <stdio.h>
 #include <errno.h>
 #include <iostream>
+#include <sstream>
 #include <map>
 
 // Internet stuff
@@ -53,7 +54,13 @@
 #include "rfc2553emu.h"
 #include "http.h"
 
+// for debugging
+#include "connect-debug.h"
+
 									/*}}}*/
+// FIXME: upstream has got rid of this soon, but for now, for backporting:
+#define APT_OVERRIDE override
+
 using namespace std;
 
 string HttpMethod::FailFile;
@@ -63,14 +70,6 @@ unsigned long PipelineDepth = 10;
 unsigned long TimeOut = 120;
 bool ChokePipe = true;
 bool Debug = false;
-
-#ifdef USE_TLS
-#define service_name "https"
-#define default_port 443
-#else /* USE_TLS */
-#define service_name "http"
-#define default_port 80
-#endif /* USE_TLS */
 
 // CircleBuf::CircleBuf - Circular input buffer				/*{{{*/
 // ---------------------------------------------------------------------
@@ -247,6 +246,15 @@ bool CircleBuf::WriteTillEl(string &Data,bool Single)
    return false;
 }
 									/*}}}*/
+// CircleBuf::Write - Write from the buffer to a string			/*{{{*/
+// ---------------------------------------------------------------------
+/* This copies everything */
+bool CircleBuf::Write(string &Data)
+{
+   Data = std::string((char *)Buf + (OutP % Size), LeftWrite());
+   OutP += LeftWrite();
+   return true;
+}
 // CircleBuf::Stats - Print out stats information			/*{{{*/
 // ---------------------------------------------------------------------
 /* */
@@ -267,6 +275,132 @@ CircleBuf::~CircleBuf()
    delete [] Buf;
    delete Hash;
 }
+
+// UnwrapHTTPConnect - Does the HTTP CONNECT handshake			/*{{{*/
+// ---------------------------------------------------------------------
+/* Performs a TLS handshake on the socket */
+struct HttpConnectFd : public MethodFd
+{
+   std::unique_ptr<MethodFd> UnderlyingFd;
+   std::string Buffer;
+   std::string Host_Port;
+
+   int Fd() APT_OVERRIDE { return UnderlyingFd->Fd(); }
+
+   ssize_t Read(void *buf, size_t count) APT_OVERRIDE
+   {
+      if (!Buffer.empty())
+      {
+	 auto read = count < Buffer.size() ? count : Buffer.size();
+
+	 memcpy(buf, Buffer.data(), read);
+	 Buffer.erase(Buffer.begin(), Buffer.begin() + read);
+	 return read;
+      }
+
+      return UnderlyingFd->Read(buf, count);
+   }
+   ssize_t Write(const void *buf, size_t count) APT_OVERRIDE
+   {
+      return UnderlyingFd->Write(buf, count);
+   }
+
+   int Close() APT_OVERRIDE
+   {
+      return UnderlyingFd->Close();
+   }
+
+   bool HasPending() APT_OVERRIDE
+   {
+      return !Buffer.empty();
+   }
+
+   std::string Label() override
+   {
+      return UnderlyingFd->Label()
+         + "_HTTPCONNECT_" + Host_Port;
+   }
+};
+
+bool UnwrapHTTPConnect(std::string Host, int Port, URI Proxy, std::unique_ptr<MethodFd> &Fd,
+		       unsigned long Timeout, pkgAcqMethod *Owner)
+{
+   Owner->Status(_("Connecting to %s (%s)"), "HTTP proxy", URI::SiteOnly(Proxy).c_str());
+   // The HTTP server expects a hostname with a trailing :port
+   std::stringstream Req;
+   std::string ProperHost;
+
+   if (Host.find(':') != std::string::npos)
+      ProperHost = '[' + Host + ']';
+   else
+      ProperHost = Host;
+
+   // Build the connect
+   Req << "CONNECT " << Host << ":" << std::to_string(Port) << " HTTP/1.1\r\n";
+   if (Proxy.Port != 0)
+      Req << "Host: " << ProperHost << ":" << std::to_string(Port) << "\r\n";
+   else
+      Req << "Host: " << ProperHost << "\r\n";
+   ;
+
+   if (Proxy.User.empty() == false || Proxy.Password.empty() == false)
+      Req << "Proxy-Authorization: Basic "
+	  << Base64Encode(Proxy.User + ":" + Proxy.Password) << "\r\n";
+
+   string UserAgent = _config->Find("Acquire::http::User-Agent");
+   if (UserAgent.empty() == true)
+	  UserAgent = "RPM APT-HTTP/1.3";
+   Req << "User-Agent: " << UserAgent << "\r\n";
+
+   Req << "\r\n";
+
+   CircleBuf In(4096);
+   CircleBuf Out(4096);
+   std::string Headers;
+
+   if (Debug == true)
+      cerr << Req.str() << endl;
+   Out.Read(Req.str());
+
+   // Writing from proxy
+   while (Out.WriteSpace() > 0)
+   {
+      if (WaitFd(Fd->Fd(), true, Timeout) == false)
+	 return _error->Errno("select", "Writing to proxy failed");
+      if (Out.Write(Fd) == false)
+	 return _error->Errno("write", "Writing to proxy failed");
+   }
+
+   while (In.ReadSpace() > 0)
+   {
+      if (WaitFd(Fd->Fd(), false, Timeout) == false)
+	 return _error->Errno("select", "Reading from proxy failed");
+      if (In.Read(Fd) == false)
+	 return _error->Errno("read", "Reading from proxy failed");
+
+      if (In.WriteTillEl(Headers))
+	 break;
+   }
+
+   if (Debug == true)
+      cerr << Headers << endl;
+
+   if (!(APT::String::Startswith(Headers, "HTTP/1.0 200") || APT::String::Startswith(Headers, "HTTP/1.1 200")))
+      return _error->Error("Invalid response from proxy: %s", Headers.c_str());
+
+   if (In.WriteSpace() > 0)
+   {
+      // Maybe there is actual data already read, if so we need to buffer it
+      std::unique_ptr<HttpConnectFd> NewFd(new HttpConnectFd());
+      In.Write(NewFd->Buffer);
+      NewFd->UnderlyingFd = std::move(Fd);
+      NewFd->Host_Port = ProperHost + ":" + std::to_string(Port);
+      Fd = std::move(NewFd);
+   }
+
+   return DebugMethodFdIfRequired(Fd);
+}
+									/*}}}*/
 
 // ServerState::ServerState - Constructor				/*{{{*/
 // ---------------------------------------------------------------------
@@ -292,7 +426,6 @@ bool ServerState::Open()
    Out.Reset();
    Persistent = true;
 
-#ifndef USE_TLS
    // Determine the proxy setting
    if (getenv("http_proxy") == 0)
    {
@@ -317,34 +450,54 @@ bool ServerState::Open()
       if (CheckDomainList(ServerName.Host,getenv("no_proxy")) == true)
 	 Proxy = "";
    }
-#endif /* !USE_TLS */
 
-   // Determine what host and port to use based on the proxy settings
-   int Port = 0;
-   string Host;
+   bool const tls = (ServerName.Access == "https" || APT::String::Endswith(ServerName.Access, "+https"));
 #ifndef USE_TLS
-   if (Proxy.empty() == true || Proxy.Host.empty() == true)
-   {
+   if (tls)
+      return _error->Error("Wrong method (without TLS) invoked for %s connection to: %s",
+                           Proxy.Access.c_str(),
+                           URI::SiteOnly(Proxy).c_str());
 #endif /* !USE_TLS */
-      if (ServerName.Port != 0)
-	 Port = ServerName.Port;
-      Host = ServerName.Host;
-#ifndef USE_TLS
+   auto const DefaultService = tls ? "https" : "http";
+   auto const DefaultPort = tls ? 443 : 80;
+
+   if (Proxy.Access == "socks5h")
+   {
+      return _error->Error("Not yet supported %s proxy configured: %s",
+                           Proxy.Access.c_str(),
+                           URI::SiteOnly(Proxy).c_str());
    }
    else
    {
-      if (Proxy.Port != 0)
-	 Port = Proxy.Port;
-      Host = Proxy.Host;
-   }
-#endif /* !USE_TLS */
+      // Determine what host and port to use based on the proxy settings
+      int Port = 0;
+      string Host;
+      if (Proxy.empty() == true || Proxy.Host.empty() == true)
+      {
+	 if (ServerName.Port != 0)
+	    Port = ServerName.Port;
+	 Host = ServerName.Host;
+      }
+      else if (Proxy.Access != "http")
+	 return _error->Error("Unsupported proxy configured: %s", URI::SiteOnly(Proxy).c_str());
+      else
+      {
+	 if (Proxy.Port != 0)
+	    Port = Proxy.Port;
+	 Host = Proxy.Host;
+      }
 
-   // Connect to the remote server
-   if (Connect(Host,Port,service_name,default_port,ServerFd,TimeOut,Owner) == false)
-      return false;
+      if (!Connect(Host, Port, DefaultService, DefaultPort, ServerFd, TimeOut, Owner))
+	 return false;
+      if (Host == Proxy.Host && tls && UnwrapHTTPConnect(ServerName.Host, ServerName.Port == 0 ? DefaultPort : ServerName.Port, Proxy, ServerFd, _config->FindI("Acquire::http::Timeout", 120), Owner) == false)
+	 return false;
+   }
 
 #ifdef USE_TLS
-   if (!UnwrapTLS(ServerName.Host, ServerFd, TimeOut, Owner))
+   if (tls && UnwrapTLS(ServerName.Host, ServerFd, TimeOut, Owner) == false)
+      return false;
+#else
+   if (tls)
       return false;
 #endif /* USE_TLS */
 
@@ -669,7 +822,7 @@ void HttpMethod::SendReq(FetchItem *Itm,CircleBuf &Out)
       but while its a must for all servers to accept absolute URIs,
       it is assumed clients will sent an absolute path for non-proxies */
    std::string requesturi;
-   if (Proxy.Access != "http" || Proxy.empty() == true || Proxy.Host.empty())
+   if ((Proxy.Access != "http" && Proxy.Access != "https") || APT::String::Endswith(Uri.Access, "https") || Proxy.empty() == true || Proxy.Host.empty())
       requesturi = Uri.Path;
    else
       requesturi = Uri;

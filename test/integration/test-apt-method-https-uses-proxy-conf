@@ -22,6 +22,15 @@ cat > "$APT_TEST_PROXY_FOR_HTTP_CONF" <<- END
 Acquire::https::Proxy	"$APT_TEST_HTTP_PROXY";
 END
 
+# Acquire::https::Proxy is not honored by apt, just Acquire::http::Proxy.
+case "$APT_TEST_METHOD" in
+    http*_localhost6*)
+	echo 'SKIP on IPv6, shows nothing (direct access is not denied; Acquire::https::Proxy is not used)' >&2
+	exit 0
+	;;
+esac
+APT_TEST_XFAIL=yes
+
 testsuccess aptget update
 
 testpkgnotinstalled 'simple-package'

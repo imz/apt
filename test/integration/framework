@@ -297,15 +297,6 @@ generaterepository_and_switch_sources() {
 		esac
 		export http_proxy
 
-		# Doing HTTPS through proxy? (And if we are setting up the repo,
-		# I believe we are going to access it with apt-get.) So, remember
-		# that it's not implemented yet and mark the tests correspondingly.
-		case "$APT_TEST_METHOD" in
-		    https*)
-			APT_TEST_XFAIL=yes
-			;;
-		esac
-
 		;;
 	esac
 
