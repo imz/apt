@@ -218,8 +218,8 @@ RPM::Allow-Duplicated {"kernel"; "kernel-smp";};
 
      <VarListEntry><Term>https</Term>
      <ListItem><Para>
-     This method inherits all configuration settings from http method except for
-     proxy settings and has some additional settings related to TLS configuration.
+     This method inherits all configuration settings from http method (including
+     proxy settings) and has some additional settings related to TLS configuration.
      </Para><Para>
      Variable <literal/Acquire::https::CaInfo/ allows setting path to
      certificate bundle file in PEM format to be used instead of system certificate store.

@@ -292,7 +292,6 @@ bool ServerState::Open()
    Out.Reset();
    Persistent = true;
 
-#ifndef USE_TLS
    // Determine the proxy setting
    if (getenv("http_proxy") == 0)
    {
@@ -317,19 +316,15 @@ bool ServerState::Open()
       if (CheckDomainList(ServerName.Host,getenv("no_proxy")) == true)
 	 Proxy = "";
    }
-#endif /* !USE_TLS */
 
    // Determine what host and port to use based on the proxy settings
    int Port = 0;
    string Host;
-#ifndef USE_TLS
    if (Proxy.empty() == true || Proxy.Host.empty() == true)
    {
-#endif /* !USE_TLS */
       if (ServerName.Port != 0)
 	 Port = ServerName.Port;
       Host = ServerName.Host;
-#ifndef USE_TLS
    }
    else
    {
@@ -337,7 +332,6 @@ bool ServerState::Open()
 	 Port = Proxy.Port;
       Host = Proxy.Host;
    }
-#endif /* !USE_TLS */
 
    // Connect to the remote server
    if (Connect(Host,Port,service_name,default_port,ServerFd,TimeOut,Owner) == false)
