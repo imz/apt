@@ -594,11 +594,7 @@ exec 1>&2
 * Wed May 21 2025 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt96
 - Added support for HTTPS connections through an HTTP proxy (ALT#38543).
   (Backported from Debian 1.5_alpha4~9.) (To come next: through HTTPS proxy.)
-  Applicable configuration is the same as for HTTP, in the order below.
-- Made the order of the applicable proxy configuration for HTTP(S) same as in
-  Debian: Acquire::http::Proxy:<a host>, Acquire::http::Proxy, $http_proxy
-  (https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=479617 ,
-   https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=157759 ). Same for FTP.
+  Applicable configuration is the same as for HTTP.
 
 * Wed May 21 2025 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt95
 - Restricted access to files output by Debug::Connect (to protect secrets).
