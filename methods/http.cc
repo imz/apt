@@ -456,7 +456,7 @@ bool ServerState::Open()
 	 Proxy = "";
    }
 
-   bool tls = (ServerName.Access == "https" || APT::String::Endswith(ServerName.Access, "+https"));
+   bool const tls = (ServerName.Access == "https" || APT::String::Endswith(ServerName.Access, "+https"));
    auto const DefaultService = tls ? "https" : "http";
    auto const DefaultPort = tls ? 443 : 80;
 
