@@ -666,6 +666,15 @@ exec 1>&2
   when looking for the end of headers, so headers and content got corrupt.)
   + Implemented Debug::Connect config parameter (a dir; if set, operations
   on the FDs from Connect() are logged there with all the data).
+- Fixes:
+  + OVE-20250602-0001 Failure to complete an HTTP download may prevent a timely
+  security update.
+  An error in APT's http method may prevent it to complete an HTTP download and
+  to do a security update on time. In practice, this was observed intermittently
+  when working through a specific proxy server, namely tinyproxy, due to
+  specific sizes of the chunks in which data was transferred.
+  Workaround: try more times; or download the file with an external tool and put
+  it into APT's download cache directory.
 - tests:
   + Decoupled testing just HTTPS from testing certificate pinning.
   + Added testing HTTP(S) over HTTP proxy beside testing just HTTP(S).
