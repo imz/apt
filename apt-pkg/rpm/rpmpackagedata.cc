@@ -44,7 +44,7 @@ RPMPackageData::RPMPackageData()
 		    FileName.c_str());
       return;
    }
-   pkgTagFile Tags(&F);
+   pkgTagFile Tags(&F, 128*1024);
    pkgTagSection Section;
 
    if (!Tags.Step(Section))
