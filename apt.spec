@@ -318,6 +318,7 @@ Group: Other
 BuildArch: noarch
 Requires(pre): %name-tests
 Requires(pre): %name = %EVR
+Requires(pre): gpg-keygen
 
 %description basic-checkinstall
 Immediately test %name when installing this package.
@@ -351,6 +352,14 @@ pushd %_datadir/%name/tests/
 system_arch="$(rpm -q rpm --qf='%%{ARCH}')"
 export APT_TEST_TARGET="$system_arch"
 
+# prepare data for rpm --import
+APT_TEST_GPGPUBKEY="$PWD"/example-pubkey.asc
+gpg-keygen --passphrase '' \
+	--name-real 'Some One' --name-email someone@example.com \
+	/dev/null "$APT_TEST_GPGPUBKEY"
+
+export APT_TEST_GPGPUBKEY
+
 # cache built pkgs and other stuff
 APT_TEST_INTERMEDIATES="$(mktemp -d)"
 export APT_TEST_INTERMEDIATES
@@ -360,7 +369,7 @@ export APT_TEST_INTERMEDIATES
 %global runtests \\\
 		./run-tests -v
 
-# A quick test with just one method for the case without APT_TEST_GPGPUBKEY.
+# A quick test with just one method
 APT_TEST_METHODS='file' APT_TEST_http_METHODS= %runtests
 
 # The same tests, but just via cdrom with a missing release:
@@ -373,7 +382,6 @@ BuildArch: noarch
 Requires(pre): %name-tests
 Requires(pre): %name = %EVR
 Requires(pre): %complete_reqs_of_tests
-Requires(pre): gpg-keygen
 
 %description checkinstall
 Immediately test %name when installing this package.
@@ -405,14 +413,6 @@ pushd %_datadir/%name/tests/
 # at least, on armh. So, we set the target by force to a value that must work.
 system_arch="$(rpm -q rpm --qf='%%{ARCH}')"
 export APT_TEST_TARGET="$system_arch"
-
-# prepare data for rpm --import
-APT_TEST_GPGPUBKEY="$PWD"/example-pubkey.asc
-gpg-keygen --passphrase '' \
-	--name-real 'Some One' --name-email someone@example.com \
-	/dev/null "$APT_TEST_GPGPUBKEY"
-
-export APT_TEST_GPGPUBKEY
 
 # cache built pkgs and other stuff
 APT_TEST_INTERMEDIATES="$(mktemp -d)"
