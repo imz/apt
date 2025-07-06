@@ -97,6 +97,17 @@ then
 fi
 export APT_TEST_GPGPUBKEY
 
+# Set up some special pkgpriorities to run the tests with.
+APT_TEST_WITH_PKGPRIO="${APT_TEST_WITH_PKGPRIO-}"
+if [ -n "$APT_TEST_WITH_PKGPRIO" ] &&
+       ! [ -e "$APT_TEST_WITH_PKGPRIO" ]
+then
+    # some special sample file
+    # (This one causes https://bugzilla.altlinux.org/55057 .)
+    APT_TEST_WITH_PKGPRIO="$TESTDIRECTORY"/data/pkgpriorities-long.sample
+fi
+export APT_TEST_WITH_PKGPRIO
+
 # The compression options for the basedir can be forced by the environment.
 # (Some methods don't work without some option;
 # that determines which ones are chosen by default.)

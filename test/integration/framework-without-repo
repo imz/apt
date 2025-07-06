@@ -332,6 +332,10 @@ Standard:
   postfix
 END
 
+	if [ -n "$APT_TEST_WITH_PKGPRIO" ]; then
+	    cat "$APT_TEST_WITH_PKGPRIO" >| rootdir/etc/apt/pkgpriorities
+	fi
+
 	# just an empty sources.list for the beginning
 	echo > rootdir/etc/apt/sources.list
 
