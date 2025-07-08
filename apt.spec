@@ -362,12 +362,10 @@ export APT_TEST_GPGPUBKEY
 APT_TEST_INTERMEDIATES="$(mktemp -d)"
 export APT_TEST_INTERMEDIATES
 
-pushd %_datadir/%name/tests/
-
 # this macro can be prefixed (e.g., by environment assignments),
 # therefore the extra backslash in the first line
 %global runtests \\\
-		./run-tests -v
+		%_datadir/%name/tests/run-tests -v
 
 # A quick test with just one method
 APT_TEST_METHODS='file' APT_TEST_http_METHODS= %runtests
@@ -417,7 +415,6 @@ export APT_TEST_TARGET="$system_arch"
 APT_TEST_INTERMEDIATES="$(mktemp -d)"
 export APT_TEST_INTERMEDIATES
 
-pushd %_datadir/%name/tests/
 %runtests
 
 # Everything has been tested by now.
@@ -465,8 +462,7 @@ export APT_TEST_GPGPUBKEY
 APT_TEST_INTERMEDIATES="$(mktemp -d)"
 export APT_TEST_INTERMEDIATES
 
-pushd %_datadir/%name/tests/
-. ./run-tests.defaults.sh
+. %_datadir/%name/tests/run-tests.defaults.sh
 
 all_unique_methods=('' $(for method in "${APT_TEST_ALL_METHODS[@]}" "${APT_TEST_ALL_http_METHODS[@]}"; do echo "$method"; done | sort -u))
 readonly -a all_unique_methods

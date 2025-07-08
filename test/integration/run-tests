@@ -1,9 +1,12 @@
 #!/bin/bash
 set -e
 
-DIR=$(readlink -f $(dirname $0))
+if [ -z "${TESTDIRECTORY-}" ]; then
+    readonly TESTDIRECTORY="$(readlink -f "$(dirname "$0")")"
+fi
+export TESTDIRECTORY
 
-. "$DIR"/run-tests.defaults.sh
+. "$TESTDIRECTORY"/run-tests.defaults.sh
 
 # Some tests are "multiplied" by the method for accessing the repo (the one
 # specified in sources.list). The user may override them with this parameter.
@@ -207,6 +210,8 @@ forall_testcases() {
 	esac
     done
 }
+
+cd "$TESTDIRECTORY"
 
 readonly TOTAL=$(forall_testcases echo | wc -l)
 

@@ -274,7 +274,9 @@ prereq() {
 }
 
 setupenvironment() {
-	TESTDIRECTORY=$(readlink -f $(dirname $0))
+	if [ -z "${TESTDIRECTORY-}" ]; then
+	    readonly TESTDIRECTORY="$(readlink -f "$(dirname "$0")")"
+	fi
 	addtrap '' # unconditionally set up our basic traps
 
 	if [ -n "$APT_TEST_WORKINGDIRECTORY" ]; then
