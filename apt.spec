@@ -354,6 +354,9 @@ export APT_TEST_TARGET="$system_arch"
 APT_TEST_GPGPUBKEY=yes
 export APT_TEST_GPGPUBKEY
 
+APT_TEST_WITH_PKGPRIO=yes
+export APT_TEST_WITH_PKGPRIO
+
 # cache built pkgs and other stuff
 APT_TEST_INTERMEDIATES="$(mktemp -d)"
 export APT_TEST_INTERMEDIATES
