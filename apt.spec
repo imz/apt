@@ -3,7 +3,7 @@
 
 Name: apt
 Version: 0.5.15lorg2
-Release: alt98
+Release: alt99
 
 Summary: Debian's Advanced Packaging Tool with RPM support
 Summary(ru_RU.UTF-8): Debian APT - Усовершенствованное средство управления пакетами с поддержкой RPM
@@ -604,6 +604,11 @@ exec 1>&2
 %_datadir/%name/tests/
 
 %changelog
+* Thu Jan 15 2026 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt99
+- basic-checkinstall subpkg:
+  + Do the testing with an installed GPG key in this subpkg.
+  + Fixed permission issues when running it unpriviledged. (ALT#54672)
+
 * Sun Nov 02 2025 Maxim Slipenko <maks1ms@altlinux.org> 0.5.15lorg2-alt98
 - Fixed size mismatch for files >2GB by using strtoul() instead of atoi()
   in acquire-worker (ALT#56327).
