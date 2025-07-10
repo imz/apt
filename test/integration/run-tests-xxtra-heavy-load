@@ -24,12 +24,8 @@ system_arch="$(rpm -q rpm --qf='%{ARCH}')"
 [ -n "$system_arch" ]
 export APT_TEST_TARGET="$system_arch"
 
-# prepare data for rpm --import
-APT_TEST_GPGPUBKEY="$PWD"/example-pubkey.asc
-gpg-keygen --passphrase '' \
-	--name-real 'Some One' --name-email someone@example.com \
-	/dev/null "$APT_TEST_GPGPUBKEY"
-
+# to be rpm --import'ed
+APT_TEST_GPGPUBKEY=yes
 export APT_TEST_GPGPUBKEY
 
 # cache built pkgs and other stuff
