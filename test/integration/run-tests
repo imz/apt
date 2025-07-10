@@ -83,7 +83,19 @@ export APT_TEST_PKG_FILENAME_BY_ALIAS
 
 # The GPG key to apply rpm --import, so that all the tests are run with such db.
 # If empty, no GPG key is imported into the db.
-export APT_TEST_GPGPUBKEY="${APT_TEST_GPGPUBKEY-}"
+APT_TEST_GPGPUBKEY="${APT_TEST_GPGPUBKEY-}"
+if [ -n "$APT_TEST_GPGPUBKEY" ] &&
+       ! [ -e "$APT_TEST_GPGPUBKEY" ]
+then
+    # prepare data for rpm --import
+    APT_TEST_GPGPUBKEY="$PWD"/example-pubkey.asc
+    # FIXME: here we assume that PWD is writable
+    # (maybe a temp dir for running the tests)
+    gpg-keygen --passphrase '' \
+	       --name-real 'Some One' --name-email someone@example.com \
+	       /dev/null "$APT_TEST_GPGPUBKEY"
+fi
+export APT_TEST_GPGPUBKEY
 
 # The compression options for the basedir can be forced by the environment.
 # (Some methods don't work without some option;

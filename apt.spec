@@ -143,7 +143,7 @@ Requires: rpm-build
 Requires: /usr/bin/genbasedir
 # optional
 %global complete_reqs_of_tests %name-https /usr/sbin/nginx tinyproxy /usr/bin/openssl
-%global reqs_of_tests_to_filter_out \\(%name-https\\|/usr/sbin/nginx\\|nginx\\|/usr/bin/openssl\\|openssl\\|/usr/bin/tinyproxy\\|tinyproxy\\)
+%global reqs_of_tests_to_filter_out \\(%name-https\\|/usr/sbin/nginx\\|nginx\\|/usr/bin/openssl\\|openssl\\|/usr/bin/tinyproxy\\|tinyproxy\\|/usr/bin/gpg-keygen\\|gpg-keygen\\)
 %filter_from_requires \,^%reqs_of_tests_to_filter_out\($\|[[:blank:]]\),d
 
 # {{{ descriptions
@@ -350,12 +350,8 @@ fi
 system_arch="$(rpm -q rpm --qf='%%{ARCH}')"
 export APT_TEST_TARGET="$system_arch"
 
-# prepare data for rpm --import
-APT_TEST_GPGPUBKEY="$PWD"/example-pubkey.asc
-gpg-keygen --passphrase '' \
-	--name-real 'Some One' --name-email someone@example.com \
-	/dev/null "$APT_TEST_GPGPUBKEY"
-
+# to be rpm --import'ed
+APT_TEST_GPGPUBKEY=yes
 export APT_TEST_GPGPUBKEY
 
 # cache built pkgs and other stuff
@@ -450,12 +446,8 @@ set -o pipefail
 system_arch="$(rpm -q rpm --qf='%%{ARCH}')"
 export APT_TEST_TARGET="$system_arch"
 
-# prepare data for rpm --import
-APT_TEST_GPGPUBKEY="$PWD"/example-pubkey.asc
-gpg-keygen --passphrase '' \
-	--name-real 'Some One' --name-email someone@example.com \
-	/dev/null "$APT_TEST_GPGPUBKEY"
-
+# to be rpm --import'ed
+APT_TEST_GPGPUBKEY=yes
 export APT_TEST_GPGPUBKEY
 
 # cache built pkgs and other stuff
