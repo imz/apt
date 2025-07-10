@@ -3,7 +3,7 @@
 
 Name: apt
 Version: 0.5.15lorg2
-Release: alt99
+Release: alt100
 
 Summary: Debian's Advanced Packaging Tool with RPM support
 Summary(ru_RU.UTF-8): Debian APT - Усовершенствованное средство управления пакетами с поддержкой RPM
@@ -599,6 +599,11 @@ exec 1>&2
 %_datadir/%name/tests/
 
 %changelog
+* Thu Jan 15 2026 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt100
+- basic-checkinstall subpkg:
+  + Added testing of a long pkgpriorities file along with the tests (reported
+  in https://bugzilla.altlinux.org/55057 , worked around in 0.5.15lorg2-alt97).
+
 * Thu Jan 15 2026 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt99
 - basic-checkinstall subpkg:
   + Do the testing with an installed GPG key in this subpkg.
