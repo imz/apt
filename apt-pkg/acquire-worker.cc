@@ -272,10 +272,10 @@ bool pkgAcquire::Worker::RunMessages()
 
 	    CurrentItem = Itm;
 	    CurrentSize = 0;
-	    TotalSize = atoi(LookupTag(Message,"Size","0").c_str());
-	    ResumePoint = atoi(LookupTag(Message,"Resume-Point","0").c_str());
+	    TotalSize = strtoul(LookupTag(Message,"Size","0").c_str(), nullptr, 10);
+	    ResumePoint = strtoul(LookupTag(Message,"Resume-Point","0").c_str(), nullptr, 10);
 	    Itm->Owner->TmpFile = LookupTag(Message,"Tmp-Filename");
-	    Itm->Owner->Start(Message,atoi(LookupTag(Message,"Size","0").c_str()));
+	    Itm->Owner->Start(Message, TotalSize);
 
 	    // Display update before completion
 	    if (Log != 0 && Log->MorePulses == true)
@@ -304,14 +304,15 @@ bool pkgAcquire::Worker::RunMessages()
 	       Log->Pulse(Owner->GetOwner());
 
 	    OwnerQ->ItemDone(Itm);
-	    if (TotalSize != 0 &&
-		(unsigned)atoi(LookupTag(Message,"Size","0").c_str()) != TotalSize)
-	       _error->Warning("Bizarre Error - File size is not what the server reported %s %lu",
-			       LookupTag(Message,"Size","0").c_str(),TotalSize);
+       unsigned long size = strtoul(LookupTag(Message,"Size","0").c_str(), nullptr, 10);
+
+	    if (TotalSize != 0 && size != TotalSize)
+	       _error->Warning("Bizarre Error - File size is not what the server reported %lu %lu",
+			       size, TotalSize);
 
 	    // LORG:2006-03-09
 	    // Owner should look up the checksum if it needs another type
-	    Owner->DoneByWorker(Message,atoi(LookupTag(Message,"Size","0").c_str()),
+	    Owner->DoneByWorker(Message, size,
 			Config);
 
 	    ItemDone();
