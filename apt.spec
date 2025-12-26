@@ -609,7 +609,8 @@ exec 1>&2
 
 %changelog
 * Sun Nov 02 2025 Maxim Slipenko <maks1ms@altlinux.org> 0.5.15lorg2-alt98
-- Fixed size mismatch for files >2GB by using strtoul() instead of atoi() in acquire-worker (ALT#56327).
+- Fixed size mismatch for files >2GB by using strtoul() instead of atoi()
+  in acquire-worker (ALT#56327).
 
 * Wed Jul 02 2025 Maria Alexeeva <alxvmr@altlinux.org> 0.5.15lorg2-alt97
 - Increased the pkgpriorities buffer size from 32*1024 to 128*1024 (Closes: #55057).
