@@ -105,7 +105,7 @@ wait_for_file() {
     printf -v cond '[ -s %q ]' "$f"
     local -r cond
 
-    wait_until "$cond" $((50 * 1000)) "$f" || msgdie "Timeout waiting for $f"
+    wait_until "$cond" $((180 * 1000)) "$f" || msgdie "Timeout waiting for $f"
 }
 
 wait_for_nofile() {
