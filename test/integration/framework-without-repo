@@ -89,7 +89,7 @@ wait_until() {
 			sleep 0.05 &&
 			let '++i' &&
 			{ (( i < n )) || {
-			      msgwarn "Waited too long (${ms}ms)!"
+			      msgwarn "Waited too long ($((i * 50))>=${ms}ms)!"
 			      return 1
 			  }
 			}
@@ -105,7 +105,7 @@ wait_for_file() {
     printf -v cond '[ -s %q ]' "$f"
     local -r cond
 
-    wait_until "$cond" 50000 "$f" || msgdie "Timeout waiting for $f"
+    wait_until "$cond" $((50 * 1000)) "$f" || msgdie "Timeout waiting for $f"
 }
 
 wait_for_nofile() {
