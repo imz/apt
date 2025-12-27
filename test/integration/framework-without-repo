@@ -402,6 +402,7 @@ mk_intermediate() {
     local -r d="${f%/*}"
     mkdir -p "${d%/*}" # the prefix
     if ! mkdir "$d" &>/dev/null; then
+	[ -d "$d" ] || msgdie "Unexpected system state when needing ${what%/*}"
 	msginfo "Re-using ${what%/*}"
 	wait_for_file "$f"
     else
@@ -413,9 +414,13 @@ mk_intermediate() {
 	# Note: This doesn't prevent trying the erroneous build once again.
 	addtrap prefix 'rm -rf %q' "$d"
 
+	msginfo "Making ${what%/*}"
+
 	# pass args: prefix name out_basename
 	"$build_cmd" "${d%/*}" "${d##*/}" "${f##*/}".in-progress
 	mv -T "$f"{.in-progress,}
+
+	msginfo "Made ${what%/*}"
 
 	CURRENTTRAP="$trap_before_mkdir"
 	addtrap ''
