@@ -69,33 +69,40 @@ exec 6>&2
 
 wait_until() {
     local -r cond="$1"; shift
-    local -r ms="$1"; shift
+    local -r timeout_ms="$1"; shift
     local msg="$*"
     if [ -z "$msg" ]; then
 	msg="$cond"
     fi
     local -r msg
 
-    local -r n=$(( ms / 50 ))
-
-    # The message 'Waiting...' is intentionally printed regardless of $MSGLEVEL;
-    # otherwise it would be difficult to see why the process is hanging;
-    # it can appear only in extra-ordinary situations (under heavy load).
-    eval "$cond" ||
-	{ # need to group the alternative commands after a ||
-	    printf >&6 'Waiting for %s\n' "$msg" &&
-		local i=0 &&
-		while ! eval "$cond"; do
-			sleep 0.05 &&
-			let '++i' &&
-			{ (( i < n )) || {
-			      msgwarn "Waited too long ($((i * 50))>=${ms}ms)!"
-			      return 1
-			  }
-			}
-		done &&
-		printf >&6 'Waited %s * 0.05s.\n' "$i" # count&print i out of curiosity
-	}
+    if ! eval "$cond"; then
+	# The message 'Waiting...' is intentionally printed regardless of $MSGLEVEL;
+	# otherwise it would be difficult to see why the process is hanging;
+	# it can appear only in extra-ordinary situations (under heavy load).
+	printf >&6 'Waiting for %s\n' "$msg" || msgdie 'Failed printf Waiting for...'
+	local time_left=$timeout_ms step=50
+	while ! eval "$cond"; do
+	    if [ 0 -ge $step ]; then
+		msgwarn "Wrong step ($step), arithmetic error"
+		return 1
+	    fi
+	    if [ 0 -ge $time_left ]; then
+		msgwarn "Waited too long"
+		return 1
+	    fi
+	    if [ $step -ge $time_left ]; then
+		sleep ${time_left}e-3 ||
+		    msgwarn "Failed sleep ${time_left}e-3"
+		time_left=0
+	    else
+		sleep ${step}e-3 ||
+		    msgwarn "Failed sleep ${step}e-3"
+		(( time_left -= step, step *= 2 ))
+	    fi
+	done
+	msginfo "Waited $(( timeout_ms - time_left ))ms." # for curiosity
+    fi
 }
 
 wait_for_file() {
