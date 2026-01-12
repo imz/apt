@@ -23,17 +23,13 @@ case "$1" in
 	readonly INI=
 	;;
 esac
-readonly HSHDIR="$1"; shift
-[ $# -eq 0 ] || [ -n "$INI" ] || {
-    printf '%s: Too many arguments! (Only 1 is expected: HSHDIR. The rest is used only by --ini.)\n' "$0" >&2
-    exit 1
-}
+readonly -a HSHARGS=("$@")
 
 run_sh_e()
 {
     local ret
     share_network=1 \
-		 hsh-run --root "$HSHDIR" -- \
+		 hsh-run --root "${HSHARGS[@]}" -- \
 		 /bin/sh -exc "$*" \
 	&& ret=$? || ret=$?
 
@@ -45,7 +41,7 @@ set -x
 
 if [ -n "$INI" ]; then
     # (run only once)
-    hsh --ini --with-stuff "$HSHDIR" "$@"
+    hsh --ini --with-stuff "${HSHARGS[@]}"
 
     # Prepare the hasher env for the tests with big repos in the sources.list
     #
@@ -57,13 +53,13 @@ if [ -n "$INI" ]; then
     case "$INI" in
 	SAME)
 	    # (run only once)
-	    hsh-setup-ssh-to-localhost "$HSHDIR"
+	    hsh-setup-ssh-to-localhost "${HSHARGS[@]}"
 	    # (can be run many times)
-	    hsh-setup-apt-with-same-sources-via-ssh "$HSHDIR"
+	    hsh-setup-apt-with-same-sources-via-ssh "${HSHARGS[@]}"
 	    ;;
 	*)
 	    # (can be run many times)
-	    hsh-install "$HSHDIR" \
+	    hsh-install "${HSHARGS[@]}" \
 			apt-https \
 			apt-conf-sisyphus \
 			apt-repo
@@ -77,7 +73,7 @@ if [ -n "$INI" ]; then
 	     update
 fi
 # (can be run many times)
-hsh-install "$HSHDIR" packagekit
+hsh-install "${HSHARGS[@]}" packagekit
 
 # Test whether there is a crash during an action ("search-detail"):
 
