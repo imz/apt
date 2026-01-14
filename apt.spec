@@ -618,6 +618,16 @@ exec 1>&2
 - Added support for HTTPS connections through an HTTP proxy (ALT#38543).
   (Backported from Debian 1.5_alpha4~9.) (To come next: through HTTPS proxy.)
   Applicable configuration is the same as for HTTP.
+- Fixes:
+  + OVE-20250602-0002 Not using HTTPS from behind a proxy opens doors for
+  exploiting APT's bugs.
+  When using APT from behind a proxy, impossibility to use a trusted
+  connection to the trusted vendor's HTTPS server may open doors for an
+  attack on APT's http method that would make APT misbehave and execute
+  arbitrary code (in a package) prepared by an attacker who controls one
+  of the connection nodes, e.g., by exploiting any bug in APT that would
+  lead to misinterpretation of internal responses from the http method,
+  which--among other things--has the power to fake computed checksums.
 
 * Wed May 21 2025 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt95
 - Restricted access to files output by Debug::Connect (to protect secrets).
@@ -672,6 +682,15 @@ exec 1>&2
   when looking for the end of headers, so headers and content got corrupt.)
   + Implemented Debug::Connect config parameter (a dir; if set, operations
   on the FDs from Connect() are logged there with all the data).
+- Fixes:
+  + OVE-20250602-0001 Failure to complete an HTTP download may prevent a timely
+  security update.
+  An error in APT's http method may prevent it to complete an HTTP download and
+  to do a security update on time. In practice, this was observed intermittently
+  when working through a specific proxy server, namely tinyproxy, due to
+  specific sizes of the chunks in which data was transferred.
+  Workaround: try more times; or download the file with an external tool and put
+  it into APT's download cache directory.
 - tests:
   + Decoupled testing just HTTPS from testing certificate pinning.
   + Added testing HTTP(S) over HTTP proxy beside testing just HTTP(S).
