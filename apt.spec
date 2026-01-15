@@ -340,8 +340,6 @@ if [ -n "$found_unwanted_reqs_of_tests" ]; then
     exit 1
 fi
 
-pushd %_datadir/%name/tests/
-
 # force the target arch for the tests
 #
 # By default, the packages would be built for the arch detected by rpm-build
@@ -363,6 +361,8 @@ export APT_TEST_GPGPUBKEY
 # cache built pkgs and other stuff
 APT_TEST_INTERMEDIATES="$(mktemp -d)"
 export APT_TEST_INTERMEDIATES
+
+pushd %_datadir/%name/tests/
 
 # this macro can be prefixed (e.g., by environment assignments),
 # therefore the extra backslash in the first line
@@ -393,7 +393,6 @@ and some additional peculiarities are tested).
 
 %pre checkinstall -p %_sbindir/sh-safely
 set -o pipefail
-pushd %_datadir/%name/tests/
 
 # This option makes sense just for the maintainer (to test the tests).
 # This option makes the built pkgs be saved under a special filename
@@ -418,6 +417,7 @@ export APT_TEST_TARGET="$system_arch"
 APT_TEST_INTERMEDIATES="$(mktemp -d)"
 export APT_TEST_INTERMEDIATES
 
+pushd %_datadir/%name/tests/
 %runtests
 
 # Everything has been tested by now.
@@ -442,7 +442,6 @@ in parallel) in order to possibly detect races
 
 %pre xxtra-heavy-load-checkinstall -p %_sbindir/sh-safely
 set -o pipefail
-pushd %_datadir/%name/tests/
 
 # force the target arch for the tests
 #
@@ -466,6 +465,7 @@ export APT_TEST_GPGPUBKEY
 APT_TEST_INTERMEDIATES="$(mktemp -d)"
 export APT_TEST_INTERMEDIATES
 
+pushd %_datadir/%name/tests/
 . ./run-tests.defaults.sh
 
 all_unique_methods=('' $(for method in "${APT_TEST_ALL_METHODS[@]}" "${APT_TEST_ALL_http_METHODS[@]}"; do echo "$method"; done | sort -u))
