@@ -227,6 +227,22 @@ forall_testcases() {
 
 cd "$TESTDIRECTORY"
 
+# Like in runtest():
+readonly BASICCASE=test-without-repo-apt-update-empty
+if [ "$MSGLEVEL" -le 2 ]; then
+    printf >&2 "(%d) ${CTEST}Basic test that apt works ${CHIGH}%s${CRESET}: " 0 "$BASICCASE"
+else
+    printf >&2 "${CTEST}Run Basic test (%d) that apt works ${CHIGH}%s${CRESET}\n" 0 "$BASICCASE"
+fi
+./"$BASICCASE" || {
+    readonly TESTRESULT=$?
+    echo >&2 "$BASICCASE ... FAIL (running further tests makes no sense)"
+    exit $TESTRESULT
+}
+if [ "$MSGLEVEL" -le 2 ]; then
+    echo
+fi
+
 readonly TOTAL=$(forall_testcases echo | wc -l)
 
 forall_testcases runtest
