@@ -3,7 +3,7 @@
 
 Name: apt
 Version: 0.5.15lorg2
-Release: alt95.p10.1
+Release: alt95.p10.2
 
 Summary: Debian's Advanced Packaging Tool with RPM support
 Summary(ru_RU.UTF-8): Debian APT - Усовершенствованное средство управления пакетами с поддержкой RPM
@@ -613,6 +613,11 @@ exec 1>&2
 %_datadir/%name/tests/
 
 %changelog
+* Sun Jan 25 2026 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt95.p10.2
+- e2k: Fixed the compilation of dependent packages with unchanged flags.
+  (Restored the e2k source code adaptations; simply removing them in
+  0.5.15lorg2-alt93 was wrong due to possible ABI or API breakage.)
+
 * Wed May 21 2025 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt95.p10.1
 - Build for p10: with some fixes (corrupt downloads, IPv6 literals, etc.),
   and with the new feature of HTTPS over an HTTP proxy,
