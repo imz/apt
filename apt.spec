@@ -609,7 +609,10 @@ exec 1>&2
 %_datadir/%name/tests/
 
 %changelog
-* Wed Jan 21 2026 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt100
+* Sun Jan 25 2026 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt100
+- e2k: Fixed the compilation of dependent packages with unchanged flags.
+  (Restored the e2k source code adaptations; simply removing them in
+  0.5.15lorg2-alt93 was wrong due to possible ABI or API breakage.)
 - Run all the tests with some long pkgprioties file (as a simplistic way
   to make sure that the problem from 0.5.15lorg2-alt97 doesn't appear).
 
