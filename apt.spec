@@ -266,12 +266,8 @@ gettextize --force --quiet --no-changelog --symlink
 # REMINDER: drop the substitutions when we increase sover (can break ABI or API)
 find -type f -'(' -name '*.cc' -or -name '*.h' -')' -print0 \
 | xargs -0 sed -i -re \
-'s,(std::)(optional|nullopt),\1experimental::\2,g;
- s,^(#[[:blank:]]*include[[:blank:]]*<)(optional>),\1experimental/\2,'
-find -type f -'(' -name '*.cc' -or -name '*.h' -')' -print0 \
-| xargs -0 sed -i -re \
-'s,(std::)(is_unsigned_v),\1experimental::\2,g;
- s,^(#[[:blank:]]*include[[:blank:]]*<)(type_traits>),\1experimental/\2,'
+'s,std::(optional|nullopt|is_unsigned_v),std::experimental::\1,g;
+ s,^(#[[:blank:]]*include[[:blank:]]*)<(optional|type_traits)>,\1<experimental/\2>,'
 %endif
 
 %configure --includedir=%_includedir/apt-pkg --enable-Werror %{subst_enable static}
