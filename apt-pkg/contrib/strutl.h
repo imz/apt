@@ -139,6 +139,9 @@ unsigned long RegexChoice(RxChoiceList *Rxs,const char **ListBegin,
 		      const char **ListEnd);
 
 // Some stuff for compatibility with Debian backports
+// hide these 2 funcs from compilers that don't know this type
+#if __cplusplus >= 201703L
+#include <string_view>
 namespace APT {
    namespace String {
 
@@ -147,6 +150,7 @@ namespace APT {
 
    }
 }
+#endif
 
 #undef APT_FORMAT2
 
