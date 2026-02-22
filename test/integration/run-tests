@@ -1,9 +1,12 @@
 #!/bin/bash
 set -e
 
-DIR=$(readlink -f $(dirname $0))
+if [ -z "${TESTDIRECTORY-}" ]; then
+    readonly TESTDIRECTORY="$(readlink -f "$(dirname "$0")")"
+fi
+export TESTDIRECTORY
 
-. "$DIR"/run-tests.defaults.sh
+. "$TESTDIRECTORY"/run-tests.defaults.sh
 
 # Some tests are "multiplied" by the method for accessing the repo (the one
 # specified in sources.list). The user may override them with this parameter.
@@ -34,12 +37,6 @@ XPASSED_TESTS=""
 
 # For multiple instances to be run in parallel under xargs:
 # PARALLEL_SLOT (unset if not run in parallel under xargs)
-
-# If set, the built pkgs will be written under a filename matching our alias
-# in tests (the name of the spec). (Useful, among other uses, if the usual name
-# would be too long.)
-APT_TEST_PKG_FILENAME_BY_ALIAS="${APT_TEST_PKG_FILENAME_BY_ALIAS-}"
-export APT_TEST_PKG_FILENAME_BY_ALIAS
 
 # If non-empty, test failures won't count as failures
 # (rather as expected failures due to known bugs).
@@ -78,9 +75,29 @@ export APT_TEST_DEFAULT_ARCH="${APT_TEST_DEFAULT_ARCH-}"
 # If empty, no --target option will be passed when building pkgs.
 export APT_TEST_TARGET="${APT_TEST_TARGET-}"
 
+# If set, the built pkgs will be written under a filename matching our alias
+# in tests (the name of the spec). (Useful, among other uses, if the usual name
+# would be too long.)
+APT_TEST_PKG_FILENAME_BY_ALIAS="${APT_TEST_PKG_FILENAME_BY_ALIAS-}"
+export APT_TEST_PKG_FILENAME_BY_ALIAS
+
 # The GPG key to apply rpm --import, so that all the tests are run with such db.
 # If empty, no GPG key is imported into the db.
 export APT_TEST_GPGPUBKEY="${APT_TEST_GPGPUBKEY-}"
+
+# Set up some special pkgpriorities to run the tests with.
+# If the option is unset (or non-null), it is turned on (to reduce
+# clutter in invocations of this script and test more by default);
+# if the option is empty, it is turned off.
+APT_TEST_WITH_PKGPRIO="${APT_TEST_WITH_PKGPRIO-yes}"
+if [ -n "$APT_TEST_WITH_PKGPRIO" ] &&
+       ! [ -e "$APT_TEST_WITH_PKGPRIO" ]
+then
+    # some special sample file
+    # (This one causes https://bugzilla.altlinux.org/55057 .)
+    APT_TEST_WITH_PKGPRIO="$TESTDIRECTORY"/data/pkgpriorities-long.sample
+fi
+export APT_TEST_WITH_PKGPRIO
 
 # The compression options for the basedir can be forced by the environment.
 # (Some methods don't work without some option;
@@ -207,6 +224,24 @@ forall_testcases() {
 	esac
     done
 }
+
+cd "$TESTDIRECTORY"
+
+# Like in runtest():
+readonly BASICCASE=test-without-repo-apt-update-empty
+if [ "$MSGLEVEL" -le 2 ]; then
+    printf >&2 "(%d) ${CTEST}Basic test that apt works ${CHIGH}%s${CRESET}: " 0 "$BASICCASE"
+else
+    printf >&2 "${CTEST}Run Basic test (%d) that apt works ${CHIGH}%s${CRESET}\n" 0 "$BASICCASE"
+fi
+./"$BASICCASE" || {
+    readonly TESTRESULT=$?
+    echo >&2 "$BASICCASE ... FAIL (running further tests makes no sense)"
+    exit $TESTRESULT
+}
+if [ "$MSGLEVEL" -le 2 ]; then
+    echo
+fi
 
 readonly TOTAL=$(forall_testcases echo | wc -l)
 

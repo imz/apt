@@ -1,0 +1,13 @@
+#!/bin/bash
+set -eu
+
+# A basic test to make sure that there are no problems in the env and apt works.
+# We could run it first. If it fails, it doesn't make sense to waste time
+# on other tests.
+
+TESTDIR=$(readlink -f $(dirname $0))
+. $TESTDIR/framework-without-repo
+
+setupenvironment
+
+testsuccess aptget update

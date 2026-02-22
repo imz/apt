@@ -17,6 +17,10 @@ esac
 
 setupenvironment
 
+# First, make sure that there are no problems in the env and apt works correctly
+# in order for the results to make sense as a test of a specific feature.
+aptget update
+
 buildpackage 'simple-package'
 
 generaterepository_and_switch_sources "$TMPWORKINGDIRECTORY/usr/src/RPM/RPMS"

@@ -69,33 +69,40 @@ exec 6>&2
 
 wait_until() {
     local -r cond="$1"; shift
-    local -r ms="$1"; shift
+    local -r timeout_ms="$1"; shift
     local msg="$*"
     if [ -z "$msg" ]; then
 	msg="$cond"
     fi
     local -r msg
 
-    local -r n=$(( ms / 50 ))
-
-    # The message 'Waiting...' is intentionally printed regardless of $MSGLEVEL;
-    # otherwise it would be difficult to see why the process is hanging;
-    # it can appear only in extra-ordinary situations (under heavy load).
-    eval "$cond" ||
-	{ # need to group the alternative commands after a ||
-	    printf >&6 'Waiting for %s\n' "$msg" &&
-		local i=0 &&
-		while ! eval "$cond"; do
-			sleep 0.05 &&
-			let '++i' &&
-			{ (( i < n )) || {
-			      msgwarn "Waited too long (${ms}ms)!"
-			      return 1
-			  }
-			}
-		done &&
-		printf >&6 'Waited %s * 0.05s.\n' "$i" # count&print i out of curiosity
-	}
+    if ! eval "$cond"; then
+	# The message 'Waiting...' is intentionally printed regardless of $MSGLEVEL;
+	# otherwise it would be difficult to see why the process is hanging;
+	# it can appear only in extra-ordinary situations (under heavy load).
+	printf >&6 'Waiting for %s\n' "$msg" || msgdie 'Failed printf Waiting for...'
+	local time_left=$timeout_ms step=50
+	while ! eval "$cond"; do
+	    if [ 0 -ge $step ]; then
+		msgwarn "Wrong step ($step), arithmetic error"
+		return 1
+	    fi
+	    if [ 0 -ge $time_left ]; then
+		msgwarn "Waited too long"
+		return 1
+	    fi
+	    if [ $step -ge $time_left ]; then
+		sleep ${time_left}e-3 ||
+		    msgwarn "Failed sleep ${time_left}e-3"
+		time_left=0
+	    else
+		sleep ${step}e-3 ||
+		    msgwarn "Failed sleep ${step}e-3"
+		(( time_left -= step, step *= 2 ))
+	    fi
+	done
+	msginfo "Waited $(( timeout_ms - time_left ))ms." # for curiosity
+    fi
 }
 
 wait_for_file() {
@@ -105,7 +112,7 @@ wait_for_file() {
     printf -v cond '[ -s %q ]' "$f"
     local -r cond
 
-    wait_until "$cond" 50000 "$f" || msgdie "Timeout waiting for $f"
+    wait_until "$cond" $((180 * 1000)) "$f" || msgdie "Timeout waiting for $f"
 }
 
 wait_for_nofile() {
@@ -267,7 +274,9 @@ prereq() {
 }
 
 setupenvironment() {
-	TESTDIRECTORY=$(readlink -f $(dirname $0))
+	if [ -z "${TESTDIRECTORY-}" ]; then
+	    readonly TESTDIRECTORY="$(readlink -f "$(dirname "$0")")"
+	fi
 	addtrap '' # unconditionally set up our basic traps
 
 	if [ -n "$APT_TEST_WORKINGDIRECTORY" ]; then
@@ -322,6 +331,10 @@ Required:
 Standard:
   postfix
 END
+
+	if [ -n "$APT_TEST_WITH_PKGPRIO" ]; then
+	    cat "$APT_TEST_WITH_PKGPRIO" >| rootdir/etc/apt/pkgpriorities
+	fi
 
 	# just an empty sources.list for the beginning
 	echo > rootdir/etc/apt/sources.list
@@ -402,6 +415,7 @@ mk_intermediate() {
     local -r d="${f%/*}"
     mkdir -p "${d%/*}" # the prefix
     if ! mkdir "$d" &>/dev/null; then
+	[ -d "$d" ] || msgdie "Unexpected system state when needing ${what%/*}"
 	msginfo "Re-using ${what%/*}"
 	wait_for_file "$f"
     else
@@ -413,9 +427,13 @@ mk_intermediate() {
 	# Note: This doesn't prevent trying the erroneous build once again.
 	addtrap prefix 'rm -rf %q' "$d"
 
+	msginfo "Making ${what%/*}"
+
 	# pass args: prefix name out_basename
 	"$build_cmd" "${d%/*}" "${d##*/}" "${f##*/}".in-progress
 	mv -T "$f"{.in-progress,}
+
+	msginfo "Made ${what%/*}"
 
 	CURRENTTRAP="$trap_before_mkdir"
 	addtrap ''

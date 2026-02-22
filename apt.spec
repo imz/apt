@@ -3,7 +3,7 @@
 
 Name: apt
 Version: 0.5.15lorg2
-Release: alt95.p10.2
+Release: alt99.p10.1
 
 Summary: Debian's Advanced Packaging Tool with RPM support
 Summary(ru_RU.UTF-8): Debian APT - Усовершенствованное средство управления пакетами с поддержкой RPM
@@ -323,6 +323,7 @@ Group: Other
 BuildArch: noarch
 Requires(pre): %name-tests
 Requires(pre): %name = %EVR
+Requires(pre): gpg-keygen
 
 %description basic-checkinstall
 Immediately test %name when installing this package.
@@ -344,8 +345,6 @@ if [ -n "$found_unwanted_reqs_of_tests" ]; then
     exit 1
 fi
 
-pushd %_datadir/%name/tests/
-
 # force the target arch for the tests
 #
 # By default, the packages would be built for the arch detected by rpm-build
@@ -356,6 +355,14 @@ pushd %_datadir/%name/tests/
 system_arch="$(rpm -q rpm --qf='%%{ARCH}')"
 export APT_TEST_TARGET="$system_arch"
 
+# prepare data for rpm --import
+APT_TEST_GPGPUBKEY="$PWD"/example-pubkey.asc
+gpg-keygen --passphrase '' \
+	--name-real 'Some One' --name-email someone@example.com \
+	/dev/null "$APT_TEST_GPGPUBKEY"
+
+export APT_TEST_GPGPUBKEY
+
 # cache built pkgs and other stuff
 APT_TEST_INTERMEDIATES="$(mktemp -d)"
 export APT_TEST_INTERMEDIATES
@@ -363,9 +370,9 @@ export APT_TEST_INTERMEDIATES
 # this macro can be prefixed (e.g., by environment assignments),
 # therefore the extra backslash in the first line
 %global runtests \\\
-		./run-tests -v
+		%_datadir/%name/tests/run-tests -v
 
-# A quick test with just one method for the case without APT_TEST_GPGPUBKEY.
+# A quick test with just one method
 APT_TEST_METHODS='file' APT_TEST_http_METHODS= %runtests
 
 # The same tests, but just via cdrom with a missing release:
@@ -378,7 +385,6 @@ BuildArch: noarch
 Requires(pre): %name-tests
 Requires(pre): %name = %EVR
 Requires(pre): %complete_reqs_of_tests
-Requires(pre): gpg-keygen
 
 %description checkinstall
 Immediately test %name when installing this package.
@@ -390,7 +396,6 @@ and some additional peculiarities are tested).
 
 %pre checkinstall -p %_sbindir/sh-safely
 set -o pipefail
-pushd %_datadir/%name/tests/
 
 # This option makes sense just for the maintainer (to test the tests).
 # This option makes the built pkgs be saved under a special filename
@@ -410,14 +415,6 @@ pushd %_datadir/%name/tests/
 # at least, on armh. So, we set the target by force to a value that must work.
 system_arch="$(rpm -q rpm --qf='%%{ARCH}')"
 export APT_TEST_TARGET="$system_arch"
-
-# prepare data for rpm --import
-APT_TEST_GPGPUBKEY="$PWD"/example-pubkey.asc
-gpg-keygen --passphrase '' \
-	--name-real 'Some One' --name-email someone@example.com \
-	/dev/null "$APT_TEST_GPGPUBKEY"
-
-export APT_TEST_GPGPUBKEY
 
 # cache built pkgs and other stuff
 APT_TEST_INTERMEDIATES="$(mktemp -d)"
@@ -447,7 +444,6 @@ in parallel) in order to possibly detect races
 
 %pre xxtra-heavy-load-checkinstall -p %_sbindir/sh-safely
 set -o pipefail
-pushd %_datadir/%name/tests/
 
 # force the target arch for the tests
 #
@@ -471,7 +467,7 @@ export APT_TEST_GPGPUBKEY
 APT_TEST_INTERMEDIATES="$(mktemp -d)"
 export APT_TEST_INTERMEDIATES
 
-. ./run-tests.defaults.sh
+. %_datadir/%name/tests/run-tests.defaults.sh
 
 all_unique_methods=('' $(for method in "${APT_TEST_ALL_METHODS[@]}" "${APT_TEST_ALL_http_METHODS[@]}"; do echo "$method"; done | sort -u))
 readonly -a all_unique_methods
@@ -613,10 +609,24 @@ exec 1>&2
 %_datadir/%name/tests/
 
 %changelog
-* Sun Jan 25 2026 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt95.p10.2
+* Sun Jan 25 2026 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt100
 - e2k: Fixed the compilation of dependent packages with unchanged flags.
   (Restored the e2k source code adaptations; simply removing them in
   0.5.15lorg2-alt93 was wrong due to possible ABI or API breakage.)
+- Run all the tests with some long pkgprioties file (as a simplistic way
+  to make sure that the problem from 0.5.15lorg2-alt97 doesn't appear).
+
+* Thu Jan 15 2026 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt99
+- basic-checkinstall subpkg:
+  + Do the testing with an installed GPG key in this subpkg.
+  + Fixed permission issues when running it unpriviledged. (ALT#54672)
+
+* Sun Nov 02 2025 Maxim Slipenko <maks1ms@altlinux.org> 0.5.15lorg2-alt98
+- Fixed size mismatch for files >2GB by using strtoul() instead of atoi()
+  in acquire-worker (ALT#56327).
+
+* Wed Jul 02 2025 Maria Alexeeva <alxvmr@altlinux.org> 0.5.15lorg2-alt97
+- Increased the pkgpriorities buffer size from 32*1024 to 128*1024 (Closes: #55057).
 
 * Wed May 21 2025 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt95.p10.1
 - Build for p10: with some fixes (corrupt downloads, IPv6 literals, etc.),
