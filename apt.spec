@@ -609,6 +609,10 @@ exec 1>&2
 %_datadir/%name/tests/
 
 %changelog
+* Sun Feb 22 2026 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt99.p10.1
+- Merged all fixes from Sisyphus into p10
+  (but with the experimental columnar output turned off).
+
 * Sun Jan 25 2026 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt100
 - e2k: Fixed the compilation of dependent packages with unchanged flags.
   (Restored the e2k source code adaptations; simply removing them in
