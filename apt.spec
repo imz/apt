@@ -80,7 +80,7 @@ Requires: RPMQ(EPOCH)
 Requires: RPMQ(BUILDTIME)
 Requires: RPMQ(DISTTAG)
 # for methods.
-Requires: gzip, bzip2, xz
+Requires: gzip, bzip2, xz, zstd
 Requires: gnupg, alt-gpgkeys
 
 # Older versions of update-kernel misunderstood the @-postfix (with buildtime

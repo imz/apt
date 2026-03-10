@@ -236,7 +236,10 @@ pkgAcqIndex::pkgAcqIndex(pkgAcquire * const Owner,const pkgRepository * const Re
 	    unlink(DestFile.c_str());
 	 }
 
-	 if (Repository->FindChecksums(RealURI + ".xz", ExpectSize, ExpectHash) == true)
+
+    if (Repository->FindChecksums(RealURI + ".zst", ExpectSize, ExpectHash) == true)
+		 Desc.URI = URI + ".zst";
+    else if (Repository->FindChecksums(RealURI + ".xz", ExpectSize, ExpectHash) == true)
 	    Desc.URI = URI + ".xz";
       }
       else if (Repository->IsAuthenticated() == true)
@@ -381,6 +384,9 @@ void pkgAcqIndex::DoneByWorker(const string &Message,
    if (ComprMeth == "xz") {
       Desc.URI = "xz:" + FileName;
       Mode = "xz";
+   } else if (ComprMeth == "zst") {
+      Desc.URI = "zstd:" + FileName;
+      Mode = "zstd";
    } else if (ComprMeth == "gz") {
       Desc.URI = "gzip:" + FileName;
       Mode = "gzip";
