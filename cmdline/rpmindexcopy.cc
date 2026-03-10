@@ -76,8 +76,10 @@ bool RPMIndexCopy::CopyPackages(const string &CDROM,const string &Name,vector<st
       FileFd Pkg;
       string File = *I;
 
-      if (strcmp(File.c_str()+File.length()-4, ".bz2") == 0)
-	 File = string(File, 0, File.length()-4);
+		string UncompFile = flUnCompressed(File);
+		if (UncompFile != File)
+			File = UncompFile;
+
 
       if (FileExists(File) == true)
       {
@@ -98,10 +100,18 @@ bool RPMIndexCopy::CopyPackages(const string &CDROM,const string &Name,vector<st
 	 Pkg.Fd(dup(fileno(tmp)));
 	 fclose(tmp);
 
-	 // Fork bzip2
+	 const string Ext = flExtension(*I);
+	 const char *decompressor = "bzip2";
+	 if (Ext == "xz") decompressor = "xz";
+	 else if (Ext == "gz") decompressor = "gzip";
+
+	 std::string binKey = std::string("Dir::Bin::") + decompressor;
+	 std::string bin = _config->Find(binKey, decompressor);
+
+	 // Fork decompressor
 	 int Process = fork();
 	 if (Process < 0)
-	    return _error->Errno("fork","Couldn't fork bzip2");
+	    return _error->Errno("fork","Couldn't fork decompressor");
 
 	 // The child
 	 if (Process == 0)
@@ -112,7 +122,7 @@ bool RPMIndexCopy::CopyPackages(const string &CDROM,const string &Name,vector<st
 	    SetCloseExec(STDOUT_FILENO,false);
 
 	    const char *Args[3];
-	    Args[0] = _config->Find("Dir::Bin::bzip2","bzip2").c_str();
+	    Args[0] = bin.c_str();
 	    Args[1] = "-d";
 	    Args[2] = 0;
 	    execvp(Args[0],(char **)Args);
@@ -120,8 +130,8 @@ bool RPMIndexCopy::CopyPackages(const string &CDROM,const string &Name,vector<st
 	 }
 
 	 // Wait for gzip to finish
-	 if (ExecWait(Process,_config->Find("Dir::Bin::bzip2","bzip2").c_str(),false) == false)
-	    return _error->Error("bzip2 failed, perhaps the disk is full.");
+	 if (ExecWait(Process,bin.c_str(),false) == false)
+	    return _error->Error("decompressor failed, perhaps the disk is full.");
 
 	 Pkg.Seek(0);
       }

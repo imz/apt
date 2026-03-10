@@ -126,15 +126,21 @@ bool FindPackages(string CD,vector<string> &List,vector<string> &SList,
 
 // CNC:2002-07-11
 #ifdef HAVE_RPM
-      if (strncmp(Dir->d_name, "pkglist.", 8) == 0 &&
-	  strcmp(Dir->d_name+strlen(Dir->d_name)-4, ".bz2") == 0)
+      if (strncmp(Dir->d_name, "pkglist.", 8) == 0 && (
+			strcmp(Dir->d_name+strlen(Dir->d_name)-4, ".bz2") == 0
+		|| strcmp(Dir->d_name+strlen(Dir->d_name)-3, ".xz") == 0
+		|| strcmp(Dir->d_name+strlen(Dir->d_name)-3, ".gz") == 0
+	  ))
       {
 	 List.push_back(CD + string(Dir->d_name));
 	 Found = true;
 	 continue;
       }
-      if (strncmp(Dir->d_name, "srclist.", 8) == 0 &&
-	  strcmp(Dir->d_name+strlen(Dir->d_name)-4, ".bz2") == 0)
+      if (strncmp(Dir->d_name, "srclist.", 8) == 0 &&(
+			strcmp(Dir->d_name+strlen(Dir->d_name)-4, ".bz2") == 0
+		|| strcmp(Dir->d_name+strlen(Dir->d_name)-3, ".xz") == 0
+		|| strcmp(Dir->d_name+strlen(Dir->d_name)-3, ".gz") == 0
+		))
       {
 	 SList.push_back(CD + string(Dir->d_name));
 	 Found = true;
