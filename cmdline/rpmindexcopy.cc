@@ -98,6 +98,7 @@ bool RPMIndexCopy::CopyPackages(const string &CDROM,const string &Name,vector<st
 	 const std::string Ext = flExtension(*I);
          std::string decompressor = "bzip2";
 	 if (Ext == "xz") decompressor = "xz";
+	 else if (Ext == "zst") decompressor = "zstd";
 	 else if (Ext == "gz") decompressor = "gzip";
 
 	 std::string binKey = std::string("Dir::Bin::") + decompressor;

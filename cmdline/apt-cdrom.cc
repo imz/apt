@@ -130,6 +130,7 @@ bool FindPackages(string CD,vector<string> &List,vector<string> &SList,
           strcmp(Dir->d_name+strlen(Dir->d_name)-4, ".bz2") == 0
        || strcmp(Dir->d_name+strlen(Dir->d_name)-3, ".xz") == 0
        || strcmp(Dir->d_name+strlen(Dir->d_name)-3, ".gz") == 0
+       || strcmp(Dir->d_name+strlen(Dir->d_name)-4, ".zst") == 0
       ))
       {
 	 List.push_back(CD + string(Dir->d_name));
@@ -140,6 +141,7 @@ bool FindPackages(string CD,vector<string> &List,vector<string> &SList,
           strcmp(Dir->d_name+strlen(Dir->d_name)-4, ".bz2") == 0
        || strcmp(Dir->d_name+strlen(Dir->d_name)-3, ".xz") == 0
        || strcmp(Dir->d_name+strlen(Dir->d_name)-3, ".gz") == 0
+       || strcmp(Dir->d_name+strlen(Dir->d_name)-4, ".zst") == 0
       ))
       {
 	 SList.push_back(CD + string(Dir->d_name));
