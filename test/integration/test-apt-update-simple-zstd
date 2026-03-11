@@ -1,0 +1,16 @@
+#!/bin/bash
+set -eu
+
+TESTDIR=$(readlink -f $(dirname $0))
+. $TESTDIR/framework
+
+APT_TEST_BASEDIR_COMPRESSION_OPTS='--no-compression --zstd'
+
+setupenvironment
+
+buildpackage 'simple-package'
+
+generaterepository_and_switch_sources "$TMPWORKINGDIRECTORY/usr/src/RPM/RPMS"
+
+testsuccess aptget update
+testsuccess aptcache show simple-package
