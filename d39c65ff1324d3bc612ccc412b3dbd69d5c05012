@@ -1,0 +1,12 @@
+suggestion: let's learn to write .editorconfig instead of .vimrc, .dir-locals.el
+
+It's supported by Vim and Emacs:
+https://editorconfig.org/#pre-installed
+
+The simple stuff would be expressed in .editorconfig, and the remaining
+tweaks would go into .vimrc, .dir-locals.el if needed.
+
+If you wish, you can try writing such a config (some time). .vimrc is
+also ok for me to accept.
+
+I've noticed it in packagekit sources.
