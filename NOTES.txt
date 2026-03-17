@@ -210,6 +210,24 @@ I've noticed it in packagekit sources.
 память освободится в конце выражения и Args[0] будет указывать на
 освобождённую память.)
 
+Так и есть:
+
+   string Find(const char *Name,const char *Default = 0) const;
+   string Find(const string &Name,const char *Default = 0) const {return Find(Name.c_str(),Default);}
+   string FindFile(const char *Name,const char *Default = 0) const;
+   string FindDir(const char *Name,const char *Default = 0) const;
+
+Так что для такого use after free можно взять номер на
+openwall.com/ove , дописать в changelog, что исправляется OVE use
+after free, в результате чего гипотетически могло запуститься
+неизвестно что при добавлении диска. Предлагаю так написать в
+changelog, и можно будет отправить в c10f2, а то там на e2k неудачно
+сломалась пересборка клиентов, а новый релиз можно сделать только с
+исправлением уязвимости.
+
+Если не охота вписывать OVE в changelog, я могу так сам поступить при
+мёрдже в p10/c10f2.
+
 > +	    Args[0] = bin.c_str();
 >  	    Args[1] = "-d";
 >  	    Args[2] = 0;
