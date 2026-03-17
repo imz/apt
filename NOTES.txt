@@ -1,23 +1,13 @@
+Спасибо! Вот замечания:
+
 git log -p --stat gears/sisyphus.. --reverse |sed -Ee 's:^:> :' >NOTES.txt
+
 > commit d39c65ff1324d3bc612ccc412b3dbd69d5c05012
 > Author: Leonid Znamenok <respublica@altlinux.org>
 > Date:   Tue Mar 10 22:24:09 2026 +0400
 > 
 >     .vimrc
 > 
-> Notes:
->     suggestion: let's learn to write .editorconfig instead of .vimrc, .dir-locals.el
->     
->     It's supported by Vim and Emacs:
->     https://editorconfig.org/#pre-installed
->     
->     The simple stuff would be expressed in .editorconfig, and the remaining
->     tweaks would go into .vimrc, .dir-locals.el if needed.
->     
->     If you wish, you can try writing such a config (some time). .vimrc is
->     also ok for me to accept.
->     
->     I've noticed it in packagekit sources.
 > ---
 >  .vimrc | 15 +++++++++++++++
 >  1 file changed, 15 insertions(+)
@@ -43,7 +33,20 @@ git log -p --stat gears/sisyphus.. --reverse |sed -Ee 's:^:> :' >NOTES.txt
 > +" don't highlight fold markers inside one-line comments
 > +autocmd Syntax c,cpp syn match cCommentFoldMarker "/\*{{{[*}]*\*/" contained containedin=cCommentL
 > +autocmd Syntax c,cpp hi link cCommentFoldMarker cComment
-> 
+
+suggestion: let's learn to write .editorconfig instead of .vimrc, .dir-locals.el
+
+Someone can try writing such a config when one wishes to.
+.vimrc is also ok for me to accept.
+
+.editorconfig is supported by Vim and Emacs:
+https://editorconfig.org/#pre-installed
+
+The simple stuff would be expressed in .editorconfig, and the remaining
+tweaks would go into .vimrc, .dir-locals.el if needed.
+
+I've noticed it in packagekit sources.
+
 > commit 138afed1b7fb34df9af1709e0f23e3102e759227
 > Author: Leonid Znamenok <respublica@altlinux.org>
 > Date:   Wed Mar 11 02:18:16 2026 +0400
@@ -83,6 +86,12 @@ git log -p --stat gears/sisyphus.. --reverse |sed -Ee 's:^:> :' >NOTES.txt
 > +. $TESTDIR/framework
 > +
 > +APT_TEST_BASEDIR_COMPRESSION_OPTS='--no-bz2 --xz --no-zstd'
+
+А --no-gz не нужно? Казалось бы, поддержка их чтения есть, и их
+наличие может испортить показательность теста.
+
+Наверно, стоит пояснить в комментарии.
+
 > +
 > +setupenvironment
 > +
@@ -126,6 +135,9 @@ git log -p --stat gears/sisyphus.. --reverse |sed -Ee 's:^:> :' >NOTES.txt
 > -      if (strncmp(Dir->d_name, "srclist.", 8) == 0 &&
 > -	  strcmp(Dir->d_name+strlen(Dir->d_name)-4, ".bz2") == 0)
 > +      if (strncmp(Dir->d_name, "srclist.", 8) == 0 &&(
+
+В предыдущем случае перед скобкой был пробел. Хочется единообразия.
+
 > +			strcmp(Dir->d_name+strlen(Dir->d_name)-4, ".bz2") == 0
 > +		|| strcmp(Dir->d_name+strlen(Dir->d_name)-3, ".xz") == 0
 > +		|| strcmp(Dir->d_name+strlen(Dir->d_name)-3, ".gz") == 0
@@ -144,10 +156,20 @@ git log -p --stat gears/sisyphus.. --reverse |sed -Ee 's:^:> :' >NOTES.txt
 > -      if (strcmp(File.c_str()+File.length()-4, ".bz2") == 0)
 > -	 File = string(File, 0, File.length()-4);
 > +		string UncompFile = flUnCompressed(File);
+
+В этих исходниках таб считается за 8 пробелов.
+Здесь нужно сохранить отступ 6. А стоят два таба,
+считается за 16. Использовать табы в отступах на мой взгляд
+необязательно в новом коде, поэтому можно всё пробелами представлять,
+если вдруг так удобнее.
+
 > +		if (UncompFile != File)
 > +			File = UncompFile;
 > +
 >  
+
+А можно сразу проще сделать File = flUnCompressed(*I) ?
+
 >        if (FileExists(File) == true)
 >        {
 > @@ -98,10 +100,18 @@ bool RPMIndexCopy::CopyPackages(const string &CDROM,const string &Name,vector<st
@@ -156,6 +178,9 @@ git log -p --stat gears/sisyphus.. --reverse |sed -Ee 's:^:> :' >NOTES.txt
 >  
 > -	 // Fork bzip2
 > +	 const string Ext = flExtension(*I);
+
+Можно, как ниже, написать std::string ради единообразия в новом коде.
+
 > +	 const char *decompressor = "bzip2";
 > +	 if (Ext == "xz") decompressor = "xz";
 > +	 else if (Ext == "gz") decompressor = "gzip";
@@ -168,6 +193,9 @@ git log -p --stat gears/sisyphus.. --reverse |sed -Ee 's:^:> :' >NOTES.txt
 >  	 if (Process < 0)
 > -	    return _error->Errno("fork","Couldn't fork bzip2");
 > +	    return _error->Errno("fork","Couldn't fork decompressor");
+
+Может быть, для большей информативности писать какой decompressor?
+
 >  
 >  	 // The child
 >  	 if (Process == 0)
@@ -176,6 +204,12 @@ git log -p --stat gears/sisyphus.. --reverse |sed -Ee 's:^:> :' >NOTES.txt
 >  
 >  	    const char *Args[3];
 > -	    Args[0] = _config->Find("Dir::Bin::bzip2","bzip2").c_str();
+
+(Старый код вообще выглядел ненадёжно: я не разбирался, но если Find
+возвращает новую копию строки (а не ссылку на своё хранилище), то
+память освободится в конце выражения и Args[0] будет указывать на
+освобождённую память.)
+
 > +	    Args[0] = bin.c_str();
 >  	    Args[1] = "-d";
 >  	    Args[2] = 0;
@@ -222,6 +256,13 @@ git log -p --stat gears/sisyphus.. --reverse |sed -Ee 's:^:> :' >NOTES.txt
 > +		 Desc.URI = URI + ".zst";
 > +    else if (Repository->FindChecksums(RealURI + ".xz", ExpectSize, ExpectHash) == true)
 >  	    Desc.URI = URI + ".xz";
+
+А почему мы предпочитаем искать (и скачивать?) .zst?.. Ведь .xz более
+сжатые (как я понимаю), и поэтому если есть, выгоднее их скачать. Я
+так думаю.
+
+Отступ был 9 (таб+1 пробел), а новый отступ 4. Вижу в этом ошибку оформления.
+
 >        }
 >        else if (Repository->IsAuthenticated() == true)
 > @@ -381,6 +384,9 @@ void pkgAcqIndex::DoneByWorker(const string &Message,
@@ -257,6 +298,10 @@ git log -p --stat gears/sisyphus.. --reverse |sed -Ee 's:^:> :' >NOTES.txt
 >  # for methods.
 > -Requires: gzip, bzip2, xz
 > +Requires: gzip, bzip2, xz, zstd
+
+Всех устраивает ещё зависимость на zstd? Есть ли он уже и так в
+минимальной системе? :)
+
 >  Requires: gnupg, alt-gpgkeys
 >  
 >  # Older versions of update-kernel misunderstood the @-postfix (with buildtime
@@ -330,6 +375,12 @@ git log -p --stat gears/sisyphus.. --reverse |sed -Ee 's:^:> :' >NOTES.txt
 > +. $TESTDIR/framework
 > +
 > +APT_TEST_BASEDIR_COMPRESSION_OPTS='--no-bz2 --no-xz --zstd'
+
+А --no-gz не нужно? Казалось бы, поддержка их чтения есть, и их
+наличие может испортить показательность теста.
+
+Наверно, стоит пояснить в комментарии.
+
 > +
 > +setupenvironment
 > +
@@ -371,6 +422,9 @@ git log -p --stat gears/sisyphus.. --reverse |sed -Ee 's:^:> :' >NOTES.txt
 >  %changelog
 > +* Wed Mar 11 2026 Leonid Znamenok <respublica@altlinux.org> 0.5.15lorg2-alt101
 > +- apt-cdrom.cc: added support of xz and gz compressed {pkg,src}lists.
+
+А zst на cdrom не добавлена поддержка?
+
 > +- acquire-item.cc: added support for zst-compressed pkglists.
 > +
 >  * Sun Jan 25 2026 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt100
