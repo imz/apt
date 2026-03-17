@@ -1,0 +1,11 @@
+Effects on the old bahavior: none
+
+1. Let's make more lines shown as moved by git show -w --color-moved:
+use the same variable name (say, "DepCache", and not "Cache" or "Dep") in
+one of the old commits as in this one after the movement.
+
+darktemplar@:
+
+It's not stated that it's just a move of code from file to file,
+and some changes are made due to change of type of variable:
+in removed code it was a pointer to class, now it's a reference.

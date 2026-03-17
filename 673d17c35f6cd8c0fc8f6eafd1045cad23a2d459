@@ -1,0 +1,4 @@
+quite clear
+
+Effects on the old behavior: no
+(only errors in MarkAuto() might theoretically affect it)
