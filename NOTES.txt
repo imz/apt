@@ -1,0 +1,379 @@
+git log -p --stat gears/sisyphus.. --reverse |sed -Ee 's:^:> :' >NOTES.txt
+> commit d39c65ff1324d3bc612ccc412b3dbd69d5c05012
+> Author: Leonid Znamenok <respublica@altlinux.org>
+> Date:   Tue Mar 10 22:24:09 2026 +0400
+> 
+>     .vimrc
+> 
+> Notes:
+>     suggestion: let's learn to write .editorconfig instead of .vimrc, .dir-locals.el
+>     
+>     It's supported by Vim and Emacs:
+>     https://editorconfig.org/#pre-installed
+>     
+>     The simple stuff would be expressed in .editorconfig, and the remaining
+>     tweaks would go into .vimrc, .dir-locals.el if needed.
+>     
+>     If you wish, you can try writing such a config (some time). .vimrc is
+>     also ok for me to accept.
+>     
+>     I've noticed it in packagekit sources.
+> ---
+>  .vimrc | 15 +++++++++++++++
+>  1 file changed, 15 insertions(+)
+> 
+> diff --git a/.vimrc b/.vimrc
+> new file mode 100644
+> index 000000000..ea9ca0cc7
+> --- /dev/null
+> +++ b/.vimrc
+> @@ -0,0 +1,15 @@
+> +set noexpandtab
+> +set shiftwidth=3
+> +set softtabstop=3
+> +set tabstop=3
+> +set cinoptions=L0
+> +set cinoptions+=l1
+> +
+> +" use z+o to expand folds
+> +"     z+c to close them
+> +set foldmethod=marker
+> +set foldmarker={{{,}}}
+> +
+> +" don't highlight fold markers inside one-line comments
+> +autocmd Syntax c,cpp syn match cCommentFoldMarker "/\*{{{[*}]*\*/" contained containedin=cCommentL
+> +autocmd Syntax c,cpp hi link cCommentFoldMarker cComment
+> 
+> commit 138afed1b7fb34df9af1709e0f23e3102e759227
+> Author: Leonid Znamenok <respublica@altlinux.org>
+> Date:   Wed Mar 11 02:18:16 2026 +0400
+> 
+>     test-apt-update-simple-xz: added test
+>     
+>     It checks that it’s possible to retrieve pkglists from the base
+>     directory when they are available only as .xz compressed archives.
+>     
+>     This test has already caught a bug:
+>     
+>        Run Testcase (2/2) test-apt-update-simple-xz_via_cdrom
+>        I: Preparing environment for test-apt-update-simple-xz in /tmp/sh.cKLrZM1G/tmp.6Sv89BUFfA… DONE
+>        I: Re-using built-pkg/simple-package
+>        Using Media mount point /tmp/sh.cKLrZM1G/tmp.6Sv89BUFfA/usr/src/RPM/DISK/
+>        Unmounting Media
+>        Please insert a Media and press enter Mounting Media
+>        Identifying.. [06b4025c2218387ced902b8c67355022-2.debug]
+>        Scanning Media for index files..  Found 0 package indexes and 0 source indexes.
+>        E: Unable to locate any package files, perhaps this is not an APT enabled disc
+>        E: Looks like the testcases ended prematurely with exitcode: 100
+>        test-apt-update-simple-xz_via_cdrom ... FAIL
+> ---
+>  test/integration/test-apt-update-simple-xz | 16 ++++++++++++++++
+>  1 file changed, 16 insertions(+)
+> 
+> diff --git a/test/integration/test-apt-update-simple-xz b/test/integration/test-apt-update-simple-xz
+> new file mode 100755
+> index 000000000..2f8e8fa19
+> --- /dev/null
+> +++ b/test/integration/test-apt-update-simple-xz
+> @@ -0,0 +1,16 @@
+> +#!/bin/bash
+> +set -eu
+> +
+> +TESTDIR=$(readlink -f $(dirname $0))
+> +. $TESTDIR/framework
+> +
+> +APT_TEST_BASEDIR_COMPRESSION_OPTS='--no-bz2 --xz --no-zstd'
+> +
+> +setupenvironment
+> +
+> +buildpackage 'simple-package'
+> +
+> +generaterepository_and_switch_sources "$TMPWORKINGDIRECTORY/usr/src/RPM/RPMS"
+> +
+> +testsuccess aptget update
+> +testsuccess aptcache show simple-package
+> 
+> commit 802b1aa62f0b933e37f1f217aaf1ffa7b8f5e03d
+> Author: Leonid Znamenok <respublica@altlinux.org>
+> Date:   Wed Mar 11 03:07:50 2026 +0400
+> 
+>     apt-cdrom.cc: added support of xz and gz compressed {pkg,src}lists
+> ---
+>  cmdline/apt-cdrom.cc    | 14 ++++++++++----
+>  cmdline/rpmindexcopy.cc | 24 +++++++++++++++++-------
+>  2 files changed, 27 insertions(+), 11 deletions(-)
+> 
+> diff --git a/cmdline/apt-cdrom.cc b/cmdline/apt-cdrom.cc
+> index 627562424..98116581d 100644
+> --- a/cmdline/apt-cdrom.cc
+> +++ b/cmdline/apt-cdrom.cc
+> @@ -126,15 +126,21 @@ bool FindPackages(string CD,vector<string> &List,vector<string> &SList,
+>  
+>  // CNC:2002-07-11
+>  #ifdef HAVE_RPM
+> -      if (strncmp(Dir->d_name, "pkglist.", 8) == 0 &&
+> -	  strcmp(Dir->d_name+strlen(Dir->d_name)-4, ".bz2") == 0)
+> +      if (strncmp(Dir->d_name, "pkglist.", 8) == 0 && (
+> +			strcmp(Dir->d_name+strlen(Dir->d_name)-4, ".bz2") == 0
+> +		|| strcmp(Dir->d_name+strlen(Dir->d_name)-3, ".xz") == 0
+> +		|| strcmp(Dir->d_name+strlen(Dir->d_name)-3, ".gz") == 0
+> +	  ))
+>        {
+>  	 List.push_back(CD + string(Dir->d_name));
+>  	 Found = true;
+>  	 continue;
+>        }
+> -      if (strncmp(Dir->d_name, "srclist.", 8) == 0 &&
+> -	  strcmp(Dir->d_name+strlen(Dir->d_name)-4, ".bz2") == 0)
+> +      if (strncmp(Dir->d_name, "srclist.", 8) == 0 &&(
+> +			strcmp(Dir->d_name+strlen(Dir->d_name)-4, ".bz2") == 0
+> +		|| strcmp(Dir->d_name+strlen(Dir->d_name)-3, ".xz") == 0
+> +		|| strcmp(Dir->d_name+strlen(Dir->d_name)-3, ".gz") == 0
+> +		))
+>        {
+>  	 SList.push_back(CD + string(Dir->d_name));
+>  	 Found = true;
+> diff --git a/cmdline/rpmindexcopy.cc b/cmdline/rpmindexcopy.cc
+> index c764f8818..de70b9462 100644
+> --- a/cmdline/rpmindexcopy.cc
+> +++ b/cmdline/rpmindexcopy.cc
+> @@ -76,8 +76,10 @@ bool RPMIndexCopy::CopyPackages(const string &CDROM,const string &Name,vector<st
+>        FileFd Pkg;
+>        string File = *I;
+>  
+> -      if (strcmp(File.c_str()+File.length()-4, ".bz2") == 0)
+> -	 File = string(File, 0, File.length()-4);
+> +		string UncompFile = flUnCompressed(File);
+> +		if (UncompFile != File)
+> +			File = UncompFile;
+> +
+>  
+>        if (FileExists(File) == true)
+>        {
+> @@ -98,10 +100,18 @@ bool RPMIndexCopy::CopyPackages(const string &CDROM,const string &Name,vector<st
+>  	 Pkg.Fd(dup(fileno(tmp)));
+>  	 fclose(tmp);
+>  
+> -	 // Fork bzip2
+> +	 const string Ext = flExtension(*I);
+> +	 const char *decompressor = "bzip2";
+> +	 if (Ext == "xz") decompressor = "xz";
+> +	 else if (Ext == "gz") decompressor = "gzip";
+> +
+> +	 std::string binKey = std::string("Dir::Bin::") + decompressor;
+> +	 std::string bin = _config->Find(binKey, decompressor);
+> +
+> +	 // Fork decompressor
+>  	 int Process = fork();
+>  	 if (Process < 0)
+> -	    return _error->Errno("fork","Couldn't fork bzip2");
+> +	    return _error->Errno("fork","Couldn't fork decompressor");
+>  
+>  	 // The child
+>  	 if (Process == 0)
+> @@ -112,7 +122,7 @@ bool RPMIndexCopy::CopyPackages(const string &CDROM,const string &Name,vector<st
+>  	    SetCloseExec(STDOUT_FILENO,false);
+>  
+>  	    const char *Args[3];
+> -	    Args[0] = _config->Find("Dir::Bin::bzip2","bzip2").c_str();
+> +	    Args[0] = bin.c_str();
+>  	    Args[1] = "-d";
+>  	    Args[2] = 0;
+>  	    execvp(Args[0],(char **)Args);
+> @@ -120,8 +130,8 @@ bool RPMIndexCopy::CopyPackages(const string &CDROM,const string &Name,vector<st
+>  	 }
+>  
+>  	 // Wait for gzip to finish
+> -	 if (ExecWait(Process,_config->Find("Dir::Bin::bzip2","bzip2").c_str(),false) == false)
+> -	    return _error->Error("bzip2 failed, perhaps the disk is full.");
+> +	 if (ExecWait(Process,bin.c_str(),false) == false)
+> +	    return _error->Error("decompressor failed, perhaps the disk is full.");
+>  
+>  	 Pkg.Seek(0);
+>        }
+> 
+> commit a3a99b05fc19486972d80d5acbffb8ac605e79ca
+> Author: Leonid Znamenok <respublica@altlinux.org>
+> Date:   Wed Mar 11 03:11:22 2026 +0400
+> 
+>     acquire-item.cc: added support for zst-compressed pkglists
+>     
+>     Based on commits 73bacc8c and 802b1aa6.
+> ---
+>  apt-pkg/acquire-item.cc    | 8 +++++++-
+>  apt-pkg/contrib/fileutl.cc | 2 +-
+>  apt.spec                   | 2 +-
+>  cmdline/apt-cdrom.cc       | 2 ++
+>  cmdline/rpmindexcopy.cc    | 1 +
+>  methods/Makefile.am        | 1 +
+>  6 files changed, 13 insertions(+), 3 deletions(-)
+> 
+> diff --git a/apt-pkg/acquire-item.cc b/apt-pkg/acquire-item.cc
+> index 906eb287d..ffc9829ba 100644
+> --- a/apt-pkg/acquire-item.cc
+> +++ b/apt-pkg/acquire-item.cc
+> @@ -236,7 +236,10 @@ pkgAcqIndex::pkgAcqIndex(pkgAcquire * const Owner,const pkgRepository * const Re
+>  	    unlink(DestFile.c_str());
+>  	 }
+>  
+> -	 if (Repository->FindChecksums(RealURI + ".xz", ExpectSize, ExpectHash) == true)
+> +
+> +    if (Repository->FindChecksums(RealURI + ".zst", ExpectSize, ExpectHash) == true)
+> +		 Desc.URI = URI + ".zst";
+> +    else if (Repository->FindChecksums(RealURI + ".xz", ExpectSize, ExpectHash) == true)
+>  	    Desc.URI = URI + ".xz";
+>        }
+>        else if (Repository->IsAuthenticated() == true)
+> @@ -381,6 +384,9 @@ void pkgAcqIndex::DoneByWorker(const string &Message,
+>     if (ComprMeth == "xz") {
+>        Desc.URI = "xz:" + FileName;
+>        Mode = "xz";
+> +   } else if (ComprMeth == "zst") {
+> +      Desc.URI = "zstd:" + FileName;
+> +      Mode = "zstd";
+>     } else if (ComprMeth == "gz") {
+>        Desc.URI = "gzip:" + FileName;
+>        Mode = "gzip";
+> diff --git a/apt-pkg/contrib/fileutl.cc b/apt-pkg/contrib/fileutl.cc
+> index 1a3905f7c..9fa6508da 100644
+> --- a/apt-pkg/contrib/fileutl.cc
+> +++ b/apt-pkg/contrib/fileutl.cc
+> @@ -482,7 +482,7 @@ string flNoExtension(const string &File)
+>  string flUnCompressed(const string &File)
+>  {
+>     string Ext = flExtension(File);
+> -   if (Ext == "xz" or Ext == "gz" or Ext == "bz2") {
+> +   if (Ext == "xz" or Ext == "zst" or Ext == "gz" or Ext == "bz2") {
+>        return flNoExtension(File);
+>     }
+>     return File;
+> diff --git a/apt.spec b/apt.spec
+> index 670f15f48..4d4b014d3 100644
+> --- a/apt.spec
+> +++ b/apt.spec
+> @@ -80,7 +80,7 @@ Requires: RPMQ(EPOCH)
+>  Requires: RPMQ(BUILDTIME)
+>  Requires: RPMQ(DISTTAG)
+>  # for methods.
+> -Requires: gzip, bzip2, xz
+> +Requires: gzip, bzip2, xz, zstd
+>  Requires: gnupg, alt-gpgkeys
+>  
+>  # Older versions of update-kernel misunderstood the @-postfix (with buildtime
+> diff --git a/cmdline/apt-cdrom.cc b/cmdline/apt-cdrom.cc
+> index 98116581d..db1110322 100644
+> --- a/cmdline/apt-cdrom.cc
+> +++ b/cmdline/apt-cdrom.cc
+> @@ -130,6 +130,7 @@ bool FindPackages(string CD,vector<string> &List,vector<string> &SList,
+>  			strcmp(Dir->d_name+strlen(Dir->d_name)-4, ".bz2") == 0
+>  		|| strcmp(Dir->d_name+strlen(Dir->d_name)-3, ".xz") == 0
+>  		|| strcmp(Dir->d_name+strlen(Dir->d_name)-3, ".gz") == 0
+> +		|| strcmp(Dir->d_name+strlen(Dir->d_name)-4, ".zst") == 0
+>  	  ))
+>        {
+>  	 List.push_back(CD + string(Dir->d_name));
+> @@ -140,6 +141,7 @@ bool FindPackages(string CD,vector<string> &List,vector<string> &SList,
+>  			strcmp(Dir->d_name+strlen(Dir->d_name)-4, ".bz2") == 0
+>  		|| strcmp(Dir->d_name+strlen(Dir->d_name)-3, ".xz") == 0
+>  		|| strcmp(Dir->d_name+strlen(Dir->d_name)-3, ".gz") == 0
+> +		|| strcmp(Dir->d_name+strlen(Dir->d_name)-4, ".zst") == 0
+>  		))
+>        {
+>  	 SList.push_back(CD + string(Dir->d_name));
+> diff --git a/cmdline/rpmindexcopy.cc b/cmdline/rpmindexcopy.cc
+> index de70b9462..f8f8f57a8 100644
+> --- a/cmdline/rpmindexcopy.cc
+> +++ b/cmdline/rpmindexcopy.cc
+> @@ -103,6 +103,7 @@ bool RPMIndexCopy::CopyPackages(const string &CDROM,const string &Name,vector<st
+>  	 const string Ext = flExtension(*I);
+>  	 const char *decompressor = "bzip2";
+>  	 if (Ext == "xz") decompressor = "xz";
+> +	 else if (Ext == "zst") decompressor = "zstd";
+>  	 else if (Ext == "gz") decompressor = "gzip";
+>  
+>  	 std::string binKey = std::string("Dir::Bin::") + decompressor;
+> diff --git a/methods/Makefile.am b/methods/Makefile.am
+> index a0c3004f9..a5c155142 100644
+> --- a/methods/Makefile.am
+> +++ b/methods/Makefile.am
+> @@ -9,6 +9,7 @@ install-data-hook: | install-methodsPROGRAMS
+>  	&& $(LN_S) rsh ssh \
+>  	&& $(LN_S) gzip bzip2 \
+>  	&& $(LN_S) gzip xz \
+> +	&& $(LN_S) gzip zstd \
+>  	)
+>  
+>  # We care about warnings during LTO. They are like g++ warnings. The flags have
+> 
+> commit 250cb13b1d5a4b6a63a159786058030d72eb5b9a
+> Author: Leonid Znamenok <respublica@altlinux.org>
+> Date:   Wed Mar 11 03:14:21 2026 +0400
+> 
+>     test-apt-update-simple-zstd: added test
+>     
+>     Needed to check functionality that have been added in commit a3a99b05.
+>     The same test as in the commit 138afed1, but with zstd instead of xz.
+> ---
+>  test/integration/test-apt-update-simple-zstd | 16 ++++++++++++++++
+>  1 file changed, 16 insertions(+)
+> 
+> diff --git a/test/integration/test-apt-update-simple-zstd b/test/integration/test-apt-update-simple-zstd
+> new file mode 100755
+> index 000000000..a7dacbdfc
+> --- /dev/null
+> +++ b/test/integration/test-apt-update-simple-zstd
+> @@ -0,0 +1,16 @@
+> +#!/bin/bash
+> +set -eu
+> +
+> +TESTDIR=$(readlink -f $(dirname $0))
+> +. $TESTDIR/framework
+> +
+> +APT_TEST_BASEDIR_COMPRESSION_OPTS='--no-bz2 --no-xz --zstd'
+> +
+> +setupenvironment
+> +
+> +buildpackage 'simple-package'
+> +
+> +generaterepository_and_switch_sources "$TMPWORKINGDIRECTORY/usr/src/RPM/RPMS"
+> +
+> +testsuccess aptget update
+> +testsuccess aptcache show simple-package
+> 
+> commit 0e900a91a1244870cf59e7d2b9e3f38219fd0221
+> Author: Leonid Znamenok <respublica@altlinux.org>
+> Date:   Wed Mar 11 03:20:34 2026 +0400
+> 
+>     0.5.15lorg2-alt101
+>     
+>     - apt-cdrom.cc: added support of xz and gz compressed {pkg,src}lists.
+>     - acquire-item.cc: added support for zst-compressed pkglists.
+> ---
+>  apt.spec | 6 +++++-
+>  1 file changed, 5 insertions(+), 1 deletion(-)
+> 
+> diff --git a/apt.spec b/apt.spec
+> index 4d4b014d3..d2b1ef6a4 100644
+> --- a/apt.spec
+> +++ b/apt.spec
+> @@ -3,7 +3,7 @@
+>  
+>  Name: apt
+>  Version: 0.5.15lorg2
+> -Release: alt100
+> +Release: alt101
+>  
+>  Summary: Debian's Advanced Packaging Tool with RPM support
+>  Summary(ru_RU.UTF-8): Debian APT - Усовершенствованное средство управления пакетами с поддержкой RPM
+> @@ -609,6 +609,10 @@ exec 1>&2
+>  %_datadir/%name/tests/
+>  
+>  %changelog
+> +* Wed Mar 11 2026 Leonid Znamenok <respublica@altlinux.org> 0.5.15lorg2-alt101
+> +- apt-cdrom.cc: added support of xz and gz compressed {pkg,src}lists.
+> +- acquire-item.cc: added support for zst-compressed pkglists.
+> +
+>  * Sun Jan 25 2026 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt100
+>  - e2k: Fixed the compilation of dependent packages with unchanged flags.
+>    (Restored the e2k source code adaptations; simply removing them in
+> 
