@@ -109,6 +109,10 @@ bool rpmListIndex::GetReleases(pkgAcquire *Owner) const
    Repository->Acquire = false;
    new pkgAcqIndexRel(Owner,Repository,ReleaseURI("release"),
 		      ReleaseInfo("release"), "release", true);
+
+   if (_config->FindB("APT::Get::OpenSSL", false) == true)
+      new pkgAcqIndexRel(Owner,Repository,ReleaseURI("release.sig"),
+                         ReleaseInfo("release.sig"), "release.sig", true);
    return true;
 }
 									/*}}}*/
