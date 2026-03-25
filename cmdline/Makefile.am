@@ -4,6 +4,7 @@ libexecaptdir=$(libexecdir)/apt
 EXTRA_DIST = indexcopy.cc indexcopy.h
 
 libexecapt_PROGRAMS = apt-get
+libexecapt_SCRIPTS = verify_sig
 bin_PROGRAMS = apt-cache apt-cdrom apt-config apt-mark
 
 if COMPILE_APTSHELL

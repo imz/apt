@@ -1,0 +1,171 @@
+#!/bin/sh -efu
+
+# Copyright (C) 2026 Paul Wolneykien <manowar@altlinux.org>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+PROG=${0##*/}
+VERSION='0.1.0'
+YEAR=2026
+
+DEFUALT_CONFIG=/etc/apt/verify_sig.conf
+
+usage()
+{
+    [ "$1" = 0 ] || exec >&2
+    cat <<EOF
+Usage: $PROG [ options ] DATA_FILE SIG_FILE
+
+Options:
+
+  -c CONF_FILE, --config=CONF_FILE    configuration file to use (the
+                                    default is $DEFUALT_CONFIG);
+
+  -C OSSL_CONF, --ossl-config=OSSL_CONF    OpenSSL configuration file
+                                         to use;
+
+  -H KEY_HASH, --key-hash=KEY_HASH    hash of the X.509 public
+     	       			    certificate of the signer;
+
+  -v, --verbose           be verbose;
+
+  -V, --version           print program version and exit;
+
+  -h, --help              show this text and exit.
+
+Report bugs to https://bugzilla.altlinux.org/.
+EOF
+    exit "${1:-0}"
+}
+
+TEMP="$(getopt -n "$PROG" -o c:C:HvVh -l config:,ossl-config:,key-hash:,verbose,version,help -- "$@")" || usage 1
+eval set -- "$TEMP"
+
+config="$DEFUALT_CONFIG"
+ossl_config=
+key_hash=
+verbose=
+while :; do
+    case "$1" in
+	-c|--config)
+	    shift
+	    config="$1"
+	    ;;
+	-C|--ossl-config)
+	    shift
+	    ossl_config="$1"
+	    ;;
+	-H|--key-hash)
+	    shift
+	    key_hash="$1"
+	    ;;
+	-v|--verbose)
+	    verbose=y
+	    ;;
+        -h|--help)
+	    usage 0
+            ;;
+	-V|--version)
+	    cat <<EOF
+$VERSION $YEAR
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+EOF
+	    exit 0
+	    ;;
+        --)
+	    shift
+	    break
+            ;;
+        *)
+	    echo "$PROG: unrecognized option: $1" >&2
+	    usage 1
+            ;;
+    esac
+    shift
+done
+
+if [ $# -ne 2 ]; then
+    usage 1
+fi
+
+if [ -e "$config" ]; then
+    # shellcheck disable=SC1090
+    . "$config"
+fi
+
+if [ -n "$ossl_config" ]; then
+    OPENSSL_CONF="$ossl_config"
+fi
+
+if [ -n "${OPENSSL_CONF:-}" ]; then
+    export OPENSSL_CONF
+fi
+
+data_f="$1"; shift
+sig_f="$1"; shift
+
+if [ ! -e "$data_f" ]; then
+    case "$data_f" in
+	/var/lib/apt/lists/partial/*)
+	    _data_f=/var/lib/apt/lists/"${data_f#/var/lib/apt/lists/partial/}"
+	    if [ -e "$_data_f" ]; then
+		data_f="$_data_f"
+	    fi
+    esac
+fi
+
+if [ ! -e "$data_f" ]; then
+    echo "Signed file $data_f not found!" >&2
+    exit 1
+fi
+
+if [ ! -e "$sig_f" ]; then
+    echo "Signature file $sig_f not found!" >&2
+    exit 1
+fi
+
+cert=
+if [ -n "$key_hash" ]; then
+    #cert=...
+    echo "Sorry, not yet implemented." >&2
+    exit 1
+elif [ -n "${DEFAULT_KEY:-}" ]; then
+    cert="$DEFAULT_KEY"
+else
+    echo "Unable to verify the signature: No key hash specified and DEFAULT_KEY is also not configured in $config." >&2
+    exit 1
+fi
+
+if [ -n "${CA_PATH:-}${CA_FILE:-}" ]; then
+    if ! openssl verify ${CA_PATH:+-CApath "$CA_PATH"} \
+	                ${CA_FILE:+-CAfile "$CA_FILE"} \
+	 "$cert"
+    then
+	echo "Certificate verification error." >&2
+	exit 1
+    fi
+fi
+
+if ! openssl pkeyutl -verify -certin -inkey "$cert" -in "$data_f" -rawin -sigfile "$sig_f"
+then
+    echo "Signature is not valid." >&2
+    exit 1
+fi
+
+[ -z "$verbose" ] || echo "Signature is valid." >&2
+exit 0
