@@ -14,11 +14,75 @@
 #include <apt-pkg/luaiface.h>
 
 #include <string>
+#include <algorithm>
 
 #include <apti18n.h>
+#include <stdlib.h>
+#include <sys/wait.h>
 									/*}}}*/
 
 using namespace std;
+
+static bool checkSignature(pkgAcquire::Item* data_f,
+                           pkgAcquire::Item* sig_f)
+{
+   int fd[2];
+   if (pipe(fd) < 0) {
+      _error->Warning("Could not create a pipe for signature verificator.");
+      return false;
+   }
+
+   pid_t pid = fork();
+   if (pid < 0) {
+      _error->Warning("Could not spawn signature verificator.");
+      return false;
+   } else if (pid == 0) {
+      close(fd[0]);
+      close(STDERR_FILENO);
+      close(STDOUT_FILENO);
+      dup2(fd[1], STDOUT_FILENO);
+      dup2(fd[1], STDERR_FILENO);
+
+      unsetenv("LANG");
+      unsetenv("LANGUAGE");
+      unsetenv("LC_ALL");
+      unsetenv("LC_MESSAGES");
+      unsetenv("LC_CTYPE");
+
+      string path = "/usr/lib/apt/verify_sig";
+      string homedir = "";
+      const char *argv[4];
+
+      argv[0] = "verify_sig";
+      argv[1] = data_f->DestFile.c_str();
+      argv[2] = sig_f->DestFile.c_str();
+      argv[3] = NULL;
+
+      execvp(path.c_str(), (char**) argv);
+      exit(111);
+   }
+
+   close(fd[1]);
+   FILE* f = fdopen(fd[0], "r");
+
+   char buf[1024];
+   while (true) {
+      if (fgets(buf, sizeof(buf), f)) {
+         _error->Warning("%s", buf);
+      } else {
+         break;
+      }
+   }
+   fclose(f);
+
+   int status;
+   waitpid(pid, &status, 0);
+
+   if (WEXITSTATUS(status) == 111)
+      _error->Warning("Unable to execute the signature verificator.");
+
+   return WEXITSTATUS(status) == 0;
+}
 
 // ListUpdate - construct Fetcher and update the cache files		/*{{{*/
 // ---------------------------------------------------------------------
@@ -73,10 +137,38 @@ bool ListUpdate(pkgAcquireStatus &Stat,
    for (pkgAcquire::ItemCIterator I = Fetcher.ItemsBegin();
         I != Fetcher.ItemsEnd(); ++I)
    {
+      ::URI uri((*I)->DescURI());
+      uri.User.clear();
+      uri.Password.clear();
+      const string descUri = string(uri);
+
       switch ((*I)->Status)
       {
       case pkgAcquire::Item::StatDone:
          AllFailed = false;
+         if (descUri.compare(descUri.length() - 4, 4, ".sig") == 0) {
+            auto data_f = find_if(Fetcher.ItemsBegin(), Fetcher.ItemsEnd(), [&](pkgAcquire::Item* J) -> bool {
+               ::URI j_uri(J->DescURI());
+               j_uri.User.clear();
+               j_uri.Password.clear();
+               const string j_uri_str = string(j_uri);
+               return J->Complete && (descUri.compare(0, descUri.length() - 4, j_uri_str) == 0);
+            });
+            if (data_f != Fetcher.ItemsEnd()) {
+               if (!checkSignature(*data_f, *I)) {
+                  Failed = true;
+                  _error->Error("Signature verification falied.");
+                  errorsWereReported = true;
+                  break;
+               }
+            } else {
+               Failed = true;
+               _error->Error("Signed file %s wasn't fetched!",
+                             descUri.substr(0, descUri.length() - 4).c_str());
+               errorsWereReported = true;
+               break;
+            }
+         }
          continue;
 
       case pkgAcquire::Item::StatIdle:
@@ -90,11 +182,6 @@ bool ListUpdate(pkgAcquireStatus &Stat,
 
       if (errorsWereReported)
          continue;
-
-      ::URI uri((*I)->DescURI());
-      uri.User.clear();
-      uri.Password.clear();
-      const std::string descUri = std::string(uri);
 
       _error->Warning(_("Release files for some repositories could not be retrieved or authenticated. Such repositories are being ignored."));
       _error->Error(_("Failed to fetch %s  %s"), descUri.c_str(),

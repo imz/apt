@@ -635,6 +635,9 @@ void pkgAcqIndexRel::DoneByWorker(const string &Message,
    }
    else
    {
+      if (DestFile.compare(DestFile.length() - 4, 4, ".sig") == 0)
+         return;
+
       if (FileName == DestFile)
 	 Erase = true;
       else
