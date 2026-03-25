@@ -69,12 +69,11 @@ bool RPMIndexCopy::CopyPackages(const string &CDROM,const string &Name,vector<st
 
    for (vector<string>::iterator I = List.begin(); I != List.end(); I++)
    {
-      string OrigPath = string(*I,CDROM.length());
       unsigned long FileSize = 0;
 
       // Open the package file
       FileFd Pkg;
-      string File = flUnCompressed(*I);
+      const std::string File = flUnCompressed(*I);
 
       if (FileExists(File) == true)
       {
@@ -101,8 +100,8 @@ bool RPMIndexCopy::CopyPackages(const string &CDROM,const string &Name,vector<st
 	 else if (Ext == "zst") decompressor = "zstd";
 	 else if (Ext == "gz") decompressor = "gzip";
 
-	 std::string binKey = std::string("Dir::Bin::") + decompressor;
-	 std::string bin = _config->Find(binKey, decompressor.c_str());
+	 const std::string binKey = std::string("Dir::Bin::") + decompressor;
+	 const std::string bin = _config->Find(binKey, decompressor.c_str());
 
 	 // Fork decompressor
 	 int Process = fork();
@@ -136,8 +135,9 @@ bool RPMIndexCopy::CopyPackages(const string &CDROM,const string &Name,vector<st
 
       // Open the output file
       char S[400];
-      sprintf(S,"cdrom:[%s]/%s",Name.c_str(),
-	      File.c_str() + CDROM.length());
+      if (snprintf(S,sizeof(S),"cdrom:[%s]/%s",Name.c_str(),
+                   File.c_str() + CDROM.length()) >= sizeof(S))
+         return _error->Error("Internal filename for %s is too long.", File.c_str());
       string TargetF = _config->FindDir("Dir::State::lists") + "partial/";
       TargetF += URItoFileName(S);
       if (_config->FindB("APT::CDROM::NoAct",false) == true)
