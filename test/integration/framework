@@ -760,6 +760,9 @@ fake_repo_noarch_pkglist() {
 		     ;;
 		.bz2) bzip2 --keep -- "$repo_noarch_pkglist"
 		      ;;
+		*)
+		    msgdie 'Unhandled unknown $REPO_COMPR_EXT in fake_repo_noarch_pkglist()'
+		    ;;
 	    esac
 	    touch -r "$repo_noarch_pkglist".orig -- "$repo_noarch_pkglist$REPO_COMPR_EXT"
 
