@@ -730,7 +730,7 @@ edit_repo_noarch_release() {
 
 # Input:
 # * args CMD [ARG..] -- stream editor (for the pkglist)
-# * global vars REPO_STORAGE, NOARCH_DISTRO, DISTRO_COMPONENT, REPO_COMPR_EXT
+# * global vars REPO_STORAGE, NOARCH_DISTRO, DISTRO_COMPONENT
 # * files $REPO_STORAGE/$NOARCH_DISTRO/base/{pkglist.$DISTRO_COMPONENT,release}
 #   and its compressed counterpart (if any)
 #
@@ -740,7 +740,6 @@ edit_repo_noarch_release() {
 fake_repo_noarch_pkglist() {
 	local -r repo_noarch_pkglist="$REPO_STORAGE/$NOARCH_DISTRO/base/pkglist.$DISTRO_COMPONENT"
 	mv "$repo_noarch_pkglist"{,.orig}
-	rm -f "$repo_noarch_pkglist$REPO_COMPR_EXT"
 
 	"$@" \
 	    >"$repo_noarch_pkglist" \
@@ -753,24 +752,32 @@ fake_repo_noarch_pkglist() {
 
 	touch -r "$repo_noarch_pkglist".orig -- "$repo_noarch_pkglist"
 
-	if [ -n "$REPO_COMPR_EXT" ]; then
+	local comprext
+	for comprext in gz bz2 xz zst; do
+	    rm "$repo_noarch_pkglist.$comprext" || continue
 
-	    case "$REPO_COMPR_EXT" in
-		.xz) xz --keep -- "$repo_noarch_pkglist"
+	    case "$comprext" in
+		gz) gzip --keep -- "$repo_noarch_pkglist"
 		     ;;
-		.bz2) bzip2 --keep -- "$repo_noarch_pkglist"
+		bz2) bzip2 --keep -- "$repo_noarch_pkglist"
 		      ;;
+		xz) xz --keep -- "$repo_noarch_pkglist"
+		     ;;
+		zst) zstd --keep -- "$repo_noarch_pkglist"
+		     ;;
+		*) msgdie "Internal error: no handler for .$comprext compression"
+		     ;;
 	    esac
-	    touch -r "$repo_noarch_pkglist".orig -- "$repo_noarch_pkglist$REPO_COMPR_EXT"
+	    touch -r "$repo_noarch_pkglist".orig -- "$repo_noarch_pkglist.$comprext"
 
 	    # Now, we have to edit the size of the compressed fake pkglist.
 	    local new_size
-	    new_size="$(stat --format '%s' -- "$repo_noarch_pkglist$REPO_COMPR_EXT")"
+	    new_size="$(stat --format '%s' -- "$repo_noarch_pkglist.$comprext")"
 	    local -r new_size
 	    # FIXME: the regex is not quite a regex below
 	    edit_repo_noarch_release \
-		sed -Ee "s:^( [^ ]* )[^ ]*( base/pkglist\.$DISTRO_COMPONENT$REPO_COMPR_EXT):\1$new_size\2:"
-	fi
+		sed -Ee "s:^( [^ ]* )[^ ]*( base/pkglist\.$DISTRO_COMPONENT.$comprext):\1$new_size\2:"
+	done
 
 	rm -- "$repo_noarch_pkglist".orig
 }
