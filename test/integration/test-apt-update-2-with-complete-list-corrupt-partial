@@ -14,7 +14,7 @@ prereq $TESTDIR/test-apt-update-simple
 ! [ -e "$APT_FETCHED_PARTIAL_NOARCH_PKGLIST" ]
 
 # Inject (if bad, apt-get update should refetch):
-readonly REPO_NOARCH_PKGLIST="$REPO_STORAGE/$NOARCH_DISTRO/base/pkglist.$DISTRO_COMPONENT"
+readonly REPO_NOARCH_PKGLIST="$REPO_STORAGE/$NOARCH_DISTRO/base/pkglist.$DISTRO_COMPONENT$REPO_COMPR_EXT"
 cp -a "$REPO_NOARCH_PKGLIST" \
    -T "$APT_FETCHED_PARTIAL_NOARCH_PKGLIST"
 shred -n 0 --zero --exact -- "$APT_FETCHED_PARTIAL_NOARCH_PKGLIST"
