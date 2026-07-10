@@ -3,7 +3,7 @@
 
 Name: apt
 Version: 0.5.15lorg2
-Release: alt101
+Release: alt102
 
 Summary: Debian's Advanced Packaging Tool with RPM support
 Summary(ru_RU.UTF-8): Debian APT - Усовершенствованное средство управления пакетами с поддержкой RPM
@@ -609,6 +609,9 @@ exec 1>&2
 %_datadir/%name/tests/
 
 %changelog
+* Sat Jun 27 2026 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt102
+- Fixed a header guard. / Fixed the build with the recent GCC.
+
 * Wed Mar 11 2026 Leonid Znamenok <respublica@altlinux.org> 0.5.15lorg2-alt101
 - acquire-item.cc: added support for zst compressed {pkg,src}lists.
 - apt-cdrom.cc: added support of xz, gz and zstd compressed {pkg,src}lists.
