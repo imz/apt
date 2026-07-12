@@ -614,7 +614,8 @@ exec 1>&2
 %_datadir/%name/tests/
 
 %changelog
-* Sat Jun 27 2026 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt102
+* Sun Jul 12 2026 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt102
+- Updated upstream URL (ALT#50036) (thx Anton Osipov radiolamp@).
 - Fixed a header guard. / Fixed the build with the recent GCC.
 
 * Wed Mar 11 2026 Leonid Znamenok <respublica@altlinux.org> 0.5.15lorg2-alt101
