@@ -711,6 +711,15 @@ testregexmatch() {
 		MSG=''
 		shift
 	fi
+	local -r MSG
+
+	local match_stdout=
+	case "$1" in
+	    --match-stdout) match_stdout=yes
+			    shift
+			    ;;
+	esac
+	local -r match_stdout
 
 	local COMPAREMSG="$1"
 	shift
@@ -720,23 +729,33 @@ testregexmatch() {
 	fi
 
 	OUTPUT="${TMPWORKINGDIRECTORY}/rootdir/tmp/testregexmatch.output"
+	local output_for_matching
 
 	local result=0 # not to be overwritten inside the tested command ("$@")
-	"$@" &> $OUTPUT || result=$?
+	{ if [ -z "$match_stdout" ]; then
+	      output_for_matching="$OUTPUT"
+	      "$@"
+	  else
+	      output_for_matching="$OUTPUT"-for-matching
+	      "$@" | tee "$output_for_matching"
+	      # we rely of set -o pipefail for setting result below
+	  fi
+	} &> $OUTPUT || result=$?
 	RESULT=$result # the global var to hold this value (could be overwritten)
-	local OUTPUT_STR
+	local -r output_for_matching
+	local output_str
 	# disable IFS not to strip spaces at the beginning and the end of file
-	IFS= read -rd '' OUTPUT_STR <"$OUTPUT" ||
+	IFS= read -rd '' output_str <"$output_for_matching" ||
 	    : # non-zero status always (because of EOF)
-	local -r OUTPUT_STR
+	local -r output_str
 
-	if [[ "$OUTPUT_STR" =~ ^$COMPAREMSG$ ]] ; then
+	if [[ "$output_str" =~ ^$COMPAREMSG$ ]] ; then
 		msgpass
 	else
 		msgfail
 		local COMPAREFILE="${TMPWORKINGDIRECTORY}/rootdir/tmp/testregexmatch.comparefile"
 		printf '%s' "$COMPAREMSG" > $COMPAREFILE
-		checkdiff $COMPAREFILE $OUTPUT || true
+		checkdiff "$COMPAREFILE" "$output_for_matching" || true
 		echo >&6 "$DIFFTEXT"
 	fi
 }
