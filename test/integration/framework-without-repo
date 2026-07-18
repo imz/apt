@@ -1031,7 +1031,7 @@ ssl_keygen() {
 	localhost6)
 	    ip=,IP:::1
 	    ;;
-    esac	
+    esac
 
     msginfo "Generating SSL key+cert: ${name}"
 
