@@ -203,7 +203,7 @@ forall_testcases() {
 		fi
 		;;
 
-	    test-apt-method-http*)
+	    test-method-http*)
 		for method in "${APT_TEST_http_METHODS[@]}"; do
 		    if [[ "$method" == ${APT_RUN_TEST_ONLY_IF_METHOD_MATCHES-"$method"} ]]
 		    then

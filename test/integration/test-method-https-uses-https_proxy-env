@@ -14,7 +14,7 @@ esac
 TESTDIR=$(readlink -f $(dirname $0))
 
 . $TESTDIR/framework-without-repo
-prereq $TESTDIR/try-apt-method-http-when-allowed-only-proxy
+prereq $TESTDIR/try-method-http-when-allowed-only-proxy
 
 # use the saved value
 msgmsg "Setting https_proxy env: $APT_TEST_HTTP_PROXY"
