@@ -712,7 +712,7 @@ nginxrestart() {
 #
 # Output/effects:
 # * the file is edited; its time is unchanged
-edit_repo_noarch_release() {
+edit_release_in_repo_noarch() {
 	local -r repo_noarch_release="$REPO_STORAGE/$NOARCH_DISTRO/base/release"
 	mv "$repo_noarch_release"{,.orig}
 
@@ -740,7 +740,7 @@ edit_repo_noarch_release() {
 # Output/effects:
 # * the file (and its compressed counterpart) is edited; its time is unchanged
 # * the size of the compressed counterpart in the release file is adjusted; its time is unchanged
-fake_repo_noarch_pkglist() {
+corrupt_pkglist_in_repo_noarch() {
 	local -r repo_noarch_pkglist="$REPO_STORAGE/$NOARCH_DISTRO/base/pkglist.$DISTRO_COMPONENT"
 	mv "$repo_noarch_pkglist"{,.orig}
 
@@ -778,7 +778,7 @@ fake_repo_noarch_pkglist() {
 	    new_size="$(stat --format '%s' -- "$repo_noarch_pkglist.$comprext")"
 	    local -r new_size
 	    # FIXME: the regex is not quite a regex below
-	    edit_repo_noarch_release \
+	    edit_release_in_repo_noarch \
 		sed -Ee "s:^( [^ ]* )[^ ]*( base/pkglist\.$DISTRO_COMPONENT.$comprext):\1$new_size\2:"
 	done
 
@@ -830,7 +830,7 @@ fake_repo_noarch_pkglist_cksum() {
 	a_bad_cksum="$(bad_cksum "$cksum_type")"
 	local -r a_bad_cksum
 
-	edit_repo_noarch_release \
+	edit_release_in_repo_noarch \
 	    sed -Ee "/^$cksum_type:/,/^[^ ]/ { /pkglist/ s:^ [^ ]* : $a_bad_cksum :; }"
 }
 
@@ -847,7 +847,7 @@ fake_repo_noarch_pkglist_size() {
 	printf -v a_bad_size '%d' 0x7edcba9876543210
 	local -r a_bad_size
 
-	edit_repo_noarch_release \
+	edit_release_in_repo_noarch \
 	    sed -Ee "/pkglist/ s:^( [^ ]*) [^ ]* :\1 $a_bad_size :"
 }
 
@@ -858,7 +858,7 @@ fake_repo_noarch_pkglist_size() {
 #
 # Output/effects:
 # * the file is edited; its time is unchanged
-fake_repo_noarch_rpm() {
+corrupt_rpm_in_repo_noarch() {
 	local -r name="$1"; shift
 
 	local pkgfile

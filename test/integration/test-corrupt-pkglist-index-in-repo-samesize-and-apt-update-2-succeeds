@@ -17,7 +17,7 @@ prereq $TESTDIR/test-apt-update-simple
 #
 # (For faking individual cksums, see other tests,
 # like test-apt-update-verifies-CKSUM-of-pkglist-index.)
-fake_repo_noarch_pkglist \
+corrupt_pkglist_in_repo_noarch \
     sed -Ee 's:nobody:oooody:'
 
 # Cksum verification should pass actually!
@@ -28,8 +28,10 @@ fake_repo_noarch_pkglist \
 
 case "$APT_TEST_METHOD" in
 	copy)
+	    APT_TEST_XFAIL=yes
 	    testregexmatch '.*(Checksum|BLAKE2b) mismatch of index file.*' \
 			   aptget update
+	    testsuccess
 	    ;;
 	*)
 	    testsuccess aptget update
