@@ -34,22 +34,24 @@ aptcdrom() { runapt apt-cdrom "${CDROM_OPTS[@]}" "$@"; }
 # Output/effects:
 # * files in $repo_dir
 # * global var REPO_COMPR_EXT (the extension for the compressed pkglists there)
+# * global vars NOARCH_DISTRO, MYARCH_DISTRO, DISTRO_COMPONENT
+#   -- the paths under $REPO_STORAGE or $APT_SOURCES_URI; the final part
+#   specified in sources.list after the URI with the component/"label"
 generaterepository() {
 	local orig_dir="$1"
 	local repo_dir="$2"
 	local repo_date="${3-}"
 
-	local label="$GB_REPO_LABEL"
-	if [ -z "$label" ]; then
-		label="apt-tests"
+	DISTRO_COMPONENT="$GB_REPO_LABEL"
+	if [ -z "$DISTRO_COMPONENT" ]; then
+	        DISTRO_COMPONENT="apt-tests"
 	fi
 	local description="$GB_REPO_DESCRIPTION"
 	if [ -z "$description" ]; then
-		description="ALT Linux $label"
+		description="ALT Linux $DISTRO_COMPONENT"
 	fi
 	local date_s="$(date +%s)"
-	local arch="$APT_TEST_USED_ARCH"
-	local comps="${label}"
+	local comps="${DISTRO_COMPONENT}"
 
 	if [ -n "$repo_date" ] ; then
 		date_s="$repo_date"
@@ -69,7 +71,7 @@ generaterepository() {
 	fi
 	local suite="$GB_REPO_SUITE"
 	if [ -z "$suite" ]; then
-		suite="$label"
+		suite="$DISTRO_COMPONENT"
 	fi
 	local version="$GB_REPO_VERSION"
 	if [ -z "$version" ]; then
@@ -99,20 +101,23 @@ generaterepository() {
 		esac
 	fi
 
+	NOARCH_DISTRO=noarch
+	MYARCH_DISTRO="$APT_TEST_USED_ARCH"
+
 	if [ -n "$orig_dir" ]; then
 		# initial generation
 		rm -rf "$repo_dir"
-		for dir in ${arch} noarch ; do
-			mkdir -p "${repo_dir}/${dir}/RPMS.${label}"
+		for dir in "${MYARCH_DISTRO}" noarch ; do
+			mkdir -p "${repo_dir}/${dir}/RPMS.${DISTRO_COMPONENT}"
 			mkdir -p "${repo_dir}/${dir}/base"
 			stat "${orig_dir}/${dir}/"*.rpm &>/dev/null &&
-				cp "${orig_dir}/${dir}/"*.rpm "${repo_dir}/${dir}/RPMS.${label}"/
+				cp "${orig_dir}/${dir}/"*.rpm "${repo_dir}/${dir}/RPMS.${DISTRO_COMPONENT}"/
 		done
 	fi
 
 	mkdir -p "${TMPWORKINGDIRECTORY}/cache"
 
-	for dir in ${arch} noarch ; do
+	for dir in "${MYARCH_DISTRO}" noarch ; do
 		genbasedir \
 			--cachedir="${TMPWORKINGDIRECTORY}/cache" \
 			--architecture="$dir" \
@@ -120,7 +125,7 @@ generaterepository() {
 			--archive="$archive" \
 			--codename="$codename" \
 			--description="$description" \
-			--label="$label" \
+			--label="$DISTRO_COMPONENT" \
 			--origin="$origin" \
 			--suite="$suite" \
 			--version="$version" \
@@ -148,6 +153,7 @@ generaterepository() {
 # * global var REPO_STORAGE -- where we physically store the data given to apt
 #   (it will be set depending on $APT_TEST_METHOD)
 # * files in $REPO_STORAGE
+# * global var REPO_COMPR_EXT (the extension for the compressed pkglists there)
 # * global vars NOARCH_DISTRO, MYARCH_DISTRO, DISTRO_COMPONENT
 #   -- the paths under $REPO_STORAGE or $APT_SOURCES_URI; the final part
 #   specified in sources.list after the URI with the component/"label"
@@ -231,9 +237,6 @@ generaterepository_and_switch_sources() {
 	#
 	# Expose the paths used under it.
 	generaterepository "$ORIG_DIR" "$REPO_STORAGE" "$REPO_DATE"
-	NOARCH_DISTRO=noarch
-	MYARCH_DISTRO="$APT_TEST_USED_ARCH"
-	DISTRO_COMPONENT=apt-tests
 
 	# Additional configuration for the server or other methods.
 
