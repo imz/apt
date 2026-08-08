@@ -24,7 +24,7 @@ Section: Other
 Installed Size: 0
 Maintainer: test@example.net
 Version: 2-alt1@[0-9]+
-Pre-Depends: rpmlib\(PayloadIsLzma\)
+Pre-Depends: $rpmlib_predeps_re
 Provides: simple-package \(= 2-alt1\)
 Architecture: $(builtpackagearch 'simple-package-update')
 Size: [0-9]+
@@ -44,7 +44,7 @@ Section: Other
 Installed Size: 0
 Maintainer: test@example.net
 Version: 1-alt1@[0-9]+
-Pre-Depends: rpmlib\(PayloadIsLzma\)
+Pre-Depends: $rpmlib_predeps_re
 Provides: simple-package \(= 1-alt1\)
 Architecture: $(builtpackagearch 'simple-package')
 Size: [0-9]+
@@ -65,7 +65,7 @@ Section: Other
 Installed Size: 0
 Maintainer: test@example.net
 Version: 1-alt1@[0-9]+
-Pre-Depends: rpmlib\(PayloadIsLzma\)
+Pre-Depends: $rpmlib_predeps_re
 Depends: no-such-package
 Provides: missing-dependency \(= 1-alt1\)
 Architecture: $(builtpackagearch 'missing-dependency')

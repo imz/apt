@@ -24,7 +24,7 @@ Section: Other
 Installed Size: 0
 Maintainer: test@example.net
 Version: 1-alt1@[0-9]+
-Pre-Depends: rpmlib\(PayloadIsLzma\)
+Pre-Depends: $rpmlib_predeps_re
 Conflicts: conflicting-package-one
 Provides: conflicting-package-two \(= 1-alt1\)
 Architecture: $(builtpackagearch 'conflicting-package-two')
@@ -43,7 +43,7 @@ Section: Other
 Installed Size: 0
 Maintainer: test@example.net
 Version: 1-alt1@[0-9]+
-Pre-Depends: rpmlib\(PayloadIsLzma\)
+Pre-Depends: $rpmlib_predeps_re
 Provides: simple-package-noarch \(= 1-alt1\)
 Architecture: $(builtpackagearch 'simple-package-noarch')
 Size: [0-9]+
@@ -61,7 +61,7 @@ Section: Other
 Installed Size: 0
 Maintainer: test@example.net
 Version: 3-alt1@[0-9]+
-Pre-Depends: rpmlib\(PayloadIsLzma\)
+Pre-Depends: $rpmlib_predeps_re
 Conflicts: simple-package \(< 3-alt1\)
 Provides: simple-package \(= 3-alt1\), simple-package-new \(= 3-alt1\)
 Obsoletes: simple-package \(< 3-alt1\)
@@ -83,7 +83,7 @@ Section: Other
 Installed Size: 0
 Maintainer: test@example.net
 Version: 1-alt1@[0-9]+
-Pre-Depends: rpmlib\(PayloadIsLzma\)
+Pre-Depends: $rpmlib_predeps_re
 Depends: no-such-package
 Provides: missing-dependency \(= 1-alt1\)
 Architecture: $(builtpackagearch 'missing-dependency')
@@ -102,7 +102,7 @@ Section: Other
 Installed Size: 0
 Maintainer: test@example.net
 Version: 2-alt1@[0-9]+
-Pre-Depends: rpmlib\(PayloadIsLzma\)
+Pre-Depends: $rpmlib_predeps_re
 Provides: simple-package \(= 2-alt1\)
 Architecture: $(builtpackagearch 'simple-package-update')
 Size: [0-9]+
@@ -122,7 +122,7 @@ Section: Other
 Installed Size: 0
 Maintainer: test@example.net
 Version: 2-alt1@[0-9]+
-Pre-Depends: rpmlib\(PayloadIsLzma\)
+Pre-Depends: $rpmlib_predeps_re
 Conflicts: conflicting-package-two, simple-package
 Provides: conflicting-package-one \(= 2-alt1\)
 Architecture: $(builtpackagearch 'conflicting-package-distupgrade')

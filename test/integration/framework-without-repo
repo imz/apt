@@ -1151,3 +1151,5 @@ runaptcmd_in_bg_apt_shell() {
 aptcache_in_bg_apt_shell() { runaptcmd_in_bg_apt_shell apt-cache "$@"; }
 aptget_in_bg_apt_shell() { runaptcmd_in_bg_apt_shell apt-get "$@"; }
 aptmark_in_bg_apt_shell() { runaptcmd_in_bg_apt_shell apt-mark "$@"; }
+
+readonly rpmlib_predeps_re='rpmlib\(PayloadIsLzma\)'
