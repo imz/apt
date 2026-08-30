@@ -145,8 +145,10 @@ Summary(ru_RU.UTF-8): Набор тестов для APT
 Group: Other
 BuildArch: noarch
 Requires: rpm-build
-Requires: /usr/bin/genbasedir
-# optional
+Requires: apt-repo-tools >= 0.11
+# genbasedir --no-compression needed by test-apt-update-simple-{xz,zstd} from
+# e09a4896b (test-apt-update-simple-xz: added test, 2026-03-11)
+# Optional:
 %global complete_reqs_of_tests %name-https /usr/sbin/nginx tinyproxy /usr/bin/openssl
 %global reqs_of_tests_to_filter_out \\(%name-https\\|/usr/sbin/nginx\\|nginx\\|/usr/bin/openssl\\|openssl\\|/usr/bin/tinyproxy\\|tinyproxy\\)
 %filter_from_requires \,^%reqs_of_tests_to_filter_out\($\|[[:blank:]]\),d
