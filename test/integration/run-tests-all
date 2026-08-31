@@ -1,0 +1,33 @@
+#!/bin/sh -e
+
+# (a copy of the former %pre script)
+# when it was run via /usr/sbin/sh-safely, it was interpreted with just set -e
+
+set -o pipefail
+
+# This option makes sense just for the maintainer (to test the tests).
+# This option makes the built pkgs be saved under a special filename
+# (our alias). This mechanism is used to test pkgs with N-V-R that would be
+# too long for filenames, in another run of the tests with
+# APT_TEST_PKG_DECORATE_VERSION turned on. And here we just can make sure
+# that the tests are robust with APT_TEST_PKG_FILENAME_BY_ALIAS alone.
+# APT_TEST_PKG_FILENAME_BY_ALIAS=yes
+# export APT_TEST_PKG_FILENAME_BY_ALIAS
+
+# force the target arch for the tests
+#
+# By default, the packages would be built for the arch detected by rpm-build
+# (rpmbuild --eval %%_arch). On installation, they would be compared
+# by rpm for compatibility with the arch detected by rpm. Currently,
+# the mismatch in the detection between rpm and rpm-build can lead to problems,
+# at least, on armh. So, we set the target by force to a value that must work.
+system_arch="$(rpm -q rpm --qf='%%{ARCH}')"
+export APT_TEST_TARGET="$system_arch"
+
+# cache built pkgs and other stuff
+APT_TEST_INTERMEDIATES="$(mktemp -d)"
+export APT_TEST_INTERMEDIATES
+
+%runtests
+
+# Everything has been tested by now.

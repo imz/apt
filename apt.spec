@@ -352,39 +352,6 @@ if [ -n "$found_unwanted_reqs_of_tests" ]; then
     exit 1
 fi
 
-# force the target arch for the tests
-#
-# By default, the packages would be built for the arch detected by rpm-build
-# (rpmbuild --eval %%_arch). On installation, they would be compared
-# by rpm for compatibility with the arch detected by rpm. Currently,
-# the mismatch in the detection between rpm and rpm-build can lead to problems,
-# at least, on armh. So, we set the target by force to a value that must work.
-system_arch="$(rpm -q rpm --qf='%%{ARCH}')"
-export APT_TEST_TARGET="$system_arch"
-
-# prepare data for rpm --import
-APT_TEST_GPGPUBKEY="$PWD"/example-pubkey.asc
-gpg-keygen --passphrase '' \
-	--name-real 'Some One' --name-email someone@example.com \
-	/dev/null "$APT_TEST_GPGPUBKEY"
-
-export APT_TEST_GPGPUBKEY
-
-# cache built pkgs and other stuff
-APT_TEST_INTERMEDIATES="$(mktemp -d)"
-export APT_TEST_INTERMEDIATES
-
-# this macro can be prefixed (e.g., by environment assignments),
-# therefore the extra backslash in the first line
-%global runtests \\\
-		%_datadir/%name/tests/run-tests -v
-
-# A quick test with just one method
-APT_TEST_METHODS='file' APT_TEST_http_METHODS= %runtests
-
-# The same tests, but just via cdrom with a missing release:
-#APT_TEST_METHODS=cdrom_missing_release APT_TEST_http_METHODS= %%runtests
-
 %package checkinstall
 Summary: Immediately test %name when installing this package (complete set of tests)
 Group: Other
@@ -400,36 +367,6 @@ The set of testcases is complete (all the methods that are tested by default
 and some additional peculiarities are tested).
 
 %files checkinstall
-
-%pre checkinstall -p %_sbindir/sh-safely
-set -o pipefail
-
-# This option makes sense just for the maintainer (to test the tests).
-# This option makes the built pkgs be saved under a special filename
-# (our alias). This mechanism is used to test pkgs with N-V-R that would be
-# too long for filenames, in another run of the tests with
-# APT_TEST_PKG_DECORATE_VERSION turned on. And here we just can make sure
-# that the tests are robust with APT_TEST_PKG_FILENAME_BY_ALIAS alone.
-# APT_TEST_PKG_FILENAME_BY_ALIAS=yes
-# export APT_TEST_PKG_FILENAME_BY_ALIAS
-
-# force the target arch for the tests
-#
-# By default, the packages would be built for the arch detected by rpm-build
-# (rpmbuild --eval %%_arch). On installation, they would be compared
-# by rpm for compatibility with the arch detected by rpm. Currently,
-# the mismatch in the detection between rpm and rpm-build can lead to problems,
-# at least, on armh. So, we set the target by force to a value that must work.
-system_arch="$(rpm -q rpm --qf='%%{ARCH}')"
-export APT_TEST_TARGET="$system_arch"
-
-# cache built pkgs and other stuff
-APT_TEST_INTERMEDIATES="$(mktemp -d)"
-export APT_TEST_INTERMEDIATES
-
-%runtests
-
-# Everything has been tested by now.
 
 %package xxtra-heavy-load-checkinstall
 Summary: Immediately test %name when installing this package (many times under heavy load)
@@ -448,80 +385,6 @@ in parallel) in order to possibly detect races
 (to make sure no tests are randomly succeeding).
 
 %files xxtra-heavy-load-checkinstall
-
-%pre xxtra-heavy-load-checkinstall -p %_sbindir/sh-safely
-set -o pipefail
-
-# force the target arch for the tests
-#
-# By default, the packages would be built for the arch detected by rpm-build
-# (rpmbuild --eval %%_arch). On installation, they would be compared
-# by rpm for compatibility with the arch detected by rpm. Currently,
-# the mismatch in the detection between rpm and rpm-build can lead to problems,
-# at least, on armh. So, we set the target by force to a value that must work.
-system_arch="$(rpm -q rpm --qf='%%{ARCH}')"
-export APT_TEST_TARGET="$system_arch"
-
-# prepare data for rpm --import
-APT_TEST_GPGPUBKEY="$PWD"/example-pubkey.asc
-gpg-keygen --passphrase '' \
-	--name-real 'Some One' --name-email someone@example.com \
-	/dev/null "$APT_TEST_GPGPUBKEY"
-
-export APT_TEST_GPGPUBKEY
-
-# cache built pkgs and other stuff
-APT_TEST_INTERMEDIATES="$(mktemp -d)"
-export APT_TEST_INTERMEDIATES
-
-. %_datadir/%name/tests/run-tests.defaults.sh
-
-all_unique_methods=('' $(for method in "${APT_TEST_ALL_METHODS[@]}" "${APT_TEST_ALL_http_METHODS[@]}"; do echo "$method"; done | sort -u))
-readonly -a all_unique_methods
-
-# Below we run the same tests many times in order to possibly catch
-# bad races. (It's more probable to catch a race under heavy load;
-# so, we do simultaneously as many as reasonable, possibly more than real nprocs.)
-
-# To not run in parallel, build the pkg with --define 'nprocs_for_check %%nil'
-# Consider multiplying `nproc` by 2 for heavier load.
-NPROCS=`nproc`
-if ! [ "$NPROCS" -gt 0 ] 2>/dev/null; then
-	NPROCS=1
-fi
-NPROCS=$(( 2 * NPROCS )) # for heavier load
-%{?nprocs_for_check:NPROCS=%nprocs_for_check}
-
-already_once=0
-job=0
-# Repeat all, so that every one gets tested at least once under maximal load;
-# this is the purpose of extra_job counter.
-readonly EXTRA_JOBS=$((1 * NPROCS)) # just an arbitrary num of extra jobs at the end
-for (( extra_job = 0; extra_job < EXTRA_JOBS; )); do
-    for method in "${all_unique_methods[@]}"; do
-	# We could do the same method several times by increasing the number here
-	# (to provoke even more races), but there are already too many tests.
-	for (( repeat = 0; repeat < 1; ++repeat )); do
-	    # %%02d in order not to pass spaces in xargs' {} placeholder
-	    printf '%%02d:%%s\n' "$((job++))" "$method"
-	    if (( already_once && (++extra_job >= EXTRA_JOBS) )); then
-		break 2
-	    fi
-	done
-    done
-    already_once=1
-done >jobs
-
-sed -i -Ee "s,^([^:]+):,\1/$job:," jobs
-
-export NPROCS # for the embedded script (to show the total number of slots)
-xargs <jobs \
-      -d'\n' -I'{}' ${NPROCS:+-P$NPROCS --process-slot-var=PARALLEL_SLOT} \
-      -- sh -efuo pipefail \
-	  -c 'APT_RUN_TEST_ONLY_IF_METHOD_MATCHES={}
-              APT_RUN_TEST_ONLY_IF_METHOD_MATCHES="${APT_RUN_TEST_ONLY_IF_METHOD_MATCHES#*:}"
-              export APT_RUN_TEST_ONLY_IF_METHOD_MATCHES
-              %runtests '${NPROCS:+'|& sed --unbuffered -e "s,^,[$(printf %%2d $PARALLEL_SLOT)/$NPROCS {}] ,"'}
 
 %package under-pkdirect-checkinstall
 Summary: Immediately test %name+PK when installing this package (via packagekit-direct)
