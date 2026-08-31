@@ -1,0 +1,39 @@
+#!/bin/sh -e
+
+# (a copy of the former %pre script)
+# when it was run via /usr/sbin/sh-safely, it was interpreted with just set -e
+
+set -o pipefail
+
+# force the target arch for the tests
+#
+# By default, the packages would be built for the arch detected by rpm-build
+# (rpmbuild --eval %%_arch). On installation, they would be compared
+# by rpm for compatibility with the arch detected by rpm. Currently,
+# the mismatch in the detection between rpm and rpm-build can lead to problems,
+# at least, on armh. So, we set the target by force to a value that must work.
+system_arch="$(rpm -q rpm --qf='%%{ARCH}')"
+export APT_TEST_TARGET="$system_arch"
+
+# prepare data for rpm --import
+APT_TEST_GPGPUBKEY="$PWD"/example-pubkey.asc
+gpg-keygen --passphrase '' \
+	--name-real 'Some One' --name-email someone@example.com \
+	/dev/null "$APT_TEST_GPGPUBKEY"
+
+export APT_TEST_GPGPUBKEY
+
+# cache built pkgs and other stuff
+APT_TEST_INTERMEDIATES="$(mktemp -d)"
+export APT_TEST_INTERMEDIATES
+
+# this macro can be prefixed (e.g., by environment assignments),
+# therefore the extra backslash in the first line
+%global runtests \\\
+		%_datadir/%name/tests/run-tests -v
+
+# A quick test with just one method
+APT_TEST_METHODS='file' APT_TEST_http_METHODS= %runtests
+
+# The same tests, but just via cdrom with a missing release:
+#APT_TEST_METHODS=cdrom_missing_release APT_TEST_http_METHODS= %%runtests
