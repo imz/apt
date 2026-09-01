@@ -5,6 +5,14 @@
 
 set -o pipefail
 
+if [ -z "${TESTDIRECTORY-}" ]; then
+    readonly TESTDIRECTORY="$(readlink -f "$(dirname "$0")")"
+fi
+# Usually expected location: %_datadir/%name/tests/run-tests
+if [ -z "${RUNTESTS-}" ]; then
+    readonly RUNTESTS="$TESTDIRECTORY"/run-tests
+fi
+
 # This option makes sense just for the maintainer (to test the tests).
 # This option makes the built pkgs be saved under a special filename
 # (our alias). This mechanism is used to test pkgs with N-V-R that would be
@@ -17,17 +25,21 @@ set -o pipefail
 # force the target arch for the tests
 #
 # By default, the packages would be built for the arch detected by rpm-build
-# (rpmbuild --eval %%_arch). On installation, they would be compared
+# (rpmbuild --eval %_arch). On installation, they would be compared
 # by rpm for compatibility with the arch detected by rpm. Currently,
 # the mismatch in the detection between rpm and rpm-build can lead to problems,
 # at least, on armh. So, we set the target by force to a value that must work.
-system_arch="$(rpm -q rpm --qf='%%{ARCH}')"
+system_arch="$(rpm -q rpm --qf='%{ARCH}')"
+[ -n "$system_arch" ]
 export APT_TEST_TARGET="$system_arch"
 
 # cache built pkgs and other stuff
+# (CLEAN UP is on you!!! If run via /usr/sbin/sh-safely, it must set up
+# and clean up $TMPDIR. FIXME: maybe just clean up in this script,
+# but this will loose information for debugging afterwards.)
 APT_TEST_INTERMEDIATES="$(mktemp -d)"
 export APT_TEST_INTERMEDIATES
 
-%runtests
+"$RUNTESTS" -v
 
 # Everything has been tested by now.

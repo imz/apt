@@ -151,9 +151,10 @@ Requires: apt-repo-tools >= 0.11
 
 # Optional:
 %global complete_reqs_of_tests %name-https /usr/sbin/nginx tinyproxy /usr/bin/openssl
+# gpg-keygen is even more optional (just for creating a context for the tests).
 # We are using extended regexes to avoid ugly escaping, at the cost of
 # a funny hack to pass -E (below, internally '%%*' becomes '' "-Ee" '...').
-%global reqs_of_tests_to_filter_out (%name-https|(/usr/sbin/|)nginx|(/usr/bin/|)(openssl|tinyproxy))
+%global reqs_of_tests_to_filter_out (%name-https|(/usr/sbin/|)nginx|(/usr/bin/|)(openssl|tinyproxy|gpg-keygen))
 %filter_from_requires ' "-Ee" '\,^%reqs_of_tests_to_filter_out($|[[:blank:]]),d
 
 # {{{ descriptions
@@ -355,6 +356,13 @@ if [ -n "$found_unwanted_reqs_of_tests" ]; then
     exit 1
 fi
 
+# this macro can be prefixed (e.g., by environment assignments),
+# therefore the extra backslash in the first line
+%global runtests_stem \\\
+		%_datadir/%name/tests/run-tests-
+
+%{runtests_stem}basic
+
 %package checkinstall
 Summary: Immediately test %name when installing this package (complete set of tests)
 Group: Other
@@ -370,6 +378,9 @@ The set of testcases is complete (all the methods that are tested by default
 and some additional peculiarities are tested).
 
 %files checkinstall
+
+%pre checkinstall -p %_sbindir/sh-safely
+%{runtests_stem}normally
 
 %package xxtra-heavy-load-checkinstall
 Summary: Immediately test %name when installing this package (many times under heavy load)
@@ -388,6 +399,9 @@ in parallel) in order to possibly detect races
 (to make sure no tests are randomly succeeding).
 
 %files xxtra-heavy-load-checkinstall
+
+%pre xxtra-heavy-load-checkinstall -p %_sbindir/sh-safely
+%{runtests_stem}xxtra-heavy-load
 
 %package under-pkdirect-checkinstall
 Summary: Immediately test %name+PK when installing this package (via packagekit-direct)
