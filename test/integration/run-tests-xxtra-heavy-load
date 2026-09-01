@@ -5,6 +5,14 @@
 
 set -o pipefail
 
+if [ -z "${TESTDIRECTORY-}" ]; then
+    readonly TESTDIRECTORY="$(readlink -f "$(dirname "$0")")"
+fi
+# Usually expected location: %_datadir/%name/tests/run-tests
+if [ -z "${RUNTESTS-}" ]; then
+    readonly RUNTESTS="$TESTDIRECTORY"/run-tests
+fi
+
 # force the target arch for the tests
 #
 # By default, the packages would be built for the arch detected by rpm-build
@@ -68,10 +76,11 @@ done >jobs
 sed -i -Ee "s,^([^:]+):,\1/$job:," jobs
 
 export NPROCS # for the embedded script (to show the total number of slots)
+export RUNTESTS
 xargs <jobs \
       -d'\n' -I'{}' ${NPROCS:+-P$NPROCS --process-slot-var=PARALLEL_SLOT} \
       -- sh -efuo pipefail \
 	  -c 'APT_RUN_TEST_ONLY_IF_METHOD_MATCHES={}
               APT_RUN_TEST_ONLY_IF_METHOD_MATCHES="${APT_RUN_TEST_ONLY_IF_METHOD_MATCHES#*:}"
               export APT_RUN_TEST_ONLY_IF_METHOD_MATCHES
-              %runtests '${NPROCS:+'|& sed --unbuffered -e "s,^,[$(printf %%2d $PARALLEL_SLOT)/$NPROCS {}] ,"'}
+              "$RUNTESTS" -v '${NPROCS:+'|& sed --unbuffered -e "s,^,[$(printf %%2d $PARALLEL_SLOT)/$NPROCS {}] ,"'}
