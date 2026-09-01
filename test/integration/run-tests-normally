@@ -5,6 +5,14 @@
 
 set -o pipefail
 
+if [ -z "${TESTDIRECTORY-}" ]; then
+    readonly TESTDIRECTORY="$(readlink -f "$(dirname "$0")")"
+fi
+# Usually expected location: %_datadir/%name/tests/run-tests
+if [ -z "${RUNTESTS-}" ]; then
+    readonly RUNTESTS="$TESTDIRECTORY"/run-tests
+fi
+
 # This option makes sense just for the maintainer (to test the tests).
 # This option makes the built pkgs be saved under a special filename
 # (our alias). This mechanism is used to test pkgs with N-V-R that would be
@@ -28,6 +36,6 @@ export APT_TEST_TARGET="$system_arch"
 APT_TEST_INTERMEDIATES="$(mktemp -d)"
 export APT_TEST_INTERMEDIATES
 
-%runtests
+"$RUNTESTS" -v
 
 # Everything has been tested by now.
