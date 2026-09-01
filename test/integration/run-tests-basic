@@ -5,6 +5,14 @@
 
 set -o pipefail
 
+if [ -z "${TESTDIRECTORY-}" ]; then
+    readonly TESTDIRECTORY="$(readlink -f "$(dirname "$0")")"
+fi
+# Usually expected location: %_datadir/%name/tests/run-tests
+if [ -z "${RUNTESTS-}" ]; then
+    readonly RUNTESTS="$TESTDIRECTORY"/run-tests
+fi
+
 # force the target arch for the tests
 #
 # By default, the packages would be built for the arch detected by rpm-build
@@ -27,13 +35,8 @@ export APT_TEST_GPGPUBKEY
 APT_TEST_INTERMEDIATES="$(mktemp -d)"
 export APT_TEST_INTERMEDIATES
 
-# this macro can be prefixed (e.g., by environment assignments),
-# therefore the extra backslash in the first line
-%global runtests \\\
-		%_datadir/%name/tests/run-tests -v
-
 # A quick test with just one method
-APT_TEST_METHODS='file' APT_TEST_http_METHODS= %runtests
+APT_TEST_METHODS='file' APT_TEST_http_METHODS= "$RUNTESTS" -v
 
 # The same tests, but just via cdrom with a missing release:
-#APT_TEST_METHODS=cdrom_missing_release APT_TEST_http_METHODS= %%runtests
+#APT_TEST_METHODS=cdrom_missing_release APT_TEST_http_METHODS= "$RUNTESTS" -v

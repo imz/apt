@@ -352,6 +352,13 @@ if [ -n "$found_unwanted_reqs_of_tests" ]; then
     exit 1
 fi
 
+# this macro can be prefixed (e.g., by environment assignments),
+# therefore the extra backslash in the first line
+%global runtests_stem \\\
+		%_datadir/%name/tests/run-tests-
+
+%{runtests_stem}basic
+
 %package checkinstall
 Summary: Immediately test %name when installing this package (complete set of tests)
 Group: Other
@@ -367,6 +374,9 @@ The set of testcases is complete (all the methods that are tested by default
 and some additional peculiarities are tested).
 
 %files checkinstall
+
+%pre checkinstall -p %_sbindir/sh-safely
+%{runtests_stem}normally
 
 %package xxtra-heavy-load-checkinstall
 Summary: Immediately test %name when installing this package (many times under heavy load)
@@ -385,6 +395,9 @@ in parallel) in order to possibly detect races
 (to make sure no tests are randomly succeeding).
 
 %files xxtra-heavy-load-checkinstall
+
+%pre xxtra-heavy-load-checkinstall -p %_sbindir/sh-safely
+%{runtests_stem}xxtra-heavy-load
 
 %package under-pkdirect-checkinstall
 Summary: Immediately test %name+PK when installing this package (via packagekit-direct)
