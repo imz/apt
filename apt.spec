@@ -148,10 +148,13 @@ Requires: rpm-build
 Requires: apt-repo-tools >= 0.11
 # genbasedir --no-compression needed by test-apt-update-simple-{xz,zstd} from
 # e09a4896b (test-apt-update-simple-xz: added test, 2026-03-11)
+
 # Optional:
 %global complete_reqs_of_tests %name-https /usr/sbin/nginx tinyproxy /usr/bin/openssl
-%global reqs_of_tests_to_filter_out \\(%name-https\\|/usr/sbin/nginx\\|nginx\\|/usr/bin/openssl\\|openssl\\|/usr/bin/tinyproxy\\|tinyproxy\\)
-%filter_from_requires \,^%reqs_of_tests_to_filter_out\($\|[[:blank:]]\),d
+# We are using extended regexes to avoid ugly escaping, at the cost of
+# a funny hack to pass -E (below, internally '%%*' becomes '' "-Ee" '...').
+%global reqs_of_tests_to_filter_out (%name-https|/usr/sbin/nginx|nginx|/usr/bin/openssl|openssl|/usr/bin/tinyproxy|tinyproxy)
+%filter_from_requires ' "-Ee" '\,^%reqs_of_tests_to_filter_out($|[[:blank:]]),d
 
 # {{{ descriptions
 %define risk_usage_en This package is still under development.
@@ -344,7 +347,7 @@ set -o pipefail
 
 # Check that %name-tests has no unwanted extra reqs:
 found_unwanted_reqs_of_tests="$(rpm -q %name-tests -R |
-				    { grep -e '%{reqs_of_tests_to_filter_out}' ||
+				    { grep -Ee '%{reqs_of_tests_to_filter_out}' ||
 				      [ $? -eq 1 ]; })"
 if [ -n "$found_unwanted_reqs_of_tests" ]; then
     printf >&2 'These are unwanted extra reqs of %name-tests:\n%%s\n' \
