@@ -150,8 +150,10 @@ Requires: apt-repo-tools >= 0.11
 # e09a4896b (test-apt-update-simple-xz: added test, 2026-03-11)
 # Optional:
 %global complete_reqs_of_tests %name-https /usr/sbin/nginx tinyproxy /usr/bin/openssl
-%global reqs_of_tests_to_filter_out \\(%name-https\\|/usr/sbin/nginx\\|nginx\\|/usr/bin/openssl\\|openssl\\|/usr/bin/tinyproxy\\|tinyproxy\\)
-%filter_from_requires \,^%reqs_of_tests_to_filter_out\($\|[[:blank:]]\),d
+%global reqs_of_tests_to_filter_out (%name-https|/usr/sbin/nginx|nginx|/usr/bin/openssl|openssl|/usr/bin/tinyproxy|tinyproxy)
+# We are using extended regexes to avoid ugly escaping, at the cost of
+# a funny hack to pass -E (below, internally '%*' becomes '' "-Ee" '...').
+%filter_from_requires ' "-Ee" '\,^%reqs_of_tests_to_filter_out($|[[:blank:]]),d
 
 # {{{ descriptions
 %define risk_usage_en This package is still under development.
