@@ -154,7 +154,7 @@ Requires: /usr/bin/genbasedir
 %global complete_reqs_of_tests %name-https /usr/sbin/nginx tinyproxy /usr/bin/openssl
 # We are using extended regexes to avoid ugly escaping, at the cost of
 # a funny hack to pass -E (below, internally '%%*' becomes '' "-Ee" '...').
-%global reqs_of_tests_to_filter_out (%name-https|/usr/sbin/nginx|nginx|/usr/bin/openssl|openssl|/usr/bin/tinyproxy|tinyproxy)
+%global reqs_of_tests_to_filter_out (%name-https|(/usr/sbin/|)nginx|(/usr/bin/|)(openssl|tinyproxy))
 %filter_from_requires ' "-Ee" '\,^%reqs_of_tests_to_filter_out($|[[:blank:]]),d
 
 # {{{ descriptions
