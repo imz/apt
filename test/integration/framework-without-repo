@@ -402,6 +402,18 @@ END
 	msgdebug "$(rpm --eval '_tmppath: %_tmppath')"
 }
 
+# Usage: mk_intermediate prefix/name/out_basename build_cmd
+#
+# It is meant then to call build_cmd when needed approximately like this:
+#
+# build_cmd $APT_TEST_INTERMEDIATES/prefix name out_basename
+#
+# to generate the file under the path given as the arg, i.e.:
+#
+# $APT_TEST_INTERMEDIATES/prefix/name/out_basename
+#
+# or actually not just the single given file (which can be waited upon by
+# concurrent processes), but rather everything useful under prefix/name/.
 mk_intermediate() {
     local -r what="$1"; shift
     local -r build_cmd="$1"; shift
