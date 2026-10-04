@@ -15,15 +15,20 @@ aptgetinstallpackage 'conflicting-package-one'
 testpkginstalled 'simple-package'
 testpkginstalled 'conflicting-package-one'
 
-if (( APT_TEST_GPGPUBKEY > 0 )); then
-	state_with_gpgpubkey='
-gpg-pubkey manual'
-	manual_with_gpgpubkey='
-gpg-pubkey'
-else
-	state_with_gpgpubkey=''
-	manual_with_gpgpubkey=''
-fi
+state_with_gpgpubkey=''
+manual_with_gpgpubkey=''
+for (( i = 0; i < APT_TEST_GPGPUBKEY; ++i )); do
+    id="$(tr [:upper:] [:lower:] <"$APT_TEST_INTERMEDIATES"/gpg-pubkey/"$i"/id)"
+    id32bit="$(echo -n "$id" | tail -c 8)"
+    time="$(stat -c '%W' "$APT_TEST_INTERMEDIATES"/gpg-pubkey/"$i"/id)"
+    printf -v time_hex '%x' "$time"
+    time_hex="${time_hex#0x}"
+    evrdt_re="$id32bit-$time_hex@$time"
+    state_with_gpgpubkey="$state_with_gpgpubkey
+gpg-pubkey#$evrdt_re manual"
+    manual_with_gpgpubkey="$manual_with_gpgpubkey
+gpg-pubkey#$evrdt_re"
+done
 readonly state_with_gpgpubkey manual_with_gpgpubkey
 
 testequal 'Reading Package Lists...
