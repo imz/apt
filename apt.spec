@@ -455,6 +455,7 @@ exec 1>&2
 %config(noreplace) %_sysconfdir/%name/%name.conf.d/01-Debug-pkgMarkInstall.conf
 %config(noreplace) %_sysconfdir/%name/%name.conf.d/01-Debug-Acquire.conf
 %config(noreplace) %_sysconfdir/%name/%name.conf.d/01-UI.conf
+%config(noreplace) %_sysconfdir/%name/%name.conf.d/01-Allow-Duplicated-gpg-pubkey.conf
 %_mandir/man?/*
 %doc README* TODO COPYING AUTHORS* ChangeLog-rpm.old.bz2 doc/examples contrib
 

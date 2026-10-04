@@ -58,6 +58,7 @@ RPM::Options:: "--justdb";' \
     'RPM::Allow-Duplicated "";
 RPM::Allow-Duplicated:: "\^\(kernel\|alsa\)\[0-9\]\*[^"]*";
 RPM::Allow-Duplicated:: "\^kernel-\(image\|modules\)-\.\*";' \
+    'RPM::Allow-Duplicated:: "\^gpg-pubkey\$";' \
     'RPM::Hold "";
 RPM::Hold:: "\^\(kernel\|alsa\)\[0-9\]\+-source";' \
     -- aptconfig dump
