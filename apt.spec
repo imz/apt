@@ -505,6 +505,8 @@ exec 1>&2
   DoS only (parser abort on malformed apt package metadata).
 - *-checkinstall & tests: test with the real (installed) configuration
   (as it may affect behavior).
+- apt.conf.d/01-Allow-Duplicated-gpg-pubkey.conf (for packages that are OpenPGP
+  keys imported into the rpm database by rpm --import or dnf). (thx lav@)
 
 * Wed Aug 12 2026 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt103
 - Fixed the tests. (Made the tests not break on packages having Pre-Depends:
