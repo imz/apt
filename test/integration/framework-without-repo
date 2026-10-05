@@ -820,11 +820,11 @@ testpartsexhaust() {
 			echo "${CINFO}*** During matching parts with the output result, a part couldn't be matched.${CNORMAL}"
 			echo "${CINFO}The remaining unmatched output:${CNORMAL}"
 			echo "${CINFO}----------------------------------------${CNORMAL}"
-			printf '%s' "$OUTPUT_STR"
+			printf '%s\n' "$OUTPUT_STR"
 			echo "${CINFO}----------------------------------------${CNORMAL}"
 			echo "${CINFO}The part that didn't match:${CNORMAL}"
 			echo "${CINFO}----------------------------------------${CNORMAL}"
-			printf '%s' "$REGEXPART"
+			printf '%s\n' "$REGEXPART"
 			echo "${CINFO}----------------------------------------${CNORMAL}"
 			return
 		fi
