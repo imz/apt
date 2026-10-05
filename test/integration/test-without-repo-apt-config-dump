@@ -15,7 +15,7 @@ APT::Get::ReInstall::MarkManual "1";
 APT::Get::Obsoletes "";
 APT::Get::Obsoletes::AptMarkInheritanceAuto "all";' \
     'APT::DistroVersion "";' \
-    'Dir "[^"]*";' \
+    "Dir \"$(regex_quote "${TMPWORKINGDIRECTORY}/rootdir")\";" \
     'Dir::State "var/lib/apt/";
 Dir::State::lists "lists/";
 Dir::State::cdroms "cdroms\.list";
@@ -37,8 +37,8 @@ Dir::Etc::pkgpriorities "pkgpriorities";
 Dir::Etc::translatelist "translate\.list";
 Dir::Etc::translateparts "translate\.list\.d";' \
     'Dir::Bin "";' \
-    'Dir::Bin::methods "[^"]*";' \
-    'Dir::Bin::scripts "[^"]*";' \
+    'Dir::Bin::methods "/usr/lib64/apt/methods";' \
+    'Dir::Bin::scripts "/usr/share/apt/scripts";' \
     'Dir::Bin::rpm "/bin/rpm";' \
     'Dir::Ignore-Files-Silently "";
 Dir::Ignore-Files-Silently:: "~\$";(
