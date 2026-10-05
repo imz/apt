@@ -814,25 +814,25 @@ testpartsexhaust() {
 	    : # non-zero status always (because of EOF)
 
 	local REGEXPART
+	local -a UNMATCHED_PARTS
+	UNMATCHED_PARTS=()
 	for REGEXPART in "${REGEXPARTS[@]}"; do
 		if ! match_and_delete "$REGEXPART" OUTPUT_STR; then
-			msgfail
-			echo "${CINFO}*** During matching parts with the output result, a part couldn't be matched.${CNORMAL}"
-			echo "${CINFO}The remaining unmatched output:${CNORMAL}"
-			echo "${CINFO}----------------------------------------${CNORMAL}"
-			printf '%s\n' "$OUTPUT_STR"
-			echo "${CINFO}----------------------------------------${CNORMAL}"
-			echo "${CINFO}The part that didn't match:${CNORMAL}"
+		    UNMATCHED_PARTS=("${UNMATCHED_PARTS[@]}" "$REGEXPART")
+		fi
+	done
+	if [ "$OUTPUT_STR" != '' ] || [ 0 -lt ${#UNMATCHED_PARTS[@]} ]; then
+		msgfail
+		echo "${CINFO}The parts that didn't match:${CNORMAL}"
+		for REGEXPART in "${UNMATCHED_PARTS[@]}"; do
 			echo "${CINFO}----------------------------------------${CNORMAL}"
 			printf '%s\n' "$REGEXPART"
 			echo "${CINFO}----------------------------------------${CNORMAL}"
-			return
-		fi
-	done
-	if [ "$OUTPUT_STR" != '' ]; then
-		msgfail
-		echo "${CINFO}The remaining unmatched output:"
-		echo "$OUTPUT_STR"
+		done
+		echo "${CINFO}The remaining unmatched output:${CNORMAL}"
+		echo "${CINFO}----------------------------------------${CNORMAL}"
+		printf '%s\n' "$OUTPUT_STR"
+		echo "${CINFO}----------------------------------------${CNORMAL}"
 	else
 		msgpass
 	fi
