@@ -377,10 +377,6 @@ END
 	mkdir -p $TMPWORKINGDIRECTORY/lua/results
 	echo "Dir::Bin::scripts \"$TMPWORKINGDIRECTORY/lua/scripts\";" > rootdir/etc/apt/apt.conf.d/90lua.conf
 
-	# setup bash scripts
-	mkdir -p $TMPWORKINGDIRECTORY/bash/scripts
-	mkdir -p $TMPWORKINGDIRECTORY/bash/results
-
 	# for rpmbuild
 	mkdir -p $TMPWORKINGDIRECTORY/tmp
 
@@ -1001,8 +997,12 @@ ENDSCRIPT
 }
 
 createbashscript() {
-	local APTNAME="$1"
-	local SCRIPTFILENAME="$2"
+	local -r APTNAME="$1"
+	local -r SCRIPTFILENAME="$2"
+
+	# setup bash scripts
+	mkdir -p $TMPWORKINGDIRECTORY/bash/scripts
+	mkdir -p $TMPWORKINGDIRECTORY/bash/results
 
 	echo "$APTNAME:: \"$TMPWORKINGDIRECTORY/bash/scripts/${SCRIPTFILENAME}.sh\";" > rootdir/etc/apt/apt.conf.d/92bash-${SCRIPTFILENAME}.conf
 	cat > $TMPWORKINGDIRECTORY/bash/scripts/${SCRIPTFILENAME}.sh << ENDSCRIPT
