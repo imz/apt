@@ -24,9 +24,9 @@ Dir::State::prefetch "prefetch";' \
 Dir::Cache::archives "archives/";
 Dir::Cache::srcpkgcache "srcpkgcache\.bin";
 Dir::Cache::pkgcache "pkgcache\.bin";' \
-    'Dir::Etc "etc/apt/";
-Dir::Etc::sourcelist "[^"]*";
-Dir::Etc::sourceparts "sources\.list\.d";
+    'Dir::Etc "etc/apt/";' \
+    "Dir::Etc::sourcelist \"$(regex_quote "${TMPWORKINGDIRECTORY}/rootdir/etc/apt/sources.list")\";" \
+    'Dir::Etc::sourceparts "sources\.list\.d";
 Dir::Etc::vendorlist "vendors\.list";
 Dir::Etc::vendorparts "vendors\.list\.d";
 Dir::Etc::main "apt\.conf";
@@ -38,7 +38,7 @@ Dir::Etc::translatelist "translate\.list";
 Dir::Etc::translateparts "translate\.list\.d";' \
     'Dir::Bin "";' \
     'Dir::Bin::methods "/usr/lib64/apt/methods";' \
-    'Dir::Bin::scripts "/usr/share/apt/scripts";' \
+    "Dir::Bin::scripts \"$(regex_quote "$TMPWORKINGDIRECTORY/lua/scripts")\";" \
     'Dir::Bin::rpm "/bin/rpm";' \
     'Dir::Ignore-Files-Silently "";
 Dir::Ignore-Files-Silently:: "~\$";(
