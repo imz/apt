@@ -372,11 +372,6 @@ END
 		rpm --import "$APT_TEST_GPGPUBKEY"
 	fi
 
-	# setup lua stuff
-	mkdir -p $TMPWORKINGDIRECTORY/lua/scripts
-	mkdir -p $TMPWORKINGDIRECTORY/lua/results
-	echo "Dir::Bin::scripts \"$TMPWORKINGDIRECTORY/lua/scripts\";" > rootdir/etc/apt/apt.conf.d/90lua.conf
-
 	# for rpmbuild
 	mkdir -p $TMPWORKINGDIRECTORY/tmp
 
@@ -985,8 +980,13 @@ testfailure() {
 }
 
 createluascript() {
-	local APTNAME="$1"
-	local SCRIPTFILENAME="$2"
+	local -r APTNAME="$1"
+	local -r SCRIPTFILENAME="$2"
+
+	# setup lua stuff
+	mkdir -p $TMPWORKINGDIRECTORY/lua/scripts
+	mkdir -p $TMPWORKINGDIRECTORY/lua/results
+	echo "Dir::Bin::scripts \"$TMPWORKINGDIRECTORY/lua/scripts\";" >| rootdir/etc/apt/apt.conf.d/90lua.conf
 
 	echo "$APTNAME:: \"${SCRIPTFILENAME}.lua\";" > rootdir/etc/apt/apt.conf.d/91lua-${SCRIPTFILENAME}.conf
 	cat > $TMPWORKINGDIRECTORY/lua/scripts/${SCRIPTFILENAME}.lua << ENDSCRIPT

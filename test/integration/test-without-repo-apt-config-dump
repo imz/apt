@@ -38,7 +38,7 @@ Dir::Etc::translatelist "translate\.list";
 Dir::Etc::translateparts "translate\.list\.d";' \
     'Dir::Bin "";' \
     'Dir::Bin::methods "/usr/lib64/apt/methods";' \
-    "Dir::Bin::scripts \"$(regex_quote "$TMPWORKINGDIRECTORY/lua/scripts")\";" \
+    'Dir::Bin::scripts "/usr/share/apt/scripts";' \
     'Dir::Bin::rpm "/bin/rpm";' \
     'Dir::Ignore-Files-Silently "";
 Dir::Ignore-Files-Silently:: "~\$";(
