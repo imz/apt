@@ -310,7 +310,8 @@ setupenvironment() {
 	cd ..
 
 	{
-		echo "Dir \"${TMPWORKINGDIRECTORY}/rootdir\";"
+		echo "Dir::State \"${TMPWORKINGDIRECTORY}/rootdir/var/lib/apt/\";"
+		echo "Dir::Cache \"${TMPWORKINGDIRECTORY}/rootdir/var/cache/apt/\";"
 		echo 'Debug::NoLocking "true";'
 		echo "Dir::Etc::sourcelist \"${TMPWORKINGDIRECTORY}/rootdir/etc/apt/sources.list\";"
 		echo 'RPM::Options { "--justdb"; };'
@@ -318,6 +319,8 @@ setupenvironment() {
 		if [ -n "$METHODSDIR" ] ; then
 			echo "Dir::Bin::methods \"$METHODSDIR\";"
 		fi
+
+		echo "#include \"${TMPWORKINGDIRECTORY}/rootdir/etc/apt/apt.conf.d/\";"
 	} > aptconfig.conf
 
 	cat > rootdir/etc/apt/pkgpriorities << END

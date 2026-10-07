@@ -15,13 +15,13 @@ APT::Get::ReInstall::MarkManual "1";
 APT::Get::Obsoletes "";
 APT::Get::Obsoletes::AptMarkInheritanceAuto "all";' \
     'APT::DistroVersion "";' \
-    "Dir \"$(regex_quote "${TMPWORKINGDIRECTORY}/rootdir")\";" \
-    'Dir::State "var/lib/apt/";
-Dir::State::lists "lists/";
+    'Dir "/";' \
+    "Dir::State \"$(regex_quote "${TMPWORKINGDIRECTORY}/rootdir/var/lib/apt/")\";" \
+    'Dir::State::lists "lists/";
 Dir::State::cdroms "cdroms\.list";
 Dir::State::prefetch "prefetch";' \
-    'Dir::Cache "var/cache/apt/";
-Dir::Cache::archives "archives/";
+    "Dir::Cache \"$(regex_quote "${TMPWORKINGDIRECTORY}/rootdir/var/cache/apt/")\";" \
+    'Dir::Cache::archives "archives/";
 Dir::Cache::srcpkgcache "srcpkgcache\.bin";
 Dir::Cache::pkgcache "pkgcache\.bin";' \
     'Dir::Etc "etc/apt/";' \
@@ -47,11 +47,17 @@ Dir::Ignore-Files-Silently:: "\\\.[[:alnum:]]+(-\[a-z\]\+)?\$";)*' \
     'Acquire "";' \
     'Acquire::DistroID "ALT Linux";' \
     'Acquire::CDROM "";
-Acquire::CDROM::Mount "/media/ALTLinux";
+Acquire::CDROM::Copy "true";
+Acquire::CDROM::mount "/media/ALTLinux";
 Acquire::CDROM::Copy-All "true";' \
     'Debug "";
 Debug::NoLocking "true";' \
     'RPM "";' \
     'RPM::Options "";
 RPM::Options:: "--justdb";' \
+    'RPM::Allow-Duplicated "";
+RPM::Allow-Duplicated:: "\^\(kernel\|alsa\)\[0-9\]\*[^"]*";
+RPM::Allow-Duplicated:: "\^kernel-\(image\|modules\)-\.\*";' \
+    'RPM::Hold "";
+RPM::Hold:: "\^\(kernel\|alsa\)\[0-9\]\+-source";' \
     -- aptconfig dump
