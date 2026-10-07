@@ -108,6 +108,8 @@ export APT_TEST_BASEDIR_COMPRESSION_OPTS="${APT_TEST_BASEDIR_COMPRESSION_OPTS-}"
 export APT_TEST_GENBASEDIR_OPTS="${APT_TEST_GENBASEDIR_OPTS-}"
 
 # setupenvironment()'s parameters: if non-empty, they override the APT config.
+# By default, we test the default system-wide things.
+# (Among other, the environment as installed by a *-checkinstall pkg.)
 export METHODSDIR="${METHODSDIR-}" # could override Dir::Bin::methods
 
 # generaterepository()'s parameters: if non-empty, they are used; otherwise,
