@@ -36,17 +36,17 @@ Dir::Etc::preferencesparts "preferences\.d";
 Dir::Etc::pkgpriorities "pkgpriorities";
 Dir::Etc::translatelist "translate\.list";
 Dir::Etc::translateparts "translate\.list\.d";' \
-    'Dir::Bin "";
-Dir::Bin::methods "[^"]*";
-Dir::Bin::scripts "[^"]*";
-Dir::Bin::rpm "/bin/rpm";' \
+    'Dir::Bin "";' \
+    'Dir::Bin::methods "[^"]*";' \
+    'Dir::Bin::scripts "[^"]*";' \
+    'Dir::Bin::rpm "/bin/rpm";' \
     'Dir::Ignore-Files-Silently "";
 Dir::Ignore-Files-Silently:: "~\$";(
 Dir::Ignore-Files-Silently:: "\\\.[[:alnum:]]+(-\[a-z\]\+)?\$";)*' \
     'Dir::Locale "/usr/share/locale";' \
-    'Acquire "";
-Acquire::DistroID "ALT Linux";
-Acquire::CDROM "";
+    'Acquire "";' \
+    'Acquire::DistroID "ALT Linux";' \
+    'Acquire::CDROM "";
 Acquire::CDROM::Mount "/media/ALTLinux";
 Acquire::CDROM::Copy-All "true";' \
     'Debug "";
