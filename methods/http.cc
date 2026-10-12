@@ -1189,9 +1189,26 @@ int HttpMethod::DealWithHeaders(FetchResult &Res,ServerState *Srv)
 
    // Open the file
    delete File;
-   File = new FileFd(Queue->DestFile,FileFd::WriteAny);
+
+   // If we are resuming, we first need to rescue the data we already have
+   FileFd partial;
+   if (Srv->StartPos > 0 && FileExists(Queue->DestFile))
+   {
+      if (not partial.Open(Queue->DestFile, FileFd::ReadOnly))
+	 return 5;
+   }
+   // Open the file exclusively to avoid injection attacks by links
+   // (WriteTemp gives the same flags as WriteAny plus O_EXCL, and unlinks first)
+   File = new FileFd(Queue->DestFile, FileFd::WriteTemp);
    if (_error->PendingError() == true)
       return 5;
+   if (partial.IsOpen())
+   {
+      // The exclusive open unlinked the old file; copy its content
+      // into the new one and rewind for hashing.
+      if (not CopyFile(partial, *File) || not partial.Close() || not File->Seek(0))
+	 return 5;
+   }
 
    FailFile = Queue->DestFile;
    static_cast<void>(FailFile.c_str());   // Make sure we dont do a malloc in the signal handler
