@@ -370,10 +370,14 @@ END
 	# Initialize rpmdb
 	rpmdb --initdb
 
-	# Include a special kind of pkg in the db to see how APT processes it
-	if [ -n "$APT_TEST_GPGPUBKEY" ]; then
-		rpm --import "$APT_TEST_GPGPUBKEY"
-	fi
+	# Include a special kind of pkg(s) in the db to see how APT processes it
+	# (arith.expansion of empty value is 0; non-number would error with -u)
+	local i pubkey
+	for (( i=0; i<APT_TEST_GPGPUBKEY; ++i )); do
+	    pubkey=gpg-pubkey/"$i"/pubkey.asc
+	    mk_intermediate "$pubkey" gpg_keygen
+	    rpm --import "$APT_TEST_INTERMEDIATES"/"$pubkey"
+	done
 
 	# for rpmbuild
 	mkdir -p $TMPWORKINGDIRECTORY/tmp
@@ -1078,6 +1082,20 @@ ssl_keygen() {
 	    -keyout "$prefix/$name"/key \
 	    -out "$prefix/$name/$out_basename" \
 	&>/dev/null
+}
+
+# for mk_intermediate
+gpg_keygen() {
+    local -r prefix="$1"; shift
+    local -r name="$1"; shift
+    local -r out_basename="$1"; shift
+
+    msginfo "Generating GPG private+public key: ${name}"
+
+    gpg-keygen --passphrase '' \
+	       --name-real 'Some One' --name-email someone@example.com \
+	       "$prefix/$name"/key \
+	       "$prefix/$name/$out_basename"
 }
 
 ############################################################

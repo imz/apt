@@ -25,7 +25,7 @@ system_arch="$(rpm -q rpm --qf='%{ARCH}')"
 export APT_TEST_TARGET="$system_arch"
 
 # to be rpm --import'ed
-APT_TEST_GPGPUBKEY=yes
+APT_TEST_GPGPUBKEY=1
 export APT_TEST_GPGPUBKEY
 
 # cache built pkgs and other stuff
