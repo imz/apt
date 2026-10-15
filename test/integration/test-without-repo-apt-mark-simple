@@ -15,7 +15,7 @@ aptgetinstallpackage 'conflicting-package-one'
 testpkginstalled 'simple-package'
 testpkginstalled 'conflicting-package-one'
 
-if [ -n "$APT_TEST_GPGPUBKEY" ]; then
+if (( APT_TEST_GPGPUBKEY > 0 )); then
 	state_with_gpgpubkey='
 gpg-pubkey manual'
 	manual_with_gpgpubkey='
