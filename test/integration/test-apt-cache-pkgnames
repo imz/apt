@@ -20,7 +20,7 @@ generaterepository_and_switch_sources "$TMPWORKINGDIRECTORY/usr/src/RPM/RPMS"
 
 testsuccess aptget update
 
-if [ -n "$APT_TEST_GPGPUBKEY" ]; then
+if (( APT_TEST_GPGPUBKEY > 0 )); then
 	pkgnames_with_gpgpubkey=('gpg-pubkey' 'gpg\([^)]*@[^)]*\)' 'gpg\([^)]*\)')
 else
 	pkgnames_with_gpgpubkey=()

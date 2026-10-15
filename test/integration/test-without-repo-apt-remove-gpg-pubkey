@@ -3,7 +3,7 @@ set -eu
 
 TESTDIR=$(readlink -f $(dirname $0))
 
-if [ -z "${APT_TEST_GPGPUBKEY}" ]; then
+if (( APT_TEST_GPGPUBKEY == 0 )); then
 	echo 'SKIP (requires the presence of APT_TEST_GPGPUBKEY)' >&2
 	exit 0
 fi

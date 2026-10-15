@@ -76,7 +76,7 @@ readonly -a dump_pkgs=(
 
 )
 
-if [ -n "$APT_TEST_GPGPUBKEY" ]; then
+if (( APT_TEST_GPGPUBKEY > 0 )); then
 	dump_with_gpgpubkey=(
 		"Package: gpg\($ANY*@$ANY*\)"
 
