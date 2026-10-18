@@ -15,19 +15,23 @@ aptgetinstallpackage 'conflicting-package-one'
 testpkginstalled 'simple-package'
 testpkginstalled 'conflicting-package-one'
 
-state_with_gpgpubkey=''
-manual_with_gpgpubkey=''
+state_with_gpgpubkey=()
+manual_with_gpgpubkey=()
 for (( i = 0; i < APT_TEST_GPGPUBKEY; ++i )); do
     id="$(tr [:upper:] [:lower:] <"$APT_TEST_INTERMEDIATES"/gpg-pubkey/"$i"/id)"
     id32bit="$(echo -n "$id" | tail -c 8)"
-    time="$(stat -c '%W' "$APT_TEST_INTERMEDIATES"/gpg-pubkey/"$i"/id)"
+    time="$(<"$APT_TEST_INTERMEDIATES"/gpg-pubkey/"$i"/time)"
     printf -v time_hex '%x' "$time"
     time_hex="${time_hex#0x}"
     evrdt_re="$id32bit-$time_hex@$time"
-    state_with_gpgpubkey="$state_with_gpgpubkey
-gpg-pubkey#$evrdt_re manual"
-    manual_with_gpgpubkey="$manual_with_gpgpubkey
-gpg-pubkey#$evrdt_re"
+    state_with_gpgpubkey=(
+	"${state_with_gpgpubkey[@]}"
+	"gpg-pubkey#$evrdt_re manual"
+    )
+    manual_with_gpgpubkey=(
+	"${manual_with_gpgpubkey[@]}"
+	"gpg-pubkey#$evrdt_re"
+    )
 done
 readonly state_with_gpgpubkey manual_with_gpgpubkey
 
@@ -36,18 +40,20 @@ Building Dependency Tree...
 conflicting-package-one manual
 simple-package manual' aptmark showstate simple-package conflicting-package-one
 
-testregexmatch "$INTRO_re
-conflicting-package-one manual${state_with_gpgpubkey}
-simple-package manual
-" aptmark showstate
+testpartsexhaust "$INTRO_re
+conflicting-package-one manual" \
+		 "${state_with_gpgpubkey[@]}" \
+		 "simple-package manual" \
+		 -- aptmark showstate
 
 testequal 'Reading Package Lists...
 Building Dependency Tree...' aptmark showauto
 
-testregexmatch "$INTRO_re
-conflicting-package-one${manual_with_gpgpubkey}
-simple-package
-" aptmark showmanual
+testpartsexhaust "$INTRO_re
+conflicting-package-one" \
+		 "${manual_with_gpgpubkey[@]}" \
+		 "simple-package" \
+		 -- aptmark showmanual
 
 testsuccess aptmark auto simple-package
 
@@ -60,15 +66,17 @@ testequal 'Reading Package Lists...
 Building Dependency Tree...
 conflicting-package-one manual' aptmark showstate conflicting-package-one
 
-testregexmatch "$INTRO_re
-conflicting-package-one manual${state_with_gpgpubkey}
-simple-package auto
-" aptmark showstate
+testpartsexhaust "$INTRO_re
+conflicting-package-one manual" \
+		 "${state_with_gpgpubkey[@]}" \
+		 "simple-package auto" \
+		 -- aptmark showstate
 
 testequal 'Reading Package Lists...
 Building Dependency Tree...
 simple-package' aptmark showauto
 
-testregexmatch "$INTRO_re
-conflicting-package-one${manual_with_gpgpubkey}
-" aptmark showmanual
+testpartsexhaust "$INTRO_re
+conflicting-package-one" \
+		 "${manual_with_gpgpubkey[@]}" \
+		 -- aptmark showmanual
