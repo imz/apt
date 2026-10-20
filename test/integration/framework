@@ -233,6 +233,20 @@ generaterepository_and_switch_sources() {
 
 	esac
 
+	# the corresponding GNUPGHOME to do the signing later
+	GNUPGHOME="$APT_TEST_INTERMEDIATES"/signing-gnupghome/main-gpg
+	mkdir -p  "$GNUPGHOME"
+	# Override the temp GNUPGHOME dir in gpg-keygen with ours,
+	# so that we have it not removed
+	local gpgcmd
+	printf -v gpgcmd 'gpg2 --homedir=%q' "$GNUPGHOME"
+	# Can't prepend $GPG with env (like this: GNUPGHOME=... gpg2), because
+	# splitting into simple commands would precede the expansion of $GPG.
+	GPG="$gpgcmd" \
+	   mk_intermediate signing/main-gpg/pubkey.asc gpg_keygen
+	# for doing the signing later
+	export GNUPGHOME
+
 	# Put the files into $REPO_STORAGE.
 	#
 	# Expose the paths used under it.
