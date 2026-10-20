@@ -373,6 +373,24 @@ int main(int ac, char *av[])
 		exit(EXIT_FAILURE);
 	}
 
+	/* options are handled here, they must never reach (or start) the server */
+	if (av[1][0] == '-') {
+		if (!strcmp(av[1], "-h") || !strcmp(av[1], "--help")) {
+			printf("usage: %s <query>\n"
+			       "Send a query to the apt-pipe server (started on demand).\n"
+			       "  -h, --help     show this help and exit\n"
+			       "  -v, --version  show version and exit\n", av[0]);
+			exit(EXIT_SUCCESS);
+		}
+		if (!strcmp(av[1], "-v") || !strcmp(av[1], "--version")) {
+			printf("%s %s\n", PACKAGE, VERSION);
+			exit(EXIT_SUCCESS);
+		}
+		fprintf(stderr, "%s: unknown option '%s'\n"
+			"usage: %s <query>\n", av[0], av[1], av[0]);
+		exit(EXIT_FAILURE);
+	}
+
 	if ((fd = do_connect()) < 0) {
 		fprintf(stderr, "do_connect: %s\n", strerror(errno));
 		exit(EXIT_FAILURE);
