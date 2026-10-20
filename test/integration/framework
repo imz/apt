@@ -132,6 +132,7 @@ generaterepository() {
 			--topdir="$repo_dir" \
 			--changelog-since='@1' \
 			--flat --no-oldhashfile $compression_opts --mapi \
+			-s  --default-key="$(< "$APT_TEST_INTERMEDIATES"/sign-repo-release/main-gpg/id)" \
 			$APT_TEST_GENBASEDIR_OPTS \
 			$dir $comps
 
@@ -232,6 +233,10 @@ generaterepository_and_switch_sources() {
 			;;
 
 	esac
+
+	mk_intermediate sign-repo-release/main-gpg/pubkey.asc gpg_keygen_ready_to_sign
+	# for doing the signing later
+	export GNUPGHOME="$APT_TEST_INTERMEDIATES"/sign-repo-release/main-gpg/gnupghome
 
 	# Put the files into $REPO_STORAGE.
 	#
