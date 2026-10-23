@@ -149,13 +149,13 @@ Requires: /usr/bin/genbasedir
 # Apart from Sisyphus, we skip the 2 tests that need apt-repo-tools >= 0.11:
 # genbasedir --no-compression needed by test-apt-update-simple-{xz,zstd} from
 # e09a4896b (test-apt-update-simple-xz: added test, 2026-03-11)
+Requires: gpg-keygen
 
 # Optional:
 %global complete_reqs_of_tests %name-https /usr/sbin/nginx tinyproxy /usr/bin/openssl
-# gpg-keygen is even more optional (just for creating a context for the tests).
 # We are using extended regexes to avoid ugly escaping, at the cost of
 # a funny hack to pass -E (below, internally '%%*' becomes '' "-Ee" '...').
-%global reqs_of_tests_to_filter_out (%name-https|(/usr/sbin/|)nginx|(/usr/bin/|)(openssl|tinyproxy|gpg-keygen))
+%global reqs_of_tests_to_filter_out (%name-https|(/usr/sbin/|)nginx|(/usr/bin/|)(openssl|tinyproxy))
 %filter_from_requires ' "-Ee" '\,^%reqs_of_tests_to_filter_out($|[[:blank:]]),d
 
 # {{{ descriptions
@@ -335,7 +335,6 @@ Group: Other
 BuildArch: noarch
 Requires(pre): %name-tests
 Requires(pre): %name = %EVR
-Requires(pre): gpg-keygen
 
 %description basic-checkinstall
 Immediately test %name when installing this package.
@@ -390,7 +389,6 @@ BuildArch: noarch
 Requires(pre): %name-tests
 Requires(pre): %name = %EVR
 Requires(pre): %complete_reqs_of_tests
-Requires(pre): gpg-keygen
 
 %description xxtra-heavy-load-checkinstall
 Immediately test %name when installing this package.
