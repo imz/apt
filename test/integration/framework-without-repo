@@ -1096,7 +1096,8 @@ gpg_keygen() {
        gpg-keygen --passphrase '' \
 	       --name-real 'Some One' --name-email someone@example.com \
 	       "$prefix/$name"/key \
-	       "$prefix/$name/$out_basename"
+	       "$prefix/$name/$out_basename" \
+	       >"$prefix/$name"/id
 }
 
 ############################################################

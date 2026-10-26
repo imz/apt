@@ -132,6 +132,7 @@ generaterepository() {
 			--topdir="$repo_dir" \
 			--changelog-since='@1' \
 			--flat --no-oldhashfile $compression_opts --mapi \
+			-s  --default-key="$APT_TEST_SIGNMAIN" \
 			$APT_TEST_GENBASEDIR_OPTS \
 			$dir $comps
 
@@ -244,6 +245,7 @@ generaterepository_and_switch_sources() {
 	# splitting into simple commands would precede the expansion of $GPG.
 	GPG="$gpgcmd" \
 	   mk_intermediate signing/main-gpg/pubkey.asc gpg_keygen
+	APT_TEST_SIGNMAIN="$(< "$APT_TEST_INTERMEDIATES"/signing/main-gpg/id)"
 	# for doing the signing later
 	export GNUPGHOME
 
