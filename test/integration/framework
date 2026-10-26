@@ -254,6 +254,8 @@ generaterepository_and_switch_sources() {
 	APT_TEST_SIGNMAIN="$(< "$APT_TEST_INTERMEDIATES"/signing/main-gpg/id)"
 	# for doing the signing later
 	export GNUPGHOME
+	# genbasedir seems to call gpg1, so it has to import our secret key:
+	gpg --import "$APT_TEST_INTERMEDIATES"/signing/main-gpg/key
 
 	# Put the files into $REPO_STORAGE.
 	#
