@@ -148,6 +148,7 @@ Requires: rpm-build
 Requires: apt-repo-tools >= 0.11
 # genbasedir --no-compression needed by test-apt-update-simple-{xz,zstd} from
 # e09a4896b (test-apt-update-simple-xz: added test, 2026-03-11)
+Requires: gpg-keygen
 
 # Optional:
 %global complete_reqs_of_tests %name-https /usr/sbin/nginx tinyproxy /usr/bin/openssl

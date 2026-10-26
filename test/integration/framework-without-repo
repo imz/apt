@@ -1092,7 +1092,8 @@ gpg_keygen() {
 
     msginfo "Generating GPG private+public key: ${name}"
 
-    gpg-keygen --passphrase '' \
+    GPG="${GPG:-gpg2} --no-permission-warning" \
+       gpg-keygen --passphrase '' \
 	       --name-real 'Some One' --name-email someone@example.com \
 	       "$prefix/$name"/key \
 	       "$prefix/$name/$out_basename"
