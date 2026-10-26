@@ -118,6 +118,11 @@ generaterepository() {
 	mkdir -p "${TMPWORKINGDIRECTORY}/cache"
 
 	for dir in "${MYARCH_DISTRO}" noarch ; do
+	    set -x
+	    {
+		gpg2 --no-tty --list-secret-keys --with-colons
+		ls -laR "$GNUPGHOME"
+	    } >&5 2>&5
 		genbasedir \
 			--cachedir="${TMPWORKINGDIRECTORY}/cache" \
 			--architecture="$dir" \
@@ -135,6 +140,7 @@ generaterepository() {
 			-s  --default-key="$APT_TEST_SIGNMAIN" \
 			$APT_TEST_GENBASEDIR_OPTS \
 			$dir $comps
+		set +x
 
 		if [ -n "$repo_date" ] ; then
 			touch -t $(date --date=@${repo_date} '+%Y%m%d%H%M.%S') \
