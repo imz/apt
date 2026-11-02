@@ -1089,15 +1089,17 @@ gpg_keygen() {
     local -r prefix="$1"; shift
     local -r name="$1"; shift
     local -r out_basename="$1"; shift
+    # must be already present; the wrapper mk_intermediate uses it as a lock:
+    local -r d="$prefix/$name"
 
     msginfo "Generating GPG private+public key: ${name}"
 
     GPG="${GPG:-gpg2} --no-permission-warning" \
        gpg-keygen --passphrase '' \
 	       --name-real 'Some One' --name-email someone@example.com \
-	       "$prefix/$name"/key \
-	       "$prefix/$name/$out_basename" \
-	       >"$prefix/$name"/id
+	       "$d"/key \
+	       "$d/$out_basename" \
+	       >"$d"/id
 }
 
 ############################################################
