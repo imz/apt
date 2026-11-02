@@ -1102,6 +1102,28 @@ gpg_keygen() {
 	       >"$d"/id
 }
 
+# for mk_intermediate
+#
+# Extending gpg_keygen to immediately have a secret keyring with it.
+# If you want to use it, just set GNUPGHOME to $prefix/$name/gnupghome
+gpg_keygen_ready_to_sign() {
+    # must be already present; the wrapper mk_intermediate uses it as a lock:
+    local -r d="$1/$2"
+
+    mkdir "$d"/gnupghome
+    # Override the temp GNUPGHOME dir in gpg-keygen with ours,
+    # so that we have it not removed
+    local gpgcmd
+    printf -v gpgcmd 'gpg2 --homedir=%q' "$d"/gnupghome
+    # Can't prepend $GPG with env (like this: GNUPGHOME=... gpg2), because
+    # splitting into simple commands would precede the expansion of $GPG.
+    GPG="$gpgcmd" \
+       gpg_keygen "$@"
+
+    # genbasedir seems to call gpg1; so gpg1 has to import our secret key:
+    gpg --homedir="$d"/gnupghome  --no-permission-warning --import "$d"/key
+}
+
 ############################################################
 # Helpers for a background apt-shell process.
 # The process will be used to run commands.

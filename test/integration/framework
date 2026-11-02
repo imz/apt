@@ -132,7 +132,7 @@ generaterepository() {
 			--topdir="$repo_dir" \
 			--changelog-since='@1' \
 			--flat --no-oldhashfile $compression_opts --mapi \
-			-s  --default-key="$APT_TEST_SIGNMAIN" \
+			-s  --default-key="$(< "$APT_TEST_INTERMEDIATES"/signing/main-gpg/id)" \
 			$APT_TEST_GENBASEDIR_OPTS \
 			$dir $comps
 
@@ -234,22 +234,9 @@ generaterepository_and_switch_sources() {
 
 	esac
 
-	# the corresponding GNUPGHOME to do the signing later
-	GNUPGHOME="$APT_TEST_INTERMEDIATES"/signing-gnupghome/main-gpg
-	mkdir -p  "$GNUPGHOME"
-	# Override the temp GNUPGHOME dir in gpg-keygen with ours,
-	# so that we have it not removed
-	local gpgcmd
-	printf -v gpgcmd 'gpg2 --homedir=%q' "$GNUPGHOME"
-	# Can't prepend $GPG with env (like this: GNUPGHOME=... gpg2), because
-	# splitting into simple commands would precede the expansion of $GPG.
-	GPG="$gpgcmd" \
-	   mk_intermediate signing/main-gpg/pubkey.asc gpg_keygen
-	APT_TEST_SIGNMAIN="$(< "$APT_TEST_INTERMEDIATES"/signing/main-gpg/id)"
+	mk_intermediate signing/main-gpg/pubkey.asc gpg_keygen_ready_to_sign
 	# for doing the signing later
-	export GNUPGHOME
-	# genbasedir seems to call gpg1, so it has to import our secret key:
-	gpg --import "$APT_TEST_INTERMEDIATES"/signing/main-gpg/key
+	export GNUPGHOME="$APT_TEST_INTERMEDIATES"/signing/main-gpg/gnupghome
 
 	# Put the files into $REPO_STORAGE.
 	#
