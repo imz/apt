@@ -457,12 +457,10 @@ bool WriteSourceList(const string &Name,vector<string> &List,bool Source)
 #endif
 
    char Buffer[300];
-   int CurLine = 0;
    bool First = true;
    while (F.eof() == false)
    {
       F.getline(Buffer,sizeof(Buffer));
-      CurLine++;
       _strtabexpand(Buffer,sizeof(Buffer));
       _strstrip(Buffer);
 
