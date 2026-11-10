@@ -2196,8 +2196,7 @@ bool DoBuildDep(CommandLine &CmdL)
    AcqTextStatus Stat(ScreenWidth,_config->FindI("quiet",0));
    pkgAcquire Fetcher(&Stat);
 
-   unsigned J = 0;
-   for (const char **I = CmdL.FileList + 1; *I != 0; I++, J++)
+   for (const char **I = CmdL.FileList + 1; *I != 0; I++)
    {
       string Src;
       pkgSrcRecords::Parser *Last = FindSrc(*I,Recs,SrcRecs,Src,*Cache);
