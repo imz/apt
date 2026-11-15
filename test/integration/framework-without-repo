@@ -811,14 +811,33 @@ testpartsexhaust() {
 	read -rd '' OUTPUT_STR <"$OUTPUT" ||
 	    : # non-zero status always (because of EOF)
 
+	local OUTPUT_STR_before_the_try
+
 	local REGEXPART
-	local -a UNMATCHED_PARTS
-	UNMATCHED_PARTS=()
-	for REGEXPART in "${REGEXPARTS[@]}"; do
+	# If OUTPUT_STR is empty, all REGEXPARTS will be
+	# the final unmatched regexparts
+	local -a UNMATCHED_PARTS=("${REGEXPARTS[@]}")
+
+	while [ "$OUTPUT_STR" != '' ]; do
+	    OUTPUT_STR_before_the_try="$OUTPUT_STR"
+
+	    UNMATCHED_PARTS=()
+	    for REGEXPART in "${REGEXPARTS[@]}"; do
 		if ! match_and_delete "$REGEXPART" OUTPUT_STR; then
 		    UNMATCHED_PARTS=("${UNMATCHED_PARTS[@]}" "$REGEXPART")
 		fi
+	    done
+
+	    # Nothing changed? (Nothing has been cut out of OUTPUT_STR.)
+	    if [ "$OUTPUT_STR" = "$OUTPUT_STR_before_the_try" ]; then
+		break
+	    fi
+
+	    # Maybe now, after we've cut out some parts from OUTPUT_STR, there is
+	    # a continuous part that matches some of the UNMATCHED_PARTS. Try again!
+	    REGEXPARTS=("${UNMATCHED_PARTS[@]}")
 	done
+
 	if [ "$OUTPUT_STR" != '' ] || [ 0 -lt ${#UNMATCHED_PARTS[@]} ]; then
 		msgfail
 		echo "${CINFO}The parts that didn't match:${CNORMAL}"
