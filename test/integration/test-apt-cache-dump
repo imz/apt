@@ -72,24 +72,23 @@ readonly -a dump_pkgs=(
 
 )
 
-if (( APT_TEST_GPGPUBKEY > 0 )); then
-    i=0
+dump_with_gpgpubkey=()
+for (( i=0; i < APT_TEST_GPGPUBKEY; ++i )); do
     id="$(tr [:upper:] [:lower:] <"$APT_TEST_INTERMEDIATES"/gpg-pubkey/"$i"/id)"
     id32bit="$(echo -n "$id" | tail -c 8)"
     evrdt_re="$id32bit"-'........@[0-9]+'
     dump_with_gpgpubkey=(
+	"${dump_with_gpgpubkey[@]}"
 	"Package: gpg\(Some One <$i@example\.com>\)"
 
 	"Package: gpg\($id32bit\)"
 
-	"Package: gpg-pubkey
+	"Package: gpg-pubkey#$evrdt_re
  Version: $evrdt_re
      File: /$ANY*/var/lib/rpm/Packages"
 
     )
-else
-	dump_with_gpgpubkey=()
-fi
+done
 readonly -a dump_with_gpgpubkey
 
 readonly dump_rpmdb="File: /$ANY*/var/lib/rpm/Packages

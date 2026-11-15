@@ -20,19 +20,18 @@ generaterepository_and_switch_sources "$TMPWORKINGDIRECTORY/usr/src/RPM/RPMS"
 
 testsuccess aptget update
 
-if (( APT_TEST_GPGPUBKEY > 0 )); then
-    i=0
+pkgnames_with_gpgpubkey=()
+for (( i = 0; i < APT_TEST_GPGPUBKEY > 0; ++i )); do
     id="$(tr [:upper:] [:lower:] <"$APT_TEST_INTERMEDIATES"/gpg-pubkey/"$i"/id)"
     id32bit="$(echo -n "$id" | tail -c 8)"
     evrdt_re="$id32bit"-'........@[0-9]+'
     pkgnames_with_gpgpubkey=(
-	'gpg-pubkey'
+	"${pkgnames_with_gpgpubkey[@]}"
+	"gpg-pubkey#$evrdt_re"
 	"gpg\(Some One <$i@example\.com>\)"
 	"gpg\($id32bit\)"
     )
-else
-	pkgnames_with_gpgpubkey=()
-fi
+done
 readonly -a pkgnames_with_gpgpubkey
 
 testpartsexhaust "${pkgnames_with_gpgpubkey[@]}" \
