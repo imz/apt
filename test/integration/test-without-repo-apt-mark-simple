@@ -31,18 +31,18 @@ Building Dependency Tree...
 conflicting-package-one manual
 simple-package manual' aptmark showstate simple-package conflicting-package-one
 
-testequal "Reading Package Lists...
-Building Dependency Tree...
+testregexmatch "$INTRO_re
 conflicting-package-one manual${state_with_gpgpubkey}
-simple-package manual" aptmark showstate
+simple-package manual
+" aptmark showstate
 
 testequal 'Reading Package Lists...
 Building Dependency Tree...' aptmark showauto
 
-testequal "Reading Package Lists...
-Building Dependency Tree...
+testregexmatch "$INTRO_re
 conflicting-package-one${manual_with_gpgpubkey}
-simple-package" aptmark showmanual
+simple-package
+" aptmark showmanual
 
 testsuccess aptmark auto simple-package
 
@@ -55,15 +55,15 @@ testequal 'Reading Package Lists...
 Building Dependency Tree...
 conflicting-package-one manual' aptmark showstate conflicting-package-one
 
-testequal "Reading Package Lists...
-Building Dependency Tree...
+testregexmatch "$INTRO_re
 conflicting-package-one manual${state_with_gpgpubkey}
-simple-package auto" aptmark showstate
+simple-package auto
+" aptmark showstate
 
 testequal 'Reading Package Lists...
 Building Dependency Tree...
 simple-package' aptmark showauto
 
-testequal "Reading Package Lists...
-Building Dependency Tree...
-conflicting-package-one${manual_with_gpgpubkey}" aptmark showmanual
+testregexmatch "$INTRO_re
+conflicting-package-one${manual_with_gpgpubkey}
+" aptmark showmanual

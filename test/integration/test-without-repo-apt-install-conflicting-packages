@@ -11,8 +11,7 @@ buildpackage 'conflicting-package-two'
 
 testpkgnotinstalled 'conflicting-package-one' 'conflicting-package-two'
 
-testregexmatch "Reading Package Lists\.\.\.
-Building Dependency Tree\.\.\.
+testregexmatch "$INTRO_re
 Selecting conflicting-package-one for '[^']+'
 Selecting conflicting-package-two for '[^']+'
 Some packages could not be installed\. This may mean that you have

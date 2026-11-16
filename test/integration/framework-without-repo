@@ -1189,4 +1189,13 @@ aptcache_in_bg_apt_shell() { runaptcmd_in_bg_apt_shell apt-cache "$@"; }
 aptget_in_bg_apt_shell() { runaptcmd_in_bg_apt_shell apt-get "$@"; }
 aptmark_in_bg_apt_shell() { runaptcmd_in_bg_apt_shell apt-mark "$@"; }
 
+# useful regexes:
+readonly NL=$'\n'
+readonly ANY="[^$NL]"
+
+readonly EVRDT_re="[^-$NL]*-[^-$NL]*@[0-9]+"
+
+readonly INTRO_re='Reading Package Lists\.\.\.
+Building Dependency Tree\.\.\.'
+
 readonly rpmlib_predeps_re='(rpmlib\(FileDigests\) \(<= 4\.6\.0-1\), )?rpmlib\(PayloadIsLzma\)'
