@@ -1096,10 +1096,15 @@ gpg_keygen() {
 
     GPG="${GPG:-gpg2} --no-permission-warning" \
        gpg-keygen --passphrase '' \
-	       --name-real 'Some One' --name-email someone@example.com \
+	       --name-real 'Some One' --name-email "$name"@example.com \
 	       "$d"/key \
 	       "$d/$out_basename" \
 	       >"$d"/id
+
+    ${GPG:-gpg2} --no-permission-warning \
+		 --list-packets "$d/$out_basename" |
+	sed -nEe 's:^.*created ([0-9]+),.*$:\1:p; T continue; q; :continue' \
+	    >"$d"/time
 }
 
 ############################################################

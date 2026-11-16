@@ -73,16 +73,23 @@ readonly -a dump_pkgs=(
 )
 
 if (( APT_TEST_GPGPUBKEY > 0 )); then
-	dump_with_gpgpubkey=(
-		"Package: gpg\($ANY*@$ANY*\)"
+    i=0
+    id="$(tr [:upper:] [:lower:] <"$APT_TEST_INTERMEDIATES"/gpg-pubkey/"$i"/id)"
+    id32bit="$(echo -n "$id" | tail -c 8)"
+    time="$(<"$APT_TEST_INTERMEDIATES"/gpg-pubkey/"$i"/time)"
+    printf -v time_hex '%x' "$time"
+    time_hex="${time_hex#0x}"
+    evrdt_re="$id32bit-$time_hex@$time"
+    dump_with_gpgpubkey=(
+	"Package: gpg\(Some One <$i@example\.com>\)"
 
-		"Package: gpg\($ANY*\)"
+	"Package: gpg\($id32bit\)"
 
-		"Package: gpg-pubkey
- Version: $EVRDT_re
+	"Package: gpg-pubkey
+ Version: $evrdt_re
      File: /$ANY*/var/lib/rpm/Packages"
 
-	)
+    )
 else
 	dump_with_gpgpubkey=()
 fi
