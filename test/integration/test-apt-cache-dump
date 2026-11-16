@@ -19,10 +19,6 @@ generaterepository_and_switch_sources "$TMPWORKINGDIRECTORY/usr/src/RPM/RPMS"
 
 testsuccess aptget update
 
-# useful regexes:
-readonly NL=$'\n'
-readonly ANY="[^$NL]"
-
 # values occurring many times in the dump:
 
 set_regex_quote_str APT_SOURCES_SITE_RE "${APT_SOURCES_SITE//[][]}"
@@ -83,7 +79,7 @@ if (( APT_TEST_GPGPUBKEY > 0 )); then
 		"Package: gpg\($ANY*\)"
 
 		"Package: gpg-pubkey
- Version: [^-$NL]*-[^-$NL]*@[0-9]+
+ Version: $EVRDT_re
      File: /$ANY*/var/lib/rpm/Packages"
 
 	)

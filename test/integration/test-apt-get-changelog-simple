@@ -25,8 +25,7 @@ testsuccess aptget update
 # to do with downloading (unlike in Debian);
 # FIXME: it should be apt-cache changelog in ALT.
 
-testregexmatch "Reading Package Lists...
-Building Dependency Tree...
+testregexmatch "$INTRO_re
 Changelog for simple-package:
 \* Tue Oct 01 2019 Nobody <nobody@altlinux\.org> 2-alt1
 - Test package updated
@@ -36,8 +35,7 @@ Changelog for simple-package:
 " \
 	       aptget changelog 'simple-package'
 
-testregexmatch "Reading Package Lists...
-Building Dependency Tree...
+testregexmatch "$INTRO_re
 Changelog for missing-dependency:
 \* Mon Sep 30 2019 Nobody <nobody@altlinux\.org> 1-alt1
 - Test package created
