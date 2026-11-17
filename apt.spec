@@ -3,7 +3,7 @@
 
 Name: apt
 Version: 0.5.15lorg2
-Release: alt103
+Release: alt104
 
 Summary: Debian's Advanced Packaging Tool with RPM support
 Summary(ru_RU.UTF-8): Debian APT - Усовершенствованное средство управления пакетами с поддержкой RPM
@@ -614,6 +614,10 @@ exec 1>&2
 %_datadir/%name/tests/
 
 %changelog
+* Tue Nov 17 2026 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt104
+- Cleaned up the source code a bit (unused vars) to fix the build with recent
+  strict compiler warnings.
+
 * Wed Aug 12 2026 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt103
 - Fixed the tests. (Made the tests not break on packages having Pre-Depends:
   rpmlib(FileDigests) (<= 4.6.0-1) due to the recent rpm-build or rpm.)
