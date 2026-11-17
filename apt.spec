@@ -145,7 +145,8 @@ Summary(ru_RU.UTF-8): Набор тестов для APT
 Group: Other
 BuildArch: noarch
 Requires: rpm-build
-Requires: apt-repo-tools >= 0.11
+Requires: /usr/bin/genbasedir
+# Apart from Sisyphus, we skip the 2 tests that need apt-repo-tools >= 0.11:
 # genbasedir --no-compression needed by test-apt-update-simple-{xz,zstd} from
 # e09a4896b (test-apt-update-simple-xz: added test, 2026-03-11)
 # Optional:
