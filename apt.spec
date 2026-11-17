@@ -617,6 +617,8 @@ exec 1>&2
 * Tue Nov 17 2026 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt104
 - Cleaned up the source code a bit (unused vars) to fix the build with recent
   strict compiler warnings.
+- tagfile: fix unbounded backward scan (thx Debian 3.3.2~1^2)
+  DoS only (parser abort on malformed apt package metadata).
 
 * Wed Aug 12 2026 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt103
 - Fixed the tests. (Made the tests not break on packages having Pre-Depends:
