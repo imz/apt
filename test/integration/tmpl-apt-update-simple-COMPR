@@ -1,0 +1,18 @@
+#!/bin/bash
+set -eu
+
+readonly COMPR_OPT="${0##*-}"
+
+TESTDIR=$(readlink -f $(dirname $0))
+. $TESTDIR/framework
+
+APT_TEST_BASEDIR_COMPRESSION_OPTS="--no-compression --$COMPR_OPT"
+
+setupenvironment
+
+buildpackage 'simple-package'
+
+generaterepository_and_switch_sources "$TMPWORKINGDIRECTORY/usr/src/RPM/RPMS"
+
+testsuccess aptget update
+testsuccess aptcache show simple-package
