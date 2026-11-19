@@ -8,6 +8,13 @@ case "$APT_TEST_METHOD" in
 		echo 'SKIP (not ready for apt-cdrom, because it fetches the lists earlier)' >&2
 		exit 0
 		;;
+	http*) :
+	       ;;
+	*)
+	    # in our setup...
+		echo 'SKIP (other methods do not seem to fetch the compressed list...)' >&2
+		exit 0
+	       ;;
 esac
 
 . $TESTDIR/framework
@@ -21,19 +28,31 @@ buildpackage 'conflicting-package-two'
 
 generaterepository_and_switch_sources "$TMPWORKINGDIRECTORY/usr/src/RPM/RPMS"
 
-# Fake pkglist (only noarch, since a noarch pkg is definitely present).
-#
-# (For faking individual cksums, see other tests,
-# like test-apt-update-verifies-CKSUM-of-pkglist-index.)
+# Inject (if bad, apt-get update should fail or refetch/retry):
+
+# 1. Fake pkglist in a copy. (only noarch, since a noarch pkg must be present)
+# (It's simpler just to use corrupt_pkglist_in_repo_noarch(), which does
+# re-compression etc. BTW, not sure that thesize slways stays the same (FIXME).)
+readonly REPO_NOARCH_PKGLIST="$REPO_STORAGE/$NOARCH_DISTRO/base/pkglist.$DISTRO_COMPONENT$REPO_COMPR_EXT"
+mv "${REPO_NOARCH_PKGLIST%/*}"{,.orig}
+cp -a "${REPO_NOARCH_PKGLIST%/*}"{.orig,}
 corrupt_pkglist_in_repo_noarch \
     sed -Ee 's:nobody:oooody:'
+# 2. Inject the fake/corrupt one.
+cp -a "$REPO_NOARCH_PKGLIST" \
+   -T "$APT_FETCHED_PARTIAL_NOARCH_PKGLIST"
+# 3. Restore the repo.
+rm -rf "${REPO_NOARCH_PKGLIST%/*}"
+mv "${REPO_NOARCH_PKGLIST%/*}"{.orig,}
+# 4. Final touch with the right time, so that no one notices.
+touch -r "$REPO_NOARCH_PKGLIST" -- "$APT_FETCHED_PARTIAL_NOARCH_PKGLIST"
 
 # Cksum verification shouldn't pass.
 
 testregexmatch '.*Checksum mismatch.*' \
 	       aptget update
 testfailure
-testregexmatch nobody \
+testregexmatch '.*nobody@.*' \
 	       aptcache show simple-package
 testsuccess
 testfailure aptcache show simple-package-noarch
