@@ -731,6 +731,14 @@ testregexmatch() {
 	esac
 	local -r match_stdout
 
+	local not=
+	case "$1" in
+	    --not) not=yes
+			    shift
+			    ;;
+	esac
+	local -r not
+
 	local COMPAREMSG="$1"
 	shift
 
@@ -760,13 +768,22 @@ testregexmatch() {
 	local -r output_str
 
 	if [[ "$output_str" =~ ^$COMPAREMSG$ ]] ; then
+	    if [ -z "$not" ]; then
 		msgpass
+	    else
+		msgfail
+		printf >&6 '%s' "$COMPAREMSG"
+	    fi
 	else
+	    if [ -z "$not" ]; then
 		msgfail
 		local COMPAREFILE="${TMPWORKINGDIRECTORY}/rootdir/tmp/testregexmatch.comparefile"
 		printf '%s' "$COMPAREMSG" > $COMPAREFILE
 		checkdiff "$COMPAREFILE" "$output_for_matching" || true
 		echo >&6 "$DIFFTEXT"
+	    else
+		msgpass
+	    fi
 	fi
 }
 
