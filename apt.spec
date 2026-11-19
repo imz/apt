@@ -3,7 +3,7 @@
 
 Name: apt
 Version: 0.5.15lorg2
-Release: alt104
+Release: alt105
 
 Summary: Debian's Advanced Packaging Tool with RPM support
 Summary(ru_RU.UTF-8): Debian APT - Усовершенствованное средство управления пакетами с поддержкой RPM
@@ -496,6 +496,16 @@ exec 1>&2
 %_datadir/%name/tests/
 
 %changelog
+* Thu Nov 19 2026 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt105
+- Ensured that the http method creates a fresh file.
+  Made it copy partially downloaded content (on a resume).
+  The old behavior may lead to a TOCTOU vulnerability; it is not exploitable:
+  * unless you changed the default to a bigger number in Acquire::Retries=0;
+  * or if you use HTTPS (not plain HTTP vulnerable to MiM).
+- Fixes:
+  + CVE-2026-109518 write to other archives after a malicious redirect HTTP response
+- tests: test http download resume (on the example of a "pkglist" index).
+
 * Tue Nov 17 2026 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt104
 - Cleaned up the source code a bit (unused vars) to fix the build with recent
   strict compiler warnings.
