@@ -28,11 +28,10 @@ buildpackage 'conflicting-package-two'
 
 generaterepository_and_switch_sources "$TMPWORKINGDIRECTORY/usr/src/RPM/RPMS"
 
-# Inject (if bad, apt-get update should fail or refetch/retry):
+# Inject (if smaller, apt-get update should resume and not refetch completely):
 readonly REPO_NOARCH_PKGLIST="$REPO_STORAGE/$NOARCH_DISTRO/base/pkglist.$DISTRO_COMPONENT$REPO_COMPR_EXT"
 {
     head -c-4 "$REPO_NOARCH_PKGLIST"
-    printf AA
 } >"$APT_FETCHED_PARTIAL_NOARCH_PKGLIST"
 # assert the size (in partial/) is smaller:
 [ "$(stat -c '%s' "$REPO_NOARCH_PKGLIST")" \
@@ -41,16 +40,16 @@ readonly REPO_NOARCH_PKGLIST="$REPO_STORAGE/$NOARCH_DISTRO/base/pkglist.$DISTRO_
     ]
 # Final touch with the right time, so that no one notices.
 touch -r "$REPO_NOARCH_PKGLIST" -- "$APT_FETCHED_PARTIAL_NOARCH_PKGLIST"
+# To be sure that apt will not have refetched the beginning, we spoil it:
+dd conv=notrunc,nocreat of="$REPO_NOARCH_PKGLIST" <<<B
+touch -r "$APT_FETCHED_PARTIAL_NOARCH_PKGLIST" -- "$REPO_NOARCH_PKGLIST"
 
-# Cksum verification shouldn't pass.
-APT_TEST_XFAIL=yes
-# xz reports an error. But xz shouldn't be called
-# if there is a checksum mismatch (to avoid a bomb etc.) See below for a log.
-testregexmatch '.*Checksum mismatch.*' \
-	       aptget update
-testfailure
+
+testsuccess aptget update
 testregexmatch '.*nobody@.*' \
 	       aptcache show simple-package
 testsuccess
-testfailure aptcache show simple-package-noarch
+testregexmatch '.*nobody@.*' \
+	       aptcache show simple-package-noarch
+testsuccess
 testfailure aptcache show nosuchpkg
