@@ -33,6 +33,8 @@ corrupt_pkglist_in_repo_noarch \
 testregexmatch '.*Checksum mismatch.*' \
 	       aptget update
 testfailure
-testsuccess aptcache show simple-package
+testregexmatch nobody \
+	       aptcache show simple-package
+testsuccess
 testfailure aptcache show simple-package-noarch
 testfailure aptcache show nosuchpkg
