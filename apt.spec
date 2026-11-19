@@ -3,7 +3,7 @@
 
 Name: apt
 Version: 0.5.15lorg2
-Release: alt104
+Release: alt105
 
 Summary: Debian's Advanced Packaging Tool with RPM support
 Summary(ru_RU.UTF-8): Debian APT - Усовершенствованное средство управления пакетами с поддержкой RPM
@@ -496,6 +496,11 @@ exec 1>&2
 %_datadir/%name/tests/
 
 %changelog
+* Thu Nov 19 2026 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt105
+- The TOCTOU vulnerability in the download methods is definitely not exploitable:
+  * unless you changed the default to a bigger number in Acquire::Retries=0;
+  * or if you use https (not plain http or other methods vulnerable to MiM).
+
 * Tue Nov 17 2026 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt104
 - Cleaned up the source code a bit (unused vars) to fix the build with recent
   strict compiler warnings.
