@@ -29,22 +29,17 @@ buildpackage 'conflicting-package-two'
 generaterepository_and_switch_sources "$TMPWORKINGDIRECTORY/usr/src/RPM/RPMS"
 
 # Inject (if bad, apt-get update should fail or refetch/retry):
-
-# 1. Fake pkglist in a copy. (only noarch, since a noarch pkg must be present)
-# (It's simpler just to use corrupt_pkglist_in_repo_noarch(), which does
-# re-compression etc. BTW, not sure that thesize slways stays the same (FIXME).)
 readonly REPO_NOARCH_PKGLIST="$REPO_STORAGE/$NOARCH_DISTRO/base/pkglist.$DISTRO_COMPONENT$REPO_COMPR_EXT"
-mv "${REPO_NOARCH_PKGLIST%/*}"{,.orig}
-cp -a "${REPO_NOARCH_PKGLIST%/*}"{.orig,}
-corrupt_pkglist_in_repo_noarch \
-    sed -Ee 's:nobody:oooody:'
-# 2. Inject the fake/corrupt one.
-cp -a "$REPO_NOARCH_PKGLIST" \
-   -T "$APT_FETCHED_PARTIAL_NOARCH_PKGLIST"
-# 3. Restore the repo.
-rm -rf "${REPO_NOARCH_PKGLIST%/*}"
-mv "${REPO_NOARCH_PKGLIST%/*}"{.orig,}
-# 4. Final touch with the right time, so that no one notices.
+{
+    head -c-1 "$REPO_NOARCH_PKGLIST"
+    printf A
+} >"$APT_FETCHED_PARTIAL_NOARCH_PKGLIST"
+# assert the size is the same:
+[ "$(stat -c '%s' "$REPO_NOARCH_PKGLIST")" \
+      = \
+      "$(stat -c '%s' "$APT_FETCHED_PARTIAL_NOARCH_PKGLIST")" \
+    ]
+# Final touch with the right time, so that no one notices.
 touch -r "$REPO_NOARCH_PKGLIST" -- "$APT_FETCHED_PARTIAL_NOARCH_PKGLIST"
 
 # Cksum verification shouldn't pass.
@@ -56,77 +51,22 @@ testsuccess aptcache show simple-package
 testfailure aptcache show simple-package-noarch
 testfailure aptcache show nosuchpkg
 
-# Sometimes it seems that it's not the same size, and we get into another bug
-# in apt's http method:
+# As a result, we've discovered that apt "incorrectly" prepares
+# the Range request:
 #
-# ===========================
+# the start point is one byte earlier.
 #
-# Test of regex match of apt-get update … FAIL
-# -.*Checksum mismatch.*
-# \ No newline at end of file
-# +Get:1 http://localhost:8080 x86_64 release [1503B]
-# +Get:2 http://localhost:8080 noarch release [1501B]
-# +Fetched 3004B in 0s (0B/s)
-# +Get:1 http://localhost:8080 x86_64/apt-tests pkglist [888B]
-# +Get:2 http://localhost:8080 x86_64/apt-tests release [151B]
-# +Err http://localhost:8080 noarch/apt-tests pkglist
-# +  The http server sent an invalid Content-Range header
-# +Err http://localhost:8080 noarch/apt-tests release
-# +  Bad header line
-# +Fetched 1039B in 0s (60.2kB/s)
-# +E: Failed to fetch http://localhost:8080/noarch/base/pkglist.apt-tests  The http server sent an invalid Content-Range header
-# +E: Failed to fetch http://localhost:8080/noarch/base/release.apt-tests  Bad header line
-# +E: Some index files failed to download. They have been ignored, or old ones used instead.
-# Test for failure in execution of the last cmd  … PASS
-# Get:1 http://localhost:8080 x86_64 release [1503B]
-# Get:2 http://localhost:8080 noarch release [1501B]
-# Fetched 3004B in 0s (0B/s)
-# Get:1 http://localhost:8080 x86_64/apt-tests pkglist [888B]
-# Get:2 http://localhost:8080 x86_64/apt-tests release [151B]
-# Err http://localhost:8080 noarch/apt-tests pkglist
-#   The http server sent an invalid Content-Range header
-# Err http://localhost:8080 noarch/apt-tests release
-#   Bad header line
-# Fetched 1039B in 0s (60.2kB/s)
-# E: Failed to fetch http://localhost:8080/noarch/base/pkglist.apt-tests  The http server sent an invalid Content-Range header
-# E: Failed to fetch http://localhost:8080/noarch/base/release.apt-tests  Bad header line
-# E: Some index files failed to download. They have been ignored, or old ones used instead.
-# Test of regex match of apt-cache show simple-package … PASS
-# Test for successful execution of the last cmd  … PASS
-# Package: simple-package
-# Section: Other
-# Installed Size: 0
-# Maintainer: test@example.net
-# Version: 1-alt1@1795087466
-# Pre-Depends: rpmlib(FileDigests) (<= 4.6.0-1), rpmlib(PayloadIsLzma)
-# Provides: simple-package (= 1-alt1)
-# Architecture: x86_64
-# Size: 1296
-# MD5Sum: eadf353a732c51ba507efd1297fdadc0
-# Filename: simple-package-1-alt1.x86_64.rpm
-# Description: Test package
-#  Dummy description
-# Changelog:
-#  * Mon Sep 30 2019 Nobody <nobody@altlinux.org> 1-alt1
-#  - Test package created
+# See the log below,
+# for noarch pkglist: 548B;
+# requested: 547-;
+# partial content length: 1
 #
-# Test for failure in execution of apt-cache show simple-package-noarch … PASS
-# W: Unable to locate package simple-package-noarch
-# E: No packages found
-# Test for failure in execution of apt-cache show nosuchpkg … PASS
-# W: Unable to locate package nosuchpkg
-# E: No packages found
-# NGINXLOG:
-# test-corrupt-pkglist-index-in-partial-samesize-and-apt-update-rejects_via_http ... FAIL
+# But then it correctly overwrites the last byte. So apt is not so broken.
 #
-# =====================
+# =====
 #
-# with http_dbgconn:
-#
-# =====================
-#
-# Run Testcase (79/106) test-corrupt-pkglist-index-in-partial-samesize-and-apt-update-rejects_via_http_dbgconn
-# I: Preparing environment for test-corrupt-pkglist-index-in-partial-samesize-and-apt-update-rejects in /tmp/sh.xHaZSkRl/tmp.gwAEHzhJks… I: Re-using gpg-pubkey/0
+# Run Testcase (120/158) test-corrupt-pkglist-index-in-partial-samesize-and-apt-update-rejects_via_http_dbgconn
+# I: Preparing environment for test-corrupt-pkglist-index-in-partial-samesize-and-apt-update-rejects in /tmp/sh.UjcnJqYC/tmp.ZHgLWEkezB… I: Re-using gpg-pubkey/0
 # I: Re-using gpg-pubkey/1
 # DONE
 # I: Re-using built-pkg/simple-package
@@ -134,30 +74,8 @@ testfailure aptcache show nosuchpkg
 # I: Re-using built-pkg/conflicting-package-one
 # I: Re-using built-pkg/conflicting-package-two
 # I: Re-using sign-repo-release/main-gpg
-# gpg: WARNING: unsafe ownership on homedir `/tmp/sh.xHaZSkRl/tmp.bABi9SiyNt/sign-repo-release/main-gpg/gnupghome'
-# gpg: WARNING: unsafe ownership on homedir `/tmp/sh.xHaZSkRl/tmp.bABi9SiyNt/sign-repo-release/main-gpg/gnupghome'
-# Edited /tmp/sh.xHaZSkRl/tmp.gwAEHzhJks/nginx/repo/noarch/base/pkglist.apt-tests:
-# Files /tmp/sh.xHaZSkRl/tmp.gwAEHzhJks/nginx/repo/noarch/base/pkglist.apt-tests.orig and /tmp/sh.xHaZSkRl/tmp.gwAEHzhJks/nginx/repo/noarch/base/pkglist.apt-tests differ
-# rm: cannot remove '/tmp/sh.xHaZSkRl/tmp.gwAEHzhJks/nginx/repo/noarch/base/pkglist.apt-tests.gz': No such file or directory
-# rm: cannot remove '/tmp/sh.xHaZSkRl/tmp.gwAEHzhJks/nginx/repo/noarch/base/pkglist.apt-tests.bz2': No such file or directory
-# Edited /tmp/sh.xHaZSkRl/tmp.gwAEHzhJks/nginx/repo/noarch/base/release:
-# --- /tmp/sh.xHaZSkRl/tmp.gwAEHzhJks/nginx/repo/noarch/base/release.orig 2026-11-19 11:38:54.664628327 +0000
-# +++ /tmp/sh.xHaZSkRl/tmp.gwAEHzhJks/nginx/repo/noarch/base/release      2026-11-19 11:38:54.732628044 +0000
-# @@ -8,11 +8,11 @@
-#  Description: ALT Linux apt-tests
-#  MD5Sum:
-#   4f9ead116f6d3e1c4c2fae877931f474 953 base/pkglist.apt-tests
-# - d67ae8275189ec4d840f1b1c080ad0d2 548 base/pkglist.apt-tests.xz
-# + d67ae8275189ec4d840f1b1c080ad0d2 552 base/pkglist.apt-tests.xz
-#   935a60f8758d527c882edf0b7acaf472 151 base/release.apt-tests
-#  BLAKE2b:
-#   1354389559ad82a37aa7f84235451716225f2865a3f26a4274c2fb95e767f1d5bd350d4e403942768c458dd766a309ea8a273d89c3757df793999483a839d7ff 953 base/pkglist.apt-tests
-# - 17d563a571cfc2f12c49a9f35e3c3aadb4d2c41dbd1a52b377695caf9bf1693e5f59f5829cd85dea4e3ae56dbebdc45803d77d3644a836dbd5c93b3d707d6f89 548 base/pkglist.apt-tests.xz
-# + 17d563a571cfc2f12c49a9f35e3c3aadb4d2c41dbd1a52b377695caf9bf1693e5f59f5829cd85dea4e3ae56dbebdc45803d77d3644a836dbd5c93b3d707d6f89 552 base/pkglist.apt-tests.xz
-#   69bd029bae09f3c3a45b8386d29ef8188ad1507efb190f6b891e2018936b95c791342b64d4a7c0b20ad825746ecfb8a3a50b414817f28256d4882a313f5f88cc 151 base/release.apt-tests
-#
-#  -----BEGIN PGP SIGNATURE-----
-# rm: cannot remove '/tmp/sh.xHaZSkRl/tmp.gwAEHzhJks/nginx/repo/noarch/base/pkglist.apt-tests.zst': No such file or directory
+# gpg: WARNING: unsafe ownership on homedir `/tmp/sh.UjcnJqYC/tmp.Cn3jCRWuAt/sign-repo-release/main-gpg/gnupghome'
+# gpg: WARNING: unsafe ownership on homedir `/tmp/sh.UjcnJqYC/tmp.Cn3jCRWuAt/sign-repo-release/main-gpg/gnupghome'
 # Test of regex match of apt-get update … FAIL
 # -.*Checksum mismatch.*
 # \ No newline at end of file
@@ -169,29 +87,29 @@ testfailure aptcache show nosuchpkg
 # +
 # +HTTP/1.1 200 OK
 # +Server: nginx/1.30.7
-# +Date: Thu, 19 Nov 2026 11:38:54 GMT
+# +Date: Thu, 19 Nov 2026 12:39:47 GMT
 # +Content-Type: application/octet-stream
-# +Content-Length: 1503
-# +Last-Modified: Thu, 19 Nov 2026 11:38:54 GMT
+# +Content-Length: 1499
+# +Last-Modified: Thu, 19 Nov 2026 12:39:47 GMT
 # +Connection: keep-alive
-# +ETag: "6afedfce-5df"
+# +ETag: "6afeee13-5db"
 # +Accept-Ranges: bytes
 # +
-# +Get:1 http://localhost:8080 x86_64 release [1503B]
 # +GET /noarch/base/release HTTP/1.1
 # +Host: localhost:8080
 # +Cache-Control: max-age=86400
 # +User-Agent: RPM APT-HTTP/1.3
 # +
 # +
+# +Get:1 http://localhost:8080 x86_64 release [1499B]
 # +HTTP/1.1 200 OK
 # +Server: nginx/1.30.7
-# +Date: Thu, 19 Nov 2026 11:38:54 GMT
+# +Date: Thu, 19 Nov 2026 12:39:47 GMT
 # +Content-Type: application/octet-stream
 # +Content-Length: 1501
-# +Last-Modified: Thu, 19 Nov 2026 11:38:54 GMT
+# +Last-Modified: Thu, 19 Nov 2026 12:39:47 GMT
 # +Connection: keep-alive
-# +ETag: "6afedfce-5dd"
+# +ETag: "6afeee13-5dd"
 # +Accept-Ranges: bytes
 # +
 # +Get:2 http://localhost:8080 noarch release [1501B]
@@ -203,15 +121,15 @@ testfailure aptcache show nosuchpkg
 # +
 # +HTTP/1.1 200 OK
 # +Server: nginx/1.30.7
-# +Date: Thu, 19 Nov 2026 11:38:54 GMT
+# +Date: Thu, 19 Nov 2026 12:39:47 GMT
 # +Content-Type: application/octet-stream
 # +Content-Length: 884
-# +Last-Modified: Thu, 19 Nov 2026 11:38:54 GMT
+# +Last-Modified: Thu, 19 Nov 2026 12:39:47 GMT
 # +Connection: keep-alive
-# +ETag: "6afedfce-374"
+# +ETag: "6afeee13-374"
 # +Accept-Ranges: bytes
 # +
-# +Fetched 3004B in 0s (0B/s)
+# +Fetched 3000B in 0s (0B/s)
 # +Get:1 http://localhost:8080 x86_64/apt-tests pkglist [884B]
 # +GET /x86_64/base/release.apt-tests HTTP/1.1
 # +Host: localhost:8080
@@ -222,8 +140,8 @@ testfailure aptcache show nosuchpkg
 # +GET /noarch/base/pkglist.apt-tests.xz HTTP/1.1
 # +Host: localhost:8080
 # +Cache-Control: max-age=86400
-# +Range: bytes=551-
-# +If-Range: Thu, 19 Nov 2026 11:38:54 GMT
+# +Range: bytes=547-
+# +If-Range: Thu, 19 Nov 2026 12:39:47 GMT
 # +User-Agent: RPM APT-HTTP/1.3
 # +
 # +
@@ -235,49 +153,41 @@ testfailure aptcache show nosuchpkg
 # +
 # +HTTP/1.1 200 OK
 # +Server: nginx/1.30.7
-# +Date: Thu, 19 Nov 2026 11:38:54 GMT
+# +Date: Thu, 19 Nov 2026 12:39:47 GMT
 # +Content-Type: application/octet-stream
 # +Content-Length: 151
-# +Last-Modified: Thu, 19 Nov 2026 11:38:54 GMT
+# +Last-Modified: Thu, 19 Nov 2026 12:39:47 GMT
 # +Connection: keep-alive
-# +ETag: "6afedfce-97"
+# +ETag: "6afeee13-97"
 # +Accept-Ranges: bytes
 # +
-# +HTTP/1.1 416 Requested Range Not Satisfiable
+# +HTTP/1.1 206 Partial Content
 # +Server: nginx/1.30.7
-# +Date: Thu, 19 Nov 2026 11:38:54 GMT
-# +Content-Type: text/html
-# +Content-Length: 197
+# +Date: Thu, 19 Nov 2026 12:39:47 GMT
+# +Content-Type: application/octet-stream
+# +Content-Length: 1
+# +Last-Modified: Thu, 19 Nov 2026 12:39:47 GMT
 # +Connection: keep-alive
-# +Content-Range: bytes */548
+# +ETag: "6afeee13-224"
+# +Content-Range: bytes 547-547/548
 # +
-# +<html>
-# +<head><title>416 Requested Range Not Satisfiable</title></head>
-# +<body>
-# +<center><h1>416 Requested Range Not Satisfiable</h1></center>
-# +<hr><center>nginx/1.30.7</center>
-# +</body>
-# +</html>
 # +HTTP/1.1 200 OK
 # +Server: nginx/1.30.7
-# +Date: Thu, 19 Nov 2026 11:38:54 GMT
+# +Date: Thu, 19 Nov 2026 12:39:47 GMT
 # +Content-Type: application/octet-stream
 # +Content-Length: 151
-# +Last-Modified: Thu, 19 Nov 2026 11:38:54 GMT
+# +Last-Modified: Thu, 19 Nov 2026 12:39:47 GMT
 # +Connection: keep-alive
-# +ETag: "6afedfce-97"
+# +ETag: "6afeee13-97"
 # +Accept-Ranges: bytes
 # +
 # +Get:2 http://localhost:8080 x86_64/apt-tests release [151B]
-# +Err http://localhost:8080 noarch/apt-tests pkglist
-# +  The http server sent an invalid Content-Range header
-# +Err http://localhost:8080 noarch/apt-tests release
-# +  Bad header line
-# +Fetched 1035B in 0s (54.0kB/s)
-# +E: Failed to fetch http://localhost:8080/noarch/base/pkglist.apt-tests  The http server sent an invalid Content-Range header
-# +E: Failed to fetch http://localhost:8080/noarch/base/release.apt-tests  Bad header line
-# +E: Some index files failed to download. They have been ignored, or old ones used instead.
-# Test for failure in execution of the last cmd  … PASS
+# +Get:3 http://localhost:8080 noarch/apt-tests pkglist [548B]
+# +Get:4 http://localhost:8080 noarch/apt-tests release [151B]
+# +Fetched 1187B in 0s (64.5kB/s)
+# +Reading Package Lists...
+# +Building Dependency Tree...
+# Test for failure in execution of the last cmd  … FAIL
 # GET /x86_64/base/release HTTP/1.1
 # Host: localhost:8080
 # Cache-Control: max-age=86400
@@ -285,28 +195,28 @@ testfailure aptcache show nosuchpkg
 #
 # HTTP/1.1 200 OK
 # Server: nginx/1.30.7
-# Date: Thu, 19 Nov 2026 11:38:54 GMT
+# Date: Thu, 19 Nov 2026 12:39:47 GMT
 # Content-Type: application/octet-stream
-# Content-Length: 1503
-# Last-Modified: Thu, 19 Nov 2026 11:38:54 GMT
+# Content-Length: 1499
+# Last-Modified: Thu, 19 Nov 2026 12:39:47 GMT
 # Connection: keep-alive
-# ETag: "6afedfce-5df"
+# ETag: "6afeee13-5db"
 # Accept-Ranges: bytes
 #
-# Get:1 http://localhost:8080 x86_64 release [1503B]
 # GET /noarch/base/release HTTP/1.1
 # Host: localhost:8080
 # Cache-Control: max-age=86400
 # User-Agent: RPM APT-HTTP/1.3
 #
+# Get:1 http://localhost:8080 x86_64 release [1499B]
 # HTTP/1.1 200 OK
 # Server: nginx/1.30.7
-# Date: Thu, 19 Nov 2026 11:38:54 GMT
+# Date: Thu, 19 Nov 2026 12:39:47 GMT
 # Content-Type: application/octet-stream
 # Content-Length: 1501
-# Last-Modified: Thu, 19 Nov 2026 11:38:54 GMT
+# Last-Modified: Thu, 19 Nov 2026 12:39:47 GMT
 # Connection: keep-alive
-# ETag: "6afedfce-5dd"
+# ETag: "6afeee13-5dd"
 # Accept-Ranges: bytes
 #
 # Get:2 http://localhost:8080 noarch release [1501B]
@@ -317,15 +227,15 @@ testfailure aptcache show nosuchpkg
 #
 # HTTP/1.1 200 OK
 # Server: nginx/1.30.7
-# Date: Thu, 19 Nov 2026 11:38:54 GMT
+# Date: Thu, 19 Nov 2026 12:39:47 GMT
 # Content-Type: application/octet-stream
 # Content-Length: 884
-# Last-Modified: Thu, 19 Nov 2026 11:38:54 GMT
+# Last-Modified: Thu, 19 Nov 2026 12:39:47 GMT
 # Connection: keep-alive
-# ETag: "6afedfce-374"
+# ETag: "6afeee13-374"
 # Accept-Ranges: bytes
 #
-# Fetched 3004B in 0s (0B/s)
+# Fetched 3000B in 0s (0B/s)
 # Get:1 http://localhost:8080 x86_64/apt-tests pkglist [884B]
 # GET /x86_64/base/release.apt-tests HTTP/1.1
 # Host: localhost:8080
@@ -335,8 +245,8 @@ testfailure aptcache show nosuchpkg
 # GET /noarch/base/pkglist.apt-tests.xz HTTP/1.1
 # Host: localhost:8080
 # Cache-Control: max-age=86400
-# Range: bytes=551-
-# If-Range: Thu, 19 Nov 2026 11:38:54 GMT
+# Range: bytes=547-
+# If-Range: Thu, 19 Nov 2026 12:39:47 GMT
 # User-Agent: RPM APT-HTTP/1.3
 #
 # GET /noarch/base/release.apt-tests HTTP/1.1
@@ -346,60 +256,52 @@ testfailure aptcache show nosuchpkg
 #
 # HTTP/1.1 200 OK
 # Server: nginx/1.30.7
-# Date: Thu, 19 Nov 2026 11:38:54 GMT
+# Date: Thu, 19 Nov 2026 12:39:47 GMT
 # Content-Type: application/octet-stream
 # Content-Length: 151
-# Last-Modified: Thu, 19 Nov 2026 11:38:54 GMT
+# Last-Modified: Thu, 19 Nov 2026 12:39:47 GMT
 # Connection: keep-alive
-# ETag: "6afedfce-97"
+# ETag: "6afeee13-97"
 # Accept-Ranges: bytes
 #
-# HTTP/1.1 416 Requested Range Not Satisfiable
+# HTTP/1.1 206 Partial Content
 # Server: nginx/1.30.7
-# Date: Thu, 19 Nov 2026 11:38:54 GMT
-# Content-Type: text/html
-# Content-Length: 197
+# Date: Thu, 19 Nov 2026 12:39:47 GMT
+# Content-Type: application/octet-stream
+# Content-Length: 1
+# Last-Modified: Thu, 19 Nov 2026 12:39:47 GMT
 # Connection: keep-alive
-# Content-Range: bytes */548
+# ETag: "6afeee13-224"
+# Content-Range: bytes 547-547/548
 #
-# <html>
-# <head><title>416 Requested Range Not Satisfiable</title></head>
-# <body>
-# <center><h1>416 Requested Range Not Satisfiable</h1></center>
-# <hr><center>nginx/1.30.7</center>
-# </body>
-# </html>
 # HTTP/1.1 200 OK
 # Server: nginx/1.30.7
-# Date: Thu, 19 Nov 2026 11:38:54 GMT
+# Date: Thu, 19 Nov 2026 12:39:47 GMT
 # Content-Type: application/octet-stream
 # Content-Length: 151
-# Last-Modified: Thu, 19 Nov 2026 11:38:54 GMT
+# Last-Modified: Thu, 19 Nov 2026 12:39:47 GMT
 # Connection: keep-alive
-# ETag: "6afedfce-97"
+# ETag: "6afeee13-97"
 # Accept-Ranges: bytes
 #
 # Get:2 http://localhost:8080 x86_64/apt-tests release [151B]
-# Err http://localhost:8080 noarch/apt-tests pkglist
-#   The http server sent an invalid Content-Range header
-# Err http://localhost:8080 noarch/apt-tests release
-#   Bad header line
-# Fetched 1035B in 0s (54.0kB/s)
-# E: Failed to fetch http://localhost:8080/noarch/base/pkglist.apt-tests  The http server sent an invalid Content-Range header
-# E: Failed to fetch http://localhost:8080/noarch/base/release.apt-tests  Bad header line
-# E: Some index files failed to download. They have been ignored, or old ones used instead.
+# Get:3 http://localhost:8080 noarch/apt-tests pkglist [548B]
+# Get:4 http://localhost:8080 noarch/apt-tests release [151B]
+# Fetched 1187B in 0s (64.5kB/s)
+# Reading Package Lists...
+# Building Dependency Tree...
 # Test of regex match of apt-cache show simple-package … PASS
 # Test for successful execution of the last cmd  … PASS
 # Package: simple-package
 # Section: Other
 # Installed Size: 0
 # Maintainer: test@example.net
-# Version: 1-alt1@1795088278
+# Version: 1-alt1@1795091902
 # Pre-Depends: rpmlib(FileDigests) (<= 4.6.0-1), rpmlib(PayloadIsLzma)
 # Provides: simple-package (= 1-alt1)
 # Architecture: x86_64
 # Size: 1296
-# MD5Sum: f60a1233e1705b8a7385b4ee4ddd9fb5
+# MD5Sum: 0d20363cd171588627759fe7b1a8eb91
 # Filename: simple-package-1-alt1.x86_64.rpm
 # Description: Test package
 #  Dummy description
@@ -407,14 +309,29 @@ testfailure aptcache show nosuchpkg
 #  * Mon Sep 30 2019 Nobody <nobody@altlinux.org> 1-alt1
 #  - Test package created
 #
-# Test for failure in execution of apt-cache show simple-package-noarch … PASS
-# W: Unable to locate package simple-package-noarch
-# E: No packages found
+# Test for failure in execution of apt-cache show simple-package-noarch … FAIL
+# Package: simple-package-noarch
+# Section: Other
+# Installed Size: 0
+# Maintainer: test@example.net
+# Version: 1-alt1@1795091902
+# Pre-Depends: rpmlib(FileDigests) (<= 4.6.0-1), rpmlib(PayloadIsLzma)
+# Provides: simple-package-noarch (= 1-alt1)
+# Architecture: noarch
+# Size: 1316
+# MD5Sum: 1ca83957afe4ca3fadebc343a92118fd
+# Filename: simple-package-noarch-1-alt1.noarch.rpm
+# Description: Test package
+#  Dummy description
+# Changelog:
+#  * Mon Sep 30 2019 Nobody <nobody@altlinux.org> 1-alt1
+#  - Test package created
+#
 # Test for failure in execution of apt-cache show nosuchpkg … PASS
 # W: Unable to locate package nosuchpkg
 # E: No packages found
 # NGINXLOG:
-# ==> ./1795088334.781266.localhost:8080(127.0.0.1) <==
+# ==> ./1795091987.419734.localhost:8080(127.0.0.1) <==
 #
 # Fd() = 3
 #
@@ -474,49 +391,49 @@ testfailure aptcache show nosuchpkg
 #
 # Read(65536) ...
 #
-# Read() = 1757
+# Read() = 1753
 # HTTP/1.1 200 OK
 # Server: nginx/1.30.7
-# Date: Thu, 19 Nov 2026 11:38:54 GMT
+# Date: Thu, 19 Nov 2026 12:39:47 GMT
 # Content-Type: application/octet-stream
-# Content-Length: 1503
-# Last-Modified: Thu, 19 Nov 2026 11:38:54 GMT
+# Content-Length: 1499
+# Last-Modified: Thu, 19 Nov 2026 12:39:47 GMT
 # Connection: keep-alive
-# ETag: "6afedfce-5df"
+# ETag: "6afeee13-5db"
 # Accept-Ranges: bytes
 #
 # Origin: ALT Linux Team
 # Label: apt-tests
 # Suite: apt-tests
-# Codename: 1795088334
-# Date: Thu, 19 Nov 2026 11:38:54 +0000
+# Codename: 1795091987
+# Date: Thu, 19 Nov 2026 12:39:47 +0000
 # Architectures: x86_64
 # Components: apt-tests
 # Description: ALT Linux apt-tests
 # MD5Sum:
-#  dd5db8fe223f79a380ec9070a73d035d 3003 base/pkglist.apt-tests
-#  a755a97977f28104eb2b01fbdd8d021e 884 base/pkglist.apt-tests.xz
-#  278e5a5749e7a07b13d4bdf8fbc8392c 151 base/release.apt-tests
+#  5cbc71d080d6aab741873a244430e4f8 3003 base/pkglist.apt-tests
+#  176a5325b7250cedcd6d15a6278847ba 884 base/pkglist.apt-tests.xz
+#  43afaa4e0d55dd1505b25355cd6266d6 151 base/release.apt-tests
 # BLAKE2b:
-#  76e36a8b5a301abfbad98e0eba498602c4a4b18549cce7e1df148ae345db39dfa3c1d5385da5510c28465ae1eccf0f8682527627dadb0f0c9f9561ae7ef1e55d 3003 base/pkglist.apt-tests
-#  c5c63c195e2649970681a8ea2555cedb6bdcd484afbf0cd091dc47ef522b7378c6cff4387195f7802dd8d29efa04e30859d403fa3fbd8ccbb2ce65e7c432c920 884 base/pkglist.apt-tests.xz
-#  83698fc2e30457ddbc0d7f109ad13b399e2350669d2a89c4462df3df053a99f702d0e5d4bdf31a22c63fb2a204472a9916f418b1abe99ad7a738f79096aecb1b 151 base/release.apt-tests
+#  a8ec2b76be3e77ad7aebc5848bf1b2c1d7773cb1ed1e62e6379f7f57a24c4fb21cdacfa672da6e9b9d93fc980f1006a40529ff5af3e69071d727df05e125e142 3003 base/pkglist.apt-tests
+#  8d64f610a4a004dea4c4713dede8829cf69bed1cebf441cef1fab9c5b1c7fd39c9e34f3eca8456cd7c0712a02ce3f5d5c3872614d98e567fa55fe342837bd454 884 base/pkglist.apt-tests.xz
+#  fc02ee589d16d7e3eacaa2ea38dd5c86dcfaf3d5e899c2f460e7ed6c2effef503b3b9c55f77ba4fd500c42b0b4d76ba7cce99b631dfc45463eec3e5f61db75a6 151 base/release.apt-tests
 #
 # -----BEGIN PGP SIGNATURE-----
 #
-# iQGcBAABCAAGBQJq/t/OAAoJEKlBadsSFSgHLl8MAJ+H1zS8B4ijj2Nm0aZu7k5A
-# etGdAmlCZlRPzCYIl3/PjhB0RwHn6DQWHvqjlYo4ltcYwZde37CWk2ur7UW696Se
-# NdoGHquYKt6VJ5jIRVWQMSwz+rP0gyznUBouuhzdu9xy8AbWJZbdrZdzTZccgxSo
-# oKFgZcczWs9BZJFmFYKB9tBydaKwzXwF/rQcGkda4Xqybryrht10z0qXpl8FiB5I
-# ANt+mYo02clwHJxkoNPQKY0WZsqQzG4P8VajubJcp0w8U6xurakycI2KBxrBrGOM
-# t3xRhZSki4lZJElxfWYqMTrqT/XATaFK5E/1G0ecSJvtuSIdCExfwX6t96iRpeol
-# 4G0XAVZSbwUMF0dUuLBwon42F6UbEMZCnkZMO1hquU2+gQkUW3ZO0+kktOiIQRES
-# rWRWMFlR6CCGz12ijDJs2UM3EM2iEISJhT409YNsjpp2xwf4AOuMcY7+zieGnB8r
-# F3MLidsqwBfaW5L13rOE7trhcxRabHtPf8Xe7+aT3g==
-# =lbMZ
+# iQGbBAABCAAGBQJq/u4TAAoJEMh6aDGFo/Yzh84L+Kfk1GALUTxy44k0AODFGC9D
+# KMOavFu1dePd2uEO02U2v/XD73LZ8srj8qSoLe6CaJ+tbvIKYYTGOBZrf2w3jL2t
+# PgJNpi1mR6riaIWot5JDYW/xLQDZuGXskq/4I7mD8zI5SGDWZOeAhF/hYCaZ/QQM
+# JLjhtCIjTgQ5OPTHj19HNnuOgGlkBuJBEWmBEe7aHhWcFuZjAgudD5xMmklIPdiS
+# smEx6usJInaSkqtObsOIvWkLZJBXw8hK28kL4B/TGKFG6OK8Ywx+5SBJklwV490+
+# b1Gp4uLEIkrI+/8jlD4CmWepQ2gLrAPthdLUyUHxxWAsgZbmlzhWE3BdPa+pIL8v
+# YmVy+UOwsNB4Lqhv2zfQW/4m3uWoo5nK8qlyoHskyQCcmMAgwDZ8swCdalDchwXW
+# oOGGcL+bQZ0wWEKsAHexs4tNP+bGLR8gwvXzl/yEceMGZ7iwkdrqbiILmB9sC5y3
+# KFDAYv9ovPaNFYtv77V3rZaFQG1vt5a8U/J4JPVl
+# =+gyx
 # -----END PGP SIGNATURE-----
 #
-# Read(63779) ...
+# Read(63783) ...
 #
 # Read() = -1
 #
@@ -608,51 +525,51 @@ testfailure aptcache show nosuchpkg
 #
 # Fd() = 3
 #
-# Read(63779) ...
+# Read(63783) ...
 #
 # Read() = 1755
 # HTTP/1.1 200 OK
 # Server: nginx/1.30.7
-# Date: Thu, 19 Nov 2026 11:38:54 GMT
+# Date: Thu, 19 Nov 2026 12:39:47 GMT
 # Content-Type: application/octet-stream
 # Content-Length: 1501
-# Last-Modified: Thu, 19 Nov 2026 11:38:54 GMT
+# Last-Modified: Thu, 19 Nov 2026 12:39:47 GMT
 # Connection: keep-alive
-# ETag: "6afedfce-5dd"
+# ETag: "6afeee13-5dd"
 # Accept-Ranges: bytes
 #
 # Origin: ALT Linux Team
 # Label: apt-tests
 # Suite: apt-tests
-# Codename: 1795088334
-# Date: Thu, 19 Nov 2026 11:38:54 +0000
+# Codename: 1795091987
+# Date: Thu, 19 Nov 2026 12:39:47 +0000
 # Architectures: noarch
 # Components: apt-tests
 # Description: ALT Linux apt-tests
 # MD5Sum:
-#  4f9ead116f6d3e1c4c2fae877931f474 953 base/pkglist.apt-tests
-#  d67ae8275189ec4d840f1b1c080ad0d2 548 base/pkglist.apt-tests.xz
-#  935a60f8758d527c882edf0b7acaf472 151 base/release.apt-tests
+#  59942435d693e124282f8ef46d4c2175 953 base/pkglist.apt-tests
+#  c8508ab30e4ac0d9eb1d64b8269a2ff6 548 base/pkglist.apt-tests.xz
+#  d9f07dfd858590bebc8ff855d448fe0c 151 base/release.apt-tests
 # BLAKE2b:
-#  1354389559ad82a37aa7f84235451716225f2865a3f26a4274c2fb95e767f1d5bd350d4e403942768c458dd766a309ea8a273d89c3757df793999483a839d7ff 953 base/pkglist.apt-tests
-#  17d563a571cfc2f12c49a9f35e3c3aadb4d2c41dbd1a52b377695caf9bf1693e5f59f5829cd85dea4e3ae56dbebdc45803d77d3644a836dbd5c93b3d707d6f89 548 base/pkglist.apt-tests.xz
-#  69bd029bae09f3c3a45b8386d29ef8188ad1507efb190f6b891e2018936b95c791342b64d4a7c0b20ad825746ecfb8a3a50b414817f28256d4882a313f5f88cc 151 base/release.apt-tests
+#  065bde10112d09cb30589fb4d12daf239db51b8b537359211dde514016eba729214729abcf18bef0dec2577f0000a54a520d914269bd8117d1a1c7d10e7f64ed 953 base/pkglist.apt-tests
+#  77e7c87430dcec338bd84687bbff3b00960937d7bd0e44917e896acf3b1a28013f6cc780d5d867b7df460a336467111f0867684e9d1fdf76555f921f7129591e 548 base/pkglist.apt-tests.xz
+#  06518a57a5cf0ee00f0e1691df55dbf945e11fb5806c9582d2d3298e823159b89f7e1b9fc715993bd23ea138b071a6d09505f9c4ae4056cb9975e5e837f870ab 151 base/release.apt-tests
 #
 # -----BEGIN PGP SIGNATURE-----
 #
-# iQGcBAABCAAGBQJq/t/OAAoJEKlBadsSFSgHraQL/jAA01Hec/03llTclZYk4KFb
-# B/0lDN26mM4LnfI0+uz5fYgFuG0JfmZxA+0siUixmEKGrumrOZHaCyPBIdz/wBfK
-# T6w48cqkUm2zKrnEJGuObJ8JHO4kZ/delmWLTtp6m/OOaz0iD3qk6JN+RUB1fQ2L
-# HFTUqxl16WDO9onTwVl1ot6K/0ub5wRbgYPFHBPd3NGUSVOjiF98s8uSCapo+5OY
-# 2gQ2PbzV4Qi7H8HKv8oze2aybe1dqL7uu8Kh+dDvXYKIrXhPzWQUV8OaY9qkJYba
-# EAUwwXZ325wHxZtNg4+pduOQxl4VzvCaFb9LIdR4G+Qkg9TJ8L+NWYLEPMjqExWP
-# I+MJ3j+Zucpgs0gJWAv+ES43MK61pDmxrBVrqZd70MfOyus3B6mWYKeZtwYl85yQ
-# oh7HxTmbHJNfHvNqqkyEmSUO6E3+bo8L4RusgwsyI/ljCDxhWYPwlhdmD1wR6OWt
-# C+SVStMrHomNXtvwA0dUIBKnlgQVXeemTfkGtSAlCg==
-# =EIC9
+# iQGcBAABCAAGBQJq/u4TAAoJEMh6aDGFo/Yzt4IMAIRgR6BGXmpxgcVv9hF9/BYK
+# Uj99ipSTzrdeRuyD3ackopGcrp2G7eohjKP4IjlENkVxHKPuQ+brPRryM0u194fk
+# +sbmO9l+DSFOoMXiIZONaAeoUZro5KOba8ht25b8J/AwBm/2/K957NjoDGBF0ViH
+# ExxlDQtV0MemAxrrlvV7OVjd7Ym1f6V6hamG3j5q/4CqQQFfFPTXONN5HVR0frsk
+# N3tW4nbuBptlDKE7FDBsiQ/Qb69QAmpdLRSSXapww6/01IkrbXjSpt5VyzB6Z8Y5
+# A2UWfF6YGDuivk5F+7QcHFbODdQT9q6jqTHsocEHoCFypjyrEN3eiKeZCnB2MKY+
+# c2DBQnN4Bn3ANHr6KwrsZ5VfFs+PQWZDptB+BM9aph6Df7JWmKM2F0WsxPVXtbu1
+# XydTr5pwK8ZWhcqsEmzM7c7y5ipfkOL5dF7uHOzjzr0Ng2pA4rb3LHZdtjHpUurd
+# di3yRKv36globOLzuaLN463yCxQBJDqMM6ROVU3CBw==
+# =D1wh
 # -----END PGP SIGNATURE-----
 #
-# Read(62024) ...
+# Read(62028) ...
 #
 # Read() = -1
 #
@@ -684,7 +601,7 @@ testfailure aptcache show nosuchpkg
 #
 # Fd() = 3
 #
-# ==> ./1795088334.790083.localhost:8080(127.0.0.1) <==
+# ==> ./1795091987.428345.localhost:8080(127.0.0.1) <==
 #
 # Fd() = 3
 #
@@ -747,18 +664,17 @@ testfailure aptcache show nosuchpkg
 # Read() = 1137
 # HTTP/1.1 200 OK
 # Server: nginx/1.30.7
-# Date: Thu, 19 Nov 2026 11:38:54 GMT
+# Date: Thu, 19 Nov 2026 12:39:47 GMT
 # Content-Type: application/octet-stream
 # Content-Length: 884
-# Last-Modified: Thu, 19 Nov 2026 11:38:54 GMT
+# Last-Modified: Thu, 19 Nov 2026 12:39:47 GMT
 # Connection: keep-alive
-# ETag: "6afedfce-374"
+# ETag: "6afeee13-374"
 # Accept-Ranges: bytes
 #
-# ý7zXZ\0\0æִFÀ²»!\0\0\0\0\0\0\0TYZàº*]\0G+Y\0©Æ2ü.	¬?D
-# év°Q)MÏS¡çoÞ^2ÉÎab§¼.r$¢ÐïnÅVT$Õ䓤ba>áûÁ(çû(y:5º/ÒéaãÆÁ,¼ÿIÄJ²´»h¬©­×%&v>©0ª®ѼV²_Z8êt%£÷ôc>ÈKLYôwD
-# Đ¶	uméÏ̐0ÕhgÑ,³Dòx{°"aÄ+ý7XC®jz²:\0y¹8lp"ûÝÇPwئíuRò¤&ìڥ:7޼¹bqóÓJNòCϳL[þÀqªTÖÕ̷ûĿ`K[u/R8сiûñÃ÷´îMáÌe®Õ@8ÐSސ«ç¸-ñÁ%½úæø]>©µû9Éì¼N½ÍÐrúÑ5Á²Ôå«¢Pq!>Üd9Kz
-# ¨ìvÐpKz­¤¾©\0\0\0X±ò~úU\0Î»\0\0×"í´±Ägû\0\0\0\0YZ
+# ý7zXZ\0\0æִFÀ±»!\0\0\0\0\0\0\0Jq8&àº)]\0G+Y\0©Æ2ü.	¬?D
+# MèÍ?'ÓÍÛ)¶µGôsλmq«èq¢ }dsCÏ ò;4Dåå{d­C9|îù«YBù¦5måÎsð*È5iGbãà&çɜn&ې¸¬ºE7·¼¹bo÷G2åÑ2çz¥¿YáààíeA ×3ÇîõyÎK؟ÒÐ(5QÆÒ6ޱ«NÚÀ~i~|r5e͸#6ÊoWmíáz5K»<³ õnó*bß\ozïÒè8|'Q:Öÿ0ÚÄîÙ$D1ü@%WÌJ¾מþ-Ü^óÁû²³>É ØyQA^³gf¶¤ëP^­dgWƧÝh¹Ø'Ã£¼m]M%noʑä#U/¡ιCZ½&±P0!ôsNÖñDҤ«Îimp¹ÚЙh{"ò·áâÌI¿òkvæ̰³íÜþ,ÔÂy©
+#  $oÍf·MR?Ûj4OîRzø$ìë4%Ê-Î#ÙSÄ|^{ݚÍ\0\0\0\0¡p]QÕûEw\0Í»\0\0yPy2±Ägû\0\0\0\0YZ
 # Read(64399) ...
 #
 # Read() = -1
@@ -836,8 +752,8 @@ testfailure aptcache show nosuchpkg
 # GET /noarch/base/pkglist.apt-tests.xz HTTP/1.1
 # Host: localhost:8080
 # Cache-Control: max-age=86400
-# Range: bytes=551-
-# If-Range: Thu, 19 Nov 2026 11:38:54 GMT
+# Range: bytes=547-
+# If-Range: Thu, 19 Nov 2026 12:39:47 GMT
 # User-Agent: RPM APT-HTTP/1.3
 #
 # GET /noarch/base/release.apt-tests HTTP/1.1
@@ -868,17 +784,17 @@ testfailure aptcache show nosuchpkg
 # Read() = 403
 # HTTP/1.1 200 OK
 # Server: nginx/1.30.7
-# Date: Thu, 19 Nov 2026 11:38:54 GMT
+# Date: Thu, 19 Nov 2026 12:39:47 GMT
 # Content-Type: application/octet-stream
 # Content-Length: 151
-# Last-Modified: Thu, 19 Nov 2026 11:38:54 GMT
+# Last-Modified: Thu, 19 Nov 2026 12:39:47 GMT
 # Connection: keep-alive
-# ETag: "6afedfce-97"
+# ETag: "6afeee13-97"
 # Accept-Ranges: bytes
 #
 # Archive: ALT Linux apt-tests
 # Component: apt-tests
-# Version: 1795088334
+# Version: 1795091987
 # Origin: ALT Linux Team
 # Label: apt-tests
 # Architecture: x86_64
@@ -940,24 +856,19 @@ testfailure aptcache show nosuchpkg
 #
 # Read(63996) ...
 #
-# Read() = 402
-# HTTP/1.1 416 Requested Range Not Satisfiable
+# Read() = 277
+# HTTP/1.1 206 Partial Content
 # Server: nginx/1.30.7
-# Date: Thu, 19 Nov 2026 11:38:54 GMT
-# Content-Type: text/html
-# Content-Length: 197
+# Date: Thu, 19 Nov 2026 12:39:47 GMT
+# Content-Type: application/octet-stream
+# Content-Length: 1
+# Last-Modified: Thu, 19 Nov 2026 12:39:47 GMT
 # Connection: keep-alive
-# Content-Range: bytes */548
+# ETag: "6afeee13-224"
+# Content-Range: bytes 547-547/548
 #
-# <html>
-# <head><title>416 Requested Range Not Satisfiable</title></head>
-# <body>
-# <center><h1>416 Requested Range Not Satisfiable</h1></center>
-# <hr><center>nginx/1.30.7</center>
-# </body>
-# </html>
-#
-# Read(63594) ...
+# Z
+# Read(63719) ...
 #
 # Read() = -1
 #
@@ -983,36 +894,56 @@ testfailure aptcache show nosuchpkg
 #
 # Fd() = 3
 #
-# Fd() = 3
-#
-# Fd() = 3
-#
-# Fd() = 3
-#
-# Read(63594) ...
+# Read(63719) ...
 #
 # Read() = 403
 # HTTP/1.1 200 OK
 # Server: nginx/1.30.7
-# Date: Thu, 19 Nov 2026 11:38:54 GMT
+# Date: Thu, 19 Nov 2026 12:39:47 GMT
 # Content-Type: application/octet-stream
 # Content-Length: 151
-# Last-Modified: Thu, 19 Nov 2026 11:38:54 GMT
+# Last-Modified: Thu, 19 Nov 2026 12:39:47 GMT
 # Connection: keep-alive
-# ETag: "6afedfce-97"
+# ETag: "6afeee13-97"
 # Accept-Ranges: bytes
 #
 # Archive: ALT Linux apt-tests
 # Component: apt-tests
-# Version: 1795088334
+# Version: 1795091987
 # Origin: ALT Linux Team
 # Label: apt-tests
 # Architecture: noarch
 # NotAutomatic: false
 #
-# Read(63191) ...
+# Read(63316) ...
 #
 # Read() = -1
+#
+# Fd() = 3
+#
+# Fd() = 3
+#
+# Fd() = 3
+#
+# Fd() = 3
+#
+# Fd() = 3
+#
+# Fd() = 3
+#
+# Fd() = 3
+#
+# Fd() = 3
+#
+# Fd() = 3
+#
+# Fd() = 3
+#
+# Fd() = 3
+#
+# Fd() = 3
+#
+# Fd() = 3
 #
 # Fd() = 3
 #
