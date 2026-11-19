@@ -1,0 +1,56 @@
+#!/bin/bash
+set -eu
+
+TESTDIR=$(readlink -f $(dirname $0))
+
+case "$APT_TEST_METHOD" in
+	cdrom*)
+		echo 'SKIP (not ready for apt-cdrom, because it fetches the lists earlier)' >&2
+		exit 0
+		;;
+	http*) :
+	       ;;
+	*)
+	    # in our setup...
+		echo 'SKIP (other methods do not seem to fetch the compressed list...)' >&2
+		exit 0
+	       ;;
+esac
+
+. $TESTDIR/framework
+
+setupenvironment
+
+buildpackage 'simple-package'
+buildpackage 'simple-package-noarch'
+buildpackage 'conflicting-package-one'
+buildpackage 'conflicting-package-two'
+
+generaterepository_and_switch_sources "$TMPWORKINGDIRECTORY/usr/src/RPM/RPMS"
+
+# Inject (if bad, apt-get update should fail or refetch/retry):
+readonly REPO_NOARCH_PKGLIST="$REPO_STORAGE/$NOARCH_DISTRO/base/pkglist.$DISTRO_COMPONENT$REPO_COMPR_EXT"
+{
+    head -c-4 "$REPO_NOARCH_PKGLIST"
+    printf AA
+} >"$APT_FETCHED_PARTIAL_NOARCH_PKGLIST"
+# assert the size (in partial/) is smaller:
+[ "$(stat -c '%s' "$REPO_NOARCH_PKGLIST")" \
+      -gt \
+      "$(stat -c '%s' "$APT_FETCHED_PARTIAL_NOARCH_PKGLIST")" \
+    ]
+# Final touch with the right time, so that no one notices.
+touch -r "$REPO_NOARCH_PKGLIST" -- "$APT_FETCHED_PARTIAL_NOARCH_PKGLIST"
+
+# Cksum verification shouldn't pass.
+APT_TEST_XFAIL=yes
+# xz reports an error. But xz shouldn't be called
+# if there is a checksum mismatch (to avoid a bomb etc.) See below for a log.
+testregexmatch '.*Checksum mismatch.*' \
+	       aptget update
+testfailure
+testregexmatch '.*nobody@.*' \
+	       aptcache show simple-package
+testsuccess
+testfailure aptcache show simple-package-noarch
+testfailure aptcache show nosuchpkg
