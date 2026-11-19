@@ -162,7 +162,7 @@ generaterepository() {
 #   (or other actions, according to $APT_TEST_METHOD)
 # * global vars APT_SOURCES_SITE, APT_SOURCES_URI -- how apt sees its source repo:
 #   - APT_SOURCES_SITE is shown as "Site:" by apt-cache dump
-#   - APT_SOURCES_URI IS used in sources.list and to identify files in APT_LISTS_DIR
+#   - APT_SOURCES_URI is used in sources.list and to identify files in APT_LISTS_DIR
 # * sources.list configured accordingly
 #
 # (The global vars are convenient for other scripts to refer to these values.)
