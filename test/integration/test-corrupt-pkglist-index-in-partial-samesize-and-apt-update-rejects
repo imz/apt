@@ -29,22 +29,17 @@ buildpackage 'conflicting-package-two'
 generaterepository_and_switch_sources "$TMPWORKINGDIRECTORY/usr/src/RPM/RPMS"
 
 # Inject (if bad, apt-get update should fail or refetch/retry):
-
-# 1. Fake pkglist in a copy. (only noarch, since a noarch pkg must be present)
-# (It's simpler just to use corrupt_pkglist_in_repo_noarch(), which does
-# re-compression etc. BTW, not sure that thesize slways stays the same (FIXME).)
 readonly REPO_NOARCH_PKGLIST="$REPO_STORAGE/$NOARCH_DISTRO/base/pkglist.$DISTRO_COMPONENT$REPO_COMPR_EXT"
-mv "${REPO_NOARCH_PKGLIST%/*}"{,.orig}
-cp -a "${REPO_NOARCH_PKGLIST%/*}"{.orig,}
-corrupt_pkglist_in_repo_noarch \
-    sed -Ee 's:nobody:oooody:'
-# 2. Inject the fake/corrupt one.
-cp -a "$REPO_NOARCH_PKGLIST" \
-   -T "$APT_FETCHED_PARTIAL_NOARCH_PKGLIST"
-# 3. Restore the repo.
-rm -rf "${REPO_NOARCH_PKGLIST%/*}"
-mv "${REPO_NOARCH_PKGLIST%/*}"{.orig,}
-# 4. Final touch with the right time, so that no one notices.
+{
+    head -c-1 "$REPO_NOARCH_PKGLIST"
+    printf A
+} >"$APT_FETCHED_PARTIAL_NOARCH_PKGLIST"
+# assert the size is the same:
+[ "$(stat -c '%s' "$REPO_NOARCH_PKGLIST")" \
+      = \
+      "$(stat -c '%s' "$APT_FETCHED_PARTIAL_NOARCH_PKGLIST")" \
+    ]
+# Final touch with the right time, so that no one notices.
 touch -r "$REPO_NOARCH_PKGLIST" -- "$APT_FETCHED_PARTIAL_NOARCH_PKGLIST"
 
 # Cksum verification shouldn't pass.
