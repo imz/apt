@@ -1206,23 +1206,23 @@ int HttpMethod::DealWithHeaders(FetchResult &Res,ServerState *Srv)
 	 return 5;
    }
 
-   // Set the start point
-   lseek(File->Fd(),0,SEEK_END);
-
    delete Srv->In.Hash;
    Srv->In.Hash = new Hashes;
 
    // Fill the Hash if the file is non-empty (resume)
    if (Srv->StartPos > 0)
    {
-      lseek(File->Fd(),0,SEEK_SET);
+      // the offset is always 0 after open; ftruncate doesn't change the offset;
+      // so we start reading from 0
       if (Srv->In.Hash->AddFD(File->Fd(),Srv->StartPos) == false)
       {
 	 _error->Errno("read",_("Problem hashing file"));
 	 return 5;
       }
-      lseek(File->Fd(),0,SEEK_END);
    }
+
+   // Set the start point
+   lseek(File->Fd(),0,SEEK_END);
 
    SetNonBlock(File->Fd(),true);
    return 0;
