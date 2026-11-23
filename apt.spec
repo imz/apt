@@ -3,7 +3,7 @@
 
 Name: apt
 Version: 0.5.15lorg2
-Release: alt99.p10.1
+Release: alt104.p10.1
 
 Summary: Debian's Advanced Packaging Tool with RPM support
 Summary(ru_RU.UTF-8): Debian APT - Усовершенствованное средство управления пакетами с поддержкой RPM
@@ -496,9 +496,11 @@ exec 1>&2
 %_datadir/%name/tests/
 
 %changelog
-* Sun Feb 22 2026 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt99.p10.1
+* Mon Nov 23 2026 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt104.p10.1
 - Merged all fixes from Sisyphus into p10
-  (but with the experimental columnar output turned off).
+  (with apt-cdrom supporting compressed pkglists; with new zstd method).
+- Fixes:
+  + CVE-2026-109518 write to other archives after a malicious redirect HTTP response
 
 * Thu Nov 19 2026 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt105
 - Ensured that the http method creates a fresh file. Made it copy partially
