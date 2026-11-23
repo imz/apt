@@ -301,6 +301,7 @@ setupenvironment() {
 	cd rootdir
 	mkdir -p \
 		  etc/apt/apt.conf.d etc/apt/sources.list.d \
+		  etc/apt/vendors.list.d \
 		  etc/apt/trusted.gpg.d etc/apt/preferences.d
 	mkdir -p var/cache var/lib/apt var/log tmp
 	mkdir -p var/lib/rpm
@@ -314,6 +315,9 @@ setupenvironment() {
 		echo "Dir::Cache \"${TMPWORKINGDIRECTORY}/rootdir/var/cache/apt/\";"
 		echo 'Debug::NoLocking "true";'
 		echo "Dir::Etc::sourcelist \"${TMPWORKINGDIRECTORY}/rootdir/etc/apt/sources.list\";"
+		echo "Dir::Etc::sourceparts \"${TMPWORKINGDIRECTORY}/rootdir/etc/apt/sources.list.d\";"
+		echo "Dir::Etc::vendorlist \"${TMPWORKINGDIRECTORY}/rootdir/etc/apt/vendors.list\";"
+		echo "Dir::Etc::vendorparts \"${TMPWORKINGDIRECTORY}/rootdir/etc/apt/vendors.list.d\";"
 		echo 'RPM::Options { "--justdb"; };'
 
 		if [ -n "$METHODSDIR" ] ; then

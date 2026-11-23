@@ -502,6 +502,9 @@ exec 1>&2
 - Fixes:
   + CVE-2026-109518 write to other archives after a malicious redirect HTTP response
 
+* Mon Nov 23 2026 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt106
+- tests: Fixed to successfully run with unforeseen system-wide sources.list.d.
+
 * Thu Nov 19 2026 Ivan Zakharyaschev <imz@altlinux.org> 0.5.15lorg2-alt105
 - Ensured that the http method creates a fresh file. Made it copy partially
   downloaded content (on a resume). (thx Debian) The old behavior may lead
