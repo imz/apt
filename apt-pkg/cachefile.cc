@@ -424,7 +424,7 @@ bool CacheFile::CanCommit() const
 // ---------------------------------------------------------------------
 /* This prints out a vector of strings with the given indent and in as
    many columns as will fit the screen width.
-   
+
    The output looks like:
   abiword                debootstrap                  gir1.2-upowerglib-1.0
   abiword-common         dh-make                      google-chrome-beta

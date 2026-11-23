@@ -1,0 +1,35 @@
+root = true
+
+[*]
+end_of_line = lf
+charset = utf-8
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+[*.{c,cc,h}]
+indent_style = space
+indent_size  = 3
+tab_width    = 8
+
+[{Makefile,Makefile.*,*.am}]
+indent_style = tab
+
+[*.m4]
+indent_style = tab
+
+[configure.ac]
+indent_style = tab
+
+[*.spec]
+indent_style = tab
+
+[*.sh]
+indent_style = tab
+
+[*.lua]
+indent_style = space
+indent_size = 4
+
+[*.py]
+indent_style = space
+indent_size = 4

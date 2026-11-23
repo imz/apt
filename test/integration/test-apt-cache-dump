@@ -19,10 +19,6 @@ generaterepository_and_switch_sources "$TMPWORKINGDIRECTORY/usr/src/RPM/RPMS"
 
 testsuccess aptget update
 
-# useful regexes:
-readonly NL=$'\n'
-readonly ANY="[^$NL]"
-
 # values occurring many times in the dump:
 
 set_regex_quote_str APT_SOURCES_SITE_RE "${APT_SOURCES_SITE//[][]}"
@@ -76,20 +72,26 @@ readonly -a dump_pkgs=(
 
 )
 
-if [ -n "$APT_TEST_GPGPUBKEY" ]; then
-	dump_with_gpgpubkey=(
-		"Package: gpg\($ANY*@$ANY*\)"
+dump_with_gpgpubkey=()
+for (( i=0; i < APT_TEST_GPGPUBKEY; ++i )); do
+    id="$(tr [:upper:] [:lower:] <"$APT_TEST_INTERMEDIATES"/gpg-pubkey/"$i"/id)"
+    id32bit="$(echo -n "$id" | tail -c 8)"
+    time="$(<"$APT_TEST_INTERMEDIATES"/gpg-pubkey/"$i"/time)"
+    printf -v time_hex '%x' "$time"
+    time_hex="${time_hex#0x}"
+    evrdt_re="$id32bit-$time_hex@$time"
+    dump_with_gpgpubkey=(
+	"${dump_with_gpgpubkey[@]}"
+	"Package: gpg\(Some One <$i@example\.com>\)"
 
-		"Package: gpg\($ANY*\)"
+	"Package: gpg\($id32bit\)"
 
-		"Package: gpg-pubkey
- Version: [^-$NL]*-[^-$NL]*@[0-9]+
+	"Package: gpg-pubkey#$evrdt_re
+ Version: $evrdt_re
      File: /$ANY*/var/lib/rpm/Packages"
 
-	)
-else
-	dump_with_gpgpubkey=()
-fi
+    )
+done
 readonly -a dump_with_gpgpubkey
 
 readonly dump_rpmdb="File: /$ANY*/var/lib/rpm/Packages

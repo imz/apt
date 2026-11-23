@@ -23,7 +23,7 @@ testsuccess aptget update
 #
 # (For faking individual cksums, see other tests,
 # like test-apt-install-verifies-CKSUM-of-rpm-archive.)
-fake_repo_noarch_rpm simple-package-noarch \
+corrupt_rpm_in_repo_noarch simple-package-noarch \
     sed -Ee '1 s:simple:dimple:'
 
 # Cksum verification shouldn't pass.

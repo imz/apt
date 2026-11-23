@@ -173,7 +173,7 @@ bool DebugMethodFd(const std::string &LogDir, std::unique_ptr<MethodFd> &MFd)
 
 bool DebugMethodFdIfRequired(std::unique_ptr<MethodFd> &MFd)
 {
-   // FindDir never returns an empty string, so we can't use it as an indicator. 
+   // FindDir never returns an empty string, so we can't use it as an indicator.
    std::string const LogDir = _config->FindFile("Debug::Connect");
    if (! LogDir.empty())
    {

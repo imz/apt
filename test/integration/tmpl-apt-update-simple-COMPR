@@ -1,0 +1,33 @@
+#!/bin/bash
+set -eu
+
+# Run (and see the errrors if any) in either case:
+# 1. the feature is present;
+# 2. that's our development branch Sisyphus; better see the errors than hide;
+# -- no, seems to be not reliable for sisyphus_e2k:
+#    [ "$(rpm --eval '%_priority_distbranch')" = sisyphus ] ||
+# 3. supposed on the version, it should be there; see if it doesn't work.
+{ genbasedir -h 2>&1 | grep -q -Fe --no-compression; } ||
+    [ "$(rpmvercmp "$(rpm -q --qf '%{VERSION}' apt-repo-tools 2>/dev/null)" 0.11)" -ge 0 ] ||
+    {
+	echo 'SKIP (genbasedir --no-compression feature is lacking)' >&2
+	exit 0
+	# FIXME: we can delete the extra files manually (perhaps),
+	# so that we don't have to rely on this smart new option for testing.
+    }
+
+readonly COMPR_OPT="${0##*-}"
+
+TESTDIR=$(readlink -f $(dirname $0))
+. $TESTDIR/framework
+
+APT_TEST_BASEDIR_COMPRESSION_OPTS="--no-compression --$COMPR_OPT"
+
+setupenvironment
+
+buildpackage 'simple-package'
+
+generaterepository_and_switch_sources "$TMPWORKINGDIRECTORY/usr/src/RPM/RPMS"
+
+testsuccess aptget update
+testsuccess aptcache show simple-package

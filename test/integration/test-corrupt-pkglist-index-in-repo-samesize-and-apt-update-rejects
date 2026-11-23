@@ -25,7 +25,7 @@ generaterepository_and_switch_sources "$TMPWORKINGDIRECTORY/usr/src/RPM/RPMS"
 #
 # (For faking individual cksums, see other tests,
 # like test-apt-update-verifies-CKSUM-of-pkglist-index.)
-fake_repo_noarch_pkglist \
+corrupt_pkglist_in_repo_noarch \
     sed -Ee 's:nobody:oooody:'
 
 # Cksum verification shouldn't pass.

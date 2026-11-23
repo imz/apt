@@ -20,8 +20,46 @@ cp -a "$REPO_NOARCH_PKGLIST" \
 touch -r "$REPO_NOARCH_PKGLIST" -- "$APT_FETCHED_PARTIAL_NOARCH_PKGLIST"
 
 # Test apt-get update the 2nd time.
-
-testsuccess aptget update
+#
+# We see that the partial file, which is actually complete, gets
+# downloaded (in some way) and the other ones are hit after asking the
+# server. If something is corrupt, then--first--the partial download
+# may fail and--second--it may affect the next request (of the next
+# item), as we will demonstrate in another test (for the handling of
+# invalid range response in APT http client code).
+#
+# So, we write down what we see as a match here, so that we have what to expect
+# as correct behavior.
+#
+# Technical notes on "where":
+#
+# ${APT_TEST_METHOD%%_*}://$APT_SOURCES_URI
+# APT_SOURCES_URI := "$APT_SOURCES_SITE:$NGINX_PORT"
+# APT_SOURCES_SITE := "$NGINX_IP" | "$NGINX_HOST"
+#
+# And actually there is no need in an exact match here of the concrete "where";
+# we could just go with any METHOD://SITE(:PORT)? expression.
+set_regex_quote_str where "${APT_TEST_METHOD%%_*}://$APT_SOURCES_URI"
+case "$APT_TEST_METHOD" in
+    file*|cdrom*)
+	testsuccess aptget update
+	;;
+    copy*)
+	# APT TODO: make copy: support partial fetches and hits.
+	testregexmatch --match-stdout ".*
+Get:[0-9] copy: noarch/apt-tests pkglist \[[0-9]+k?B\]
+Get:[0-9] copy: .*" \
+		       aptget update
+	testsuccess
+	;;
+    *)
+	testregexmatch --match-stdout ".*
+Get:1 $where noarch/apt-tests pkglist \[[0-9]+k?B\]
+Hit .*" \
+		       aptget update
+	testsuccess
+	;;
+esac
 testsuccess aptcache show simple-package
 testsuccess aptcache show simple-package-noarch
 testfailure aptcache show nosuchpkg

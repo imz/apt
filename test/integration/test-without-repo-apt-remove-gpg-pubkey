@@ -3,7 +3,7 @@ set -eu
 
 TESTDIR=$(readlink -f $(dirname $0))
 
-if [ -z "${APT_TEST_GPGPUBKEY}" ]; then
+if (( APT_TEST_GPGPUBKEY == 0 )); then
 	echo 'SKIP (requires the presence of APT_TEST_GPGPUBKEY)' >&2
 	exit 0
 fi
@@ -13,5 +13,7 @@ fi
 setupenvironment
 
 testpkginstalled 'gpg-pubkey'
-testsuccess aptget -y remove 'gpg-pubkey'
+# Unless there is a final $, a + of the regex may be interpreted
+# as a request to "install", not "remove":
+testsuccess aptget -y remove "gpg-pubkey#$EVRDT_re$"
 testpkgnotinstalled 'gpg-pubkey'

@@ -4,13 +4,11 @@ set -eu
 TESTDIR=$(readlink -f $(dirname $0))
 
 . $TESTDIR/framework-without-repo
-prereq $TESTDIR/try-apt-method-http-when-allowed-only-proxy
+prereq $TESTDIR/try-method-http-when-allowed-only-proxy
 
 # use the saved value
-msgmsg "Setting proxy for http in apt in config: $APT_TEST_HTTP_PROXY"
-cat > "$APT_TEST_PROXY_FOR_HTTP_CONF" <<- END
-Acquire::http::Proxy	"$APT_TEST_HTTP_PROXY";
-END
+msgmsg "Setting http_proxy env: $APT_TEST_HTTP_PROXY"
+export http_proxy="$APT_TEST_HTTP_PROXY"
 
 testsuccess aptget update
 

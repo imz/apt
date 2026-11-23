@@ -34,7 +34,7 @@ generaterepository_and_switch_sources "$TMPWORKINGDIRECTORY/usr/src/RPM/RPMS"
 # Fake the cksum of pkglist (only noarch, since a noarch pkg is definitely present).
 #
 # (For faking the pkglist itself, see other tests,
-# like test-apt-update-rejects-fake-pkglist-index.)
+# like test-corrupt-pkglist-index-in-repo-samesize-and-apt-update-rejects.)
 case "$CKSUM_TYPE" in
 	Size)
 		fake_repo_noarch_pkglist_size

@@ -30,7 +30,7 @@ generaterepository_and_switch_sources "$TMPWORKINGDIRECTORY/usr/src/RPM/RPMS"
 # Fake the cksum of the rpm.
 #
 # (For faking the rpm itself, see other tests,
-# like test-apt-install-rejects-fake-rpm-archive.)
+# like test-corrupt-rpm-archive-in-repo-samesize-and-apt-install-rejects.)
 fake_repo_rpm_cksum "$CKSUM_TYPE" simple-package-noarch
 
 testsuccess aptget update

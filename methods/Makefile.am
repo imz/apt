@@ -9,6 +9,7 @@ install-data-hook: | install-methodsPROGRAMS
 	&& $(LN_S) rsh ssh \
 	&& $(LN_S) gzip bzip2 \
 	&& $(LN_S) gzip xz \
+	&& $(LN_S) gzip zstd \
 	)
 
 # We care about warnings during LTO. They are like g++ warnings. The flags have

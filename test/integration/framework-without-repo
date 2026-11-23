@@ -310,7 +310,8 @@ setupenvironment() {
 	cd ..
 
 	{
-		echo "Dir \"${TMPWORKINGDIRECTORY}/rootdir\";"
+		echo "Dir::State \"${TMPWORKINGDIRECTORY}/rootdir/var/lib/apt/\";"
+		echo "Dir::Cache \"${TMPWORKINGDIRECTORY}/rootdir/var/cache/apt/\";"
 		echo 'Debug::NoLocking "true";'
 		echo "Dir::Etc::sourcelist \"${TMPWORKINGDIRECTORY}/rootdir/etc/apt/sources.list\";"
 		echo 'RPM::Options { "--justdb"; };'
@@ -318,6 +319,8 @@ setupenvironment() {
 		if [ -n "$METHODSDIR" ] ; then
 			echo "Dir::Bin::methods \"$METHODSDIR\";"
 		fi
+
+		echo "#include \"${TMPWORKINGDIRECTORY}/rootdir/etc/apt/apt.conf.d/\";"
 	} > aptconfig.conf
 
 	cat > rootdir/etc/apt/pkgpriorities << END
@@ -367,19 +370,14 @@ END
 	# Initialize rpmdb
 	rpmdb --initdb
 
-	# Include a special kind of pkg in the db to see how APT processes it
-	if [ -n "$APT_TEST_GPGPUBKEY" ]; then
-		rpm --import "$APT_TEST_GPGPUBKEY"
-	fi
-
-	# setup lua stuff
-	mkdir -p $TMPWORKINGDIRECTORY/lua/scripts
-	mkdir -p $TMPWORKINGDIRECTORY/lua/results
-	echo "Dir::Bin::scripts \"$TMPWORKINGDIRECTORY/lua/scripts\";" > rootdir/etc/apt/apt.conf.d/90lua.conf
-
-	# setup bash scripts
-	mkdir -p $TMPWORKINGDIRECTORY/bash/scripts
-	mkdir -p $TMPWORKINGDIRECTORY/bash/results
+	# Include a special kind of pkg(s) in the db to see how APT processes it
+	# (arith.expansion of empty value is 0; non-number would error with -u)
+	local i pubkey
+	for (( i=0; i<APT_TEST_GPGPUBKEY; ++i )); do
+	    pubkey=gpg-pubkey/"$i"/pubkey.asc
+	    mk_intermediate "$pubkey" gpg_keygen
+	    rpm --import "$APT_TEST_INTERMEDIATES"/"$pubkey"
+	done
 
 	# for rpmbuild
 	mkdir -p $TMPWORKINGDIRECTORY/tmp
@@ -402,6 +400,18 @@ END
 	msgdebug "$(rpm --eval '_tmppath: %_tmppath')"
 }
 
+# Usage: mk_intermediate prefix/name/out_basename build_cmd
+#
+# It is meant then to call build_cmd when needed approximately like this:
+#
+# build_cmd $APT_TEST_INTERMEDIATES/prefix name out_basename
+#
+# to generate the file under the path given as the arg, i.e.:
+#
+# $APT_TEST_INTERMEDIATES/prefix/name/out_basename
+#
+# or actually not just the single given file (which can be waited upon by
+# concurrent processes), but rather everything useful under prefix/name/.
 mk_intermediate() {
     local -r what="$1"; shift
     local -r build_cmd="$1"; shift
@@ -711,6 +721,23 @@ testregexmatch() {
 		MSG=''
 		shift
 	fi
+	local -r MSG
+
+	local match_stdout=
+	case "$1" in
+	    --match-stdout) match_stdout=yes
+			    shift
+			    ;;
+	esac
+	local -r match_stdout
+
+	local not=
+	case "$1" in
+	    --not) not=yes
+			    shift
+			    ;;
+	esac
+	local -r not
 
 	local COMPAREMSG="$1"
 	shift
@@ -720,24 +747,43 @@ testregexmatch() {
 	fi
 
 	OUTPUT="${TMPWORKINGDIRECTORY}/rootdir/tmp/testregexmatch.output"
+	local output_for_matching
 
 	local result=0 # not to be overwritten inside the tested command ("$@")
-	"$@" &> $OUTPUT || result=$?
+	{ if [ -z "$match_stdout" ]; then
+	      output_for_matching="$OUTPUT"
+	      "$@"
+	  else
+	      output_for_matching="$OUTPUT"-for-matching
+	      "$@" | tee "$output_for_matching"
+	      # we rely of set -o pipefail for setting result below
+	  fi
+	} &> $OUTPUT || result=$?
 	RESULT=$result # the global var to hold this value (could be overwritten)
-	local OUTPUT_STR
+	local -r output_for_matching
+	local output_str
 	# disable IFS not to strip spaces at the beginning and the end of file
-	IFS= read -rd '' OUTPUT_STR <"$OUTPUT" ||
+	IFS= read -rd '' output_str <"$output_for_matching" ||
 	    : # non-zero status always (because of EOF)
-	local -r OUTPUT_STR
+	local -r output_str
 
-	if [[ "$OUTPUT_STR" =~ ^$COMPAREMSG$ ]] ; then
+	if [[ "$output_str" =~ ^$COMPAREMSG$ ]] ; then
+	    if [ -z "$not" ]; then
 		msgpass
+	    else
+		msgfail
+		printf >&6 '%s' "$COMPAREMSG"
+	    fi
 	else
+	    if [ -z "$not" ]; then
 		msgfail
 		local COMPAREFILE="${TMPWORKINGDIRECTORY}/rootdir/tmp/testregexmatch.comparefile"
 		printf '%s' "$COMPAREMSG" > $COMPAREFILE
-		checkdiff $COMPAREFILE $OUTPUT || true
+		checkdiff "$COMPAREFILE" "$output_for_matching" || true
 		echo >&6 "$DIFFTEXT"
+	    else
+		msgpass
+	    fi
 	fi
 }
 
@@ -782,26 +828,45 @@ testpartsexhaust() {
 	read -rd '' OUTPUT_STR <"$OUTPUT" ||
 	    : # non-zero status always (because of EOF)
 
+	local OUTPUT_STR_before_the_try
+
 	local REGEXPART
-	for REGEXPART in "${REGEXPARTS[@]}"; do
+	# If OUTPUT_STR is empty, all REGEXPARTS will be
+	# the final unmatched regexparts
+	local -a UNMATCHED_PARTS=("${REGEXPARTS[@]}")
+
+	while [ "$OUTPUT_STR" != '' ]; do
+	    OUTPUT_STR_before_the_try="$OUTPUT_STR"
+
+	    UNMATCHED_PARTS=()
+	    for REGEXPART in "${REGEXPARTS[@]}"; do
 		if ! match_and_delete "$REGEXPART" OUTPUT_STR; then
-			msgfail
-			echo "${CINFO}*** During matching parts with the output result, a part couldn't be matched.${CNORMAL}"
-			echo "${CINFO}The remaining unmatched output:${CNORMAL}"
-			echo "${CINFO}----------------------------------------${CNORMAL}"
-			printf '%s' "$OUTPUT_STR"
-			echo "${CINFO}----------------------------------------${CNORMAL}"
-			echo "${CINFO}The part that didn't match:${CNORMAL}"
-			echo "${CINFO}----------------------------------------${CNORMAL}"
-			printf '%s' "$REGEXPART"
-			echo "${CINFO}----------------------------------------${CNORMAL}"
-			return
+		    UNMATCHED_PARTS=("${UNMATCHED_PARTS[@]}" "$REGEXPART")
 		fi
+	    done
+
+	    # Nothing changed? (Nothing has been cut out of OUTPUT_STR.)
+	    if [ "$OUTPUT_STR" = "$OUTPUT_STR_before_the_try" ]; then
+		break
+	    fi
+
+	    # Maybe now, after we've cut out some parts from OUTPUT_STR, there is
+	    # a continuous part that matches some of the UNMATCHED_PARTS. Try again!
+	    REGEXPARTS=("${UNMATCHED_PARTS[@]}")
 	done
-	if [ "$OUTPUT_STR" != '' ]; then
+
+	if [ "$OUTPUT_STR" != '' ] || [ 0 -lt ${#UNMATCHED_PARTS[@]} ]; then
 		msgfail
-		echo "${CINFO}The remaining unmatched output:"
-		echo "$OUTPUT_STR"
+		echo "${CINFO}The parts that didn't match:${CNORMAL}"
+		for REGEXPART in "${UNMATCHED_PARTS[@]}"; do
+			echo "${CINFO}----------------------------------------${CNORMAL}"
+			printf '%s\n' "$REGEXPART"
+			echo "${CINFO}----------------------------------------${CNORMAL}"
+		done
+		echo "${CINFO}The remaining unmatched output:${CNORMAL}"
+		echo "${CINFO}----------------------------------------${CNORMAL}"
+		printf '%s\n' "$OUTPUT_STR"
+		echo "${CINFO}----------------------------------------${CNORMAL}"
 	else
 		msgpass
 	fi
@@ -958,8 +1023,13 @@ testfailure() {
 }
 
 createluascript() {
-	local APTNAME="$1"
-	local SCRIPTFILENAME="$2"
+	local -r APTNAME="$1"
+	local -r SCRIPTFILENAME="$2"
+
+	# setup lua stuff
+	mkdir -p $TMPWORKINGDIRECTORY/lua/scripts
+	mkdir -p $TMPWORKINGDIRECTORY/lua/results
+	echo "Dir::Bin::scripts \"$TMPWORKINGDIRECTORY/lua/scripts\";" >| rootdir/etc/apt/apt.conf.d/90lua.conf
 
 	echo "$APTNAME:: \"${SCRIPTFILENAME}.lua\";" > rootdir/etc/apt/apt.conf.d/91lua-${SCRIPTFILENAME}.conf
 	cat > $TMPWORKINGDIRECTORY/lua/scripts/${SCRIPTFILENAME}.lua << ENDSCRIPT
@@ -970,8 +1040,12 @@ ENDSCRIPT
 }
 
 createbashscript() {
-	local APTNAME="$1"
-	local SCRIPTFILENAME="$2"
+	local -r APTNAME="$1"
+	local -r SCRIPTFILENAME="$2"
+
+	# setup bash scripts
+	mkdir -p $TMPWORKINGDIRECTORY/bash/scripts
+	mkdir -p $TMPWORKINGDIRECTORY/bash/results
 
 	echo "$APTNAME:: \"$TMPWORKINGDIRECTORY/bash/scripts/${SCRIPTFILENAME}.sh\";" > rootdir/etc/apt/apt.conf.d/92bash-${SCRIPTFILENAME}.conf
 	cat > $TMPWORKINGDIRECTORY/bash/scripts/${SCRIPTFILENAME}.sh << ENDSCRIPT
@@ -1031,7 +1105,7 @@ ssl_keygen() {
 	localhost6)
 	    ip=,IP:::1
 	    ;;
-    esac	
+    esac
 
     msginfo "Generating SSL key+cert: ${name}"
 
@@ -1044,6 +1118,51 @@ ssl_keygen() {
 	    -keyout "$prefix/$name"/key \
 	    -out "$prefix/$name/$out_basename" \
 	&>/dev/null
+}
+
+# for mk_intermediate
+gpg_keygen() {
+    local -r prefix="$1"; shift
+    local -r name="$1"; shift
+    local -r out_basename="$1"; shift
+    # must be already present; the wrapper mk_intermediate uses it as a lock:
+    local -r d="$prefix/$name"
+
+    msginfo "Generating GPG private+public key: ${name}"
+
+    GPG="${GPG:-gpg2} --no-permission-warning" \
+       gpg-keygen --passphrase '' \
+	       --name-real 'Some One' --name-email "$name"@example.com \
+	       "$d"/key \
+	       "$d/$out_basename" \
+	       >"$d"/id
+
+    ${GPG:-gpg2} --no-permission-warning \
+		 --list-packets "$d/$out_basename" |
+	sed -nEe 's:^.*created ([0-9]+),.*$:\1:p; T continue; q; :continue' \
+	    >"$d"/time
+}
+
+# for mk_intermediate
+#
+# Extending gpg_keygen to immediately have a secret keyring with it.
+# If you want to use it, just set GNUPGHOME to $prefix/$name/gnupghome
+gpg_keygen_ready_to_sign() {
+    # must be already present; the wrapper mk_intermediate uses it as a lock:
+    local -r d="$1/$2"
+
+    mkdir "$d"/gnupghome
+    # Override the temp GNUPGHOME dir in gpg-keygen with ours,
+    # so that we have it not removed
+    local gpgcmd
+    printf -v gpgcmd 'gpg2 --homedir=%q' "$d"/gnupghome
+    # Can't prepend $GPG with env (like this: GNUPGHOME=... gpg2), because
+    # splitting into simple commands would precede the expansion of $GPG.
+    GPG="$gpgcmd" \
+       gpg_keygen "$@"
+
+    # genbasedir seems to call gpg1; so gpg1 has to import our secret key:
+    gpg --homedir="$d"/gnupghome  --no-permission-warning --import "$d"/key
 }
 
 ############################################################
@@ -1132,3 +1251,14 @@ runaptcmd_in_bg_apt_shell() {
 aptcache_in_bg_apt_shell() { runaptcmd_in_bg_apt_shell apt-cache "$@"; }
 aptget_in_bg_apt_shell() { runaptcmd_in_bg_apt_shell apt-get "$@"; }
 aptmark_in_bg_apt_shell() { runaptcmd_in_bg_apt_shell apt-mark "$@"; }
+
+# useful regexes:
+readonly NL=$'\n'
+readonly ANY="[^$NL]"
+
+readonly EVRDT_re="[^-$NL]*-[^-$NL]*@[0-9]+"
+
+readonly INTRO_re='Reading Package Lists\.\.\.
+Building Dependency Tree\.\.\.'
+
+readonly rpmlib_predeps_re='(rpmlib\(FileDigests\) \(<= 4\.6\.0-1\), )?rpmlib\(PayloadIsLzma\)'

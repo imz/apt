@@ -34,22 +34,24 @@ aptcdrom() { runapt apt-cdrom "${CDROM_OPTS[@]}" "$@"; }
 # Output/effects:
 # * files in $repo_dir
 # * global var REPO_COMPR_EXT (the extension for the compressed pkglists there)
+# * global vars NOARCH_DISTRO, MYARCH_DISTRO, DISTRO_COMPONENT
+#   -- the paths under $REPO_STORAGE or $APT_SOURCES_URI; the final part
+#   specified in sources.list after the URI with the component/"label"
 generaterepository() {
 	local orig_dir="$1"
 	local repo_dir="$2"
 	local repo_date="${3-}"
 
-	local label="$GB_REPO_LABEL"
-	if [ -z "$label" ]; then
-		label="apt-tests"
+	DISTRO_COMPONENT="$GB_REPO_LABEL"
+	if [ -z "$DISTRO_COMPONENT" ]; then
+	        DISTRO_COMPONENT="apt-tests"
 	fi
 	local description="$GB_REPO_DESCRIPTION"
 	if [ -z "$description" ]; then
-		description="ALT Linux $label"
+		description="ALT Linux $DISTRO_COMPONENT"
 	fi
 	local date_s="$(date +%s)"
-	local arch="$APT_TEST_USED_ARCH"
-	local comps="${label}"
+	local comps="${DISTRO_COMPONENT}"
 
 	if [ -n "$repo_date" ] ; then
 		date_s="$repo_date"
@@ -69,7 +71,7 @@ generaterepository() {
 	fi
 	local suite="$GB_REPO_SUITE"
 	if [ -z "$suite" ]; then
-		suite="$label"
+		suite="$DISTRO_COMPONENT"
 	fi
 	local version="$GB_REPO_VERSION"
 	if [ -z "$version" ]; then
@@ -99,20 +101,23 @@ generaterepository() {
 		esac
 	fi
 
+	NOARCH_DISTRO=noarch
+	MYARCH_DISTRO="$APT_TEST_USED_ARCH"
+
 	if [ -n "$orig_dir" ]; then
 		# initial generation
 		rm -rf "$repo_dir"
-		for dir in ${arch} noarch ; do
-			mkdir -p "${repo_dir}/${dir}/RPMS.${label}"
+		for dir in "${MYARCH_DISTRO}" noarch ; do
+			mkdir -p "${repo_dir}/${dir}/RPMS.${DISTRO_COMPONENT}"
 			mkdir -p "${repo_dir}/${dir}/base"
 			stat "${orig_dir}/${dir}/"*.rpm &>/dev/null &&
-				cp "${orig_dir}/${dir}/"*.rpm "${repo_dir}/${dir}/RPMS.${label}"/
+				cp "${orig_dir}/${dir}/"*.rpm "${repo_dir}/${dir}/RPMS.${DISTRO_COMPONENT}"/
 		done
 	fi
 
 	mkdir -p "${TMPWORKINGDIRECTORY}/cache"
 
-	for dir in ${arch} noarch ; do
+	for dir in "${MYARCH_DISTRO}" noarch ; do
 		genbasedir \
 			--cachedir="${TMPWORKINGDIRECTORY}/cache" \
 			--architecture="$dir" \
@@ -120,13 +125,14 @@ generaterepository() {
 			--archive="$archive" \
 			--codename="$codename" \
 			--description="$description" \
-			--label="$label" \
+			--label="$DISTRO_COMPONENT" \
 			--origin="$origin" \
 			--suite="$suite" \
 			--version="$version" \
 			--topdir="$repo_dir" \
 			--changelog-since='@1' \
 			--flat --no-oldhashfile $compression_opts --mapi \
+			-s  --default-key="$(< "$APT_TEST_INTERMEDIATES"/sign-repo-release/main-gpg/id)" \
 			$APT_TEST_GENBASEDIR_OPTS \
 			$dir $comps
 
@@ -148,6 +154,7 @@ generaterepository() {
 # * global var REPO_STORAGE -- where we physically store the data given to apt
 #   (it will be set depending on $APT_TEST_METHOD)
 # * files in $REPO_STORAGE
+# * global var REPO_COMPR_EXT (the extension for the compressed pkglists there)
 # * global vars NOARCH_DISTRO, MYARCH_DISTRO, DISTRO_COMPONENT
 #   -- the paths under $REPO_STORAGE or $APT_SOURCES_URI; the final part
 #   specified in sources.list after the URI with the component/"label"
@@ -155,7 +162,7 @@ generaterepository() {
 #   (or other actions, according to $APT_TEST_METHOD)
 # * global vars APT_SOURCES_SITE, APT_SOURCES_URI -- how apt sees its source repo:
 #   - APT_SOURCES_SITE is shown as "Site:" by apt-cache dump
-#   - APT_SOURCES_URI IS used in sources.list and to identify files in APT_LISTS_DIR
+#   - APT_SOURCES_URI is used in sources.list and to identify files in APT_LISTS_DIR
 # * sources.list configured accordingly
 #
 # (The global vars are convenient for other scripts to refer to these values.)
@@ -227,13 +234,14 @@ generaterepository_and_switch_sources() {
 
 	esac
 
+	mk_intermediate sign-repo-release/main-gpg/pubkey.asc gpg_keygen_ready_to_sign
+	# for doing the signing later
+	export GNUPGHOME="$APT_TEST_INTERMEDIATES"/sign-repo-release/main-gpg/gnupghome
+
 	# Put the files into $REPO_STORAGE.
 	#
 	# Expose the paths used under it.
 	generaterepository "$ORIG_DIR" "$REPO_STORAGE" "$REPO_DATE"
-	NOARCH_DISTRO=noarch
-	MYARCH_DISTRO="$APT_TEST_USED_ARCH"
-	DISTRO_COMPONENT=apt-tests
 
 	# Additional configuration for the server or other methods.
 
@@ -709,7 +717,7 @@ nginxrestart() {
 #
 # Output/effects:
 # * the file is edited; its time is unchanged
-edit_repo_noarch_release() {
+edit_release_in_repo_noarch() {
 	local -r repo_noarch_release="$REPO_STORAGE/$NOARCH_DISTRO/base/release"
 	mv "$repo_noarch_release"{,.orig}
 
@@ -730,17 +738,16 @@ edit_repo_noarch_release() {
 
 # Input:
 # * args CMD [ARG..] -- stream editor (for the pkglist)
-# * global vars REPO_STORAGE, NOARCH_DISTRO, DISTRO_COMPONENT, REPO_COMPR_EXT
+# * global vars REPO_STORAGE, NOARCH_DISTRO, DISTRO_COMPONENT
 # * files $REPO_STORAGE/$NOARCH_DISTRO/base/{pkglist.$DISTRO_COMPONENT,release}
 #   and its compressed counterpart (if any)
 #
 # Output/effects:
 # * the file (and its compressed counterpart) is edited; its time is unchanged
 # * the size of the compressed counterpart in the release file is adjusted; its time is unchanged
-fake_repo_noarch_pkglist() {
+corrupt_pkglist_in_repo_noarch() {
 	local -r repo_noarch_pkglist="$REPO_STORAGE/$NOARCH_DISTRO/base/pkglist.$DISTRO_COMPONENT"
 	mv "$repo_noarch_pkglist"{,.orig}
-	rm -f "$repo_noarch_pkglist$REPO_COMPR_EXT"
 
 	"$@" \
 	    >"$repo_noarch_pkglist" \
@@ -753,24 +760,32 @@ fake_repo_noarch_pkglist() {
 
 	touch -r "$repo_noarch_pkglist".orig -- "$repo_noarch_pkglist"
 
-	if [ -n "$REPO_COMPR_EXT" ]; then
+	local comprext
+	for comprext in gz bz2 xz zst; do
+	    rm "$repo_noarch_pkglist.$comprext" || continue
 
-	    case "$REPO_COMPR_EXT" in
-		.xz) xz --keep -- "$repo_noarch_pkglist"
+	    case "$comprext" in
+		gz) gzip --keep -- "$repo_noarch_pkglist"
 		     ;;
-		.bz2) bzip2 --keep -- "$repo_noarch_pkglist"
+		bz2) bzip2 --keep -- "$repo_noarch_pkglist"
 		      ;;
+		xz) xz --keep -- "$repo_noarch_pkglist"
+		     ;;
+		zst) zstd --keep -- "$repo_noarch_pkglist"
+		     ;;
+		*) msgdie "Internal error: no handler for .$comprext compression"
+		     ;;
 	    esac
-	    touch -r "$repo_noarch_pkglist".orig -- "$repo_noarch_pkglist$REPO_COMPR_EXT"
+	    touch -r "$repo_noarch_pkglist".orig -- "$repo_noarch_pkglist.$comprext"
 
 	    # Now, we have to edit the size of the compressed fake pkglist.
 	    local new_size
-	    new_size="$(stat --format '%s' -- "$repo_noarch_pkglist$REPO_COMPR_EXT")"
+	    new_size="$(stat --format '%s' -- "$repo_noarch_pkglist.$comprext")"
 	    local -r new_size
 	    # FIXME: the regex is not quite a regex below
-	    edit_repo_noarch_release \
-		sed -Ee "s:^( [^ ]* )[^ ]*( base/pkglist\.$DISTRO_COMPONENT$REPO_COMPR_EXT):\1$new_size\2:"
-	fi
+	    edit_release_in_repo_noarch \
+		sed -Ee "s:^( [^ ]* )[^ ]*( base/pkglist\.$DISTRO_COMPONENT.$comprext):\1$new_size\2:"
+	done
 
 	rm -- "$repo_noarch_pkglist".orig
 }
@@ -820,7 +835,7 @@ fake_repo_noarch_pkglist_cksum() {
 	a_bad_cksum="$(bad_cksum "$cksum_type")"
 	local -r a_bad_cksum
 
-	edit_repo_noarch_release \
+	edit_release_in_repo_noarch \
 	    sed -Ee "/^$cksum_type:/,/^[^ ]/ { /pkglist/ s:^ [^ ]* : $a_bad_cksum :; }"
 }
 
@@ -837,7 +852,7 @@ fake_repo_noarch_pkglist_size() {
 	printf -v a_bad_size '%d' 0x7edcba9876543210
 	local -r a_bad_size
 
-	edit_repo_noarch_release \
+	edit_release_in_repo_noarch \
 	    sed -Ee "/pkglist/ s:^( [^ ]*) [^ ]* :\1 $a_bad_size :"
 }
 
@@ -848,7 +863,7 @@ fake_repo_noarch_pkglist_size() {
 #
 # Output/effects:
 # * the file is edited; its time is unchanged
-fake_repo_noarch_rpm() {
+corrupt_rpm_in_repo_noarch() {
 	local -r name="$1"; shift
 
 	local pkgfile

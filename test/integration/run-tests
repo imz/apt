@@ -81,9 +81,11 @@ export APT_TEST_TARGET="${APT_TEST_TARGET-}"
 APT_TEST_PKG_FILENAME_BY_ALIAS="${APT_TEST_PKG_FILENAME_BY_ALIAS-}"
 export APT_TEST_PKG_FILENAME_BY_ALIAS
 
-# The GPG key to apply rpm --import, so that all the tests are run with such db.
-# If empty, no GPG key is imported into the db.
-export APT_TEST_GPGPUBKEY="${APT_TEST_GPGPUBKEY-}"
+# How many GPG keys to apply rpm --import, so that all the tests are run
+# with such db. If empty, no GPG key is imported into the db. (This works
+# even if we don't overwrite empty with 0 here.)
+APT_TEST_GPGPUBKEY="${APT_TEST_GPGPUBKEY:-0}"
+export APT_TEST_GPGPUBKEY
 
 # Set up some special pkgpriorities to run the tests with.
 # If the option is unset (or non-null), it is turned on (to reduce
@@ -108,6 +110,8 @@ export APT_TEST_BASEDIR_COMPRESSION_OPTS="${APT_TEST_BASEDIR_COMPRESSION_OPTS-}"
 export APT_TEST_GENBASEDIR_OPTS="${APT_TEST_GENBASEDIR_OPTS-}"
 
 # setupenvironment()'s parameters: if non-empty, they override the APT config.
+# By default, we test the default system-wide things.
+# (Among other, the environment as installed by a *-checkinstall pkg.)
 export METHODSDIR="${METHODSDIR-}" # could override Dir::Bin::methods
 
 # generaterepository()'s parameters: if non-empty, they are used; otherwise,
@@ -203,7 +207,7 @@ forall_testcases() {
 		fi
 		;;
 
-	    test-apt-method-http*)
+	    test-method-http*)
 		for method in "${APT_TEST_http_METHODS[@]}"; do
 		    if [[ "$method" == ${APT_RUN_TEST_ONLY_IF_METHOD_MATCHES-"$method"} ]]
 		    then

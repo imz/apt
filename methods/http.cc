@@ -1189,9 +1189,26 @@ int HttpMethod::DealWithHeaders(FetchResult &Res,ServerState *Srv)
 
    // Open the file
    delete File;
-   File = new FileFd(Queue->DestFile,FileFd::WriteAny);
+
+   // If we are resuming, we first need to rescue the data we already have
+   FileFd partial;
+   if (Srv->StartPos > 0 && FileExists(Queue->DestFile))
+   {
+      if (not partial.Open(Queue->DestFile, FileFd::ReadOnly))
+	 return 5;
+   }
+   // Open the file exclusively to avoid injection attacks by links
+   // (WriteTemp gives the same flags as WriteAny plus O_EXCL, and unlinks first)
+   File = new FileFd(Queue->DestFile, FileFd::WriteTemp);
    if (_error->PendingError() == true)
       return 5;
+   if (partial.IsOpen())
+   {
+      // The exclusive open unlinked the old file; copy its content
+      // into the new one and rewind for hashing.
+      if (not CopyFile(partial, *File) || not partial.Close() || not File->Seek(0))
+	 return 5;
+   }
 
    FailFile = Queue->DestFile;
    static_cast<void>(FailFile.c_str());   // Make sure we dont do a malloc in the signal handler
@@ -1206,23 +1223,23 @@ int HttpMethod::DealWithHeaders(FetchResult &Res,ServerState *Srv)
 	 return 5;
    }
 
-   // Set the start point
-   lseek(File->Fd(),0,SEEK_END);
-
    delete Srv->In.Hash;
    Srv->In.Hash = new Hashes;
 
    // Fill the Hash if the file is non-empty (resume)
    if (Srv->StartPos > 0)
    {
-      lseek(File->Fd(),0,SEEK_SET);
+      // the offset is always 0 after open; ftruncate doesn't change the offset;
+      // so we start reading from 0
       if (Srv->In.Hash->AddFD(File->Fd(),Srv->StartPos) == false)
       {
 	 _error->Errno("read",_("Problem hashing file"));
 	 return 5;
       }
-      lseek(File->Fd(),0,SEEK_END);
    }
+
+   // Set the start point
+   lseek(File->Fd(),0,SEEK_END);
 
    SetNonBlock(File->Fd(),true);
    return 0;
