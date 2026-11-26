@@ -3,6 +3,9 @@ set -o pipefail
 
 # Parse the output of xxtra-heavy-checkinstall package's script:
 # save each job's output to a separate file
+#
+# Then one can easily find the cases of failures with smth like:
+# grep -Ee '^Failed tests:' -lr "$LOG_TO_PARSE"-by-jobs
 
 readonly MY_DIR="${0%/*}"
 
