@@ -397,6 +397,13 @@ The tests are run many times and under simulated heavy load (namely,
 in parallel) in order to possibly detect races
 (to make sure no tests are randomly succeeding).
 
+These runs cover all possible tests (and maybe more--because one test may be
+run twice and under heavy load). Due to parallelism, they are often even faster
+than a normal sequential run of all tests.
+
+To inspect the parallel output to find tests that failed, there is a helper:
+xxtra-heavy-output-save-jobs.sh (packaged in %{name}-tests package).
+
 %files xxtra-heavy-load-checkinstall
 
 %pre xxtra-heavy-load-checkinstall -p %_sbindir/sh-safely
