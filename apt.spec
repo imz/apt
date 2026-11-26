@@ -377,7 +377,8 @@ Immediately test %name when installing this package.
 The set of testcases is complete (all the methods that are tested by default
 and some additional peculiarities are tested).
 
-%files checkinstall
+%def_disable normally_checkinstall
+%{?_enable_normally_checkinstall:%files checkinstall}
 
 %pre checkinstall -p %_sbindir/sh-safely
 %{runtests_stem}normally
@@ -399,7 +400,7 @@ in parallel) in order to possibly detect races
 
 These runs cover all possible tests (and maybe more--because one test may be
 run twice and under heavy load). Due to parallelism, they are often even faster
-than a normal sequential run of all tests.
+than a normal sequential run of all tests. So, we use just them.
 
 To inspect the parallel output to find tests that failed, there is a helper:
 xxtra-heavy-output-save-jobs.sh (packaged in %{name}-tests package).
